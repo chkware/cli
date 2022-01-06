@@ -1,4 +1,4 @@
-# from commands import
+from commands import chk_run
 
 if __name__ == '__main__':
-    pass
+    chk_run.execute()
