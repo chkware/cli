@@ -1,5 +1,6 @@
 import click
 from yaml import safe_load
+from requests import request
 from pprint import pp
 
 
@@ -13,13 +14,17 @@ def execute(file):
         yaml_data = safe_load(yf)
 
     pp(yaml_data)
-    pp(yaml_data['request']['path'])
 
     # make request
-    fetch(yaml_data['request'])
+    make_request(yaml_data['request'])
 
     # process data
 
 
-def fetch(request: dict):
-    pass
+def make_request(request_data: dict):
+    response = request(
+        request_data['method'],
+        request_data['path'],
+    )
+
+    pp(response.text)
