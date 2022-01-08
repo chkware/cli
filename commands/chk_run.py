@@ -12,8 +12,9 @@ def execute(file):
     response = make_request(doc.request)
 
     # process data
-    print(response.text)
     print(response.url)
+    print(response.headers.get('content-type'))
+    print(response.json())
 
 
 def read_chk(file_name: str) -> DotMap:
