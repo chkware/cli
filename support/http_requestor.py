@@ -21,6 +21,7 @@ def get_request_args(request_data: DotMap) -> dict:
 
 
 def _args_http_get(request_data: DotMap) -> dict:
+    """Returns HTTP GET method compatible data from request_data"""
     return {
         "method": request_data.method,
         "url": request_data.path,
