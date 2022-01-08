@@ -13,6 +13,7 @@ def execute(file):
 
     # process data
     print(response.text)
+    print(response.url)
 
 
 def read_chk(file_name: str) -> DotMap:
