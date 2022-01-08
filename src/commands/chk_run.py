@@ -1,6 +1,6 @@
 import click
 from yaml import safe_load
-from requests import request
+from support.http_requestor import make_request
 from dotmap import DotMap
 
 
@@ -19,13 +19,3 @@ def read_chk(file_name: str) -> DotMap:
     """read yml data"""
     with open(file_name, 'r') as yf:
         return DotMap(safe_load(yf))
-
-
-def make_request(request_data: DotMap):
-    """Make external api call"""
-    response = request(
-        request_data.method,
-        request_data.path,
-    )
-
-    return response
