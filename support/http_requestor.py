@@ -28,30 +28,28 @@ class HttpRequestArgCompiler:
     @staticmethod
     def add_query_string(request_data: DotMap, request_arg: dict) -> None:
         """add query string"""
-        if request_data.get('query') is not None:
-            request_arg["params"] = request_data.query
+        if (params := request_data.get(HttpDoc.PARAMS)) is not None:
+            request_arg["params"] = params
 
     @staticmethod
     def add_headers(request_data: DotMap, request_arg: dict) -> None:
         """add custom header"""
-        if request_data.get('headers') is not None:
-            request_arg["headers"] = request_data.headers
+        if (headers := request_data.get(HttpDoc.HEADERS)) is not None:
+            request_arg["headers"] = headers
 
     @staticmethod
     def add_authorization(request_data: DotMap, request_arg: dict) -> None:
         """handle authorization header"""
         # handle basic auth
-        if request_data.get(HttpDoc.AUTH_BA) is not None:
+        if (tag_ba := request_data.get(HttpDoc.AUTH_BA)) is not None:
             from requests.auth import HTTPBasicAuth
 
             request_arg["auth"] = HTTPBasicAuth(
-                request_data.get(HttpDoc.AUTH_BA).get(HttpDoc.AUTH_BA_USR),
-                request_data.get(HttpDoc.AUTH_BA).get(HttpDoc.AUTH_BA_PAS),
-            )
+                tag_ba.get(HttpDoc.AUTH_BA_USR), tag_ba.get(HttpDoc.AUTH_BA_PAS))
 
         # handle bearer auth
-        if request_data.get(HttpDoc.AUTH_BE) is not None:
-            request_arg["headers"]["Authorization"] = "Bearer " + request_data.get(HttpDoc.AUTH_BE).get(HttpDoc.AUTH_BE_TOK)
+        if (tag_be := request_data.get(HttpDoc.AUTH_BE)) is not None:
+            request_arg["headers"]["Authorization"] = "Bearer " + tag_be.get(HttpDoc.AUTH_BE_TOK)
 
     @staticmethod
     def add_generic_args(request_data: DotMap, request_arg: dict) -> None:
@@ -72,6 +70,8 @@ class HttpDoc(BaseDoc):
     # common request
     PATH = 'path'
     METHOD = 'method'
+    HEADERS = 'headers'
+    PARAMS = 'query_params'
 
     # Basic
     AUTH_BA = 'auth[basic]'
