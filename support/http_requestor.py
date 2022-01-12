@@ -1,6 +1,7 @@
 from requests import request, Response
 from dotmap import DotMap
 import enum
+import pprint
 
 
 # module functions
@@ -34,10 +35,42 @@ class HttpRequestArgCompiler:
             request_arg["headers"] = request_data.headers
 
     @staticmethod
+    def add_authorization(request_data: DotMap, request_arg: dict) -> None:
+        if request_data.get(HttpDoc.AUTH_BA) is not None:
+            from requests.auth import HTTPBasicAuth
+
+            request_arg["auth"] = HTTPBasicAuth(
+                request_data.get(HttpDoc.AUTH_BA).get(HttpDoc.AUTH_BA_USR),
+                request_data.get(HttpDoc.AUTH_BA).get(HttpDoc.AUTH_BA_PAS),
+            )
+
+    @staticmethod
     def add_compulsory_args(request_data: DotMap, request_arg: dict) -> None:
         HttpRequestArgCompiler.add_url_and_method(request_data, request_arg)
         HttpRequestArgCompiler.add_query_string(request_data, request_arg)
         HttpRequestArgCompiler.add_headers(request_data, request_arg)
+        HttpRequestArgCompiler.add_authorization(request_data, request_arg)
+
+
+class BaseDoc:
+    """represent the base of all kind of documents"""
+    VERSION = 'version'
+
+
+class HttpDoc(BaseDoc):
+    """represent http documents"""
+    # common request
+    PATH = 'path'
+    METHOD = 'method'
+
+    # Basic
+    AUTH_BA = 'auth[basic]'
+    AUTH_BA_USR = 'username'
+    AUTH_BA_PAS = 'password'
+
+    # Bearer
+    AUTH_BE = 'auth[bearer]'
+    AUTH_BE_TOK = 'token'
 
 
 # services
