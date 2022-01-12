@@ -19,19 +19,25 @@ class HttpMethod(enum.Enum):
 
 class HttpRequestArgCompiler:
     @staticmethod
-    def add_url_and_method(request_data: DotMap, request_arg: dict):
+    def add_url_and_method(request_data: DotMap, request_arg: dict) -> None:
         request_arg["method"] = request_data.method
         request_arg["url"] = request_data.path
 
     @staticmethod
-    def add_query_string(request_data: DotMap, request_arg: dict):
+    def add_query_string(request_data: DotMap, request_arg: dict) -> None:
         if request_data.get('query') is not None:
             request_arg["params"] = request_data.query
 
     @staticmethod
-    def add_compulsory_args(request_data: DotMap, request_arg: dict):
+    def add_headers(request_data: DotMap, request_arg: dict) -> None:
+        if request_data.get('headers') is not None:
+            request_arg["headers"] = request_data.headers
+
+    @staticmethod
+    def add_compulsory_args(request_data: DotMap, request_arg: dict) -> None:
         HttpRequestArgCompiler.add_url_and_method(request_data, request_arg)
         HttpRequestArgCompiler.add_query_string(request_data, request_arg)
+        HttpRequestArgCompiler.add_headers(request_data, request_arg)
 
 
 # services
