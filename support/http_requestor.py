@@ -21,21 +21,26 @@ class HttpMethod(enum.Enum):
 class HttpRequestArgCompiler:
     @staticmethod
     def add_url_and_method(request_data: DotMap, request_arg: dict) -> None:
+        """add default request url and request method"""
         request_arg["method"] = request_data.method
         request_arg["url"] = request_data.path
 
     @staticmethod
     def add_query_string(request_data: DotMap, request_arg: dict) -> None:
+        """add query string"""
         if request_data.get('query') is not None:
             request_arg["params"] = request_data.query
 
     @staticmethod
     def add_headers(request_data: DotMap, request_arg: dict) -> None:
+        """add custom header"""
         if request_data.get('headers') is not None:
             request_arg["headers"] = request_data.headers
 
     @staticmethod
     def add_authorization(request_data: DotMap, request_arg: dict) -> None:
+        """handle authorization header"""
+        # handle basic auth
         if request_data.get(HttpDoc.AUTH_BA) is not None:
             from requests.auth import HTTPBasicAuth
 
@@ -44,11 +49,13 @@ class HttpRequestArgCompiler:
                 request_data.get(HttpDoc.AUTH_BA).get(HttpDoc.AUTH_BA_PAS),
             )
 
+        # handle bearer auth
         if request_data.get(HttpDoc.AUTH_BE) is not None:
             request_arg["headers"]["Authorization"] = "Bearer " + request_data.get(HttpDoc.AUTH_BE).get(HttpDoc.AUTH_BE_TOK)
 
     @staticmethod
-    def add_compulsory_args(request_data: DotMap, request_arg: dict) -> None:
+    def add_generic_args(request_data: DotMap, request_arg: dict) -> None:
+        """add default request parameters regardless of method"""
         HttpRequestArgCompiler.add_url_and_method(request_data, request_arg)
         HttpRequestArgCompiler.add_query_string(request_data, request_arg)
         HttpRequestArgCompiler.add_headers(request_data, request_arg)
@@ -94,7 +101,7 @@ def _args_http_get(request_data: DotMap) -> dict:
     """Returns HTTP GET method compatible data from request_data"""
     request_args = {}
 
-    HttpRequestArgCompiler.add_compulsory_args(request_data, request_args)
+    HttpRequestArgCompiler.add_generic_args(request_data, request_args)
 
     return request_args
 
@@ -103,6 +110,6 @@ def _args_http_post(request_data: DotMap) -> dict:
     """Returns HTTP GET method compatible data from request_data"""
     request_args = {}
 
-    HttpRequestArgCompiler.add_compulsory_args(request_data, request_args)
+    HttpRequestArgCompiler.add_generic_args(request_data, request_args)
 
     return request_args
