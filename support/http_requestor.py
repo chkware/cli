@@ -44,6 +44,9 @@ class HttpRequestArgCompiler:
                 request_data.get(HttpDoc.AUTH_BA).get(HttpDoc.AUTH_BA_PAS),
             )
 
+        if request_data.get(HttpDoc.AUTH_BE) is not None:
+            request_arg["headers"]["Authorization"] = "Bearer " + request_data.get(HttpDoc.AUTH_BE).get(HttpDoc.AUTH_BE_TOK)
+
     @staticmethod
     def add_compulsory_args(request_data: DotMap, request_arg: dict) -> None:
         HttpRequestArgCompiler.add_url_and_method(request_data, request_arg)
