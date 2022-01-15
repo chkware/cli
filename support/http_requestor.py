@@ -92,7 +92,7 @@ def get_request_args(request_data: DotMap) -> dict:
     }.get(request_data.method)
 
     if _args_http is None:
-        raise ValueError('The http method no allowed')
+        raise SystemExit(f'The http method no implemented yet. method: {request_data.method}')
 
     return _args_http(request_data)
 
