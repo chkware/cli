@@ -49,7 +49,7 @@ class HttpRequestArgCompiler:
 
         # handle bearer auth
         if (tag_be := request_data.get(HttpDocElements.AUTH_BE)) is not None:
-            request_arg["headers"]["Authorization"] = "Bearer " + tag_be.get(HttpDocElements.AUTH_BE_TOK)
+            request_arg["headers"]["authorization"] = "Bearer " + tag_be.get(HttpDocElements.AUTH_BE_TOK)
 
     @staticmethod
     def add_body(request_data: DotMap, request_arg: dict) -> None:
@@ -60,6 +60,9 @@ class HttpRequestArgCompiler:
             request_arg["data"] = dict(body)
         elif (body := request_data.get(HttpDocElements.BODY_JSN)) is not None:
             request_arg["json"] = dict(body)
+        elif (body := request_data.get(HttpDocElements.BODY_XML)) is not None:
+            request_arg["headers"]["content-type"] = 'application/xml'
+            request_arg["data"] = body
 
 
     @staticmethod
@@ -99,6 +102,7 @@ class HttpDocElements(BaseDocElements):
     BODY_FRM = 'body[form]'
     BODY_FRM_DAT = 'body[form-data]'
     BODY_JSN = 'body[json]'
+    BODY_XML = 'body[xml]'
 
 
 # services
