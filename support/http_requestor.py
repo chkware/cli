@@ -1,7 +1,7 @@
 from requests import request, Response
 from dotmap import DotMap
+from urllib.parse import unquote, urlparse
 import enum
-import pprint
 
 
 # module functions
@@ -58,12 +58,26 @@ class HttpRequestArgCompiler:
             pass
         elif (body := request_data.get(HttpDocElements.BODY_FRM)) is not None:
             request_arg["data"] = dict(body)
+        elif (body := request_data.get(HttpDocElements.BODY_FRM_DAT)) is not None:
+            non_files = {}
+            files = {}
+
+            for body_i in dict(body).items():
+                (key, val) = body_i
+                if val.startswith('file://'):
+                    val = unquote(urlparse(val).path)
+                    files[key] = open(val, 'rb')
+                else:
+                    non_files[key] = val
+
+            request_arg["data"] = non_files
+            request_arg["files"] = files
+
         elif (body := request_data.get(HttpDocElements.BODY_JSN)) is not None:
             request_arg["json"] = dict(body)
         elif (body := request_data.get(HttpDocElements.BODY_XML)) is not None:
             request_arg["headers"]["content-type"] = 'application/xml'
             request_arg["data"] = body
-
 
     @staticmethod
     def add_generic_args(request_data: DotMap, request_arg: dict) -> None:
