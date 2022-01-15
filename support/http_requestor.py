@@ -89,7 +89,6 @@ class HttpRequestArgCompiler:
         HttpRequestArgCompiler.add_query_string(request_data, request_arg)
         HttpRequestArgCompiler.add_headers(request_data, request_arg)
         HttpRequestArgCompiler.add_authorization(request_data, request_arg)
-        HttpRequestArgCompiler.add_body(request_data, request_arg)
 
 
 class BaseDocElements:
@@ -141,5 +140,6 @@ def _args_http_generic(request_data: DotMap) -> dict:
     request_args = {}
 
     HttpRequestArgCompiler.add_generic_args(request_data, request_args)
+    HttpRequestArgCompiler.add_body(request_data, request_args)
 
     return request_args
