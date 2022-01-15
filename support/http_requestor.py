@@ -58,6 +58,8 @@ class HttpRequestArgCompiler:
             pass
         elif (body := request_data.get(HttpDocElements.BODY_FRM)) is not None:
             request_arg["data"] = dict(body)
+        elif (body := request_data.get(HttpDocElements.BODY_JSN)) is not None:
+            request_arg["json"] = dict(body)
 
 
     @staticmethod
@@ -96,6 +98,7 @@ class HttpDocElements(BaseDocElements):
     BODY_NO = 'body[none]'
     BODY_FRM = 'body[form]'
     BODY_FRM_DAT = 'body[form-data]'
+    BODY_JSN = 'body[json]'
 
 
 # services
