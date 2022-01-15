@@ -16,6 +16,9 @@ class HttpMethod(enum.Enum):
     """Constants of wellknown http methods"""
     GET = 'GET'
     POST = 'POST'
+    PUT = 'PUT'
+    PATCH = 'PATCH'
+    DELETE = 'DELETE'
 
 
 class HttpRequestArgCompiler:
@@ -123,7 +126,11 @@ class HttpDocElements(BaseDocElements):
 def get_request_args(request_data: DotMap) -> dict:
     """Prepare dotmap to dict before making request"""
     match request_data.method:
-        case HttpMethod.GET.value | HttpMethod.POST.value:
+        case HttpMethod.GET.value | \
+             HttpMethod.POST.value | \
+             HttpMethod.PUT.value | \
+             HttpMethod.PATCH.value | \
+             HttpMethod.DELETE.value:
             return _args_http_generic(request_data)
         case _:
             raise SystemExit(f'The http method no implemented yet. method: {request_data.method}')
