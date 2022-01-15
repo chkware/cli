@@ -23,7 +23,7 @@ class HttpRequestArgCompiler:
     def add_url_and_method(request_data: DotMap, request_arg: dict) -> None:
         """add default request url and request method"""
         request_arg["method"] = request_data.method
-        request_arg["url"] = request_data.path
+        request_arg["url"] = request_data.url
 
     @staticmethod
     def add_query_string(request_data: DotMap, request_arg: dict) -> None:
@@ -68,10 +68,10 @@ class BaseDoc:
 class HttpDoc(BaseDoc):
     """represent http documents"""
     # common request
-    PATH = 'path'
+    URL = 'url'
     METHOD = 'method'
     HEADERS = 'headers'
-    PARAMS = 'query_params'
+    PARAMS = 'url_params'
 
     # Basic
     AUTH_BA = 'auth[basic]'
