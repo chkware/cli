@@ -87,8 +87,8 @@ class HttpDocElements(BaseDocElements):
 def get_request_args(request_data: DotMap) -> dict:
     """Prepare dotmap to dict before making request"""
     _args_http = {
-        HttpMethod.GET.value: _args_http_get,
-        HttpMethod.POST.value: _args_http_post,
+        HttpMethod.GET.value: _args_http_generic,
+        HttpMethod.POST.value: _args_http_generic,
     }.get(request_data.method)
 
     if _args_http is None:
@@ -97,16 +97,7 @@ def get_request_args(request_data: DotMap) -> dict:
     return _args_http(request_data)
 
 
-def _args_http_get(request_data: DotMap) -> dict:
-    """Returns HTTP GET method compatible data from request_data"""
-    request_args = {}
-
-    HttpRequestArgCompiler.add_generic_args(request_data, request_args)
-
-    return request_args
-
-
-def _args_http_post(request_data: DotMap) -> dict:
+def _args_http_generic(request_data: DotMap) -> dict:
     """Returns HTTP GET method compatible data from request_data"""
     request_args = {}
 
