@@ -52,12 +52,22 @@ class HttpRequestArgCompiler:
             request_arg["headers"]["Authorization"] = "Bearer " + tag_be.get(HttpDocElements.AUTH_BE_TOK)
 
     @staticmethod
+    def add_body(request_data: DotMap, request_arg: dict) -> None:
+        """add body"""
+        if request_data.get(HttpDocElements.BODY_NO):
+            pass
+        elif (body := request_data.get(HttpDocElements.BODY_FRM)) is not None:
+            request_arg["data"] = dict(body)
+
+
+    @staticmethod
     def add_generic_args(request_data: DotMap, request_arg: dict) -> None:
         """add default request parameters regardless of method"""
         HttpRequestArgCompiler.add_url_and_method(request_data, request_arg)
         HttpRequestArgCompiler.add_query_string(request_data, request_arg)
         HttpRequestArgCompiler.add_headers(request_data, request_arg)
         HttpRequestArgCompiler.add_authorization(request_data, request_arg)
+        HttpRequestArgCompiler.add_body(request_data, request_arg)
 
 
 class BaseDocElements:
@@ -81,6 +91,11 @@ class HttpDocElements(BaseDocElements):
     # Bearer
     AUTH_BE = 'auth[bearer]'
     AUTH_BE_TOK = 'token'
+
+    # Body
+    BODY_NO = 'body[none]'
+    BODY_FRM = 'body[form]'
+    BODY_FRM_DAT = 'body[form-data]'
 
 
 # services
