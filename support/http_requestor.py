@@ -28,28 +28,28 @@ class HttpRequestArgCompiler:
     @staticmethod
     def add_query_string(request_data: DotMap, request_arg: dict) -> None:
         """add query string"""
-        if (params := request_data.get(HttpDoc.PARAMS)) is not None:
+        if (params := request_data.get(HttpDocElements.PARAMS)) is not None:
             request_arg["params"] = params
 
     @staticmethod
     def add_headers(request_data: DotMap, request_arg: dict) -> None:
         """add custom header"""
-        if (headers := request_data.get(HttpDoc.HEADERS)) is not None:
+        if (headers := request_data.get(HttpDocElements.HEADERS)) is not None:
             request_arg["headers"] = headers
 
     @staticmethod
     def add_authorization(request_data: DotMap, request_arg: dict) -> None:
         """handle authorization header"""
         # handle basic auth
-        if (tag_ba := request_data.get(HttpDoc.AUTH_BA)) is not None:
+        if (tag_ba := request_data.get(HttpDocElements.AUTH_BA)) is not None:
             from requests.auth import HTTPBasicAuth
 
             request_arg["auth"] = HTTPBasicAuth(
-                tag_ba.get(HttpDoc.AUTH_BA_USR), tag_ba.get(HttpDoc.AUTH_BA_PAS))
+                tag_ba.get(HttpDocElements.AUTH_BA_USR), tag_ba.get(HttpDocElements.AUTH_BA_PAS))
 
         # handle bearer auth
-        if (tag_be := request_data.get(HttpDoc.AUTH_BE)) is not None:
-            request_arg["headers"]["Authorization"] = "Bearer " + tag_be.get(HttpDoc.AUTH_BE_TOK)
+        if (tag_be := request_data.get(HttpDocElements.AUTH_BE)) is not None:
+            request_arg["headers"]["Authorization"] = "Bearer " + tag_be.get(HttpDocElements.AUTH_BE_TOK)
 
     @staticmethod
     def add_generic_args(request_data: DotMap, request_arg: dict) -> None:
@@ -60,12 +60,12 @@ class HttpRequestArgCompiler:
         HttpRequestArgCompiler.add_authorization(request_data, request_arg)
 
 
-class BaseDoc:
+class BaseDocElements:
     """represent the base of all kind of documents"""
     VERSION = 'version'
 
 
-class HttpDoc(BaseDoc):
+class HttpDocElements(BaseDocElements):
     """represent http documents"""
     # common request
     URL = 'url'
