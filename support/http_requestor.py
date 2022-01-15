@@ -19,6 +19,8 @@ class HttpMethod(enum.Enum):
     PUT = 'PUT'
     PATCH = 'PATCH'
     DELETE = 'DELETE'
+    HEAD = 'HEAD'
+    OPTIONS = 'OPTIONS'
 
 
 class HttpRequestArgCompiler:
@@ -125,12 +127,13 @@ class HttpDocElements(BaseDocElements):
 def get_request_args(request_data: DotMap) -> dict:
     """Prepare dotmap to dict before making request"""
     match request_data.method:
-        case HttpMethod.GET.value | \
-             HttpMethod.POST.value | \
-             HttpMethod.PUT.value | \
-             HttpMethod.PATCH.value | \
-             HttpMethod.DELETE.value:
+        case HttpMethod.GET.value | HttpMethod.POST.value | HttpMethod.PUT.value | \
+             HttpMethod.PATCH.value | HttpMethod.DELETE.value:
             return _args_http_generic(request_data)
+
+        case HttpMethod.OPTIONS.value | HttpMethod.HEAD.value:
+            return _args_http_generic(request_data)
+
         case _:
             raise SystemExit(f'The http method no implemented yet. method: {request_data.method}')
 
@@ -141,5 +144,14 @@ def _args_http_generic(request_data: DotMap) -> dict:
 
     HttpRequestArgCompiler.add_generic_args(request_data, request_args)
     HttpRequestArgCompiler.add_body(request_data, request_args)
+
+    return request_args
+
+
+def _args_http_status(request_data: DotMap) -> dict:
+    """Returns HTTP GET method compatible data from request_data"""
+    request_args = {}
+
+    HttpRequestArgCompiler.add_generic_args(request_data, request_args)
 
     return request_args
