@@ -1,0 +1,38 @@
+from urllib3.response import HTTPResponse
+from requests import Response, PreparedRequest
+
+
+class ResponseToStringFormatter:
+    def __init__(self, resp: Response) -> None:
+        self.response: Response = resp
+        self.response_raw: HTTPResponse = resp.raw
+        self.request: PreparedRequest = resp.request
+
+    def body(self) -> str:
+        try:
+            return self.response.json()
+        except Exception as ex:
+            print(ex)
+            return self.response.text
+
+    def headers(self) -> str:
+        return '{}'.format(
+            '\r\n'.join('{}: {}'.format(k, v) for k, v in self.response.headers.items()),
+        )
+
+    def summary(self) -> str:
+        def convert_version_to_string(proto_ver: int) -> str:
+            match proto_ver:
+                case 10: return 'HTTP/1.0'
+                case 11: return 'HTTP/1.1'
+                case 20: return 'HTTP/2.0' # un-tested
+
+        return '{} {} {}'.format(
+            convert_version_to_string(self.response_raw.version),
+            self.response.status_code,
+            self.response.reason,
+        )
+
+    def get(self):
+        return '{}\r\n{}\r\n\r\n{}'.format(self.summary(), self.headers(), self.body())
+
