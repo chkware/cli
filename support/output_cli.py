@@ -36,3 +36,8 @@ class ResponseToStringFormatter:
     def get(self):
         return '{}\r\n{}\r\n\r\n{}'.format(self.summary(), self.headers(), self.body())
 
+    def dd(self):
+        from requests_toolbelt.utils.dump import dump_all
+
+        print(dump_all(self.response).decode('utf-8'))
+        exit(0)
