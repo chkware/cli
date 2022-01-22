@@ -1,7 +1,10 @@
+"""
+http_requestor mod
+"""
+import enum
+from urllib.parse import unquote, urlparse
 from requests import request, Response
 from dotmap import DotMap
-from urllib.parse import unquote, urlparse
-import enum
 
 
 # module functions
@@ -24,6 +27,9 @@ class HttpMethod(enum.Enum):
 
 
 class HttpRequestArgCompiler:
+    """
+    HttpRequestArgCompiler
+    """
     @staticmethod
     def add_url_and_method(request_data: DotMap, request_arg: dict) -> None:
         """add default request url and request method"""

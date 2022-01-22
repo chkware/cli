@@ -1,7 +1,10 @@
+"""
+run command
+"""
 import click
 from yaml import safe_load
-from support.http_requestor import make_request
-from support.output_cli import ResponseToStringFormatter
+from chk.support.http_requestor import make_request
+from chk.support.output_cli import ResponseToStringFormatter
 from dotmap import DotMap
 
 

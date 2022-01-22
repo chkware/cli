@@ -1,3 +1,8 @@
+"""
+output_cli
+"""
+import sys
+
 from urllib3.response import HTTPResponse
 from requests import Response, PreparedRequest
 
@@ -46,4 +51,4 @@ class ResponseToStringFormatter:
         from requests_toolbelt.utils.dump import dump_all
 
         print(dump_all(self.response).decode('utf-8'))
-        exit(0)
+        sys.exit(0)
