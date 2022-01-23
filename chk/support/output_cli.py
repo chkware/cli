@@ -31,10 +31,10 @@ class ResponseToStringFormatter:
     def summary(self) -> str:
         """Summary"""
         def convert_version_to_string(proto_ver: int) -> str:
-            match proto_ver:
-                case 10: return 'HTTP/1.0'
-                case 11: return 'HTTP/1.1'
-                case 20: return 'HTTP/2.0' # un-tested
+            if proto_ver == 10:
+                return 'HTTP/1.0'
+            elif proto_ver == 11:
+                return 'HTTP/1.1'
 
         return '{} {} {}'.format(
             convert_version_to_string(self.response_raw.version),
