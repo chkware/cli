@@ -1,7 +1,10 @@
+"""
+http_requestor mod
+"""
+import enum
+from urllib.parse import unquote, urlparse
 from requests import request, Response
 from dotmap import DotMap
-from urllib.parse import unquote, urlparse
-import enum
 
 
 # module functions
@@ -24,6 +27,9 @@ class HttpMethod(enum.Enum):
 
 
 class HttpRequestArgCompiler:
+    """
+    HttpRequestArgCompiler
+    """
     @staticmethod
     def add_url_and_method(request_data: DotMap, request_arg: dict) -> None:
         """add default request url and request method"""
@@ -126,16 +132,21 @@ class HttpDocElements(BaseDocElements):
 # services
 def get_request_args(request_data: DotMap) -> dict:
     """Prepare dotmap to dict before making request"""
-    match request_data.method:
-        case HttpMethod.GET.value | HttpMethod.POST.value | HttpMethod.PUT.value | \
-             HttpMethod.PATCH.value | HttpMethod.DELETE.value:
-            return _args_http_generic(request_data)
+    if request_data.method in \
+        (HttpMethod.GET.value,
+         HttpMethod.POST.value,
+         HttpMethod.PUT.value,
+         HttpMethod.PATCH.value,
+         HttpMethod.DELETE.value):
+        return _args_http_generic(request_data)
 
-        case HttpMethod.OPTIONS.value | HttpMethod.HEAD.value:
-            return _args_http_generic(request_data)
+    elif request_data.method in \
+        (HttpMethod.OPTIONS.value,
+         HttpMethod.HEAD.value):
+        return _args_http_generic(request_data)
 
-        case _:
-            raise SystemExit(f'The http method no implemented yet. method: {request_data.method}')
+    else:
+        raise SystemExit(f'The http method no implemented yet. method: {request_data.method}')
 
 
 def _args_http_generic(request_data: DotMap) -> dict:
