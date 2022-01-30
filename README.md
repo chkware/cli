@@ -1,5 +1,35 @@
-# cli
-CHK command-line tools
+# chk
+
+![Chkware | Test management for api era](https://raw.githubusercontent.com/wiki/chkware/cli/github-readme-01.png)
+
+> Test management for API era.
+
+### Introduction
+
+API tests management is not easy to develop, and maintain. It requires multitude of knowledge of programming libraries, business scenarios, infrastructure details, etc - unless you use ***chk***.
+
+***chk*** helps you write accurate, robust, and expressive feature tests for your API in less time.
+ 
+Read [more value propositions](wiki/1.-Introduction) here. <br>
+Find [changelog](https://github.com/chkware/cli/wiki/7.-Changelog) here
+
+### Setup
+
+With [**Python 3.8**](https://www.python.org/downloads/) and [**Pipx**](https://pypa.github.io/pipx/installation/#install-pipx) preinstalled, run following in your terminal to get ***chk*** installed.
+
+```bash
+$ pipx install chk
+```
+
+### Usage
+
+[Get started](https://github.com/chkware/cli/wiki/3.-Quick-start) quickly here.
+Find [More examples](https://github.com/chkware/cli/wiki/4.-More-examples) here
 
 
+### Contribute
+
+Read [contribution guide](https://github.com/chkware/cli/wiki/6.-Contributing) and [code of conduct](https://github.com/chkware/cli/wiki/5.-Code-of-conduct) to start contributions.
+
+---
 Licensed under [MPL v2.0](https://www.mozilla.org/en-US/MPL/2.0/)
