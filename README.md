@@ -2,6 +2,9 @@
 
 ![Chkware | Test management for api era](https://raw.githubusercontent.com/wiki/chkware/cli/github-readme-01.png)
 
+[![PyPI version](https://badge.fury.io/py/chk.svg)](https://badge.fury.io/py/chk)
+[![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/)
+
 > Test management for API era.
 
 ### Introduction
