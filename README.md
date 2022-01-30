@@ -29,6 +29,14 @@ $ pipx install chk
 [Get started](https://github.com/chkware/cli/wiki/3.-Quick-start) quickly here.
 Find [More examples](https://github.com/chkware/cli/wiki/4.-More-examples) here
 
+### Need help
+
+Please head over to [discussion](https://github.com/chkware/cli/discussions) section
+
+1. Search in the dicussion section whether someone asked same / similar question or made any discussion before.
+2. Feel free to comment on any existing discusison, or create one new discussion.
+3. If similar discussion exists, tag the discussion to yours for context.
+4. **DO NOT** create issue for your question.
 
 ### Contribute
 
