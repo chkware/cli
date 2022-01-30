@@ -10,7 +10,7 @@ API tests management is not easy to develop, and maintain. It requires multitude
 
 ***chk*** helps you write accurate, robust, and expressive feature tests for your API in less time.
  
-Read [more value propositions](wiki/1.-Introduction) here. <br>
+Read [more value propositions](https://github.com/chkware/cli/wiki/1.-Introduction) here. <br>
 Find [changelog](https://github.com/chkware/cli/wiki/7.-Changelog) here
 
 ### Setup
