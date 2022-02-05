@@ -157,12 +157,3 @@ def _args_http_generic(request_data: DotMap) -> dict:
     HttpRequestArgCompiler.add_body(request_data, request_args)
 
     return request_args
-
-
-def _args_http_status(request_data: DotMap) -> dict:
-    """Returns HTTP GET method compatible data from request_data"""
-    request_args = {}
-
-    HttpRequestArgCompiler.add_generic_args(request_data, request_args)
-
-    return request_args

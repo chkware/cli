@@ -5,11 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- #12 priliminary documentation need
-- #23 do primary test code setup
+- priliminary documentation need [#12](https://github.com/chkware/cli/issues/12)
+- refactor code to make it testable [#23](https://github.com/chkware/cli/issues/23)
 
 ### Changed
-- #18 add support for request body for HEAD, OPTIONS http methods
+- add support for request body for HEAD, OPTIONS http methods [#18](https://github.com/chkware/cli/issues/18)
 
 ## [0.1.0 pre-alpha] - 2022-01-26
 ### Added
