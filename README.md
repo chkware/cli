@@ -14,7 +14,7 @@ API tests management is not easy to develop, and maintain. It requires multitude
 ***chk*** helps you write accurate, robust, and expressive feature tests for your API in less time.
  
 Read [more value propositions](https://github.com/chkware/cli/wiki/1.-Introduction) here. <br>
-Find [changelog](https://github.com/chkware/cli/wiki/7.-Changelog) here
+Find [changelog](docs/CHANGELOG.md) here
 
 ### Setup
 
@@ -31,7 +31,7 @@ Find [More examples](https://github.com/chkware/cli/wiki/4.-More-examples) here
 
 ### Contribute
 
-Read [contribution guide](https://github.com/chkware/cli/wiki/6.-Contributing) and [code of conduct](https://github.com/chkware/cli/wiki/5.-Code-of-conduct) to start contributions.
+Read [contribution guide](docs/CONTRIBUTING.md) and [code of conduct](docs/CODE_OF_CONDUCT.md) to start contributions.
 
 ---
 Licensed under [MPL v2.0](https://www.mozilla.org/en-US/MPL/2.0/)
