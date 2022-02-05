@@ -34,4 +34,4 @@ Find [More examples](https://github.com/chkware/cli/wiki/4.-More-examples) here
 Read [contribution guide](docs/CONTRIBUTING.md) and [code of conduct](docs/CODE_OF_CONDUCT.md) to start contributions.
 
 ---
-Licensed under [MPL v2.0](https://www.mozilla.org/en-US/MPL/2.0/)
+Licensed under [MPL v2.0](/LICENSE)
