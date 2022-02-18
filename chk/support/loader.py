@@ -1,3 +1,4 @@
+from pathlib import Path
 from yaml import safe_load
 from typing import Dict
 
@@ -15,3 +16,10 @@ class ChkFileLoader:
                 raise SystemExit(f'`{file_name}` is not a valid YAML.')
 
             return chk_yaml
+
+    @staticmethod
+    def is_file_ok(file_name: str) -> bool:
+        """Check if chk file exists, extension is okay"""
+        return Path(file_name).is_file() and \
+               Path(file_name).suffix == '.chk'
+
