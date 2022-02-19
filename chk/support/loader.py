@@ -20,6 +20,4 @@ class ChkFileLoader:
     @staticmethod
     def is_file_ok(file_name: str) -> bool:
         """Check if chk file exists, extension is okay"""
-        return Path(file_name).is_file() and \
-               Path(file_name).suffix == '.chk'
-
+        return Path(file_name).is_file() and Path(file_name).suffix == '.chk'
