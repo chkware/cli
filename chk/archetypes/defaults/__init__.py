@@ -10,12 +10,12 @@ class ArchetypeConfig(ABC):
     """Base class to all archetype"""
 
     @classmethod
-    def validate_version(cls, config: Dict) -> Dict:
+    def validate_version(cls, config: Dict) -> bool:
         """check if this version is supported"""
-        if v := config.get('version') is not None:
+        if (v := config.get('version')) is not None:
             archetype_class = ArchetypeConfigModules.data.get(v)
             if archetype_class is None: raise SystemExit('Version not supported.')
-            return config
+            return True
 
     @classmethod
     @abstractmethod
