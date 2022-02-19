@@ -12,6 +12,7 @@ class TestV072:
         assert ver.validate_version(config) is True
 
     def test_validate_version_invalid(self):
+        """when version not found"""
         config = {
             "version": "default:http:0.7"
         }
@@ -20,6 +21,7 @@ class TestV072:
             assert ver.validate_version(config) is True
 
     def test_validate_version_fail_when_empty_version(self):
+        """when version string is empty"""
         config = {
             "version": ""
         }
@@ -28,6 +30,7 @@ class TestV072:
             assert ver.validate_version(config) is True
 
     def test_validate_version_fail_when_no_version(self):
+        """when version string not given"""
         config = {
         }
         ver = V072()
