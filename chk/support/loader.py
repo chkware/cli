@@ -1,6 +1,7 @@
 from pathlib import Path
 from yaml import safe_load
 from typing import Dict
+from chk.globals import current_app, l10n
 
 
 class ChkFileLoader:
@@ -10,10 +11,8 @@ class ChkFileLoader:
     def to_dict(file_name: str) -> Dict:
         """read yml data"""
         with open(file_name, 'r') as yaml_file:
-            try:
-                chk_yaml = safe_load(yaml_file)
-            except:
-                raise SystemExit(f'`{file_name}` is not a valid YAML.')
+            try: chk_yaml = safe_load(yaml_file)
+            except: raise SystemExit(l10n(current_app().config.error.fatal.V0003, {'file_name': file_name}))
 
             return chk_yaml
 
