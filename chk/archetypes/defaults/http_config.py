@@ -1,5 +1,5 @@
 """
-do
+Versioned schema repository for http specifications
 """
 from typing import Dict
 from chk.archetypes.defaults import ArchetypeConfig
