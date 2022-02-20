@@ -4,6 +4,7 @@ Default archetypes
 from abc import ABC, abstractmethod
 from typing import Dict
 from chk.constants.archetype import ArchetypeConfigModules
+from chk.globals import current_app
 
 
 class ArchetypeConfig(ABC):
@@ -12,11 +13,13 @@ class ArchetypeConfig(ABC):
     @classmethod
     def validate_version(cls, config: Dict) -> bool:
         """check if this version is supported"""
+        app = current_app()
+
         ver = config.get('version')
-        if ver is None: raise SystemExit('`version` string not found.')
+        if ver is None: raise SystemExit(app.config.error.fatal.V0001)
 
         archetype_class = ArchetypeConfigModules.data.get(ver)
-        if archetype_class is None: raise SystemExit('Version not supported.')
+        if archetype_class is None: raise SystemExit(app.config.error.fatal.V0002)
 
         return True
 
