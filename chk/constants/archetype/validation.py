@@ -5,7 +5,8 @@ Request specification validation schema
 version_schema = {
     'version': {
         'required': True,
-        'type': 'string'
+        'type': 'string',
+        'empty': False,
     }
 }
 
