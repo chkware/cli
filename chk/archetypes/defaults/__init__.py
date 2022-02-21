@@ -13,11 +13,11 @@ class ArchetypeConfig(ABC):
         self.validator = Validator()
 
     @abstractmethod
-    def get_schema(self):
+    def get_schema(self) -> Dict:
         """abstract method to be implemented by child"""
 
     @abstractmethod
-    def raise_exception(self):
+    def raise_exception(self) -> bool:
         """Error handling at global level for schemas"""
 
     @abstractmethod
