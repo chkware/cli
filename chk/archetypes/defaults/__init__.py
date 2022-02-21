@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from typing import Dict
 from chk.constants.archetype import ArchetypeConfigModules, validation
 from chk.globals import current_app
+from cerberus import Validator
 
 
 class ArchetypeConfig(ABC):
@@ -12,14 +13,24 @@ class ArchetypeConfig(ABC):
 
     @classmethod
     def validate_version(cls, config: Dict) -> bool:
-        """check if this version is supported"""
+        """
+        check if this version is supported
+
+        @todo move exact version string checkup to schema
+            chk/constants/archetype/validation.py
+        """
+        schema = cls.get_version_schema()
+        validator = Validator()
+
         app = current_app()
+        if validator.validate(config, schema) is False:
+            raise SystemExit(app.config.error.fatal.V0001)
 
         ver = config.get('version')
-        if ver is None: raise SystemExit(app.config.error.fatal.V0001)
 
         archetype_class = ArchetypeConfigModules.data.get(ver)
-        if archetype_class is None: raise SystemExit(app.config.error.fatal.V0002)
+        if archetype_class is None:
+            raise SystemExit(app.config.error.fatal.V0002)
 
         return True
 
@@ -29,4 +40,4 @@ class ArchetypeConfig(ABC):
         """abstract method to be implemented by child"""
 
     @classmethod
-    def get_validation_schema(cls) -> Dict: return validation.version_schema
+    def get_version_schema(cls) -> Dict: return validation.version_schema

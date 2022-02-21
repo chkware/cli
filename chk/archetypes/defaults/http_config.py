@@ -13,7 +13,7 @@ class V072(ArchetypeConfig):
     @classmethod
     def validate_schema(cls, config: Dict) -> bool:
         """create and validate schema against the dict passed"""
-        schema = super().get_validation_schema() | cls.get_validation_schema()
+        schema = super().get_version_schema() | cls.get_validation_schema()
         validator = Validator()
         return validator.validate(config, schema)
 
