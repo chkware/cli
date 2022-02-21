@@ -1,5 +1,7 @@
-from chk.archetypes.defaults.http_config import V072
 import pytest
+import tests
+from chk.archetypes.defaults.http_config import V072
+from chk.support.loader import ChkFileLoader
 
 
 class TestV072:
@@ -36,3 +38,12 @@ class TestV072:
         ver = V072()
         with pytest.raises(SystemExit):
             assert ver.validate_version(config) is True
+
+    def test_validate_schema(self):
+        """when version string not given"""
+        filename = tests.RES_DIR + "UserOk.chk"
+        config = ChkFileLoader.to_dict(filename)
+
+        ver = V072()
+        # with pytest.raises(SystemExit):
+        assert ver.validate_schema(config) is True
