@@ -2,5 +2,4 @@
 Request specification validation schema
 """
 
-
-request_schema = dict()
+version_schema = {'version': {'type': 'string'}}

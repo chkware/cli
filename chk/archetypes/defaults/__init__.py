@@ -3,7 +3,7 @@ Default archetypes
 """
 from abc import ABC, abstractmethod
 from typing import Dict
-from chk.constants.archetype import ArchetypeConfigModules
+from chk.constants.archetype import ArchetypeConfigModules, validation
 from chk.globals import current_app
 
 
@@ -27,4 +27,6 @@ class ArchetypeConfig(ABC):
     @abstractmethod
     def validate_schema(cls, config: Dict):
         """abstract method to be implemented by child"""
-        pass
+
+    @classmethod
+    def get_validation_schema(cls) -> Dict: return validation.version_schema
