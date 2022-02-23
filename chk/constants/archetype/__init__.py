@@ -6,5 +6,5 @@ from typing import Dict
 
 class ArchetypeConfigModules:
     data: Dict = {
-        "default:http:0.7.2": "chk.archetypes.defaults.http_config.V072",
+        "default:http:0.7.2": "chk.archetypes.defaults.http_config.HttpV072",
     }

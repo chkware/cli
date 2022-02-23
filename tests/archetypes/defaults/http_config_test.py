@@ -1,49 +1,22 @@
 import pytest
 import tests
-from chk.archetypes.defaults.http_config import V072
+from chk.archetypes.defaults.http_config import HttpV072
 from chk.support.loader import ChkFileLoader
 
 
-class TestV072:
-    """Test chk.archetypes.defaults.http_config.V072"""
-    def test_validate_version_valid(self):
-        config = {
-            "version": "default:http:0.7.2"
-        }
-        ver = V072()
-        assert ver.validate_version(config) is True
-
-    def test_validate_version_invalid(self):
-        """when version not found"""
-        config = {
-            "version": "default:http:0.7"
-        }
-        ver = V072()
-        with pytest.raises(SystemExit):
-            assert ver.validate_version(config) is True
-
-    def test_validate_version_fail_when_empty_version(self):
-        """when version string is empty"""
-        config = {
-            "version": ""
-        }
-        ver = V072()
-        with pytest.raises(SystemExit):
-            assert ver.validate_version(config) is True
-
-    def test_validate_version_fail_when_no_version(self):
-        """when version string not given"""
-        config = {
-        }
-        ver = V072()
-        with pytest.raises(SystemExit):
-            assert ver.validate_version(config) is True
+class TestHttpV072:
+    """Test chk.archetypes.defaults.http_config.HttpV072"""
 
     def test_validate_schema(self):
         """when version string not given"""
-        filename = tests.RES_DIR + "UserOk.chk"
-        config = ChkFileLoader.to_dict(filename)
+        config = {
+            'version': 'default:http:0.7.2',
+            'request': {
+                'url': 'https://example.com',
+                'method': 'GET'
+            }
+        }
 
-        ver = V072()
-        # with pytest.raises(SystemExit):
-        assert ver.validate_schema(config) is True
+        ver = HttpV072()
+        assert ver.validate_config(config) is True
+
