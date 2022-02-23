@@ -17,9 +17,5 @@ class ArchetypeConfig(ABC):
         """abstract method to be implemented by child"""
 
     @abstractmethod
-    def raise_exception(self) -> bool:
-        """Error handling at global level for schemas"""
-
-    @abstractmethod
     def validate_config(self, config: Dict) -> bool:
         """Error handling at global level for schemas"""
