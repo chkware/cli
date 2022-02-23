@@ -1,6 +1,7 @@
 """
 Versioned schema repository for http specifications
 """
+from types import NoneType
 from typing import Dict
 from chk.archetypes.defaults import ArchetypeConfig
 from chk.constants.archetype.validation import version_schema
@@ -23,18 +24,20 @@ class DocV072(ArchetypeConfig):
 
         try:
             if self.validator.validate(config, self.get_schema()) is not True:
-                return self.raise_exception()
-        except DocumentError as de:
-            raise SystemExit(f'{app.config.error.fatal.V0001}: {de}') from de
+                if cerberus.errors.EMPTY_NOT_ALLOWED \
+                        in self.validator.document_error_tree['version']:
+                    raise SystemExit(app.config.error.fatal.V0004)
 
-        # or is a success
-        return True
+                if cerberus.errors.UNALLOWED_VALUE \
+                        in self.validator.document_error_tree['version']:
+                    raise SystemExit(app.config.error.fatal.V0002)
 
-    def raise_exception(self) -> bool:
-        """Error handling at global level for schemas"""
-        app = current_app()
+                if cerberus.errors.REQUIRED_FIELD \
+                        in self.validator.document_error_tree['version']:
+                    raise SystemExit(app.config.error.fatal.V0002)
 
-        if cerberus.errors.EMPTY_NOT_ALLOWED in self.validator.document_error_tree['version']:
-            raise SystemExit(app.config.error.fatal.V0004)
-
-        return True
+                return False
+        except DocumentError as doc_err:
+            raise SystemExit(f'{app.config.error.fatal.V0001}: {doc_err}') from doc_err
+        else:
+            return True # or is a success
