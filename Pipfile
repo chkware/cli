@@ -22,9 +22,11 @@ toml = "==0.10.2"
 typing-extensions = "==4.0.1"
 urllib3 = "==1.26.8"
 wrapt = "==1.13.3"
+cerberus = "*"
 
 [dev-packages]
 pytest = "*"
+mypy = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.10"
