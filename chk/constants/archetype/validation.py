@@ -31,6 +31,11 @@ request_schema = {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
+            },
+            'headers': {
+                'required': False,
+                'empty': False,
+                'type': 'dict',
             }
         }
     }
