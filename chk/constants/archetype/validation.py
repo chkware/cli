@@ -26,6 +26,11 @@ request_schema = {
             'method': {
                 'required': True,
                 'type': 'string',
+            },
+            'url_params': {
+                'required': False,
+                'empty': False,
+                'type': 'dict',
             }
         }
     }
