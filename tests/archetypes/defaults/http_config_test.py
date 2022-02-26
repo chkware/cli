@@ -35,6 +35,12 @@ class TestHttpV072:
         with pytest.raises(SystemExit) as ex:
             assert ver.validate_config(config) is True
 
+    def test_validate_get_expect_pass(self):
+        """when version string not given"""
+        doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/GET-Plain.chk')
+        ver = HttpV072()
+        assert ver.validate_config(doc) is True
+
     def test_validate_get_with_query_expect_pass(self):
         """when version string not given"""
         doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/GET-WithQuery.chk')
