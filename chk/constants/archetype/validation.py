@@ -41,6 +41,11 @@ request_schema = {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
+            },
+            'auth[bearer]': {
+                'required': False,
+                'empty': False,
+                'type': 'dict',
             }
         }
     }
