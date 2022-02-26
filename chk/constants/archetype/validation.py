@@ -36,6 +36,11 @@ request_schema = {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
+            },
+            'auth[basic]': {
+                'required': False,
+                'empty': False,
+                'type': 'dict',
             }
         }
     }
