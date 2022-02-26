@@ -20,6 +20,7 @@ request_schema = {
         'schema': {
             'url': {
                 'required': True,
+                'empty': False,
                 'type': 'string',
             },
             'method': {
