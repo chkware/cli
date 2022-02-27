@@ -26,6 +26,51 @@ request_schema = {
             'method': {
                 'required': True,
                 'type': 'string',
+            },
+            'url_params': {
+                'required': False,
+                'empty': False,
+                'type': 'dict',
+            },
+            'headers': {
+                'required': False,
+                'empty': False,
+                'type': 'dict',
+            },
+            'auth[basic]': {
+                'required': False,
+                'empty': False,
+                'type': 'dict',
+            },
+            'auth[bearer]': {
+                'required': False,
+                'empty': False,
+                'type': 'dict',
+            },
+            'body[none]': {
+                'required': False,
+                'nullable': True,
+                'type': 'string',
+            },
+            'body[form]': {
+                'required': False,
+                'empty': False,
+                'type': 'dict',
+            },
+            'body[form-data]': {
+                'required': False,
+                'empty': False,
+                'type': 'dict',
+            },
+            'body[json]': {
+                'required': False,
+                'empty': False,
+                'type': 'dict',
+            },
+            'body[xml]': {
+                'required': False,
+                'empty': False,
+                'type': 'string',
             }
         }
     }
