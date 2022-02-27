@@ -61,6 +61,11 @@ request_schema = {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
+            },
+            'body[json]': {
+                'required': False,
+                'empty': False,
+                'type': 'dict',
             }
         }
     }
