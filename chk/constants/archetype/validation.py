@@ -56,6 +56,11 @@ request_schema = {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
+            },
+            'body[form-data]': {
+                'required': False,
+                'empty': False,
+                'type': 'dict',
             }
         }
     }

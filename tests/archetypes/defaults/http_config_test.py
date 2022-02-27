@@ -159,3 +159,26 @@ class TestHttpV072:
         with pytest.raises(SystemExit):
             assert ver.validate_config(doc) is True
 
+    def test_validate_post_with_form_data_body_expect_pass(self):
+        """when version string not given"""
+        doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/POST-WithBodyFormData.chk')
+        ver = HttpV072()
+
+        assert ver.validate_config(doc) is True
+
+    def test_validate_post_with_form_data_body_as_list_expect_fail(self):
+        """when version string not given"""
+        doc = ChkFileLoader.to_dict(tests.RES_DIR + 'fail_cases/POST-WithBodyFormData-AsList.chk')
+        ver = HttpV072()
+
+        with pytest.raises(SystemExit):
+            assert ver.validate_config(doc) is True
+
+    def test_validate_post_with_form_data_body_as_empty_expect_fail(self):
+        """when version string not given"""
+        doc = ChkFileLoader.to_dict(tests.RES_DIR + 'fail_cases/POST-WithBodyFormData-Empty.chk')
+        ver = HttpV072()
+
+        with pytest.raises(SystemExit):
+            assert ver.validate_config(doc) is True
+
