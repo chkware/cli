@@ -4,10 +4,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+Date: 2022-03-31 (tentative) <br>
 Tracked milestone: [M.2022-03](https://github.com/chkware/cli/milestone/2) 
 
 ## [0.1.4 `pre-alpha`]  
-Date: 2022-02-28
+Date: 2022-02-28 <br>
 Tracked milestone: [M.2022-02](https://github.com/chkware/cli/milestone/1)
 
 ### Added
