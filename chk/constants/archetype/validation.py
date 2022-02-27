@@ -66,6 +66,11 @@ request_schema = {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
+            },
+            'body[xml]': {
+                'required': False,
+                'empty': False,
+                'type': 'string',
             }
         }
     }
