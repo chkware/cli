@@ -121,18 +121,14 @@ class HttpDocElements(BaseDocElements):
 def get_request_args(request_data: DotMap) -> dict:
     """Prepare dotmap to dict before making request"""
     if request_data.method in \
-        (HttpMethod.GET.value,
-         HttpMethod.POST.value,
-         HttpMethod.PUT.value,
-         HttpMethod.PATCH.value,
-         HttpMethod.DELETE.value):
+            (HttpMethod.GET.value,
+             HttpMethod.POST.value,
+             HttpMethod.PUT.value,
+             HttpMethod.PATCH.value,
+             HttpMethod.DELETE.value,
+             HttpMethod.OPTIONS.value,
+             HttpMethod.HEAD.value):
         return _args_http_generic(request_data)
-
-    elif request_data.method in \
-        (HttpMethod.OPTIONS.value,
-         HttpMethod.HEAD.value):
-        return _args_http_generic(request_data)
-
     else:
         raise SystemExit(f'The http method no implemented yet. method: {request_data.method}')
 
