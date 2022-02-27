@@ -19,7 +19,6 @@ class ResponseToStringFormatter:
         try:
             return self.response.json()
         except Exception as ex:
-            print(ex)
             return self.response.text
 
     def headers(self) -> str:
