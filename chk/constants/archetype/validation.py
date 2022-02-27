@@ -46,6 +46,16 @@ request_schema = {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
+            },
+            'body[none]': {
+                'required': False,
+                'nullable': True,
+                'type': 'string',
+            },
+            'body[form]': {
+                'required': False,
+                'empty': False,
+                'type': 'dict',
             }
         }
     }
