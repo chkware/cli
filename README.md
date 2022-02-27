@@ -23,6 +23,8 @@ With [**Python 3.10**](https://www.python.org/downloads/) and [**Pipx**](https:/
 $ pipx install chk
 ```
 
+Jump to the [setup guide](https://github.com/chkware/cli/wiki/2.-Setup) for different ways to install ***chkware***.
+
 ### Usage
 
 [Get started](https://github.com/chkware/cli/wiki/3.-Quick-start) quickly here.
