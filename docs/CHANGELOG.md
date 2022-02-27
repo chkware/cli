@@ -4,9 +4,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-March Release: [M.2022-03](https://github.com/chkware/cli/milestone/2) 
+Tracked milestone: [M.2022-03](https://github.com/chkware/cli/milestone/2) 
 
-## [0.1.4 `pre-alpha`] - 2022-02-28 [M.2022-02](https://github.com/chkware/cli/milestone/1)
+## [0.1.4 `pre-alpha`]  
+Date: 2022-02-28
+Tracked milestone: [M.2022-02](https://github.com/chkware/cli/milestone/1)
+
 ### Added
 - validation for Http spec file [#29](https://github.com/chkware/cli/issues/29)
 - validate request .chk file [#7](https://github.com/chkware/cli/issues/7)
@@ -18,7 +21,9 @@ March Release: [M.2022-03](https://github.com/chkware/cli/milestone/2)
 - add support for request body for HEAD, OPTIONS http methods [#18](https://github.com/chkware/cli/issues/18)
 - Improvement to docs for v0.1.4 [#36](https://github.com/chkware/cli/issues/36)
 
-## [0.1.0 `pre-alpha`] - 2022-01-26
+## [0.1.0 `pre-alpha`] 
+Date: 2022-01-26
+
 ### Added
 - POST, PUT, PATCH null body support
 - form enctype multipart/form-data support
