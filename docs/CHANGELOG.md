@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 March Release: [M.2022-03](https://github.com/chkware/cli/milestone/2) 
 
-## [0.1.4 `pre-alpha`]
+## [0.1.4 `pre-alpha`] - 2022-02-28 [M.2022-02](https://github.com/chkware/cli/milestone/1)
 ### Added
 - validation for Http spec file [#29](https://github.com/chkware/cli/issues/29)
 - validate request .chk file [#7](https://github.com/chkware/cli/issues/7)
