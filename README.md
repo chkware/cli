@@ -35,4 +35,4 @@ Find [More examples](https://github.com/chkware/cli/wiki/4.-More-examples) here
 Read [contribution guide](docs/CONTRIBUTING.md) and [code of conduct](docs/CODE_OF_CONDUCT.md) to start contributions.
 
 ---
-Licensed under [MPL v2.0](/LICENSE) | Follow [@chkware](https://twitter.com/chkware) for update
+Licensed under [MPL v2.0](/LICENSE) | Follow [@chkware](https://twitter.com/chkware) on Twitter | [See releases](https://pypi.org/project/chk/) on PyPi
