@@ -1,4 +1,4 @@
-# chk
+# Chkware
 
 ![Chkware | Test management for api era](https://raw.githubusercontent.com/wiki/chkware/cli/github-readme-01.png)
 
@@ -11,10 +11,9 @@
 
 API tests management is not easy to develop, and maintain. It requires multitude of knowledge of programming libraries, business scenarios, infrastructure details, etc - unless you use ***chkware***.
 
-***chkware*** helps you write accurate, robust, and expressive feature tests for your API in less time.
+***chkware*** (pronounced as */check:ware/*) helps you write accurate, robust, and expressive feature tests for your API in less time.
  
-Read [more value propositions](https://github.com/chkware/cli/wiki/1.-Introduction) here. <br>
-Find [changelog](docs/CHANGELOG.md) here
+Read [more value propositions](https://github.com/chkware/cli/wiki/1.-Introduction) here. Find [changelog](docs/CHANGELOG.md) here.
 
 ### Setup
 
