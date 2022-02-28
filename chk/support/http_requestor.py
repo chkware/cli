@@ -1,7 +1,7 @@
 """
 http_requestor mod
 """
-import enum
+from chk.constants.http import HttpMethod
 from urllib.parse import unquote, urlparse
 from requests import request, Response
 from dotmap import DotMap
@@ -12,18 +12,6 @@ def make_request(request_data: DotMap) -> Response:
     """Make external api call"""
     request_args = get_request_args(request_data)
     return request(**request_args)
-
-
-# class
-class HttpMethod(enum.Enum):
-    """Constants of wellknown http methods"""
-    GET = 'GET'
-    POST = 'POST'
-    PUT = 'PUT'
-    PATCH = 'PATCH'
-    DELETE = 'DELETE'
-    HEAD = 'HEAD'
-    OPTIONS = 'OPTIONS'
 
 
 class HttpRequestArgCompiler:
@@ -133,18 +121,14 @@ class HttpDocElements(BaseDocElements):
 def get_request_args(request_data: DotMap) -> dict:
     """Prepare dotmap to dict before making request"""
     if request_data.method in \
-        (HttpMethod.GET.value,
-         HttpMethod.POST.value,
-         HttpMethod.PUT.value,
-         HttpMethod.PATCH.value,
-         HttpMethod.DELETE.value):
+            (HttpMethod.GET.value,
+             HttpMethod.POST.value,
+             HttpMethod.PUT.value,
+             HttpMethod.PATCH.value,
+             HttpMethod.DELETE.value,
+             HttpMethod.OPTIONS.value,
+             HttpMethod.HEAD.value):
         return _args_http_generic(request_data)
-
-    elif request_data.method in \
-        (HttpMethod.OPTIONS.value,
-         HttpMethod.HEAD.value):
-        return _args_http_generic(request_data)
-
     else:
         raise SystemExit(f'The http method no implemented yet. method: {request_data.method}')
 

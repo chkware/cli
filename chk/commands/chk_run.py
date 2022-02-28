@@ -2,30 +2,31 @@
 run command
 """
 import click
-from yaml import safe_load
+import dotmap
 from chk.support.http_requestor import make_request
 from chk.support.output_cli import ResponseToStringFormatter
-from dotmap import DotMap
+from chk.support.loader import ChkFileLoader
+from chk.archetypes.defaults.http_config import HttpV072
 
 
 @click.command()
 @click.argument('file')
 def execute(file):
     """execute command"""
-    doc = read_chk(file)
-    response = make_request(doc.request)
-    fmt_str = ResponseToStringFormatter(response).get()
+    if ChkFileLoader.is_file_ok(file):
+        # load as dict
+        doc = ChkFileLoader.to_dict(file)
 
-    # print data
-    print(fmt_str)
+        doc_ver = HttpV072()
+        doc_ver.validate_config(doc)
+        del doc_ver
 
+        doc = dotmap.DotMap(doc)
 
-def read_chk(file_name: str) -> DotMap:
-    """read yml data"""
-    with open(file_name, 'r') as yf:
-        try:
-            chk_yaml = safe_load(yf)
-        except:
-            raise SystemExit(f'`{file_name}` is not a valid YAML.')
+        response = make_request(doc.request)
+        fmt_str = ResponseToStringFormatter(response).get()
 
-        return DotMap(chk_yaml)
+        print(fmt_str)  # print data
+    else:
+        from chk.globals import current_app
+        raise SystemExit(current_app().config.error.fatal.V0002)
