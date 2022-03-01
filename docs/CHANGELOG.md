@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Date: 2022-03-31 (tentative) <br>
 Tracked milestone: [M.2022-03](https://github.com/chkware/cli/milestone/2) 
 
-## [0.1.4 `pre-alpha`]  
+## [0.1.5 `pre-alpha`]  
 Date: 2022-02-28 <br>
 Tracked milestone: [M.2022-02](https://github.com/chkware/cli/milestone/1)
 
@@ -20,7 +20,7 @@ Tracked milestone: [M.2022-02](https://github.com/chkware/cli/milestone/1)
 
 ### Changed
 - add support for request body for HEAD, OPTIONS http methods [#18](https://github.com/chkware/cli/issues/18)
-- Improvement to docs for v0.1.4 [#36](https://github.com/chkware/cli/issues/36)
+- Improvement to docs for v0.1.5 [#36](https://github.com/chkware/cli/issues/36)
 
 ## [0.1.0 `pre-alpha`] 
 Date: 2022-01-26
