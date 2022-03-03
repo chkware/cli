@@ -22,6 +22,7 @@ request_schema = {
                 'required': True,
                 'empty': False,
                 'type': 'string',
+                'check_with': rules.allowed_url,
             },
             'method': {
                 'required': True,

@@ -35,6 +35,21 @@ class TestHttpV072:
         with pytest.raises(SystemExit):
             assert ver.validate_config(config) is True
 
+    def test_validate_fail_if_url_wrong(self):
+        """when version string not given"""
+        config = {
+            'version': 'default:http:0.7.2',
+            'request': {
+                'url': 'ftp://example.com/wrong/url.html',
+                'method': 'GET'
+            }
+        }
+
+        ver = HttpV072()
+
+        with pytest.raises(SystemExit):
+            assert ver.validate_config(config) is True
+
     def test_validate_success_with_method(self):
         """when version string not given"""
         config = {
