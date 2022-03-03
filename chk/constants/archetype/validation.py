@@ -2,14 +2,14 @@
 Request specification validation schema
 """
 
-import chk.constants.archetype
+from chk.constants.archetype import rules, ArchetypeConfigModules
 
 version_schema = {
     'version': {
         'required': True,
         'type': 'string',
         'empty': False,
-        'allowed': list(chk.constants.archetype.ArchetypeConfigModules.data.keys())
+        'allowed': list(ArchetypeConfigModules.data.keys())
     }
 }
 
@@ -26,6 +26,7 @@ request_schema = {
             'method': {
                 'required': True,
                 'type': 'string',
+                'check_with': rules.allowed_method,
             },
             'url_params': {
                 'required': False,

@@ -32,7 +32,35 @@ class TestHttpV072:
 
         ver = HttpV072()
 
-        with pytest.raises(SystemExit) as ex:
+        with pytest.raises(SystemExit):
+            assert ver.validate_config(config) is True
+
+    def test_validate_success_with_method(self):
+        """when version string not given"""
+        config = {
+            'version': 'default:http:0.7.2',
+            'request': {
+                'url': 'https://example.com',
+                'method': 'GET'
+            }
+        }
+
+        ver = HttpV072()
+        assert ver.validate_config(config) is True
+
+    def test_validate_fail_if_method_wrong(self):
+        """when version string not given"""
+        config = {
+            'version': 'default:http:0.7.2',
+            'request': {
+                'url': 'https://example.com',
+                'method': 'WRONG'
+            }
+        }
+
+        ver = HttpV072()
+
+        with pytest.raises(SystemExit):
             assert ver.validate_config(config) is True
 
     def test_validate_get_expect_pass(self):
