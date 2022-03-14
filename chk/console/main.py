@@ -5,6 +5,7 @@ from chk.infrastructure.file_loader import ChkFileLoader
 from chk.modules.http.entities import HttpV072
 from chk.modules.http.presentation import ResponseToStringFormatter
 from chk.support.http_requestor import make_request
+from chk.console.app_container import app
 
 
 # run command
@@ -27,8 +28,7 @@ def run(file):
 
         print(fmt_str)  # print data
     else:
-        from chk.globals import current_app
-        raise SystemExit(current_app().config.error.fatal.V0002)
+        raise SystemExit(app.messages.exception.fatal.V0002)
 
 
 # root command

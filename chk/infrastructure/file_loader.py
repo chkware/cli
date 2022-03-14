@@ -15,7 +15,7 @@ class ChkFileLoader:
             try:
                 return safe_load(yaml_file)
             except:
-                raise SystemExit(l10n(app.messages.error.fatal.V0003, {'file_name': file_name}))
+                raise SystemExit(l10n(app.messages.exception.fatal.V0003, {'file_name': file_name}))
 
     @staticmethod
     def is_file_ok(file_name: str) -> bool:

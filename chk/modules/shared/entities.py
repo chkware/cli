@@ -42,6 +42,6 @@ class DocV072(AbstractArchetypeConfig):
             if self.validator.validate(config, self.get_schema()) is not True:
                 raise SystemExit(str(self.validator.errors))
         except DocumentError as doc_err:
-            raise SystemExit(f'{app.config.error.fatal.V0001}: {doc_err}') from doc_err
+            raise SystemExit(f'{app.messages.exception.fatal.V0001}: {doc_err}') from doc_err
         else:
             return True  # or is a success
