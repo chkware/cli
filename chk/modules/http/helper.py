@@ -10,12 +10,9 @@ from urllib.parse import unquote, urlparse
 
 def prepare_request_args(request_data: DotMap) -> dict:
     """Prepare dotmap to dict before making request"""
-    if request_data.method in set(method.value for method in HttpMethod):
-        request_args: Dict[str, str] = {}
-        HttpRequestArgCompiler.add_generic_args(request_data, request_args)
-        return request_args
-    else:
-        raise SystemExit(f'The http method no implemented yet. method: {request_data.method}')
+    request_args: Dict[str, str] = {}
+    HttpRequestArgCompiler.add_generic_args(request_data, request_args)
+    return request_args
 
 
 class HttpRequestArgCompiler:
