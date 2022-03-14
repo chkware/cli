@@ -1,15 +1,14 @@
 """
 Versioned schema repository for http specifications
 """
-import cerberus.errors
 from typing import Dict
-from chk.modules.shared.entities import ArchetypeConfig, DocV072
-from chk.constants.archetype.validation import request_schema
+from chk.modules.shared.entities import AbstractArchetypeConfig, DocV072
+from chk.modules.http.validation_rules import request_schema
 from cerberus.validator import DocumentError
 from chk.console.app_container import app
 
 
-class HttpV072(ArchetypeConfig):
+class HttpV072(AbstractArchetypeConfig):
     """http config v0.7.2"""
     def __init__(self):
         super().__init__()

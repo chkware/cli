@@ -1,5 +1,6 @@
 """
 Versioned schema repository for http specifications
+@deprecate
 """
 import cerberus.errors
 from typing import Dict
