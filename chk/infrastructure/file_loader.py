@@ -1,11 +1,8 @@
-"""
-@deprecate
-"""
-
+from chk.console.app_container import app
+from chk.infrastructure.translation import l10n
 from pathlib import Path
-from yaml import safe_load
 from typing import Dict
-from chk.globals import current_app, l10n
+from yaml import safe_load
 
 
 class ChkFileLoader:
@@ -16,11 +13,9 @@ class ChkFileLoader:
         """read yml data"""
         with open(file_name, 'r') as yaml_file:
             try:
-                chk_yaml = safe_load(yaml_file)
+                return safe_load(yaml_file)
             except:
-                raise SystemExit(l10n(current_app().config.error.fatal.V0003, {'file_name': file_name}))
-
-            return chk_yaml
+                raise SystemExit(l10n(app.messages.error.fatal.V0003, {'file_name': file_name}))
 
     @staticmethod
     def is_file_ok(file_name: str) -> bool:
