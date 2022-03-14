@@ -1,6 +1,5 @@
 """
-output_cli
-@deprecate
+Presentation related logics
 """
 import sys
 
