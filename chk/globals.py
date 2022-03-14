@@ -1,5 +1,6 @@
 """
 Global application functionality
+@deprecate
 """
 import pydoc
 from typing import Dict
