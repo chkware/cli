@@ -1,10 +1,10 @@
 """Commands"""
 import click
 import dotmap
-from chk.support.http_requestor import make_request
-from chk.modules.http.presentation import ResponseToStringFormatter
 from chk.infrastructure.file_loader import ChkFileLoader
-from chk.archetypes.defaults.http_config import HttpV072
+from chk.modules.http.entities import HttpV072
+from chk.modules.http.presentation import ResponseToStringFormatter
+from chk.support.http_requestor import make_request
 
 
 # run command
