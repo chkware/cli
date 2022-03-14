@@ -1,7 +1,7 @@
 """
 Validation rules and supporting libs for http module
 """
-from chk.constants.http import HttpMethod
+from chk.modules.http.constants import HttpMethod
 from urllib.parse import urlparse
 
 

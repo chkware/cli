@@ -1,23 +1,28 @@
 """
-http_requestor mod
+Http module helpers
 """
-from chk.constants.http import HttpMethod
-from urllib.parse import unquote, urlparse
-from requests import request, Response
+from chk.modules.http.constants import HttpDocElements, HttpMethod
 from dotmap import DotMap
+from requests.auth import HTTPBasicAuth
+from typing import Dict
+from urllib.parse import unquote, urlparse
 
 
-# module functions
-def make_request(request_data: DotMap) -> Response:
-    """Make external api call"""
-    request_args = get_request_args(request_data)
-    return request(**request_args)
+def prepare_request_args(request_data: DotMap) -> dict:
+    """Prepare dotmap to dict before making request"""
+    if request_data.method in set(method.value for method in HttpMethod):
+        request_args: Dict[str, str] = {}
+        HttpRequestArgCompiler.add_generic_args(request_data, request_args)
+        return request_args
+    else:
+        raise SystemExit(f'The http method no implemented yet. method: {request_data.method}')
 
 
 class HttpRequestArgCompiler:
     """
     HttpRequestArgCompiler
     """
+
     @staticmethod
     def add_url_and_method(request_data: DotMap, request_arg: dict) -> None:
         """add default request url and request method"""
@@ -41,8 +46,6 @@ class HttpRequestArgCompiler:
         """handle authorization header"""
         # handle basic auth
         if (tag_ba := request_data.get(HttpDocElements.AUTH_BA)) is not None:
-            from requests.auth import HTTPBasicAuth
-
             request_arg["auth"] = HTTPBasicAuth(
                 tag_ba.get(HttpDocElements.AUTH_BA_USR), tag_ba.get(HttpDocElements.AUTH_BA_PAS))
 
@@ -85,59 +88,4 @@ class HttpRequestArgCompiler:
         HttpRequestArgCompiler.add_query_string(request_data, request_arg)
         HttpRequestArgCompiler.add_headers(request_data, request_arg)
         HttpRequestArgCompiler.add_authorization(request_data, request_arg)
-
-
-class BaseDocElements:
-    """represent the base of all kind of documents"""
-    VERSION = 'version'
-
-
-class HttpDocElements(BaseDocElements):
-    """represent http documents"""
-    # common request
-    URL = 'url'
-    METHOD = 'method'
-    HEADERS = 'headers'
-    PARAMS = 'url_params'
-
-    # Basic
-    AUTH_BA = 'auth[basic]'
-    AUTH_BA_USR = 'username'
-    AUTH_BA_PAS = 'password'
-
-    # Bearer
-    AUTH_BE = 'auth[bearer]'
-    AUTH_BE_TOK = 'token'
-
-    # Body
-    BODY_NO = 'body[none]'
-    BODY_FRM = 'body[form]'
-    BODY_FRM_DAT = 'body[form-data]'
-    BODY_JSN = 'body[json]'
-    BODY_XML = 'body[xml]'
-
-
-# services
-def get_request_args(request_data: DotMap) -> dict:
-    """Prepare dotmap to dict before making request"""
-    if request_data.method in \
-            (HttpMethod.GET.value,
-             HttpMethod.POST.value,
-             HttpMethod.PUT.value,
-             HttpMethod.PATCH.value,
-             HttpMethod.DELETE.value,
-             HttpMethod.OPTIONS.value,
-             HttpMethod.HEAD.value):
-        return _args_http_generic(request_data)
-    else:
-        raise SystemExit(f'The http method no implemented yet. method: {request_data.method}')
-
-
-def _args_http_generic(request_data: DotMap) -> dict:
-    """Returns HTTP GET method compatible data from request_data"""
-    request_args = {}
-
-    HttpRequestArgCompiler.add_generic_args(request_data, request_args)
-    HttpRequestArgCompiler.add_body(request_data, request_args)
-
-    return request_args
+        HttpRequestArgCompiler.add_body(request_data, request_arg)
