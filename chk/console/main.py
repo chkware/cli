@@ -1,39 +1,17 @@
 """Commands"""
+import chk.modules.http.main as http_executor
 import click
-import dotmap
-from chk.infrastructure.file_loader import ChkFileLoader
-from chk.modules.http.entities import HttpV072
-from chk.modules.http.presentation import ResponseToStringFormatter
-from chk.support.http_requestor import make_request
-from chk.console.app_container import app
 
 
 # run command
-@click.command()
+@click.command('http')
 @click.argument('file')
-def run(file):
-    """execute command"""
-    if ChkFileLoader.is_file_ok(file):
-        # load as dict
-        doc = ChkFileLoader.to_dict(file)
-
-        doc_ver = HttpV072()
-        doc_ver.validate_config(doc)
-        del doc_ver
-
-        doc = dotmap.DotMap(doc)
-
-        response = make_request(doc.request)
-        fmt_str = ResponseToStringFormatter(response).get()
-
-        print(fmt_str)  # print data
-    else:
-        raise SystemExit(app.messages.exception.fatal.V0002)
+def execute_http(file): http_executor.execute(file)
 
 
 # root command
-@click.group()
-def chk(): pass
+@click.group('chk')
+def execute_root(): pass
 
 
-chk.add_command(run)
+execute_root.add_command(execute_http)  # add `http` as sub-command
