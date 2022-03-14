@@ -2,8 +2,8 @@
 import click
 import dotmap
 from chk.support.http_requestor import make_request
-from chk.support.output_cli import ResponseToStringFormatter
-from chk.support.loader import ChkFileLoader
+from chk.modules.http.presentation import ResponseToStringFormatter
+from chk.infrastructure.file_loader import ChkFileLoader
 from chk.archetypes.defaults.http_config import HttpV072
 
 
