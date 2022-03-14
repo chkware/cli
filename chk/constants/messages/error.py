@@ -1,5 +1,6 @@
 """
 english messages
+@deprecate
 """
 messages = dict(
     fatal=dict(

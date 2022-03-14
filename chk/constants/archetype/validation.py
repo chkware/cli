@@ -1,5 +1,6 @@
 """
 Request specification validation schema
+@deprecate
 """
 
 from chk.constants.archetype import rules, ArchetypeConfigModules

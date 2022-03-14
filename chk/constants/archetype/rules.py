@@ -1,5 +1,6 @@
 """
 Cerberus validation rules
+@deprecate
 """
 from chk.constants.http import HttpMethod
 from urllib.parse import urlparse

@@ -2,14 +2,14 @@
 Shared entities
 """
 from abc import ABC, abstractmethod
-from typing import Dict
 from cerberus import Validator
-from chk.constants.archetype.validation import version_schema
 from cerberus.validator import DocumentError
 from chk.console.app_container import app
+from chk.modules.shared.validation_rules import version_schema
+from typing import Dict
 
 
-class ArchetypeConfig(ABC):
+class AbstractArchetypeConfig(ABC):
     """Base class to all archetype"""
 
     def __init__(self):
@@ -24,7 +24,7 @@ class ArchetypeConfig(ABC):
         """Error handling at global level for schemas"""
 
 
-class DocV072(ArchetypeConfig):
+class DocV072(AbstractArchetypeConfig):
     """
     Versioned schema repository for http specifications
     version: v0.7.2
