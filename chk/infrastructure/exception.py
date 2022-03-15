@@ -1,5 +1,5 @@
 """
-english messages
+exception messages
 """
 messages = dict(
     fatal=dict(

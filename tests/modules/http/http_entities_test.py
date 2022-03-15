@@ -1,7 +1,7 @@
 import pytest
 import tests
-from chk.archetypes.defaults.http_config import HttpV072
-from chk.support.loader import ChkFileLoader
+from chk.modules.http.entities import HttpV072
+from chk.infrastructure.file_loader import ChkFileLoader
 
 
 class TestHttpV072:

@@ -1,7 +1,7 @@
 """test loader"""
 import pytest
 import tests
-from chk.support.loader import ChkFileLoader
+from chk.infrastructure.file_loader import ChkFileLoader
 
 
 class TestChkFileLoader:
