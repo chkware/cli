@@ -1,7 +1,5 @@
 import pytest
-import tests
-from chk.archetypes.defaults.doc_config import DocV072
-from chk.support.loader import ChkFileLoader
+from chk.modules.ver.entities import DocV072
 
 
 class TestDocV072:
