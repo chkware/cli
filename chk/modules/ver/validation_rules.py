@@ -1,7 +1,7 @@
 """
-Validation rules and supporting libs for shared module
+Validation rules and supporting libs for ver module
 """
-from chk.modules.shared.constants import VersionStrToSpecConfigMapping
+from chk.modules.ver.constants import VersionStrToSpecConfigMapping
 
 version_schema = {
     'version': {

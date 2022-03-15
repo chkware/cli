@@ -2,7 +2,7 @@
 Versioned schema repository for http specifications
 """
 from typing import Dict
-from chk.modules.shared.entities import AbstractArchetypeConfig, DocV072
+from chk.modules.ver.entities import AbstractArchetypeConfig, DocV072
 from chk.modules.http.validation_rules import request_schema
 from cerberus.validator import DocumentError
 from chk.console.app_container import app

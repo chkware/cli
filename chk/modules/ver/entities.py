@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from cerberus import Validator
 from cerberus.validator import DocumentError
 from chk.console.app_container import app
-from chk.modules.shared.validation_rules import version_schema
+from chk.modules.ver.validation_rules import version_schema
 from typing import Dict
 
 
