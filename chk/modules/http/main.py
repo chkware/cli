@@ -6,8 +6,7 @@ from chk.console.app_container import app
 from chk.infrastructure.file_loader import ChkFileLoader
 from chk.modules.http.entities import HttpV072
 from chk.modules.http.presentation import ResponseToStringFormatter
-from chk.modules.http.helper import prepare_request_args
-from chk.modules.shared.requesting import do_http_request
+from chk.modules.http.request_helper import prepare_request_args, do_http_request
 
 
 def execute(file: str):

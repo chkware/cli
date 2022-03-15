@@ -4,8 +4,14 @@ Http module helpers
 from chk.modules.http.constants import HttpDocElements, HttpMethod
 from dotmap import DotMap
 from requests.auth import HTTPBasicAuth
+from requests import request, Response
 from typing import Dict
 from urllib.parse import unquote, urlparse
+
+
+def do_http_request(request_args: Dict[str, str]) -> Response:
+    """Make external api call"""
+    return request(**request_args)
 
 
 def prepare_request_args(request_data: DotMap) -> dict:
