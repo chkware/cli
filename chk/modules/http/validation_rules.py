@@ -54,11 +54,13 @@ request_schema = {  # cerberus validation rules
                 'required': False,
                 'empty': False,
                 'type': 'dict',
+                'excludes': 'auth[bearer]',
             },
             'auth[bearer]': {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
+                'excludes': 'auth[basic]',
             },
             'body[none]': {
                 'required': False,

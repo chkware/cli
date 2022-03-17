@@ -150,6 +150,14 @@ class TestHttpV072:
         with pytest.raises(SystemExit):
             assert ver.validate_config(doc) is True
 
+    def test_validate_get_with_ba_and_be_sametime_expect_fail(self):
+        """when basic and bearer auth given same time"""
+        doc = ChkFileLoader.to_dict(tests.RES_DIR + 'fail_cases/GET-WithBasicAuth-AndBearer.chk')
+        ver = HttpV072()
+
+        with pytest.raises(SystemExit):
+            assert ver.validate_config(doc) is True
+
     def test_validate_get_with_be_expect_pass(self):
         """when version string not given"""
         doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/GET-WithBearerAuth.chk')
