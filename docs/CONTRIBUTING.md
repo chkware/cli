@@ -39,7 +39,7 @@ Confirm that you are adding the following things while creating an issue under `
  
 1. The operating system, and its version you are using.
 2. Your specific python version. Run `python3 -V` to get it
-3. Your `chk` command version. Just run `chk –help` to get the version
+3. Your `chk` command version. Just run `chk –-help` to get the version
 4. The specification file that you are trying to write, and the example you are using to write it.
  
 ### Making a new feature request
