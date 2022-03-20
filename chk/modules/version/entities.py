@@ -9,7 +9,7 @@ from chk.modules.version.validation_rules import version_schema
 from typing import Dict
 
 
-class AbstractArchetypeConfig(ABC):
+class AbstractSpecConfig(ABC):
     """Base class to all archetype"""
 
     def __init__(self):
@@ -24,7 +24,7 @@ class AbstractArchetypeConfig(ABC):
         """Error handling at global level for schemas"""
 
 
-class DocV072(AbstractArchetypeConfig):
+class VersionConfigV072(AbstractSpecConfig):
     """
     Versioned schema repository for http specifications
     version: v0.7.2
