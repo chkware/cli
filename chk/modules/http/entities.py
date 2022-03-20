@@ -8,7 +8,7 @@ from cerberus.validator import DocumentError
 from chk.console.app_container import app
 
 
-class HttpV072(AbstractSpecConfig):
+class HttpConfigV072(AbstractSpecConfig):
     """http config v0.7.2"""
     def __init__(self):
         super().__init__()

@@ -4,7 +4,7 @@ main driver
 import dotmap
 from chk.console.app_container import app
 from chk.infrastructure.file_loader import ChkFileLoader
-from chk.modules.http.entities import HttpV072
+from chk.modules.http.entities import HttpConfigV072
 from chk.modules.http.presentation import ResponseToStringFormatter
 from chk.modules.http.request_helper import prepare_request_args, do_http_request
 
@@ -15,7 +15,7 @@ def execute(file: str):
         # load as dict
         doc = ChkFileLoader.to_dict(file)
 
-        doc_ver = HttpV072()
+        doc_ver = HttpConfigV072()
         doc_ver.validate_config(doc)
         del doc_ver
 
