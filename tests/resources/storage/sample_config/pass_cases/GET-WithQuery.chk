@@ -5,4 +5,4 @@ request:
   url: https://hookb.in/2q9eQGeepPidzq88Rxek
   url_params:
     foo: bar
-    flex: ver-05
+    flex: version-05
