@@ -18,12 +18,13 @@ class HttpConfigV072(AbstractSpecConfig):
         """create and validate schema against the dict passed"""
         return self.version_config.get_schema() | request_schema
 
-    def validate_config(self, config: Dict) -> bool:
+    def validate_config(self) -> bool:
         """Validate the schema against config"""
-        self.version_config.validate_config(config)  # validate version
+        self.version_config.document = self.document
+        self.version_config.validate_config()  # validate version
 
         try:
-            if self.validator.validate(config, self.get_schema()) is not True:  # validate request
+            if not self.validator.validate(self.document, self.get_schema()):  # validate request
                 raise SystemExit(str(self.validator.errors))
         except DocumentError as doc_err:
             raise SystemExit(f'{app.messages.exception.fatal.V0001}: {doc_err}') from doc_err
