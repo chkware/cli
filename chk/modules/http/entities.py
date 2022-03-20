@@ -2,13 +2,13 @@
 Versioned schema repository for http specifications
 """
 from typing import Dict
-from chk.modules.version.entities import AbstractArchetypeConfig, DocV072
+from chk.modules.version.entities import AbstractSpecConfig, DocV072
 from chk.modules.http.validation_rules import request_schema
 from cerberus.validator import DocumentError
 from chk.console.app_container import app
 
 
-class HttpV072(AbstractArchetypeConfig):
+class HttpV072(AbstractSpecConfig):
     """http config v0.7.2"""
     def __init__(self):
         super().__init__()
