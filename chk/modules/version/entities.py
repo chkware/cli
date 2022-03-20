@@ -24,7 +24,7 @@ class AbstractSpecConfig(ABC):
         """Error handling at global level for schemas"""
 
 
-class DocV072(AbstractSpecConfig):
+class VersionConfigV072(AbstractSpecConfig):
     """
     Versioned schema repository for http specifications
     version: v0.7.2

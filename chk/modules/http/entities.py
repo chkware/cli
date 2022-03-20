@@ -2,7 +2,7 @@
 Versioned schema repository for http specifications
 """
 from typing import Dict
-from chk.modules.version.entities import AbstractSpecConfig, DocV072
+from chk.modules.version.entities import AbstractSpecConfig, VersionConfigV072
 from chk.modules.http.validation_rules import request_schema
 from cerberus.validator import DocumentError
 from chk.console.app_container import app
@@ -12,7 +12,7 @@ class HttpV072(AbstractSpecConfig):
     """http config v0.7.2"""
     def __init__(self):
         super().__init__()
-        self.version_config = DocV072()
+        self.version_config = VersionConfigV072()
 
     def get_schema(self) -> Dict:
         """create and validate schema against the dict passed"""

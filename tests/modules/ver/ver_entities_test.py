@@ -1,15 +1,15 @@
 import pytest
-from chk.modules.version.entities import DocV072
+from chk.modules.version.entities import VersionConfigV072
 
 
-class TestDocV072:
+class TestVersionConfigV072:
     def test_validate_config_success(self):
         """when version string given"""
         config = {
             'version': 'default:http:0.7.2'
         }
 
-        ver = DocV072()
+        ver = VersionConfigV072()
         assert ver.validate_config(dict(config)) is True
 
     def test_validate_config_empty_version(self):
@@ -18,7 +18,7 @@ class TestDocV072:
             'version': ''
         }
 
-        ver = DocV072()
+        ver = VersionConfigV072()
         with pytest.raises(SystemExit):
             assert ver.validate_config(config) is True
 
@@ -28,7 +28,7 @@ class TestDocV072:
             'version': 'default:http:0.7'
         }
 
-        ver = DocV072()
+        ver = VersionConfigV072()
         with pytest.raises(SystemExit):
             assert ver.validate_config(config) is True
 
@@ -36,7 +36,7 @@ class TestDocV072:
         """when version string not given"""
         config = {}
 
-        ver = DocV072()
+        ver = VersionConfigV072()
         with pytest.raises(SystemExit):
             assert ver.validate_config(config) is True
 
@@ -44,7 +44,7 @@ class TestDocV072:
         """when version string not given"""
         config = None
 
-        ver = DocV072()
+        ver = VersionConfigV072()
         with pytest.raises(SystemExit):
             assert ver.validate_config(config) is True
 
@@ -56,6 +56,6 @@ class TestDocV072:
             }
         }
 
-        ver = DocV072()
+        ver = VersionConfigV072()
         with pytest.raises(SystemExit):
             assert ver.validate_config(config) is True
