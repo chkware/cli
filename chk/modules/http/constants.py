@@ -2,6 +2,7 @@
 Constants used in http modules
 """
 from enum import Enum
+from chk.modules.version import constants as ver_const
 
 
 class HttpMethod(Enum):
@@ -15,12 +16,7 @@ class HttpMethod(Enum):
     OPTIONS = 'OPTIONS'
 
 
-class BaseDocElements:
-    """represent the base of all kind of documents"""
-    VERSION = 'version'
-
-
-class HttpDocElements(BaseDocElements):
+class HttpDocElements(ver_const.BaseDocElements):
     """represent http documents"""
     # common request
     URL = 'url'

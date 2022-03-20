@@ -10,7 +10,8 @@ class TestVersionConfigV072:
         }
 
         ver = VersionConfigV072()
-        assert ver.validate_config(dict(config)) is True
+        ver.document = config
+        assert ver.validate_config() is True
 
     def test_validate_config_empty_version(self):
         """when version string not given"""
@@ -20,7 +21,8 @@ class TestVersionConfigV072:
 
         ver = VersionConfigV072()
         with pytest.raises(SystemExit):
-            assert ver.validate_config(config) is True
+            ver.document = config
+            assert ver.validate_config() is True
 
     def test_validate_config_fail_non_exist_ver(self):
         """when version string not given"""
@@ -30,7 +32,8 @@ class TestVersionConfigV072:
 
         ver = VersionConfigV072()
         with pytest.raises(SystemExit):
-            assert ver.validate_config(config) is True
+            ver.document = config
+            assert ver.validate_config() is True
 
     def test_validate_config_fail_no_doc(self):
         """when version string not given"""
@@ -38,7 +41,8 @@ class TestVersionConfigV072:
 
         ver = VersionConfigV072()
         with pytest.raises(SystemExit):
-            assert ver.validate_config(config) is True
+            ver.document = config
+            assert ver.validate_config() is True
 
     def test_validate_config_fail_on_none(self):
         """when version string not given"""
@@ -46,7 +50,8 @@ class TestVersionConfigV072:
 
         ver = VersionConfigV072()
         with pytest.raises(SystemExit):
-            assert ver.validate_config(config) is True
+            ver.document = config
+            assert ver.validate_config() is True
 
     def test_validate_config_fail_no_version(self):
         """when version string not given"""
@@ -58,4 +63,5 @@ class TestVersionConfigV072:
 
         ver = VersionConfigV072()
         with pytest.raises(SystemExit):
-            assert ver.validate_config(config) is True
+            ver.document = config
+            assert ver.validate_config() is True
