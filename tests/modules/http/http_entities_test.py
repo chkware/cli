@@ -18,7 +18,8 @@ class TestHttpConfigV072:
         }
 
         ver = HttpConfigV072()
-        assert ver.validate_config(config) is True
+        ver.document = config
+        assert ver.validate_config() is True
 
     def test_validate_fail_if_url_empty(self):
         """when version string not given"""
@@ -33,7 +34,8 @@ class TestHttpConfigV072:
         ver = HttpConfigV072()
 
         with pytest.raises(SystemExit):
-            assert ver.validate_config(config) is True
+            ver.document = config
+            assert ver.validate_config() is True
 
     def test_validate_fail_if_url_wrong(self):
         """when version string not given"""
@@ -48,7 +50,8 @@ class TestHttpConfigV072:
         ver = HttpConfigV072()
 
         with pytest.raises(SystemExit):
-            assert ver.validate_config(config) is True
+            ver.document = config
+            assert ver.validate_config() is True
 
     def test_validate_success_with_method(self):
         """when version string not given"""
@@ -61,7 +64,8 @@ class TestHttpConfigV072:
         }
 
         ver = HttpConfigV072()
-        assert ver.validate_config(config) is True
+        ver.document = config
+        assert ver.validate_config() is True
 
     def test_validate_fail_if_method_wrong(self):
         """when version string not given"""
@@ -76,19 +80,22 @@ class TestHttpConfigV072:
         ver = HttpConfigV072()
 
         with pytest.raises(SystemExit):
-            assert ver.validate_config(config) is True
+            ver.document = config
+            assert ver.validate_config() is True
 
     def test_validate_get_expect_pass(self):
         """when version string not given"""
         doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/GET-Plain.chk')
         ver = HttpConfigV072()
-        assert ver.validate_config(doc) is True
+        ver.document = doc
+        assert ver.validate_config() is True
 
     def test_validate_get_with_query_expect_pass(self):
         """when version string not given"""
         doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/GET-WithQuery.chk')
         ver = HttpConfigV072()
-        assert ver.validate_config(doc) is True
+        ver.document = doc
+        assert ver.validate_config() is True
 
     def test_validate_get_with_query_empty_expect_fail(self):
         """when version string not given"""
@@ -96,7 +103,8 @@ class TestHttpConfigV072:
         ver = HttpConfigV072()
 
         with pytest.raises(SystemExit):
-            assert ver.validate_config(doc) is True
+            ver.document = doc
+            assert ver.validate_config() is True
 
     def test_validate_get_with_query_as_list_expect_fail(self):
         """when version string not given"""
@@ -104,13 +112,15 @@ class TestHttpConfigV072:
         ver = HttpConfigV072()
 
         with pytest.raises(SystemExit):
-            assert ver.validate_config(doc) is True
+            ver.document = doc
+            assert ver.validate_config() is True
 
     def test_validate_get_with_headers_expect_pass(self):
         """when version string not given"""
         doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/GET-WithHeaders.chk')
         ver = HttpConfigV072()
-        assert ver.validate_config(doc) is True
+        ver.document = doc
+        assert ver.validate_config() is True
 
     def test_validate_get_with_headers_empty_expect_fail(self):
         """when version string not given"""
@@ -118,7 +128,8 @@ class TestHttpConfigV072:
         ver = HttpConfigV072()
 
         with pytest.raises(SystemExit):
-            assert ver.validate_config(doc) is True
+            ver.document = doc
+            assert ver.validate_config() is True
 
     def test_validate_get_with_headers_as_list_expect_fail(self):
         """when version string not given"""
@@ -126,13 +137,15 @@ class TestHttpConfigV072:
         ver = HttpConfigV072()
 
         with pytest.raises(SystemExit):
-            assert ver.validate_config(doc) is True
+            ver.document = doc
+            assert ver.validate_config() is True
 
     def test_validate_get_with_ba_expect_pass(self):
         """when version string not given"""
         doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/GET-WithBasicAuth.chk')
         ver = HttpConfigV072()
-        assert ver.validate_config(doc) is True
+        ver.document = doc
+        assert ver.validate_config() is True
 
     def test_validate_get_with_ba_empty_expect_fail(self):
         """when version string not given"""
@@ -140,7 +153,8 @@ class TestHttpConfigV072:
         ver = HttpConfigV072()
 
         with pytest.raises(SystemExit):
-            assert ver.validate_config(doc) is True
+            ver.document = doc
+            assert ver.validate_config() is True
 
     def test_validate_get_with_ba_as_list_expect_fail(self):
         """when version string not given"""
@@ -148,7 +162,8 @@ class TestHttpConfigV072:
         ver = HttpConfigV072()
 
         with pytest.raises(SystemExit):
-            assert ver.validate_config(doc) is True
+            ver.document = doc
+            assert ver.validate_config() is True
 
     def test_validate_get_with_ba_and_be_sametime_expect_fail(self):
         """when basic and bearer auth given same time"""
@@ -156,13 +171,15 @@ class TestHttpConfigV072:
         ver = HttpConfigV072()
 
         with pytest.raises(SystemExit):
-            assert ver.validate_config(doc) is True
+            ver.document = doc
+            assert ver.validate_config() is True
 
     def test_validate_get_with_be_expect_pass(self):
         """when version string not given"""
         doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/GET-WithBearerAuth.chk')
         ver = HttpConfigV072()
-        assert ver.validate_config(doc) is True
+        ver.document = doc
+        assert ver.validate_config() is True
 
     def test_validate_get_with_be_empty_expect_fail(self):
         """when version string not given"""
@@ -170,7 +187,8 @@ class TestHttpConfigV072:
         ver = HttpConfigV072()
 
         with pytest.raises(SystemExit):
-            assert ver.validate_config(doc) is True
+            ver.document = doc
+            assert ver.validate_config() is True
 
     def test_validate_get_with_be_as_list_expect_fail(self):
         """when version string not given"""
@@ -178,21 +196,24 @@ class TestHttpConfigV072:
         ver = HttpConfigV072()
 
         with pytest.raises(SystemExit):
-            assert ver.validate_config(doc) is True
+            ver.document = doc
+            assert ver.validate_config() is True
 
     def test_validate_post_plain_expect_pass(self):
         """when version string not given"""
         doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/POST-Plain.chk')
         ver = HttpConfigV072()
 
-        assert ver.validate_config(doc) is True
+        ver.document = doc
+        assert ver.validate_config() is True
 
     def test_validate_post_with_form_body_expect_pass(self):
         """when version string not given"""
         doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/POST-WithBodyForm.chk')
         ver = HttpConfigV072()
 
-        assert ver.validate_config(doc) is True
+        ver.document = doc
+        assert ver.validate_config() is True
 
     def test_validate_post_with_form_body_as_list_expect_fail(self):
         """when version string not given"""
@@ -200,7 +221,8 @@ class TestHttpConfigV072:
         ver = HttpConfigV072()
 
         with pytest.raises(SystemExit):
-            assert ver.validate_config(doc) is True
+            ver.document = doc
+            assert ver.validate_config() is True
 
     def test_validate_post_with_form_body_as_empty_expect_fail(self):
         """when version string not given"""
@@ -208,14 +230,16 @@ class TestHttpConfigV072:
         ver = HttpConfigV072()
 
         with pytest.raises(SystemExit):
-            assert ver.validate_config(doc) is True
+            ver.document = doc
+            assert ver.validate_config() is True
 
     def test_validate_post_with_form_data_body_expect_pass(self):
         """when version string not given"""
         doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/POST-WithBodyFormData.chk')
         ver = HttpConfigV072()
 
-        assert ver.validate_config(doc) is True
+        ver.document = doc
+        assert ver.validate_config() is True
 
     def test_validate_post_with_form_data_body_as_list_expect_fail(self):
         """when version string not given"""
@@ -223,7 +247,8 @@ class TestHttpConfigV072:
         ver = HttpConfigV072()
 
         with pytest.raises(SystemExit):
-            assert ver.validate_config(doc) is True
+            ver.document = doc
+            assert ver.validate_config() is True
 
     def test_validate_post_with_form_data_body_as_empty_expect_fail(self):
         """when version string not given"""
@@ -231,14 +256,16 @@ class TestHttpConfigV072:
         ver = HttpConfigV072()
 
         with pytest.raises(SystemExit):
-            assert ver.validate_config(doc) is True
+            ver.document = doc
+            assert ver.validate_config() is True
 
     def test_validate_post_with_json_body_expect_pass(self):
         """when version string not given"""
         doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/POST-WithBodyJson.chk')
         ver = HttpConfigV072()
 
-        assert ver.validate_config(doc) is True
+        ver.document = doc
+        assert ver.validate_config() is True
 
     def test_validate_post_with_json_body_as_empty_expect_fail(self):
         """when version string not given"""
@@ -246,14 +273,16 @@ class TestHttpConfigV072:
         ver = HttpConfigV072()
 
         with pytest.raises(SystemExit):
-            assert ver.validate_config(doc) is True
+            ver.document = doc
+            assert ver.validate_config() is True
 
     def test_validate_post_with_xml_body_expect_pass(self):
         """when version string not given"""
         doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/POST-WithBodyXML.chk')
         ver = HttpConfigV072()
 
-        assert ver.validate_config(doc) is True
+        ver.document = doc
+        assert ver.validate_config() is True
 
     def test_validate_post_with_xml_body_as_empty_expect_fail(self):
         """when version string not given"""
@@ -261,7 +290,8 @@ class TestHttpConfigV072:
         ver = HttpConfigV072()
 
         with pytest.raises(SystemExit):
-            assert ver.validate_config(doc) is True
+            ver.document = doc
+            assert ver.validate_config() is True
 
     def test_validate_post_with_many_body_expect_fail(self):
         """when version string not given"""
@@ -269,4 +299,5 @@ class TestHttpConfigV072:
         ver = HttpConfigV072()
 
         with pytest.raises(SystemExit):
-            assert ver.validate_config(doc) is True
+            ver.document = doc
+            assert ver.validate_config() is True
