@@ -38,7 +38,6 @@ class HttpDocElements(BaseDocElements):
     AUTH_BE_TOK = 'token'
 
     # Body
-    BODY_NO = 'body[none]'
     BODY_FRM = 'body[form]'
     BODY_FRM_DAT = 'body[form-data]'
     BODY_JSN = 'body[json]'

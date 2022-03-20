@@ -59,9 +59,7 @@ class HttpRequestArgCompiler:
     @staticmethod
     def add_body(request_data: DotMap, request_arg: dict) -> None:
         """add body"""
-        if request_data.get(HttpDocElements.BODY_NO):
-            pass
-        elif (body := request_data.get(HttpDocElements.BODY_FRM)) is not None:
+        if (body := request_data.get(HttpDocElements.BODY_FRM)) is not None:
             request_arg["data"] = dict(body)
         elif (body := request_data.get(HttpDocElements.BODY_FRM_DAT)) is not None:
             non_files = {}
