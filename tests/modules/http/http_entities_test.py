@@ -263,3 +263,10 @@ class TestHttpV072:
         with pytest.raises(SystemExit):
             assert ver.validate_config(doc) is True
 
+    def test_validate_post_with_many_body_expect_fail(self):
+        """when version string not given"""
+        doc = ChkFileLoader.to_dict(tests.RES_DIR + 'fail_cases/POST-WithManyBody.chk')
+        ver = HttpV072()
+
+        with pytest.raises(SystemExit):
+            assert ver.validate_config(doc) is True

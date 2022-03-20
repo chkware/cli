@@ -66,26 +66,31 @@ request_schema = {  # cerberus validation rules
                 'required': False,
                 'nullable': True,
                 'type': 'string',
+                'excludes': ['body[form]', 'body[form-data]', 'body[json]', 'body[xml]'],
             },
             'body[form]': {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
+                'excludes': ['body[none]', 'body[form-data]', 'body[json]', 'body[xml]'],
             },
             'body[form-data]': {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
+                'excludes': ['body[none]', 'body[form]', 'body[json]', 'body[xml]'],
             },
             'body[json]': {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
+                'excludes': ['body[none]', 'body[form]', 'body[form-data]', 'body[xml]'],
             },
             'body[xml]': {
                 'required': False,
                 'empty': False,
                 'type': 'string',
+                'excludes': ['body[none]', 'body[form]', 'body[form-data]', 'body[json]', ],
             }
         }
     }
