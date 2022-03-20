@@ -1,5 +1,5 @@
 import pytest
-from chk.modules.ver.entities import DocV072
+from chk.modules.version.entities import DocV072
 
 
 class TestDocV072:
