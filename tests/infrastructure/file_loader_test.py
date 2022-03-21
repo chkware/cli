@@ -26,9 +26,11 @@ class TestChkFileLoader:
     def test_is_file_ok_invalid_file(self):
         """test to_dict"""
         filename = tests.RES_DIR + "UserOk.yaml"
-        assert ChkFileLoader.is_file_ok(filename) is False
+        with pytest.raises(SystemExit):
+            assert ChkFileLoader.is_file_ok(filename) is False
 
     def test_is_file_ok_inexistent_file(self):
         """test to_dict"""
         filename = tests.RES_DIR + "UserOk.yml"
-        assert ChkFileLoader.is_file_ok(filename) is False
+        with pytest.raises(SystemExit):
+            assert ChkFileLoader.is_file_ok(filename) is False
