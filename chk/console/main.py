@@ -6,7 +6,11 @@ import click
 # run command
 @click.command('http')
 @click.argument('file')
-def execute_http(file): http_executor.execute(file)
+def execute_http(file):
+    """Command to run HTTP request config file.\r\n
+    FILE: Any .chk file, that has 'version:...' string in it.
+    """
+    http_executor.execute(file)
 
 
 # root command
