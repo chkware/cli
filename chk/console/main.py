@@ -15,7 +15,7 @@ def execute_http(file):
 # root command
 @click.group('chk')
 def execute_root():
-    """v0.2.0 | supported versions: 0.7.2"""
+    """v0.2.0 | version strings: 0.7.2"""
     pass
 
 
