@@ -5,7 +5,7 @@ from typing import Dict
 from chk.modules.version.entities import AbstractSpecConfig, VersionConfigV072
 from chk.modules.http.validation_rules import request_schema
 from cerberus.validator import DocumentError
-from chk.console.app_container import app
+from chk.infrastructure.exception import err_message
 
 
 class HttpConfigV072(AbstractSpecConfig):
@@ -25,8 +25,8 @@ class HttpConfigV072(AbstractSpecConfig):
 
         try:
             if not self.validator.validate(self.document, self.get_schema()):  # validate request
-                raise SystemExit(str(self.validator.errors))
+                raise SystemExit(err_message('fatal.V0006', extra=self.validator.errors))
         except DocumentError as doc_err:
-            raise SystemExit(f'{app.messages.exception.fatal.V0001}: {doc_err}') from doc_err
+            raise SystemExit(err_message('fatal.V0001', extra=doc_err)) from doc_err
         else:
             return True  # or is a success
