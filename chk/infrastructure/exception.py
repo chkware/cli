@@ -11,7 +11,7 @@ messages = dict(
         V0003='`{file_name}` is not a valid YAML.',
         V0004='Unsupported document version.',
         V0005='Unsupported document.',
-        V0006='Validation error.',
+        V0006='Validation failed.',
         V0007='Not a Callable.',
     )
 )
