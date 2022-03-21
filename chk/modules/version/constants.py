@@ -1,4 +1,4 @@
-from chk.console.app_container import app
+from chk.infrastructure.exception import err_message
 from typing import Dict
 
 
@@ -17,10 +17,10 @@ class VersionStrToSpecConfigMapping:
     @classmethod
     def find_by_version(cls, key: str) -> str:
         """find config by version str"""
-        if not isinstance(key, str): raise SystemExit(app.messages.exception.fatal.V0004)
+        if not isinstance(key, str): raise SystemExit(err_message('fatal.V0004'))
 
         class_map = cls.data.get(key)
-        if not isinstance(class_map, str): raise SystemExit(app.messages.exception.fatal.V0004)
-        elif len(class_map) == 0: raise SystemExit(app.messages.exception.fatal.V0004)
+        if not isinstance(class_map, str): raise SystemExit(err_message('fatal.V0004'))
+        elif len(class_map) == 0: raise SystemExit(err_message('fatal.V0004'))
 
         return class_map

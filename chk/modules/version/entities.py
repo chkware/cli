@@ -5,7 +5,7 @@ import pydoc
 from abc import ABC, abstractmethod
 from cerberus import Validator
 from cerberus.validator import DocumentError
-from chk.console.app_container import app
+from chk.infrastructure.exception import err_message
 from chk.modules.version.validation_rules import version_schema
 from chk.modules.version.constants import BaseDocElements, VersionStrToSpecConfigMapping as Mapping
 from typing import Dict
@@ -32,7 +32,8 @@ class AbstractSpecConfig(ABC):
         class_map = Mapping.find_by_version(version)
         http_config_class = pydoc.locate(class_map)
 
-        if not callable(http_config_class): raise SystemExit('Not callable.')
+        if not callable(http_config_class):
+            raise SystemExit(err_message('fatal.V0007'))
 
         return http_config_class()
 
@@ -53,15 +54,15 @@ class VersionConfigV072(AbstractSpecConfig):
 
         try:
             if not self.validator.validate(self.document, self.get_schema()):
-                raise SystemExit(str(self.validator.errors))
+                raise SystemExit(err_message('fatal.V0006', extra=self.validator.errors))
         except DocumentError as doc_err:
-            raise SystemExit(f'{app.messages.exception.fatal.V0001}: {doc_err}') from doc_err
+            raise SystemExit(err_message('fatal.V0001', extra=doc_err)) from doc_err
         else:
             return True  # or is a success
 
 
 def get_document_version(document: Dict) -> str:
     """check and get version string"""
-    if not isinstance(document, dict): raise SystemExit(app.messages.exception.fatal.V0005)
+    if not isinstance(document, dict): raise SystemExit(err_message('fatal.V0005'))
 
     return str(document.get(BaseDocElements.VERSION))
