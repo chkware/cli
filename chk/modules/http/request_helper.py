@@ -1,7 +1,7 @@
 """
 Http module helpers
 """
-from chk.modules.http.constants import HttpDocElements, HttpMethod
+from chk.modules.http.constants import HttpDocElements
 from dotmap import DotMap
 from requests.auth import HTTPBasicAuth
 from requests import request, Response
