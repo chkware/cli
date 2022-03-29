@@ -66,3 +66,13 @@ def get_document_version(document: Dict) -> str:
     if not isinstance(document, dict): raise SystemExit(err_message('fatal.V0005'))
 
     return str(document.get(BaseDocElements.VERSION))
+
+
+class VersionMixin_V072:
+    """ Mixin for version spec. for v0.7.2"""
+
+    def _get_validation_schema(self):
+        """Get validation schema"""
+        return version_schema
+    
+    
