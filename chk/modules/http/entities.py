@@ -30,3 +30,24 @@ class HttpConfigV072(AbstractSpecConfig):
             raise SystemExit(err_message('fatal.V0001', extra=doc_err)) from doc_err
         else:
             return True  # or is a success
+
+# --------------
+
+class RequestMixin_V072:
+    
+    def rules(self) -> Dict:
+        """ get schema"""
+        return request_schema
+    
+    def validate(self) -> Dict:
+        """Validate the schema against config"""
+        if not hasattr(self, 'validator') or not hasattr(self, 'document'):
+            raise SystemExit(err_message('fatal.V0005'))
+        
+        try:
+            if not self.validator.validate(self.document, self.rules()):  # validate request
+                raise SystemExit(err_message('fatal.V0006', extra=self.validator.errors))
+        except DocumentError as doc_err:
+            raise SystemExit(err_message('fatal.V0001', extra=doc_err)) from doc_err
+        else:
+            return True  # or is a success
