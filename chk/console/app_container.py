@@ -10,7 +10,10 @@ class App:
     """Global app"""
 
     messages = DotMap({
-        'exception': exception_messages
+        'exception': exception_messages,
+        'validation_schema': {
+            
+        }
     })
 
 
