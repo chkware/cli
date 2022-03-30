@@ -6,16 +6,15 @@ from abc import ABC
 from cerberus import Validator
 from cerberus.validator import DocumentError
 from chk.infrastructure.exception import err_message
-from chk.modules.version.validation_rules import version_schema
 from chk.modules.version.constants import BaseConfigElements, VersionStrToSpecConfigMapping as Mapping
-from typing import Dict
+from chk.modules.version.validation_rules import version_schema
 
 
 class BaseSpecConfig(ABC):
     """Base class to all archetype"""
 
     def __init__(self):
-        self.document: Dict = {}
+        self.document: dict = {}
         self.validator = Validator()
 
     @classmethod
