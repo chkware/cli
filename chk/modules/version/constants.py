@@ -7,6 +7,11 @@ class BaseDocElements:
     VERSION = 'version'
 
 
+class BaseConfigElements:
+    """represent the base of all kind of documents"""
+    VERSION = 'version'
+
+
 class VersionStrToSpecConfigMapping:
     """VersionStrToSpecConfigMapping lists all archetypes by version string"""
 
