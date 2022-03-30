@@ -2,7 +2,7 @@
 Shared entities
 """
 import pydoc
-from abc import ABC
+
 from cerberus import Validator
 from cerberus.validator import DocumentError
 from chk.infrastructure.exception import err_message
@@ -10,7 +10,7 @@ from chk.modules.version.constants import BaseConfigElements, VersionStrToSpecCo
 from chk.modules.version.validation_rules import version_schema
 
 
-class BaseSpecConfig(ABC):
+class BaseSpecConfig:
     """Base class to all archetype"""
 
     def __init__(self):
@@ -18,7 +18,7 @@ class BaseSpecConfig(ABC):
         self.validator = Validator()
 
     @classmethod
-    def from_version(cls, version: str = ''):
+    def to_spec_config(cls, version: str = ''):
         """Creates and returns AbstractSpecConfig from version stirng"""
         class_map = Mapping.find_by_version(version)
         http_config_class = pydoc.locate(class_map)
@@ -27,6 +27,10 @@ class BaseSpecConfig(ABC):
             raise SystemExit(err_message('fatal.V0007'))
 
         return http_config_class()
+
+    def version(self) -> str:
+        """check and get version string"""
+        return str(self.document.get(BaseConfigElements.VERSION))
 
 
 class VersionMixin_V072:
