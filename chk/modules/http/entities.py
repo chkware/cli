@@ -1,16 +1,15 @@
 """
 Versioned schema repository for http specifications
 """
-from typing import Dict
-from chk.modules.http.validation_rules import request_schema
 from cerberus.validator import DocumentError
 from chk.infrastructure.exception import err_message
 from chk.modules.http.constants import RequestConfigElements_V072
+from chk.modules.http.validation_rules import request_schema
 
 
 class RequestMixin_V072:
     """ Mixin for request spec. for v0.7.2"""
-    def rules(self) -> Dict:
+    def rules(self) -> dict:
         """ get schema"""
         return request_schema
 
