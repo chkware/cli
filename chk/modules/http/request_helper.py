@@ -1,24 +1,32 @@
 """
 Http module helpers
 """
-from chk.modules.http.constants import HttpDocElements
+from chk.modules.http.constants import RequestConfigElements_V072 as ConfElem
 from dotmap import DotMap
 from requests.auth import HTTPBasicAuth
 from requests import request, Response
-from typing import Dict
 from urllib.parse import unquote, urlparse
 
 
-def do_http_request(request_args: Dict[str, str]) -> Response:
-    """Make external api call"""
-    return request(**request_args)
+class RequestProcessorMixin_PyRequests:
+    """
+    Request class that use python requests
+    """
 
+    def __process__(self) -> dict:
+        """Make external api call"""
 
-def prepare_request_args(request_data: DotMap) -> dict:
-    """Prepare dotmap to dict before making request"""
-    request_args: Dict[str, str] = {}
-    HttpRequestArgCompiler.add_generic_args(request_data, request_args)
-    return request_args
+        if not hasattr(self, 'request_args'):
+            raise SystemExit('WorkProcessingContract not inherited.')
+
+        return request(**self.request_args)  # type: ignore
+
+    def __before_process__(self, request_data: dict[str, object]) -> None:
+        """Prepare dotmap to dict before making request"""
+        if not hasattr(self, 'request_args'):
+            raise SystemExit('WorkProcessingContract not inherited.')
+
+        HttpRequestArgCompiler.add_generic_args(DotMap(request_data), self.request_args)  # type: ignore
 
 
 class HttpRequestArgCompiler:
@@ -35,33 +43,33 @@ class HttpRequestArgCompiler:
     @staticmethod
     def add_query_string(request_data: DotMap, request_arg: dict) -> None:
         """add query string"""
-        if (params := request_data.get(HttpDocElements.PARAMS)) is not None:
+        if (params := request_data.get(ConfElem.PARAMS)) is not None:
             request_arg["params"] = params
 
     @staticmethod
     def add_headers(request_data: DotMap, request_arg: dict) -> None:
         """add custom header"""
-        if (headers := request_data.get(HttpDocElements.HEADERS)) is not None:
+        if (headers := request_data.get(ConfElem.HEADERS)) is not None:
             request_arg["headers"] = headers
 
     @staticmethod
     def add_authorization(request_data: DotMap, request_arg: dict) -> None:
         """handle authorization header"""
         # handle basic auth
-        if (tag_ba := request_data.get(HttpDocElements.AUTH_BA)) is not None:
+        if (tag_ba := request_data.get(ConfElem.AUTH_BA)) is not None:
             request_arg["auth"] = HTTPBasicAuth(
-                tag_ba.get(HttpDocElements.AUTH_BA_USR), tag_ba.get(HttpDocElements.AUTH_BA_PAS))
+                tag_ba.get(ConfElem.AUTH_BA_USR), tag_ba.get(ConfElem.AUTH_BA_PAS))
 
         # handle bearer auth
-        if (tag_be := request_data.get(HttpDocElements.AUTH_BE)) is not None:
-            request_arg["headers"]["authorization"] = "Bearer " + tag_be.get(HttpDocElements.AUTH_BE_TOK)
+        if (tag_be := request_data.get(ConfElem.AUTH_BE)) is not None:
+            request_arg["headers"]["authorization"] = "Bearer " + tag_be.get(ConfElem.AUTH_BE_TOK)
 
     @staticmethod
     def add_body(request_data: DotMap, request_arg: dict) -> None:
         """add body"""
-        if (body := request_data.get(HttpDocElements.BODY_FRM)) is not None:
+        if (body := request_data.get(ConfElem.BODY_FRM)) is not None:
             request_arg["data"] = dict(body)
-        elif (body := request_data.get(HttpDocElements.BODY_FRM_DAT)) is not None:
+        elif (body := request_data.get(ConfElem.BODY_FRM_DAT)) is not None:
             non_files = {}
             files = {}
 
@@ -76,9 +84,9 @@ class HttpRequestArgCompiler:
             request_arg["data"] = non_files
             request_arg["files"] = files
 
-        elif (body := request_data.get(HttpDocElements.BODY_JSN)) is not None:
+        elif (body := request_data.get(ConfElem.BODY_JSN)) is not None:
             request_arg["json"] = dict(body)
-        elif (body := request_data.get(HttpDocElements.BODY_XML)) is not None:
+        elif (body := request_data.get(ConfElem.BODY_XML)) is not None:
             request_arg["headers"]["content-type"] = 'application/xml'
             request_arg["data"] = body
 
