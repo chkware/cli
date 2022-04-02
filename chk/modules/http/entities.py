@@ -17,8 +17,8 @@ class RequestMixin_V072:
         """Validate the schema against config"""
         try:
             request_doc = self.as_dict()
-            if not self.validator.validate(request_doc, self.rules()):  # validate request
-                raise SystemExit(err_message('fatal.V0006', extra=self.validator.errors))
+            if not self.validator.validate(request_doc, self.rules()):  # type: ignore
+                raise SystemExit(err_message('fatal.V0006', extra=self.validator.errors))  # type: ignore
         except DocumentError as doc_err:
             raise SystemExit(err_message('fatal.V0001', extra=doc_err)) from doc_err
         else:
@@ -30,6 +30,6 @@ class RequestMixin_V072:
             raise SystemExit(err_message('fatal.V0005'))
 
         try:
-            return {RequestConfigElements_V072.ROOT: dict(self.document[RequestConfigElements_V072.ROOT])}
+            return {RequestConfigElements_V072.ROOT: dict(self.document[RequestConfigElements_V072.ROOT])}  # type: ignore
         except:
             raise SystemExit(err_message('fatal.V0005'))
