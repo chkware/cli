@@ -1,10 +1,32 @@
 """
 version related support services
 """
-from cerberus.validator import DocumentError
+import pydoc
+
+from cerberus import validator, Validator
 from chk.infrastructure.exception import err_message
-from chk.modules.version.constants import BaseConfigElements
+from chk.modules.version.constants import BaseConfigElements, VersionStrToSpecConfigMapping as Mapping
 from chk.modules.version.validation_rules import version_schema
+
+
+class SpecificationLoader:
+    """Specification file loading service"""
+
+    @classmethod
+    def to_spec_config(cls, document: dict):
+        """Creates and returns AbstractSpecConfig from version string"""
+        class_map = Mapping.find_by_version(cls.version(document))
+        http_config_class = pydoc.locate(class_map)
+
+        if not callable(http_config_class):
+            raise SystemExit(err_message('fatal.V0007'))
+
+        return http_config_class(self.document)
+
+    @classmethod
+    def version(cls, document) -> str:
+        """check and get version string"""
+        return str(document.get(BaseConfigElements.VERSION))
 
 
 class VersionMixin_V072:
@@ -20,7 +42,7 @@ class VersionMixin_V072:
             version_doc = self.as_dict()
             if not self.validator.validate(version_doc, self.rules()):  # type: ignore
                 raise SystemExit(err_message('fatal.V0006', extra=self.validator.errors))  # type: ignore
-        except DocumentError as doc_err:
+        except validator.DocumentError as doc_err:
             raise SystemExit(err_message('fatal.V0001', extra=doc_err)) from doc_err
         else:
             return version_doc  # or is a success
