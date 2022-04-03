@@ -8,12 +8,14 @@ from abc import ABC, abstractmethod
 class WorkerContract(ABC):
     """Contacts for worker"""
 
-    def __before_work__(self) -> None: pass
+    @abstractmethod
+    def __before_work__(self): pass
 
     @abstractmethod
-    def __work__(self) -> None:
+    def __work__(self):
         pass
 
+    @abstractmethod
     def __after_work__(self): pass
 
 
@@ -40,11 +42,11 @@ class ProcessorContract(ABC):
     def __initialize_process__(self):
         self.request_args: dict[str, str] = {}
 
+    @abstractmethod
     def __before_process__(self, args: dict[str, object]) -> None: pass
 
     @abstractmethod
-    def __process__(self) -> dict:
-        pass
+    def __process__(self) -> dict: pass
 
 
 def handle_processor(processor: ProcessorContract, args: dict[str, object]) -> dict:
