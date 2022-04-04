@@ -21,7 +21,7 @@ class SpecificationLoader:
         if not callable(http_config_class):
             raise SystemExit(err_message('fatal.V0007'))
 
-        return http_config_class(self.document)
+        return http_config_class(document)
 
     @classmethod
     def version(cls, document) -> str:
@@ -29,7 +29,7 @@ class SpecificationLoader:
         return str(document.get(BaseConfigElements.VERSION))
 
 
-class VersionMixin_V072:
+class VersionMixin_V072(object):
     """ Mixin for version spec. for v0.7.2"""
 
     def rules(self) -> dict:
@@ -40,12 +40,12 @@ class VersionMixin_V072:
         """Validate the schema against config"""
         try:
             version_doc = self.as_dict()
+            print(version_doc, self.rules())
             if not self.validator.validate(version_doc, self.rules()):  # type: ignore
                 raise SystemExit(err_message('fatal.V0006', extra=self.validator.errors))  # type: ignore
         except validator.DocumentError as doc_err:
             raise SystemExit(err_message('fatal.V0001', extra=doc_err)) from doc_err
-        else:
-            return version_doc  # or is a success
+        return version_doc  # or is a success
 
     def as_dict(self) -> dict[str, str]:
         """Get version string"""
