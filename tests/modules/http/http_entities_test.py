@@ -4,6 +4,65 @@ from chk.modules.http.entities import HttpSpec_V072
 from chk.infrastructure.file_loader import ChkFileLoader
 
 
+class TestValidationForVersion_HttpSpec_V072:
+    def test_validate_config_success(self):
+        config = {
+            'version': 'default:http:0.7.2'
+        }
+
+        ver = HttpSpec_V072({})
+        ver.document = config
+        assert type(ver.version_validated()) is dict
+
+    def test_validate_config_empty_version(self):
+        config = {
+            'version': ''
+        }
+
+        ver = HttpSpec_V072({})
+        with pytest.raises(SystemExit):
+            ver.document = config
+            ver.version_validated()
+
+    def test_validate_config_fail_non_exist_ver(self):
+        config = {
+            'version': 'default:http:0.7'
+        }
+
+        ver = HttpSpec_V072({})
+        with pytest.raises(SystemExit):
+            ver.document = config
+            ver.version_validated()
+
+    def test_validate_config_fail_no_doc(self):
+        config = {}
+
+        ver = HttpSpec_V072({})
+        with pytest.raises(SystemExit):
+            ver.document = config
+            ver.version_validated()
+
+    def test_validate_config_fail_on_none(self):
+        config = None
+
+        ver = HttpSpec_V072({})
+        with pytest.raises(SystemExit):
+            ver.document = config
+            ver.version_validated()
+
+    def test_validate_config_fail_no_version(self):
+        config = {
+            'request': {
+                'url': 'some.url'
+            }
+        }
+
+        ver = HttpSpec_V072({})
+        with pytest.raises(SystemExit):
+            ver.document = config
+            ver.version_validated()
+
+
 class TestValidationForRequest_HttpSpec_V072:
     """Test chk.archetypes.defaults.http_config.HttpSpec_V072"""
 
