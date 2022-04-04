@@ -17,16 +17,19 @@ class RequestProcessorMixin_PyRequests:
         """Make external api call"""
 
         if not hasattr(self, 'request_args'):
-            raise SystemExit('WorkProcessingContract not inherited.')
+            raise SystemExit('ProcessorContract not inherited.')
 
         return request(**self.request_args)  # type: ignore
 
     def __before_process__(self, request_data: dict[str, object]) -> None:
         """Prepare dotmap to dict before making request"""
         if not hasattr(self, 'request_args'):
-            raise SystemExit('WorkProcessingContract not inherited.')
+            raise SystemExit('ProcessorContract not inherited.')
 
-        HttpRequestArgCompiler.add_generic_args(DotMap(request_data), self.request_args)  # type: ignore
+        if ConfElem.ROOT not in request_data:
+            raise SystemExit('Wrong document format.')
+
+        HttpRequestArgCompiler.add_generic_args(DotMap(request_data[ConfElem.ROOT]), self.request_args)  # type: ignore
 
 
 class HttpRequestArgCompiler:
@@ -37,8 +40,8 @@ class HttpRequestArgCompiler:
     @staticmethod
     def add_url_and_method(request_data: DotMap, request_arg: dict) -> None:
         """add default request url and request method"""
-        request_arg["method"] = request_data.method
-        request_arg["url"] = request_data.url
+        request_arg["method"] = request_data.get(ConfElem.METHOD)
+        request_arg["url"] = request_data.get(ConfElem.URL)
 
     @staticmethod
     def add_query_string(request_data: DotMap, request_arg: dict) -> None:
