@@ -1,9 +1,10 @@
 """
 Constants used in http modules
 """
+from enum import Enum
 
 
-class HttpMethod:
+class HttpMethod(Enum):
     """Constants of wellknown http methods"""
     GET = 'GET'
     POST = 'POST'
