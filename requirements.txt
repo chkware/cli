@@ -11,7 +11,7 @@ cerberus==1.3.4
 certifi==2021.10.8
 charset-normalizer==2.0.12
 click==8.0.4
-dotmap==1.3.26
+dotmap==1.3.28
 idna==3.3
 isort==5.10.1
 lazy-object-proxy==1.7.1
@@ -20,7 +20,7 @@ platformdirs==2.4.1
 pyyaml==6.0
 requests-toolbelt==0.9.1
 requests==2.27.1
-setuptools==60.10.0; python_version >= '3.7'
+setuptools==62.0.0; python_version >= '3.7'
 toml==0.10.2
 typing-extensions==4.0.1
 urllib3==1.26.9
