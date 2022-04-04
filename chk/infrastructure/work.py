@@ -12,26 +12,23 @@ class WorkerContract(ABC):
     def __before_work__(self): pass
 
     @abstractmethod
-    def __work__(self):
-        pass
+    def __work__(self): pass
 
     @abstractmethod
     def __after_work__(self): pass
 
 
-def handle_worker(worker: WorkerContract) -> bool:
+def handle_worker(worker: WorkerContract):
     """
     Run a WorkerContract's contracts
 
     :param worker: WorkerContract
     :return: bool
     """
-    try:
-        worker.__before_work__()
-        worker.__work__()
-        worker.__after_work__()
-    except BaseException as ex:
-        raise SystemExit(str(ex))
+    # try:
+    worker.__before_work__()
+    worker.__work__()
+    worker.__after_work__()
 
     return True
 
@@ -40,16 +37,16 @@ class ProcessorContract(ABC):
     """Contacts for work processing"""
 
     def __initialize_process__(self):
-        self.request_args: dict[str, str] = {}
+        self.request_args = {}
 
     @abstractmethod
-    def __before_process__(self, args: dict[str, object]) -> None: pass
+    def __before_process__(self, args): pass
 
     @abstractmethod
-    def __process__(self) -> dict: pass
+    def __process__(self): pass
 
 
-def handle_processor(processor: ProcessorContract, args: dict[str, object]) -> dict:
+def handle_processor(processor: ProcessorContract, args: dict):
     """
     Run a ProcessorContract's contracts
 
@@ -58,9 +55,6 @@ def handle_processor(processor: ProcessorContract, args: dict[str, object]) -> d
     :return: dict
     """
 
-    try:
-        processor.__initialize_process__()
-        processor.__before_process__(args)
-        return processor.__process__()
-    except BaseException as ex:
-        raise SystemExit(str(ex))
+    processor.__initialize_process__()
+    processor.__before_process__(args)
+    return processor.__process__()
