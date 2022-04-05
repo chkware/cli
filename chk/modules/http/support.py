@@ -17,7 +17,6 @@ class RequestMixin_V072(object):
             if not self.validator.validate(request_doc, request_schema):  # type: ignore
                 raise SystemExit(err_message('fatal.V0006', extra=self.validator.errors))  # type: ignore
         except DocumentError as doc_err:
-            print('RequestMixin_V072.request_validated')
             raise SystemExit(err_message('fatal.V0001', extra=doc_err)) from doc_err
         else:
             return request_doc  # or is a success
