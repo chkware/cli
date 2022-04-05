@@ -1,32 +1,26 @@
-"""
-Versioned schema repository for http specifications
-"""
-from typing import Dict
-from chk.modules.version.entities import AbstractSpecConfig, VersionConfigV072
-from chk.modules.http.validation_rules import request_schema
-from cerberus.validator import DocumentError
-from chk.infrastructure.exception import err_message
+from cerberus import Validator
+from chk.infrastructure.work import WorkerContract, ProcessorContract, handle_processor
+from chk.modules.http.support import RequestMixin_V072
+from chk.modules.version.support import VersionMixin_V072
+from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
 
 
-class HttpConfigV072(AbstractSpecConfig):
-    """http config v0.7.2"""
-    def __init__(self):
-        super().__init__()
-        self.version_config = VersionConfigV072()
+class HttpSpec_V072(
+    RequestProcessorMixin_PyRequests,
+    VersionMixin_V072, RequestMixin_V072,
+    WorkerContract, ProcessorContract):
 
-    def get_schema(self) -> Dict:
-        """create and validate schema against the dict passed"""
-        return self.version_config.get_schema() | request_schema
+    def __init__(self, doc: dict):
+        self.document = doc
+        self.validator = Validator()
+        self.response = None
 
-    def validate_config(self) -> bool:
-        """Validate the schema against config"""
-        self.version_config.document = self.document
-        self.version_config.validate_config()  # validate version
+    def __before_work__(self) -> None:
+        VersionMixin_V072.version_validated(self)
+        RequestMixin_V072.request_validated(self)
 
-        try:
-            if not self.validator.validate(self.document, self.get_schema()):  # validate request
-                raise SystemExit(err_message('fatal.V0006', extra=self.validator.errors))
-        except DocumentError as doc_err:
-            raise SystemExit(err_message('fatal.V0001', extra=doc_err)) from doc_err
-        else:
-            return True  # or is a success
+    def __work__(self) -> None:
+        self.response = handle_processor(self, self.document)
+
+    def __after_work__(self):
+        pass

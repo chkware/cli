@@ -2,7 +2,7 @@ from chk.infrastructure.exception import err_message
 from typing import Dict
 
 
-class BaseDocElements:
+class BaseConfigElements:
     """represent the base of all kind of documents"""
     VERSION = 'version'
 
@@ -11,7 +11,7 @@ class VersionStrToSpecConfigMapping:
     """VersionStrToSpecConfigMapping lists all archetypes by version string"""
 
     data: Dict = {
-        "default:http:0.7.2": "chk.modules.http.entities.HttpConfigV072",
+        "default:http:0.7.2": "chk.modules.http.entities.HttpSpec_V072",
     }
 
     @classmethod
