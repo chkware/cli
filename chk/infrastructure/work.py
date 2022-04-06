@@ -9,13 +9,7 @@ class WorkerContract(ABC):
     """Contacts for worker"""
 
     @abstractmethod
-    def __before_work__(self): pass
-
-    @abstractmethod
     def __work__(self): pass
-
-    @abstractmethod
-    def __after_work__(self): pass
 
 
 def handle_worker(worker: WorkerContract):
@@ -26,11 +20,7 @@ def handle_worker(worker: WorkerContract):
     :return: bool
     """
     # try:
-    worker.__before_work__()
-    worker.__work__()
-    worker.__after_work__()
-
-    return True
+    return worker.__work__()
 
 
 class ProcessorContract(ABC):
