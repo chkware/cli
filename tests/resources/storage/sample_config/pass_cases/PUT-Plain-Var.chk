@@ -1,0 +1,26 @@
+version: 'default:http:0.7.2'
+
+variables:
+  var_1: values here
+  var_2: C:\\Documents\\Newsletters\\Summer2018.pdf
+
+request:
+  url: https://httpbin.org/put
+  method: PUT
+
+  url_params:
+      foo: bar
+      two: 2
+
+  headers:
+    User-Agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36'
+    Accept-Encoding: gzip, deflate
+    Accept: application/json
+
+  body[json]: {
+    id: 32,
+    name: 'Some',
+    product: {
+      id: 2
+    }
+  }
