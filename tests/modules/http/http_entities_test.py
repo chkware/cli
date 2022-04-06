@@ -308,7 +308,7 @@ class TestValidationForRequest_HttpSpec_V072:
             ver.request_validated()
 
     def test_validate_post_with_xml_body_expect_pass(self):
-        doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/POST-WithBodyXML.chk')
+        doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/GET-WithBodyXML.chk')
         ver = HttpSpec_V072({})
 
         ver.document = doc
