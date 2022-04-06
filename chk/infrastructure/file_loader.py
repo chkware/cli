@@ -1,7 +1,10 @@
+import os
+
+from chk.infrastructure import exception
+from collections import namedtuple
 from pathlib import Path
 from typing import Dict
 from yaml import safe_load
-from chk.infrastructure import exception
 
 
 class ChkFileLoader:
@@ -24,3 +27,11 @@ class ChkFileLoader:
 
         raise SystemExit(exception.err_message('fatal.V0002'))
 
+    @staticmethod
+    def get_mangled_name(file_name: str) -> str:
+        file_name = os.path.abspath(file_name)
+        return file_name.lower().strip('/').replace('/', '-').replace('\\', '_').replace(':', '~')
+
+
+# File context that holds file information
+FileContext = namedtuple('FileContext', ['root_file', 'mangled_root_file', 'document'])
