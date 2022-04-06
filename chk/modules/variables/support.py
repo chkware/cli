@@ -17,7 +17,6 @@ class VariableMixin_V072(object):
             if not self.validator.validate(request_doc, variable_schema):  # type: ignore
                 raise SystemExit(err_message('fatal.V0006', extra=self.validator.errors))  # type: ignore
         except DocumentError as doc_err:
-            print('20')
             raise SystemExit(err_message('fatal.V0001', extra=doc_err)) from doc_err
 
         return request_doc  # or is a success
@@ -25,7 +24,6 @@ class VariableMixin_V072(object):
     def variable_as_dict(self) -> dict[str, dict]:
         """Get variable dict"""
         if not hasattr(self, 'validator') or not hasattr(self, 'document'):
-            print('28')
             raise SystemExit(err_message('fatal.V0005'))
 
         try:
