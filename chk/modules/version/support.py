@@ -50,5 +50,5 @@ class VersionMixin_V072(object):
 
         try:
             return {BaseConfigElements.VERSION: str(self.document[BaseConfigElements.VERSION])}  # type: ignore
-        except:
-            raise SystemExit(err_message('fatal.V0005'))
+        except Exception as ex:
+            raise SystemExit(err_message('fatal.V0005', extra=ex))
