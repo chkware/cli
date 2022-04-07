@@ -1,6 +1,4 @@
-import os
-
-from chk.infrastructure import exception
+from chk.infrastructure import exception, mangle
 from collections import namedtuple
 from pathlib import Path
 from typing import Dict
@@ -29,8 +27,7 @@ class ChkFileLoader:
 
     @staticmethod
     def get_mangled_name(file_name: str) -> str:
-        file_name = os.path.abspath(file_name)
-        return file_name.lower().strip('/').replace('/', '-').replace('\\', '_').replace(':', '~')
+        return mangle.filename(file_name)
 
 
 # File context that holds file information
