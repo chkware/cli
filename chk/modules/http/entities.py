@@ -13,10 +13,7 @@ class HttpSpec_V072(
     WorkerContract, ProcessorContract):
 
     def __init__(self, file_ctx: FileContext):
-        self.file_ctx = file_ctx
-        self.document = file_ctx.document
-        self.validator = Validator()
-        self.response = None
+        self.file_ctx, self.document, self.validator, self.response = file_ctx, file_ctx.document, Validator(), None
 
     def __work__(self) -> None:
         VersionMixin_V072.version_validated(self)
