@@ -1,16 +1,18 @@
 version: 'default:http:0.7.2'
 
 variables:
-  var_1: values here
-  var_2: C:\\Documents\\Newsletters\\Summer2018.pdf
+#  var_1: 'values here'
+#  var_2: C:\\Documents\\Newsletters\\Summer2018.pdf
+  var_1: bar
+  var_2: 2
 
 request:
-  url: https://httpbin.org/put
+  url: https://httpbin.org/put?foo={var_1}&two={var_2}
   method: PUT
 
-  url_params:
-      foo: bar
-      two: 2
+#  url_params:
+#      foo: bar
+#      two: 2
 
   headers:
     User-Agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36'

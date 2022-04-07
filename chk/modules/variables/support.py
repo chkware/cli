@@ -1,6 +1,8 @@
 """
 Module for variables management
 """
+import pprint
+
 from cerberus.validator import DocumentError
 from chk.infrastructure.exception import err_message
 from chk.modules.variables.constants import VariableConfigElements_V072
@@ -30,3 +32,21 @@ class VariableMixin_V072(object):
             return {key:self.document[key] for key in (VariableConfigElements_V072.ROOT, ) if key in self.document}  # type: ignore
         except Exception as ex:
             raise SystemExit(err_message('fatal.V0005', extra=ex))
+
+    def variable_process(self) -> dict:
+        self._prepare_variable_space()
+        return self._variable_space
+
+    def _prepare_variable_space(self) -> None:
+        """ Fill variable space"""
+        if not hasattr(self, 'file_ctx') or not hasattr(self, '_variable_space'):
+            raise SystemExit(err_message('fatal.V0008'))
+
+        doc = self.variable_as_dict().get(VariableConfigElements_V072.ROOT)
+        # pprint.pp(doc); exit()
+        m_file = self.file_ctx.mangled_root_file
+
+        self._variable_space = {m_file+'|'+key: doc[key] for key in doc.keys()}
+        pprint.pp(self._variable_space); exit()
+
+

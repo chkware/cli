@@ -14,10 +14,12 @@ class HttpSpec_V072(
 
     def __init__(self, file_ctx: FileContext):
         self.file_ctx, self.document, self.validator, self.response = file_ctx, file_ctx.document, Validator(), None
+        self._variable_space: dict[str, object] = {}
 
     def __work__(self) -> None:
         VersionMixin_V072.version_validated(self)
         RequestMixin_V072.request_validated(self)
         VariableMixin_V072.variable_validated(self)
 
-        self.response = handle_processor(self, self.document)
+        ctx_document = VariableMixin_V072.variable_process(self)
+        self.response = handle_processor(self, ctx_document)
