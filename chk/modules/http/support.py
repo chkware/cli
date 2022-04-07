@@ -27,6 +27,6 @@ class RequestMixin_V072(object):
             raise SystemExit(err_message('fatal.V0005'))
 
         try:
-            return {RequestConfigElements_V072.ROOT: dict(self.document[RequestConfigElements_V072.ROOT])}  # type: ignore
+            return {key:self.document[key] for key in (RequestConfigElements_V072.ROOT, ) if key in self.document}  # type: ignore
         except Exception as ex:
             raise SystemExit(err_message('fatal.V0005', extra=ex))

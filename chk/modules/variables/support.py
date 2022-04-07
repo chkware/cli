@@ -27,6 +27,6 @@ class VariableMixin_V072(object):
             raise SystemExit(err_message('fatal.V0005'))
 
         try:
-            return {VariableConfigElements_V072.ROOT: dict(self.document[VariableConfigElements_V072.ROOT])}  # type: ignore
+            return {key:self.document[key] for key in (VariableConfigElements_V072.ROOT, ) if key in self.document}  # type: ignore
         except Exception as ex:
             raise SystemExit(err_message('fatal.V0005', extra=ex))

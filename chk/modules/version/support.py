@@ -50,6 +50,6 @@ class VersionMixin_V072(object):
             raise SystemExit(err_message('fatal.V0005'))
 
         try:
-            return {BaseConfigElements.VERSION: str(self.document[BaseConfigElements.VERSION])}  # type: ignore
+            return {key:self.document[key] for key in (BaseConfigElements.VERSION, ) if key in self.document}  # type: ignore
         except Exception as ex:
             raise SystemExit(err_message('fatal.V0005', extra=ex))
