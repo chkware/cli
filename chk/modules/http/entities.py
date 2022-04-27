@@ -13,7 +13,8 @@ class HttpSpec_V072(
     RequestMixin_V072,
     VariableMixin_V072,
     WorkerContract,
-    ProcessorContract):
+    ProcessorContract,
+):
 
     def __init__(self, file_ctx: FileContext):
         self.file_ctx, self.document, self.validator, self.response = file_ctx, file_ctx.document, Validator(), None

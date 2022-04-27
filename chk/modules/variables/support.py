@@ -37,18 +37,16 @@ class VariableMixin_V072(object):
         self._lexical_analysis()  # lexical analysis
         self._code_generation()  # code generation
 
-        return self._symbol_tbl
+        return self.document  # type: ignore
 
     def _build_symbol_table(self) -> None:
         """ Fill variable space"""
-        if not hasattr(self, 'file_ctx') or not hasattr(self, '_symbol_tbl'):
-            raise SystemExit(err_message('fatal.V0008'))
-
-        doc = self.variable_as_dict().get(VariableConfigElements_V072.ROOT)  # type: ignore
+        doc = self.variable_as_dict().get(VariableConfigElements_V072.ROOT)
 
         if doc:
-            m_file = self.file_ctx.mangled_root_file  # type: ignore
-            self._symbol_tbl = {m_file + '|' + key: doc[key] for key in doc.keys() if key in doc.keys()}
+            self._symbol_tbl = {key: doc[key] for key in doc.keys() if key in doc.keys()}
+            # @debug
+            import pprint; pprint.pp(self._symbol_tbl); pprint.pp(self.document); exit()
 
     def _lexical_analysis(self):
         """lexical validation"""
