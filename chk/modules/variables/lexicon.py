@@ -22,3 +22,13 @@ class StringLexicalAnalyzer:
 
         return ''.join(line_strip)
 
+    @staticmethod
+    def replace(container: str, replace_with: dict) -> str:
+        if type(container) is not str: raise TypeError
+        if len(replace_with) == 0: return container
+
+        if container.startswith('$'):
+            value = replace_with.get(container.lstrip('$'), None)
+            return value if value else container
+
+        return container
