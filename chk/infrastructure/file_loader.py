@@ -1,7 +1,8 @@
+from chk.infrastructure import exception, mangle
+from collections import namedtuple
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Tuple
 from yaml import safe_load
-from chk.infrastructure import exception
 
 
 class ChkFileLoader:
@@ -24,3 +25,10 @@ class ChkFileLoader:
 
         raise SystemExit(exception.err_message('fatal.V0002'))
 
+    @staticmethod
+    def get_mangled_name(file_name: str) -> Tuple[str, str]:
+        return mangle.filename(file_name), mangle.uniq_sha255(file_name)
+
+
+# File context that holds file information
+FileContext = namedtuple('FileContext', ['filepath', 'filepath_mangled', 'filepath_hash', 'document'])

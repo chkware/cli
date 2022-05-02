@@ -9,9 +9,7 @@ from urllib.parse import unquote, urlparse
 
 
 class RequestProcessorMixin_PyRequests:
-    """
-    Request class that use python requests
-    """
+    """ Request class that use python requests """
 
     def __process__(self) -> dict:
         """Make external api call"""
@@ -23,6 +21,7 @@ class RequestProcessorMixin_PyRequests:
 
     def __before_process__(self, request_data: dict[str, object]) -> None:
         """Prepare dotmap to dict before making request"""
+
         if not hasattr(self, 'request_args'):
             raise SystemExit('ProcessorContract not inherited.')
 
@@ -33,9 +32,7 @@ class RequestProcessorMixin_PyRequests:
 
 
 class HttpRequestArgCompiler:
-    """
-    HttpRequestArgCompiler
-    """
+    """ HttpRequestArgCompiler """
 
     @staticmethod
     def add_url_and_method(request_data: DotMap, request_arg: dict) -> None:

@@ -6,13 +6,14 @@ from chk.infrastructure.translation import l10n
 
 messages = dict(
     fatal=dict(
-        V0001='`version` string not found.',
-        V0002='Invalid file format.',
-        V0003='`{file_name}` is not a valid YAML.',
-        V0004='Unsupported document version.',
-        V0005='Unsupported document.',
-        V0006='Validation failed.',
-        V0007='Not a Callable.',
+        V0001='Document exception: `version` string not found',
+        V0002='Document exception: Invalid file format',
+        V0003='Document exception: `{file_name}` is not a valid YAML',
+        V0004='File exception: Unsupported document version',
+        V0005='File exception: Unsupported document',
+        V0006='File exception: Validation failed',
+        V0007='System exception: Not a Callable',
+        V0008='System exception: Wrong spec class',
     )
 )
 
