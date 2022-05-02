@@ -3,7 +3,9 @@ Module for variables management
 """
 from cerberus.validator import DocumentError
 from chk.infrastructure.exception import err_message
+from chk.modules.http.constants import RequestConfigElements_V072
 from chk.modules.variables.constants import VariableConfigElements_V072
+from chk.modules.variables.lexicon import StringLexicalAnalyzer
 from chk.modules.variables.validation_rules import variable_schema
 
 
@@ -32,8 +34,8 @@ class VariableMixin_V072(object):
             raise SystemExit(err_message('fatal.V0005', extra=ex))
 
     def variable_process(self) -> dict:
-        request_doc = self.request_as_dict()  # type: ignore
         symbol_tbl = self._build_symbol_table()
+        request_doc = self.request_as_dict()  # type: ignore
 
         return self._lexical_analysis(request_doc, symbol_tbl)
 
@@ -44,8 +46,25 @@ class VariableMixin_V072(object):
 
         return doc
 
-    def _lexical_analysis(self, request_doc: dict, symbol_table: dict) -> dict:
+    def _lexical_analysis(self, document: dict, symbol_table: dict) -> dict:
         """lexical validation"""
 
-        return self.document
+        return {
+            RequestConfigElements_V072.ROOT: self._request_expression(document, symbol_table)
+        }
 
+    def _request_expression(self, document: dict, symbol_table: dict):
+        """Convert request block variables"""
+        def process_dict(doc: dict, var_s: dict):
+            for key in doc.keys():
+                if type(doc[key]) is str:
+                    item = str(doc[key])
+                    doc[key] = StringLexicalAnalyzer.replace_in_str(item, var_s)
+                elif type(doc[key]) is dict:
+                    doc[key] = process_dict(doc[key], var_s)
+            return doc
+
+        request_document = document.get(RequestConfigElements_V072.ROOT, {})
+        import copy; request_document = copy.deepcopy(request_document)
+
+        return process_dict(request_document, symbol_table)
