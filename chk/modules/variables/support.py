@@ -32,26 +32,20 @@ class VariableMixin_V072(object):
             raise SystemExit(err_message('fatal.V0005', extra=ex))
 
     def variable_process(self) -> dict:
-        self._symbol_tbl = {}
-        self._build_symbol_table()
-        self._lexical_analysis()  # lexical analysis
-        self._code_generation()  # code generation
+        request_doc = self.request_as_dict()  # type: ignore
+        symbol_tbl = self._build_symbol_table()
 
-        return self.document  # type: ignore
+        return self._lexical_analysis(request_doc, symbol_tbl)
 
-    def _build_symbol_table(self) -> None:
+    def _build_symbol_table(self) -> dict:
         """ Fill variable space"""
-        doc = self.variable_as_dict().get(VariableConfigElements_V072.ROOT)
+        doc = self.variable_as_dict().get(VariableConfigElements_V072.ROOT, {})
+        if doc: return {key: doc[key] for key in doc.keys() if key in doc.keys()}
 
-        if doc:
-            self._symbol_tbl = {key: doc[key] for key in doc.keys() if key in doc.keys()}
-            # @debug
-            import pprint; pprint.pp(self._symbol_tbl); pprint.pp(self.document); exit()
+        return doc
 
-    def _lexical_analysis(self):
+    def _lexical_analysis(self, request_doc: dict, symbol_table: dict) -> dict:
         """lexical validation"""
-        pass
 
-    def _code_generation(self):
-        """replace with variable data"""
-        pass
+        return self.document
+
