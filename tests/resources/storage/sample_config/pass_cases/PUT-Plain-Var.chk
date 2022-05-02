@@ -8,7 +8,7 @@ variables:
 
 request:
   method: PUT 
-#  url_: https://httpbin.org/put?foo={$var_1}&two={$var_2}
+  # url: https://httpbin.org/put?foo={$var_1}&two={$var_2}
 
   url: https://httpbin.org/put
   url_params:
