@@ -7,7 +7,7 @@ from chk.modules.http.constants import RequestConfigNode
 from chk.modules.http.validation_rules import request_schema
 
 
-class RequestMixin_V072(object):
+class RequestMixin(object):
     """ Mixin for request spec. for v0.7.2"""
 
     def request_validated(self) -> dict[str, dict]:
