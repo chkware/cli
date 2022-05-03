@@ -6,7 +6,7 @@ import pydoc
 from cerberus import validator
 from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
-from chk.modules.version.constants import BaseConfigElements, VersionStrToSpecConfigMapping as Mapping
+from chk.modules.version.constants import VersionConfigNode, VersionStrToSpecConfigMapping as Mapping
 from chk.modules.version.validation_rules import version_schema
 
 
@@ -27,7 +27,7 @@ class SpecificationLoader:
     @classmethod
     def version(cls, document) -> str:
         """check and get version string"""
-        return str(document.get(BaseConfigElements.VERSION))
+        return str(document.get(VersionConfigNode.VERSION))
 
 
 class VersionMixin_V072(object):
@@ -50,6 +50,6 @@ class VersionMixin_V072(object):
             raise SystemExit(err_message('fatal.V0005'))
 
         try:
-            return {key:self.document[key] for key in (BaseConfigElements.VERSION, ) if key in self.document}  # type: ignore
+            return {key:self.document[key] for key in (VersionConfigNode.VERSION, ) if key in self.document}  # type: ignore
         except Exception as ex:
             raise SystemExit(err_message('fatal.V0005', extra=ex))
