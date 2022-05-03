@@ -4,7 +4,7 @@ Module for variables management
 from cerberus.validator import DocumentError
 from chk.infrastructure.exception import err_message
 from chk.modules.http.constants import RequestConfigNode
-from chk.modules.variables.constants import VariableConfigElements_V072
+from chk.modules.variables.constants import VariableConfigNode
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
 from chk.modules.variables.validation_rules import variable_schema
 
@@ -29,7 +29,7 @@ class VariableMixin_V072(object):
             raise SystemExit(err_message('fatal.V0005'))
 
         try:
-            return {key: self.document[key] for key in (VariableConfigElements_V072.ROOT,) if key in self.document}  # type: ignore
+            return {key: self.document[key] for key in (VariableConfigNode.ROOT,) if key in self.document}  # type: ignore
         except Exception as ex:
             raise SystemExit(err_message('fatal.V0005', extra=ex))
 
@@ -41,7 +41,7 @@ class VariableMixin_V072(object):
 
     def _build_symbol_table(self) -> dict:
         """ Fill variable space"""
-        doc = self.variable_as_dict().get(VariableConfigElements_V072.ROOT, {})
+        doc = self.variable_as_dict().get(VariableConfigNode.ROOT, {})
         if doc: return {key: doc[key] for key in doc.keys() if key in doc.keys()}
 
         return doc
