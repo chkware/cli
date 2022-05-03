@@ -9,7 +9,7 @@ from chk.modules.variables.lexicon import StringLexicalAnalyzer
 from chk.modules.variables.validation_rules import variable_schema
 
 
-class VariableMixin_V072(object):
+class VariableMixin(object):
     """ Mixin for variable spec. for v0.7.2"""
 
     def variable_validated(self) -> dict[str, dict]:
