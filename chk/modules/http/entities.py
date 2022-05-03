@@ -4,12 +4,12 @@ from chk.infrastructure.work import WorkerContract, ProcessorContract, handle_pr
 from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
 from chk.modules.http.support import RequestMixin
 from chk.modules.variables.support import VariableMixin_V072
-from chk.modules.version.support import VersionMixin_V072
+from chk.modules.version.support import VersionMixin
 
 
 class HttpSpec_V072(
     RequestProcessorMixin_PyRequests,
-    VersionMixin_V072,
+    VersionMixin,
     RequestMixin,
     VariableMixin_V072,
     WorkerContract,
@@ -20,7 +20,7 @@ class HttpSpec_V072(
         self.file_ctx, self.document, self.validator, self.response = file_ctx, file_ctx.document, Validator(), None
 
     def __work__(self) -> None:
-        VersionMixin_V072.version_validated(self)
+        VersionMixin.version_validated(self)
         RequestMixin.request_validated(self)
         VariableMixin_V072.variable_validated(self)
 

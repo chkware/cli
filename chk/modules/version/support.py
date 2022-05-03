@@ -30,7 +30,7 @@ class SpecificationLoader:
         return str(document.get(VersionConfigNode.VERSION))
 
 
-class VersionMixin_V072(object):
+class VersionMixin(object):
     """ Mixin for version spec. for v0.7.2"""
 
     def version_validated(self) -> dict[str, str]:
