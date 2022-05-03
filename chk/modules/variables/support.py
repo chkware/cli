@@ -3,13 +3,13 @@ Module for variables management
 """
 from cerberus.validator import DocumentError
 from chk.infrastructure.exception import err_message
-from chk.modules.http.constants import RequestConfigElements_V072
-from chk.modules.variables.constants import VariableConfigElements_V072
+from chk.modules.http.constants import RequestConfigNode
+from chk.modules.variables.constants import VariableConfigNode
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
 from chk.modules.variables.validation_rules import variable_schema
 
 
-class VariableMixin_V072(object):
+class VariableMixin(object):
     """ Mixin for variable spec. for v0.7.2"""
 
     def variable_validated(self) -> dict[str, dict]:
@@ -29,7 +29,7 @@ class VariableMixin_V072(object):
             raise SystemExit(err_message('fatal.V0005'))
 
         try:
-            return {key: self.document[key] for key in (VariableConfigElements_V072.ROOT,) if key in self.document}  # type: ignore
+            return {key: self.document[key] for key in (VariableConfigNode.ROOT,) if key in self.document}  # type: ignore
         except Exception as ex:
             raise SystemExit(err_message('fatal.V0005', extra=ex))
 
@@ -41,7 +41,7 @@ class VariableMixin_V072(object):
 
     def _build_symbol_table(self) -> dict:
         """ Fill variable space"""
-        doc = self.variable_as_dict().get(VariableConfigElements_V072.ROOT, {})
+        doc = self.variable_as_dict().get(VariableConfigNode.ROOT, {})
         if doc: return {key: doc[key] for key in doc.keys() if key in doc.keys()}
 
         return doc
@@ -50,7 +50,7 @@ class VariableMixin_V072(object):
         """lexical validation"""
 
         return {
-            RequestConfigElements_V072.ROOT: self._request_expression(document, symbol_table)
+            RequestConfigNode.ROOT: self._request_expression(document, symbol_table)
         }
 
     def _request_expression(self, document: dict, symbol_table: dict):
@@ -64,7 +64,7 @@ class VariableMixin_V072(object):
                     doc[key] = process_dict(doc[key], var_s)
             return doc
 
-        request_document = document.get(RequestConfigElements_V072.ROOT, {})
+        request_document = document.get(RequestConfigNode.ROOT, {})
         import copy; request_document = copy.deepcopy(request_document)
 
         return process_dict(request_document, symbol_table)

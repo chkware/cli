@@ -3,11 +3,11 @@ Versioned schema repository for http specifications
 """
 from cerberus.validator import DocumentError
 from chk.infrastructure.exception import err_message
-from chk.modules.http.constants import RequestConfigElements_V072
+from chk.modules.http.constants import RequestConfigNode
 from chk.modules.http.validation_rules import request_schema
 
 
-class RequestMixin_V072(object):
+class RequestMixin(object):
     """ Mixin for request spec. for v0.7.2"""
 
     def request_validated(self) -> dict[str, dict]:
@@ -27,6 +27,6 @@ class RequestMixin_V072(object):
             raise SystemExit(err_message('fatal.V0005'))
 
         try:
-            return {key:self.document[key] for key in (RequestConfigElements_V072.ROOT, ) if key in self.document}  # type: ignore
+            return {key:self.document[key] for key in (RequestConfigNode.ROOT, ) if key in self.document}  # type: ignore
         except Exception as ex:
             raise SystemExit(err_message('fatal.V0005', extra=ex))

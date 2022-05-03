@@ -2,7 +2,7 @@ from chk.infrastructure.exception import err_message
 from typing import Dict
 
 
-class BaseConfigElements:
+class VersionConfigNode:
     """represent the base of all kind of documents"""
     VERSION = 'version'
 
