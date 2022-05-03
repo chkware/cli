@@ -15,7 +15,7 @@ class HttpMethod(Enum):
     OPTIONS = 'OPTIONS'
 
 
-class RequestConfigElements_V072:
+class RequestConfigNode:
     """represent request config section"""
     ROOT = 'request'
 

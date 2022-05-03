@@ -3,7 +3,7 @@ Module for variables management
 """
 from cerberus.validator import DocumentError
 from chk.infrastructure.exception import err_message
-from chk.modules.http.constants import RequestConfigElements_V072
+from chk.modules.http.constants import RequestConfigNode
 from chk.modules.variables.constants import VariableConfigElements_V072
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
 from chk.modules.variables.validation_rules import variable_schema
@@ -50,7 +50,7 @@ class VariableMixin_V072(object):
         """lexical validation"""
 
         return {
-            RequestConfigElements_V072.ROOT: self._request_expression(document, symbol_table)
+            RequestConfigNode.ROOT: self._request_expression(document, symbol_table)
         }
 
     def _request_expression(self, document: dict, symbol_table: dict):
@@ -64,7 +64,7 @@ class VariableMixin_V072(object):
                     doc[key] = process_dict(doc[key], var_s)
             return doc
 
-        request_document = document.get(RequestConfigElements_V072.ROOT, {})
+        request_document = document.get(RequestConfigNode.ROOT, {})
         import copy; request_document = copy.deepcopy(request_document)
 
         return process_dict(request_document, symbol_table)
