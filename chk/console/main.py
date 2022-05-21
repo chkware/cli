@@ -5,10 +5,12 @@ import click
 
 # run command
 @click.command('http')
-@click.argument('file')
+@click.argument('file', nargs=-1)
 def execute_http(file):
     """Command to run HTTP request config file.\r\n
     FILE: Any .chk file, that has 'version:...' string in it."""
+
+    file = list(file).pop(0)
     http_executor.execute(file)
 
 
