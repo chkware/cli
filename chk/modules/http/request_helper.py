@@ -4,7 +4,7 @@ Http module helpers
 from chk.modules.http.constants import RequestConfigNode as ConfElem
 from dotmap import DotMap
 from requests.auth import HTTPBasicAuth
-from requests import request, Response
+from requests import request
 from urllib.parse import unquote, urlparse
 
 
@@ -15,7 +15,7 @@ class RequestProcessorMixin_PyRequests:
         """Make external api call"""
 
         if not hasattr(self, 'request_args'):
-            raise SystemExit('ProcessorContract not inherited.')
+            raise SystemExit('RequestProcessorContract not inherited.')
 
         return request(**self.request_args)  # type: ignore
 
@@ -23,7 +23,7 @@ class RequestProcessorMixin_PyRequests:
         """Prepare dotmap to dict before making request"""
 
         if not hasattr(self, 'request_args'):
-            raise SystemExit('ProcessorContract not inherited.')
+            raise SystemExit('RequestProcessorContract not inherited.')
 
         if ConfElem.ROOT not in request_data:
             raise SystemExit('Wrong document format.')

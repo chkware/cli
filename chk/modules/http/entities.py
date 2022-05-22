@@ -1,6 +1,6 @@
 from cerberus import Validator
 from chk.infrastructure.file_loader import FileContext
-from chk.infrastructure.work import WorkerContract, ProcessorContract, handle_processor
+from chk.infrastructure.work import WorkerContract, RequestProcessorContract, handle_processor
 from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
 from chk.modules.http.support import RequestMixin
 from chk.modules.variables.support import VariableMixin
@@ -13,7 +13,7 @@ class HttpSpec_V072(
     RequestMixin,
     VariableMixin,
     WorkerContract,
-    ProcessorContract,
+    RequestProcessorContract
 ):
 
     def __init__(self, file_ctx: FileContext):
