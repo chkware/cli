@@ -1,6 +1,6 @@
 from cerberus import Validator
 from chk.infrastructure.file_loader import FileContext
-from chk.infrastructure.work import WorkerContract, RequestProcessorContract, handle_processor
+from chk.infrastructure.work import WorkerContract, RequestProcessorContract, handle_request
 from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
 from chk.modules.http.support import RequestMixin
 from chk.modules.variables.support import VariableMixin
@@ -25,4 +25,4 @@ class HttpSpec_V072(
         VariableMixin.variable_validated(self)
 
         ctx_document = VariableMixin.variable_process(self)
-        self.response = handle_processor(self, ctx_document)
+        self.response = handle_request(self, ctx_document)

@@ -1,6 +1,7 @@
 """
 Http module helpers
 """
+from chk.infrastructure.work import RequestProcessorContract
 from chk.modules.http.constants import RequestConfigNode as ConfElem
 from dotmap import DotMap
 from requests.auth import HTTPBasicAuth
@@ -8,7 +9,7 @@ from requests import request
 from urllib.parse import unquote, urlparse
 
 
-class RequestProcessorMixin_PyRequests:
+class RequestProcessorMixin_PyRequests(RequestProcessorContract):
     """ Request class that use python requests """
 
     def __process__(self) -> dict:

@@ -36,7 +36,7 @@ class RequestProcessorContract(ABC):
     def __process__(self): pass
 
 
-def handle_processor(processor: RequestProcessorContract, args: dict):
+def handle_request(processor: RequestProcessorContract, args: dict):
     """
     Run a RequestProcessorContract's contracts
 
