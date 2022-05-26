@@ -29,7 +29,9 @@ def execute_http(file, result):
 def execute_test_spec(file):
     """Command to run HTTP request config file.\r\n
     FILE: Any .chk file, that has 'version: default.test-spec.*' string in it."""
-    test_spec_executor.execute()
+
+    file = list(file).pop(0)
+    test_spec_executor.execute(file)
 
 
 # root command
