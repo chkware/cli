@@ -23,7 +23,7 @@ def handle_worker(worker: WorkerContract):
     return worker.__work__()
 
 
-class ProcessorContract(ABC):
+class RequestProcessorContract(ABC):
     """Contacts for work processing"""
 
     def __initialize_process__(self):
@@ -36,11 +36,11 @@ class ProcessorContract(ABC):
     def __process__(self): pass
 
 
-def handle_processor(processor: ProcessorContract, args: dict):
+def handle_request(processor: RequestProcessorContract, args: dict):
     """
-    Run a ProcessorContract's contracts
+    Run a RequestProcessorContract's contracts
 
-    :param processor: ProcessorContract
+    :param processor: RequestProcessorContract
     :param args: dict[str, object]
     :return: dict
     """
