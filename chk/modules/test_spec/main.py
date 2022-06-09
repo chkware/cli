@@ -16,9 +16,9 @@ def execute(file: str):
     fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file)
 
     file_ctx = FileContext(file, fpath_mangled, fpath_hash, document)
-    http_spec = SpecificationLoader.to_spec_config(file_ctx)
+    test_spec = SpecificationLoader.to_spec_config(file_ctx)
 
-    handle_worker(http_spec)
-    fmt_str = ResponseToStringFormatter(http_spec.response)
+    handle_worker(test_spec)
+    fmt_str = ResponseToStringFormatter(test_spec.response)
 
     print(fmt_str.get())  # print data
