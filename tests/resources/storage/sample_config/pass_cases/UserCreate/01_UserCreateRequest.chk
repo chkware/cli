@@ -1,0 +1,16 @@
+version: 'default:http:0.7.2'
+
+variables:
+  Name: 'Morpheus'
+  Job: 'leader'
+  Response:
+  Server: https://reqres.io/api/v1
+
+request:
+  url: "{$Server}/users"
+  method: POST
+  body[json]: {
+    'name': $Name,
+    'job': $Job,
+  }
+  return: .body
