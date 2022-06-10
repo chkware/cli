@@ -5,7 +5,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 Date: not-available <br>
-Tracked milestone: none
 
 ## [0.3.2 `alpha`]
 Date: 2022-06-10 <br>
