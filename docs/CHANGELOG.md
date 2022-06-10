@@ -4,8 +4,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-Date: 2022-04-30 (tentative) <br>
-Tracked milestone: [M.2022-04](https://github.com/chkware/cli/milestone/3)
+Date: not-available <br>
+Tracked milestone: none
+
+## [0.3.2 `alpha`]
+Date: 2022-06-10 <br>
+
+**BREAKING CHANGE** variable support added. can be used as `variables` in `http` specification files.
+
+### Added
+- http spec file: define variable and use in request [#78](https://github.com/chkware/cli/issues/78)
+
+### Changed
+- nested dict data not getting sent in `body[json]` [#84](https://github.com/chkware/cli/issues/84)
+- variables can't be used in `request.url` [#92](https://github.com/chkware/cli/issues/92)
 
 ## [0.2.0 `alpha`]
 Date: 2022-03-31 <br>
