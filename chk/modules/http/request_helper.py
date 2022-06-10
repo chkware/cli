@@ -90,7 +90,7 @@ class HttpRequestArgCompiler:
             request_arg["files"] = files
 
         elif (body := request_data.get(ConfElem.BODY_JSN)) is not None:
-            request_arg["json"] = dict(body)
+            request_arg["json"] = body.toDict()
         elif (body := request_data.get(ConfElem.BODY_XML)) is not None:
             request_arg["headers"]["content-type"] = 'application/xml'
             request_arg["data"] = body
