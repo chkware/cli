@@ -3,6 +3,7 @@ Http module helpers
 """
 from chk.infrastructure.work import RequestProcessorContract
 from chk.modules.http.constants import RequestConfigNode as ConfElem
+from chk.modules.http.validation_rules import allowed_method, allowed_url
 from dotmap import DotMap
 from requests.auth import HTTPBasicAuth
 from requests import request
@@ -37,9 +38,12 @@ class HttpRequestArgCompiler:
 
     @staticmethod
     def add_url_and_method(request_data: DotMap, request_arg: dict) -> None:
-        """add default request url and request method"""
-        request_arg["method"] = request_data.get(ConfElem.METHOD)
-        request_arg["url"] = request_data.get(ConfElem.URL)
+        """ add default request url and request method """
+        if allowed_method(request_data.get(ConfElem.METHOD)):
+            request_arg["method"] = request_data.get(ConfElem.METHOD)
+
+        if allowed_url(request_data.get(ConfElem.URL)):
+            request_arg["url"] = request_data.get(ConfElem.URL)
 
     @staticmethod
     def add_query_string(request_data: DotMap, request_arg: dict) -> None:

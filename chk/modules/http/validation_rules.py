@@ -5,23 +5,27 @@ from chk.modules.http.constants import HttpMethod
 from urllib.parse import urlparse
 
 
-def allowed_method(field, value, error):
+def allowed_method(value):
     """Validate if given method is allowed"""
     if value not in set(method.value for method in HttpMethod):
-        error(field, 'Invalid `method`.')
+        raise ValueError('Unsupported method')
+    else:
+        return True
 
 
-def allowed_url(field, value, error):
+def allowed_url(value):
     """Validate if given method is allowed"""
 
     parsed_url = urlparse(value)
     ret = all([parsed_url.scheme, parsed_url.netloc])
 
     if ret is False:
-        error(field, 'Invalid `url`.')
+        raise ValueError('Invalid `url`')
 
     if parsed_url.scheme not in ['http', 'https']:
-        error(field, 'Invalid `url` scheme. http and https allowed')
+        raise ValueError('Invalid `url` scheme. http and https allowed')
+
+    return True
 
 
 request_schema = {  # cerberus validation rules
@@ -33,12 +37,10 @@ request_schema = {  # cerberus validation rules
                 'required': True,
                 'empty': False,
                 'type': 'string',
-                'check_with': allowed_url,
             },
             'method': {
                 'required': True,
                 'type': 'string',
-                'check_with': allowed_method,
             },
             'url_params': {
                 'required': False,
