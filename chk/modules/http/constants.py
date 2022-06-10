@@ -18,6 +18,7 @@ class HttpMethod(Enum):
 class RequestConfigNode:
     """represent request config section"""
     ROOT = 'request'
+    RETURN = 'return'
 
     # common request
     URL = 'url'

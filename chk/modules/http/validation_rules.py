@@ -1,7 +1,7 @@
 """
 Validation rules and supporting libs for http module
 """
-from chk.modules.http.constants import HttpMethod
+from chk.modules.http.constants import HttpMethod, RequestConfigNode
 from urllib.parse import urlparse
 
 
@@ -29,70 +29,71 @@ def allowed_url(value):
 
 
 request_schema = {  # cerberus validation rules
-    'request': {
+    RequestConfigNode.ROOT: {
         'required': True,
         'type': 'dict',
         'schema': {
-            'url': {
+            RequestConfigNode.URL: {
                 'required': True,
                 'empty': False,
                 'type': 'string',
             },
-            'method': {
+            RequestConfigNode.METHOD: {
                 'required': True,
                 'type': 'string',
             },
-            'url_params': {
+            RequestConfigNode.PARAMS: {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
             },
-            'headers': {
+            RequestConfigNode.HEADERS: {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
             },
-            'auth[basic]': {
+            RequestConfigNode.AUTH_BA: {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
-                'excludes': 'auth[bearer]',
+                'excludes': RequestConfigNode.AUTH_BE,
             },
-            'auth[bearer]': {
+            RequestConfigNode.AUTH_BE: {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
-                'excludes': 'auth[basic]',
+                'excludes': RequestConfigNode.AUTH_BA,
             },
-            'body[form]': {
+            RequestConfigNode.BODY_FRM: {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
-                'excludes': ['body[form-data]', 'body[json]', 'body[xml]'],
+                'excludes': [RequestConfigNode.BODY_FRM_DAT, RequestConfigNode.BODY_JSN, RequestConfigNode.BODY_XML],
             },
-            'body[form-data]': {
+            RequestConfigNode.BODY_FRM_DAT: {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
-                'excludes': ['body[form]', 'body[json]', 'body[xml]'],
+                'excludes': [RequestConfigNode.BODY_FRM, RequestConfigNode.BODY_JSN, RequestConfigNode.BODY_XML],
             },
-            'body[json]': {
+            RequestConfigNode.BODY_JSN: {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
-                'excludes': ['body[form]', 'body[form-data]', 'body[xml]'],
+                'excludes': [RequestConfigNode.BODY_FRM, RequestConfigNode.BODY_FRM_DAT, RequestConfigNode.BODY_XML],
             },
-            'body[xml]': {
+            RequestConfigNode.BODY_XML: {
                 'required': False,
                 'empty': False,
                 'type': 'string',
-                'excludes': ['body[form]', 'body[form-data]', 'body[json]'],
+                'excludes': [RequestConfigNode.BODY_FRM, RequestConfigNode.BODY_FRM_DAT, RequestConfigNode.BODY_JSN],
             },
-            'return': {
+            RequestConfigNode.RETURN: {
                 'required': False,
-                'empty': True,
+                'empty': False,
+                'nullable': True,
                 'type': 'string',
-            }
+            },
         }
     }
 }
