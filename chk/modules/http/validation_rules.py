@@ -33,12 +33,10 @@ request_schema = {  # cerberus validation rules
                 'required': True,
                 'empty': False,
                 'type': 'string',
-                'check_with': allowed_url,
             },
             'method': {
                 'required': True,
                 'type': 'string',
-                'check_with': allowed_method,
             },
             'url_params': {
                 'required': False,
