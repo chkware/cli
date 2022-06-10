@@ -6,7 +6,7 @@ from chk.modules.http.constants import RequestConfigNode as ConfElem
 from chk.modules.http.validation_rules import allowed_method, allowed_url
 from dotmap import DotMap
 from requests.auth import HTTPBasicAuth
-from requests import request
+from requests import request, Response
 from urllib.parse import unquote, urlparse
 
 
@@ -16,10 +16,25 @@ class RequestProcessorMixin_PyRequests(RequestProcessorContract):
     def __process__(self) -> dict:
         """Make external api call"""
 
+        def body(res) -> str:
+            """parse body"""
+            try:
+                return res.json()
+            except Exception:
+                return res.text
+
         if not hasattr(self, 'request_args'):
             raise SystemExit('RequestProcessorContract not inherited.')
 
-        return request(**self.request_args)  # type: ignore
+        response: Response = request(**self.request_args)
+
+        return dict(
+            version=response.raw.version,
+            code=response.status_code,
+            reason=response.reason,
+            headers=response.headers,
+            body=body(response),
+        )
 
     def __before_process__(self, request_data: dict[str, object]) -> None:
         """Prepare dotmap to dict before making request"""
