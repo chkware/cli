@@ -13,22 +13,22 @@ API tests management is not easy to develop, and maintain. It requires multitude
 
 ***chkware*** (pronounced as */check:ware/*) helps you write accurate, robust, and expressive feature tests for your API in less time.
  
-Read [more value propositions](https://github.com/chkware/cli/wiki/1.-Introduction) here. Find [changelog](docs/CHANGELOG.md) here.
+Read [more value propositions](https://chkware.github.io/introduction) here. Find [changelog](docs/CHANGELOG.md) here.
 
 ### Setup
 
 With [**Python 3.10**](https://www.python.org/downloads/) and [**Pipx**](https://pypa.github.io/pipx/installation/#install-pipx) preinstalled, run following in your terminal to get ***chkware*** installed.
 
 ```bash
-$ python -m pipx install chk
+$ pipx install chk
 ```
 
-Jump to the [setup guide](https://github.com/chkware/cli/wiki/2.-Setup) for different ways to install ***chkware***.
+Jump to the [setup guide](https://chkware.github.io/setup) for different ways to install ***chkware***.
 
 ### Usage
 
-[Get started](https://github.com/chkware/cli/wiki/3.-Quick-start) quickly here.
-Find [More examples](https://github.com/chkware/cli/wiki/4.-More-examples) here
+[Get started](https://chkware.github.io/quick-start) quickly here.
+Find [more examples usage](https://chkware.github.io/examples), and [reference](https://chkware.github.io/reference) here, 
 
 ### Contribute
 
