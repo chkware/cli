@@ -87,6 +87,11 @@ request_schema = {  # cerberus validation rules
                 'empty': False,
                 'type': 'string',
                 'excludes': ['body[form]', 'body[form-data]', 'body[json]'],
+            },
+            'return': {
+                'required': False,
+                'empty': True,
+                'type': 'string',
             }
         }
     }
