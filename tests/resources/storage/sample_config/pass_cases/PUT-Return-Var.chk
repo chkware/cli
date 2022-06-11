@@ -23,4 +23,5 @@ request:
       type: $var_3,
     }
   }
-  return: .code
+
+  return: ~  # writing this or not is same
