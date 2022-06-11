@@ -4,8 +4,8 @@ Module for variables management
 from cerberus.validator import DocumentError
 from chk.infrastructure.exception import err_message
 from chk.modules.http.constants import RequestConfigNode
+from chk.modules.http.support import RequestValueHandler
 from chk.modules.variables.constants import VariableConfigNode
-from chk.modules.variables.lexicon import StringLexicalAnalyzer
 from chk.modules.variables.validation_rules import variable_schema
 
 
@@ -29,7 +29,8 @@ class VariableMixin(object):
             raise SystemExit(err_message('fatal.V0005'))
 
         try:
-            return {key: self.document[key] for key in (VariableConfigNode.ROOT,) if key in self.document}  # type: ignore
+            return {key: self.document[key] for key in (VariableConfigNode.ROOT,) if
+                    key in self.document}  # type: ignore
         except Exception as ex:
             raise SystemExit(err_message('fatal.V0005', extra=ex))
 
@@ -48,23 +49,9 @@ class VariableMixin(object):
 
     def _lexical_analysis(self, document: dict, symbol_table: dict) -> dict:
         """lexical validation"""
-
         return {
-            RequestConfigNode.ROOT: self._request_expression(document, symbol_table)
+            RequestConfigNode.ROOT: RequestValueHandler.request_fill_val(document, symbol_table)
         }
 
-    def _request_expression(self, document: dict, symbol_table: dict):
-        """Convert request block variables"""
-        def process_dict(doc: dict, var_s: dict):
-            for key in doc.keys():
-                if type(doc[key]) is str:
-                    item = str(doc[key])
-                    doc[key] = StringLexicalAnalyzer.replace_in_str(item, var_s)
-                elif type(doc[key]) is dict:
-                    doc[key] = process_dict(doc[key], var_s)
-            return doc
-
-        request_document = document.get(RequestConfigNode.ROOT, {})
-        import copy; request_document = copy.deepcopy(request_document)
-
-        return process_dict(request_document, symbol_table)
+    def assemble_values(self, document: dict, response: dict) -> dict:
+        return RequestValueHandler.request_get_return(document, response)
