@@ -2,7 +2,7 @@
 main driver
 """
 from chk.infrastructure.file_loader import ChkFileLoader, FileContext
-from chk.modules.http.presentation import ResponseToStringFormatter
+from chk.modules.http.presentation import make_displayable
 from chk.modules.version.support import SpecificationLoader
 from chk.infrastructure.work import handle_worker
 
@@ -16,7 +16,5 @@ def execute(file: str):
     file_ctx = FileContext(file, fpath_mangled, fpath_hash, document)
     http_spec = SpecificationLoader.to_spec_config(file_ctx)
 
-    handle_worker(http_spec)
-    fmt_str = ResponseToStringFormatter(http_spec.response)
-
-    print(fmt_str.get())  # print data
+    response = handle_worker(http_spec)
+    print(make_displayable(response))  # print data
