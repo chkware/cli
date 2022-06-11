@@ -31,6 +31,9 @@ class RequestValueHandler:
     @staticmethod
     def request_get_return(document: dict, response: dict) -> dict:
         """Return request block variables"""
+        returnable = response
+        returnable['have_all'] = True
+
         if req := document.get(RequestConfigNode.ROOT, {}):
             if ret := req.get(RequestConfigNode.RETURN):
                 ret = str(ret)
@@ -42,8 +45,10 @@ class RequestValueHandler:
                     raise ValueError('Unsupported key in request.return')
 
                 fx = lambda k, v: None if k != ret else v
-                return {key: fx(key, value) for key, value in response.items()}
-        return response
+                returnable = {key: fx(key, value) for key, value in response.items()}
+                returnable['have_all'] = False
+
+        return returnable
 
 
 class RequestMixin(object):
