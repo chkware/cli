@@ -23,13 +23,17 @@ class RequestProcessorMixin_PyRequests(RequestProcessorContract):
             except Exception:
                 return res.text
 
+        def version(proto_ver: int) -> str:
+            """parse version"""
+            return 'HTTP/1.0' if proto_ver == 10 else 'HTTP/1.1'
+
         if not hasattr(self, 'request_args'):
             raise SystemExit('RequestProcessorContract not inherited.')
 
         response: Response = request(**self.request_args)
 
         return dict(
-            version=response.raw.version,
+            version=version(response.raw.version),
             code=response.status_code,
             reason=response.reason,
             headers=response.headers,
