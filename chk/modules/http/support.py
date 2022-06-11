@@ -29,11 +29,21 @@ class RequestValueHandler:
         return process_dict(request_document, symbol_table)
 
     @staticmethod
-    def request_get_return(self, document: dict, response: dict) -> dict:
+    def request_get_return(document: dict, response: dict) -> dict:
+        """Return request block variables"""
         if req := document.get(RequestConfigNode.ROOT, {}):
             if ret := req.get(RequestConfigNode.RETURN):
-                pass  # handle return
-        return {}  # return all
+                ret = str(ret)
+                if not ret.startswith('.'):
+                    raise ValueError('Unsupported key format in request.return')
+
+                ret = ret.lstrip('.')
+                if ret not in ('version', 'code', 'reason', 'headers', 'body'):
+                    raise ValueError('Unsupported key in request.return')
+
+                fx = lambda k, v: None if k != ret else v
+                return {key: fx(key, value) for key, value in response.items()}
+        return response
 
 
 class RequestMixin(object):
@@ -56,7 +66,6 @@ class RequestMixin(object):
             raise SystemExit(err_message('fatal.V0005'))
 
         try:
-            return {key:self.document[key] for key in (RequestConfigNode.ROOT, ) if key in self.document}  # type: ignore
+            return {key: self.document[key] for key in (RequestConfigNode.ROOT,) if key in self.document}  # type: ignore
         except Exception as ex:
             raise SystemExit(err_message('fatal.V0005', extra=ex))
-
