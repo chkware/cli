@@ -34,3 +34,8 @@ class TestVersionMixin:
             ver.document = {}
             ver.version_validated()
 
+    def test_validate_config_fail_on_none(self):
+        ver = HavingVersion()
+        with pytest.raises(SystemExit):
+            ver.document = None
+            ver.version_validated()
