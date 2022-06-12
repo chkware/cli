@@ -6,48 +6,6 @@ from chk.infrastructure.file_loader import ChkFileLoader
 
 class TestValidationForRequest_HttpSpec_V072:
     """Test chk.archetypes.defaults.http_config.HttpSpec_V072"""
-    def test_validate_fail_if_url_wrong(self):
-        config = {
-            'version': 'default:http:0.7.2',
-            'request': {
-                'url': 'ftp://example.com/wrong/url.html',
-                'method': 'GET'
-            }
-        }
-
-        ver = HttpSpec_V072({})
-
-        with pytest.raises(SystemExit):
-            ver.document = config
-            ver.request_validated()
-
-    def test_validate_success_with_method(self):
-        config = {
-            'version': 'default:http:0.7.2',
-            'request': {
-                'url': 'https://example.com',
-                'method': 'GET'
-            }
-        }
-
-        ver = HttpSpec_V072({})
-        ver.document = config
-        assert type(ver.request_validated()) is dict
-
-    def test_validate_fail_if_method_wrong(self):
-        config = {
-            'version': 'default:http:0.7.2',
-            'request': {
-                'url': 'https://example.com',
-                'method': 'WRONG'
-            }
-        }
-
-        ver = HttpSpec_V072({})
-
-        with pytest.raises(SystemExit):
-            ver.document = config
-            ver.request_validated()
 
     def test_validate_get_expect_pass(self):
         doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/GET-Plain.chk')
