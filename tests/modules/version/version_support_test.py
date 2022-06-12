@@ -27,3 +27,10 @@ class TestVersionMixin:
         with pytest.raises(SystemExit):
             ver.document = {'version': 'default:http:0.7'}
             ver.version_validated()
+            
+    def test_validate_config_fail_no_doc(self):
+        ver = HavingVersion()
+        with pytest.raises(SystemExit):
+            ver.document = {}
+            ver.version_validated()
+
