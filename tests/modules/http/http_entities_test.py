@@ -4,25 +4,8 @@ from chk.modules.http.entities import HttpSpec_V072
 from chk.infrastructure.file_loader import ChkFileLoader
 
 
-class TestValidationForVersion_HttpSpec_V072:
-
-
 class TestValidationForRequest_HttpSpec_V072:
     """Test chk.archetypes.defaults.http_config.HttpSpec_V072"""
-
-    def test_validate_schema(self):
-        config = {
-            'version': 'default:http:0.7.2',
-            'request': {
-                'url': 'https://example.com',
-                'method': 'GET'
-            }
-        }
-
-        ver = HttpSpec_V072({})
-        ver.document = config
-        assert type(ver.request_validated()) is dict
-
     def test_validate_fail_if_url_empty(self):
         config = {
             'version': 'default:http:0.7.2',
