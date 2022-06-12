@@ -5,16 +5,6 @@ from chk.infrastructure.file_loader import ChkFileLoader
 
 
 class TestValidationForVersion_HttpSpec_V072:
-    def test_validate_config_empty_version(self):
-        config = {
-            'version': ''
-        }
-
-        ver = HttpSpec_V072({})
-        with pytest.raises(SystemExit):
-            ver.document = config
-            ver.version_validated()
-
     def test_validate_config_fail_non_exist_ver(self):
         config = {
             'version': 'default:http:0.7'
