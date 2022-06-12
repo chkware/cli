@@ -13,7 +13,6 @@ class TestVersionMixin:
     def test_validate_config_success(self):
         ver = HavingVersion()
         ver.document = {'version': 'default:http:0.7.2'}
-        print(ver.version_validated())
         assert type(ver.version_validated()) is dict
         
     def test_validate_config_empty_version(self):
