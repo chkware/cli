@@ -39,3 +39,16 @@ class TestVersionMixin:
         with pytest.raises(SystemExit):
             ver.document = None
             ver.version_validated()
+            
+    def test_validate_config_fail_no_version(self):
+        config = {
+            'request': {
+                'url': 'some.url'
+            }
+        }
+
+        ver = HavingVersion()
+        with pytest.raises(SystemExit):
+            ver.document = config
+            ver.version_validated()
+
