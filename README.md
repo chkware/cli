@@ -1,6 +1,6 @@
 # Chkware
 
-![Chkware | Test management for api era](docs/github-readme-01.png)
+![Chkware | Test management for api era](https://raw.githubusercontent.com/chkware/cli/main/docs/github-readme-01.png)
 
 [![PyPI version](https://badge.fury.io/py/chk.svg)](https://badge.fury.io/py/chk)
 [![Python 3.8](https://img.shields.io/badge/python-3.10-red.svg)](https://www.python.org/downloads/release/python-3102/)
