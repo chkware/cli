@@ -6,21 +6,6 @@ from chk.infrastructure.file_loader import ChkFileLoader
 
 class TestValidationForRequest_HttpSpec_V072:
     """Test chk.archetypes.defaults.http_config.HttpSpec_V072"""
-    def test_validate_fail_if_url_empty(self):
-        config = {
-            'version': 'default:http:0.7.2',
-            'request': {
-                'url': None,
-                'method': 'GET'
-            }
-        }
-
-        ver = HttpSpec_V072({})
-
-        with pytest.raises(SystemExit):
-            ver.document = config
-            ver.request_validated()
-
     def test_validate_fail_if_url_wrong(self):
         config = {
             'version': 'default:http:0.7.2',
