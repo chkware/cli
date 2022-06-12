@@ -17,12 +17,13 @@ class HttpSpec_V072(
 ):
 
     def __init__(self, file_ctx: FileContext):
-        self.file_ctx, self.document, self.validator, self.response = file_ctx, file_ctx.document, Validator(), None
+        self.file_ctx, self.document, self.validator = file_ctx, file_ctx.document, Validator()
 
-    def __work__(self) -> None:
+    def __work__(self) -> dict:
         VersionMixin.version_validated(self)
         RequestMixin.request_validated(self)
         VariableMixin.variable_validated(self)
 
         ctx_document = VariableMixin.variable_process(self)
-        self.response = handle_request(self, ctx_document)
+        out_response = handle_request(self, ctx_document)
+        return VariableMixin.assemble_values(self, ctx_document, out_response)
