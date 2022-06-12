@@ -5,15 +5,6 @@ from chk.infrastructure.file_loader import ChkFileLoader
 
 
 class TestValidationForVersion_HttpSpec_V072:
-    def test_validate_config_success(self):
-        config = {
-            'version': 'default:http:0.7.2'
-        }
-
-        ver = HttpSpec_V072({})
-        ver.document = config
-        assert type(ver.version_validated()) is dict
-
     def test_validate_config_empty_version(self):
         config = {
             'version': ''
