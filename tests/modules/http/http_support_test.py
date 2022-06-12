@@ -43,3 +43,9 @@ class TestRequestMixin:
         ver = HavingRequest()
         ver.document = doc
         assert type(ver.request_validated()) is dict
+
+    def test_validate_get_with_query_expect_pass(self):
+        doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/GET-WithQuery.chk')
+        ver = HavingRequest()
+        ver.document = doc
+        assert type(ver.request_validated()) is dict
