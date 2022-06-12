@@ -6,13 +6,6 @@ from chk.infrastructure.file_loader import ChkFileLoader
 
 class TestValidationForRequest_HttpSpec_V072:
     """Test chk.archetypes.defaults.http_config.HttpSpec_V072"""
-
-    def test_validate_get_expect_pass(self):
-        doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/GET-Plain.chk')
-        ver = HttpSpec_V072({})
-        ver.document = doc
-        assert type(ver.request_validated()) is dict
-
     def test_validate_get_with_query_expect_pass(self):
         doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/GET-WithQuery.chk')
         ver = HttpSpec_V072({})

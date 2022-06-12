@@ -1,6 +1,8 @@
 import pytest
+import tests
 
 from cerberus import Validator
+from chk.infrastructure.file_loader import ChkFileLoader
 from chk.modules.http.support import RequestMixin
 
 
@@ -35,3 +37,9 @@ class TestRequestMixin:
         with pytest.raises(SystemExit):
             ver.document = config
             ver.request_validated()
+
+    def test_validate_get_expect_pass(self):
+        doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/GET-Plain.chk')
+        ver = HavingRequest()
+        ver.document = doc
+        assert type(ver.request_validated()) is dict
