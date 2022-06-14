@@ -20,10 +20,10 @@ class HttpSpec_V072(
         self.file_ctx, self.document, self.validator = file_ctx, file_ctx.document, Validator()
 
     def __work__(self) -> dict:
-        VersionMixin.version_validated(self)
-        RequestMixin.request_validated(self)
-        VariableMixin.variable_validated(self)
+        self.version_validated()
+        self.request_validated()
+        self.variable_validated()
 
-        ctx_document = VariableMixin.variable_process(self)
+        ctx_document = self.variable_process()
         out_response = handle_request(self, ctx_document)
-        return VariableMixin.assemble_values(self, ctx_document, out_response)
+        return self.assemble_values(ctx_document, out_response)
