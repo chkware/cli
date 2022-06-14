@@ -11,7 +11,7 @@ class VersionStrToSpecConfigMapping:
     """VersionStrToSpecConfigMapping lists all archetypes by version string"""
 
     data: Dict = {
-        "default:http:0.7.2": "chk.modules.http.entities.HttpSpec_V072",
+        "default:http:0.7.2": "chk.modules.http.entities.HttpSpec",
     }
 
     @classmethod

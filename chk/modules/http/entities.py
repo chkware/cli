@@ -7,7 +7,7 @@ from chk.modules.variables.support import VariableMixin
 from chk.modules.version.support import VersionMixin
 
 
-class HttpSpec_V072(
+class HttpSpec(
     RequestProcessorMixin_PyRequests,
     VersionMixin,
     RequestMixin,
