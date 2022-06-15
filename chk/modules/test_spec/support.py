@@ -3,7 +3,7 @@ test_spec related support services
 """
 from cerberus import validator
 from chk.infrastructure.exception import err_message
-from chk.modules.version.constants import VersionConfigNode, VersionStrToSpecConfigMapping as Mapping
+from chk.modules.test_spec.constants import TestSpecConfigNode
 from chk.modules.test_spec.validation_rules import test_spec_schema
 
 
