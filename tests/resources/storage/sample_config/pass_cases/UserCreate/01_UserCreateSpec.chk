@@ -1,7 +1,7 @@
 version: 'default:test-spec:0.7.2'
 
 variables:
-  Response: ~
+  $Code: ~
 
 spec:
   execute:
@@ -12,4 +12,4 @@ spec:
 #      Job: "choosen-one"
 
   asserts:
-    - {type: AssertEquals, actual: $Response.code, expected: 201, silent: true}
+    - {type: AssertEquals, actual: $Code, expected: 201}
