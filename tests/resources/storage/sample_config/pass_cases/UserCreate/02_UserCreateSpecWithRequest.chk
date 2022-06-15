@@ -1,0 +1,24 @@
+version: 'default:test-spec:0.7.2'
+
+variables:
+  Name: 'Morpheus'
+  Job: 'leader'
+  Code: ~
+  Server: https://reqres.io/api/v1
+
+request:
+  url: "{$Server}/users"
+  method: POST
+  body[json]: {
+    'name': $Name,
+    'job': $Job,
+  }
+  return: .code
+
+spec:
+  execute:
+    file: ~
+    result: $Code
+
+  asserts:
+    - {type: AssertEquals, actual: $Code, expected: 201}
