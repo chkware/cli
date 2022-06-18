@@ -36,13 +36,7 @@ test_spec_schema = {
     TestSpecConfigNode.ROOT: {
         'required': True,
         'type': 'dict',
-        'schema': {
-            TestSpecConfigNode.EXECUTE: {
-                'required': False,
-                'empty': False,
-                'type': 'dict',
-                'schema': execute_schema,
-            },
+        'schema': execute_schema | {
             TestSpecConfigNode.ASSERTS: {
                 'required': True,
                 'empty': False,
