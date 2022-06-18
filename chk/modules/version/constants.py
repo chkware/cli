@@ -12,6 +12,7 @@ class VersionStrToSpecConfigMapping:
 
     data: Dict = {
         "default:http:0.7.2": "chk.modules.http.entities.HttpSpec",
+        "default:test-spec:0.7.2": "chk.modules.test_spec.entities.TestSpec",
     }
 
     @classmethod
