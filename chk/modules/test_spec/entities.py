@@ -26,5 +26,13 @@ class TestSpec(
         self.test_spec_validated()
         self.variable_validated()
 
-        ctx_document = VariableMixin.variable_process(self)
-        self.response = handle_request(self, ctx_document)
+        ctx_document = {}
+
+        if self.in_file:
+            ctx_document = VariableMixin.variable_process(self)
+        else:
+            pass # execute from other file
+
+        if not ctx_document:
+            out_response = handle_request(self, ctx_document)
+
