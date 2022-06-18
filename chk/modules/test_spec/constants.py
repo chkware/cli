@@ -10,3 +10,11 @@ class TestSpecConfigNode:
     # common request
     EXECUTE = 'execute'
     ASSERTS = 'asserts'
+
+
+class ExecuteConfigNode:
+    """represent request config section"""
+    ROOT = 'execute'
+    FILE = 'file'
+    WITH = 'with'
+    RESULT = 'result'
