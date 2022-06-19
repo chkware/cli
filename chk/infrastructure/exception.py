@@ -17,6 +17,7 @@ messages = dict(
 
         # test-spec errors
         V0020='None or many request found',
+        V0029='File linking not supported',
     )
 )
 

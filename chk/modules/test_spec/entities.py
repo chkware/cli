@@ -1,6 +1,7 @@
 from cerberus import Validator
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.work import WorkerContract, RequestProcessorContract, handle_request
+from chk.infrastructure.exception import err_message
 from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
 from chk.modules.http.support import RequestMixin
 from chk.modules.variables.support import VariableMixin
@@ -31,8 +32,9 @@ class TestSpec(
         if self.in_file:
             ctx_document = VariableMixin.variable_process(self)
         else:
-            pass # execute from other file
+            # this is a temporary situation
+            # TODO: support file linking; remove this message
+            raise SystemExit(err_message('fatal.V0029', extra={'spec': {'execute': {'file': 'External file linked'}}}))
 
         if not ctx_document:
             out_response = handle_request(self, ctx_document)
-
