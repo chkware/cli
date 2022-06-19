@@ -26,7 +26,8 @@ class TestSpecMixin:
                 raise SystemExit(err_message('fatal.V0006', extra=self.validator.errors))
 
             # validate request if it exists in-file
-            self._validate_request()
+            self.validate_request_block()
+            self.validate_with_block()
         except validator.DocumentError as doc_err:
             raise SystemExit(err_message('fatal.V0001', extra=doc_err)) from doc_err
 
@@ -44,9 +45,10 @@ class TestSpecMixin:
         except Exception as ex:
             raise SystemExit(err_message('fatal.V0005', extra=ex))
 
-    def _validate_request(self) -> None:
+    def validate_request_block(self) -> None:
         """
         If request in file validate it or set False to internal in_file
+        :return: None
         """
         out_file_request = self.document\
                                .get(TestSpecConfigNode.ROOT)\
@@ -64,3 +66,18 @@ class TestSpecMixin:
             self.in_file = True
         else:
             self.in_file = False
+
+    def validate_with_block(self) -> None:
+        """
+        Check is data passing to same context
+        :return: None
+        """
+        in_file_request = self.document.get(RequestConfigNode.ROOT) is not None
+
+        out_file_with = self.document\
+                            .get(TestSpecConfigNode.ROOT)\
+                            .get(ExecuteConfigNode.ROOT)\
+                            .get(ExecuteConfigNode.WITH) is not None
+
+        if in_file_request and out_file_with:
+            raise SystemExit(err_message('fatal.V0021', extra={'spec': {'execute': {'with': 'Not allowed'}}}))
