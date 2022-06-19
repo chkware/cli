@@ -4,9 +4,9 @@ from chk.infrastructure.work import WorkerContract, RequestProcessorContract, ha
 from chk.infrastructure.exception import err_message
 from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
 from chk.modules.http.support import RequestMixin
+from chk.modules.test_spec.support import TestSpecMixin
 from chk.modules.variables.support import VariableMixin
 from chk.modules.version.support import VersionMixin
-from chk.modules.test_spec.support import TestSpecMixin
 
 
 class TestSpec(
@@ -30,11 +30,16 @@ class TestSpec(
         ctx_document = {}
 
         if self.in_file:
-            ctx_document = VariableMixin.variable_process(self)
+            ctx_document = self.variable_process()
         else:
             # this is a temporary situation
             # TODO: support file linking; remove this message
             raise SystemExit(err_message('fatal.V0029', extra={'spec': {'execute': {'file': 'External file linked'}}}))
 
-        if not ctx_document:
+        if ctx_document:
             out_response = handle_request(self, ctx_document)
+            print(out_response)
+
+
+
+        exit(0)
