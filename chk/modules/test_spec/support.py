@@ -55,7 +55,7 @@ class TestSpecMixin:
         in_file_request = self.document.get(RequestConfigNode.ROOT) is not None
 
         if in_file_request is out_file_request:
-            raise SystemExit(err_message('fatal.V0006', extra=ValueError(messages.get('fatal').get('V0020'))))
+            raise SystemExit(err_message('fatal.V0020', extra={'spec': {'execute': {'file': '...'}}}))
 
         self.__init_test_spec_mixin()
 

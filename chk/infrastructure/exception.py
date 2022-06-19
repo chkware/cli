@@ -16,7 +16,7 @@ messages = dict(
         V0008='System exception: Wrong spec class',
 
         # test-spec errors
-        V0020='No or many request found on spec file',
+        V0020='None or many request found',
     )
 )
 
