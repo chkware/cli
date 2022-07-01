@@ -14,7 +14,10 @@ class TestSpecMixin:
     """
 
     def __init_test_spec_mixin(self):
-        self.in_file = None
+        self.in_file = True
+        
+    def is_request_infile(self) -> bool:
+        return self.in_file;
 
     def test_spec_validated(self) -> dict[str, str]:
         """

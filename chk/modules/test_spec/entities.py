@@ -3,6 +3,7 @@ from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.work import WorkerContract, RequestProcessorContract, handle_request
 from chk.infrastructure.exception import err_message
 from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
+from chk.modules.assertion.support import AssertionMixin
 from chk.modules.http.support import RequestMixin
 from chk.modules.test_spec.support import TestSpecMixin
 from chk.modules.variables.support import VariableMixin
@@ -15,6 +16,7 @@ class TestSpec(
     RequestMixin,
     VariableMixin,
     TestSpecMixin,
+    AssertionMixin,
     WorkerContract,
     RequestProcessorContract
 ):
@@ -29,7 +31,7 @@ class TestSpec(
 
         ctx_document = {}
 
-        if self.in_file:
+        if self.is_request_infile():
             ctx_document = self.variable_process()
         else:
             # this is a temporary situation
@@ -38,7 +40,8 @@ class TestSpec(
 
         if ctx_document:
             out_response = handle_request(self, ctx_document)
-            print(out_response)
+            assembled_response = self.variable_assemble_values(ctx_document, out_response)
+            print(ctx_document, assembled_response)
 
 
 
