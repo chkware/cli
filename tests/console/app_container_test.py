@@ -12,9 +12,9 @@ class TestChk:
 
     @staticmethod
     def test_config_set():
-        app.messages.exception.key = 'Some name: {name}'
-        assert app.messages.exception.key == 'Some name: {name}'
+        app.messages['exception']['key'] = 'Some name: {name}'
+        assert app.messages['exception']['key'] == 'Some name: {name}'
 
     @staticmethod
     def test_config_get():
-        assert app.messages.exception.key == 'Some name: {name}'
+        assert app.messages['exception']['key'] == 'Some name: {name}'

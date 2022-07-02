@@ -10,7 +10,7 @@ from chk.infrastructure.translation import l10n
 class TestTranslation:
     """Test chk functions"""
     def test_l10n_should_pass(self):
-        retstr = l10n(app.messages.exception.key, {'name': 'Hasan'})
+        retstr = l10n(app.messages['exception']['key'], {'name': 'Hasan'})
 
         assert retstr == 'Some name: Hasan'
 

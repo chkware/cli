@@ -1,13 +1,15 @@
 """
 Http module helpers
 """
+from types import MappingProxyType
+from urllib.parse import unquote, urlparse
+
+from requests import Response, request
+from requests.auth import HTTPBasicAuth
+
 from chk.infrastructure.work import RequestProcessorContract
 from chk.modules.http.constants import RequestConfigNode as ConfElem
 from chk.modules.http.validation_rules import allowed_method, allowed_url
-from dotmap import DotMap
-from requests.auth import HTTPBasicAuth
-from requests import request, Response
-from urllib.parse import unquote, urlparse
 
 
 class RequestProcessorMixin_PyRequests(RequestProcessorContract):
@@ -49,14 +51,17 @@ class RequestProcessorMixin_PyRequests(RequestProcessorContract):
         if ConfElem.ROOT not in request_data:
             raise SystemExit('Wrong document format.')
 
-        HttpRequestArgCompiler.add_generic_args(DotMap(request_data[ConfElem.ROOT]), self.request_args)  # type: ignore
+        HttpRequestArgCompiler.add_generic_args(
+            MappingProxyType(request_data[ConfElem.ROOT]),  # type: ignore
+            self.request_args,
+        )
 
 
 class HttpRequestArgCompiler:
     """ HttpRequestArgCompiler """
 
     @staticmethod
-    def add_url_and_method(request_data: DotMap, request_arg: dict) -> None:
+    def add_url_and_method(request_data: MappingProxyType, request_arg: dict) -> None:
         """ add default request url and request method """
         if allowed_method(request_data.get(ConfElem.METHOD)):
             request_arg["method"] = request_data.get(ConfElem.METHOD)
@@ -65,19 +70,19 @@ class HttpRequestArgCompiler:
             request_arg["url"] = request_data.get(ConfElem.URL)
 
     @staticmethod
-    def add_query_string(request_data: DotMap, request_arg: dict) -> None:
+    def add_query_string(request_data: MappingProxyType, request_arg: dict) -> None:
         """add query string"""
         if (params := request_data.get(ConfElem.PARAMS)) is not None:
             request_arg["params"] = params
 
     @staticmethod
-    def add_headers(request_data: DotMap, request_arg: dict) -> None:
+    def add_headers(request_data: MappingProxyType, request_arg: dict) -> None:
         """add custom header"""
         if (headers := request_data.get(ConfElem.HEADERS)) is not None:
             request_arg["headers"] = headers
 
     @staticmethod
-    def add_authorization(request_data: DotMap, request_arg: dict) -> None:
+    def add_authorization(request_data: MappingProxyType, request_arg: dict) -> None:
         """handle authorization header"""
         # handle basic auth
         if (tag_ba := request_data.get(ConfElem.AUTH_BA)) is not None:
@@ -89,7 +94,7 @@ class HttpRequestArgCompiler:
             request_arg["headers"]["authorization"] = "Bearer " + tag_be.get(ConfElem.AUTH_BE_TOK)
 
     @staticmethod
-    def add_body(request_data: DotMap, request_arg: dict) -> None:
+    def add_body(request_data: MappingProxyType, request_arg: dict) -> None:
         """add body"""
         if (body := request_data.get(ConfElem.BODY_FRM)) is not None:
             request_arg["data"] = dict(body)
@@ -109,13 +114,13 @@ class HttpRequestArgCompiler:
             request_arg["files"] = files
 
         elif (body := request_data.get(ConfElem.BODY_JSN)) is not None:
-            request_arg["json"] = body.toDict()
+            request_arg["json"] = dict(body)
         elif (body := request_data.get(ConfElem.BODY_XML)) is not None:
             request_arg["headers"]["content-type"] = 'application/xml'
             request_arg["data"] = body
 
     @staticmethod
-    def add_generic_args(request_data: DotMap, request_arg: dict) -> None:
+    def add_generic_args(request_data: MappingProxyType, request_arg: dict) -> None:
         """add default request parameters regardless of method"""
         HttpRequestArgCompiler.add_url_and_method(request_data, request_arg)
         HttpRequestArgCompiler.add_query_string(request_data, request_arg)
