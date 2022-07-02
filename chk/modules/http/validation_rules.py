@@ -14,7 +14,7 @@ def allowed_method(value):
 
 
 def allowed_url(value):
-    """Validate if given method is allowed"""
+    """Validate if given URL is allowed"""
 
     parsed_url = urlparse(value)
     ret = all([parsed_url.scheme, parsed_url.netloc])
