@@ -7,6 +7,7 @@ from chk.modules.http.constants import RequestConfigNode
 from chk.modules.http.support import RequestValueHandler
 from chk.modules.variables.constants import VariableConfigNode as VarConf, LexicalAnalysisType
 from chk.modules.variables.validation_rules import variable_schema
+from copy import deepcopy
 
 
 class VariableMixin(object):
@@ -53,9 +54,10 @@ class VariableMixin(object):
         if la_type is LexicalAnalysisType.REQUEST:
             document_part = self.request_as_dict()
 
-        return {
-            RequestConfigNode.ROOT: RequestValueHandler.request_fill_val(document_part, symbol_table)
-        }
+        document_replaced = deepcopy(self.document)
+        document_replaced[RequestConfigNode.ROOT] = RequestValueHandler.request_fill_val(document_part, symbol_table)
+
+        return document_replaced
 
     @staticmethod
     def assemble_values(document: dict, response: dict) -> dict:
