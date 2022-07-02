@@ -4,7 +4,7 @@ Http module helpers
 from types import MappingProxyType
 from urllib.parse import unquote, urlparse
 
-from requests import request, Response
+from requests import Response, request
 from requests.auth import HTTPBasicAuth
 
 from chk.infrastructure.work import RequestProcessorContract
