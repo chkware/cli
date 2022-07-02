@@ -5,7 +5,7 @@ from cerberus.validator import DocumentError
 from chk.infrastructure.exception import err_message
 from chk.modules.http.constants import RequestConfigNode
 from chk.modules.http.support import RequestValueHandler
-from chk.modules.variables.constants import VariableConfigNode
+from chk.modules.variables.constants import VariableConfigNode as VarConf
 from chk.modules.variables.validation_rules import variable_schema
 
 
@@ -16,8 +16,8 @@ class VariableMixin(object):
         """Validate the schema against config"""
         try:
             request_doc = self.variable_as_dict()
-            if not self.validator.validate(request_doc, variable_schema):  # type: ignore
-                raise SystemExit(err_message('fatal.V0006', extra=self.validator.errors))  # type: ignore
+            if not self.validator.validate(request_doc, variable_schema):
+                raise SystemExit(err_message('fatal.V0006', extra=self.validator.errors))
         except DocumentError as doc_err:
             raise SystemExit(err_message('fatal.V0001', extra=doc_err)) from doc_err
 
@@ -29,20 +29,20 @@ class VariableMixin(object):
             raise SystemExit(err_message('fatal.V0005'))
 
         try:
-            return {key: self.document[key] for key in (VariableConfigNode.ROOT,) if
-                    key in self.document}  # type: ignore
+            return {key: self.document[key] for key in (VarConf.ROOT,) if
+                    key in self.document}
         except Exception as ex:
             raise SystemExit(err_message('fatal.V0005', extra=ex))
 
     def variable_process(self) -> dict:
         symbol_tbl = self._build_symbol_table()
-        request_doc = self.request_as_dict()  # type: ignore
+        request_doc = self.request_as_dict()
 
         return self._lexical_analysis(request_doc, symbol_tbl)
 
     def _build_symbol_table(self) -> dict:
         """ Fill variable space"""
-        doc = self.variable_as_dict().get(VariableConfigNode.ROOT, {})
+        doc = self.variable_as_dict().get(VarConf.ROOT, {})
         if doc: return {key: doc[key] for key in doc.keys() if key in doc.keys()}
 
         return doc
