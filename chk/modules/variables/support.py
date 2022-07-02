@@ -35,23 +35,25 @@ class VariableMixin(object):
             raise SystemExit(err_message('fatal.V0005', extra=ex))
 
     def variable_process(self) -> dict:
-        symbol_tbl = self._build_symbol_table()
+        symbol_tbl = self.build_symbol_table()
         request_doc = self.request_as_dict()
 
-        return self._lexical_analysis(request_doc, symbol_tbl)
+        return self.lexical_analysis(request_doc, symbol_tbl)
 
-    def _build_symbol_table(self) -> dict:
+    def build_symbol_table(self) -> dict:
         """ Fill variable space"""
         doc = self.variable_as_dict().get(VarConf.ROOT, {})
         if doc: return {key: doc[key] for key in doc.keys() if key in doc.keys()}
 
         return doc
 
-    def _lexical_analysis(self, document: dict, symbol_table: dict) -> dict:
+    @staticmethod
+    def lexical_analysis(document: dict, symbol_table: dict) -> dict:
         """lexical validation"""
         return {
             RequestConfigNode.ROOT: RequestValueHandler.request_fill_val(document, symbol_table)
         }
 
-    def assemble_values(self, document: dict, response: dict) -> dict:
+    @staticmethod
+    def assemble_values(document: dict, response: dict) -> dict:
         return RequestValueHandler.request_get_return(document, response)
