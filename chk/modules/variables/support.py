@@ -5,7 +5,7 @@ from cerberus.validator import DocumentError
 from chk.infrastructure.exception import err_message
 from chk.modules.http.constants import RequestConfigNode
 from chk.modules.http.support import RequestValueHandler
-from chk.modules.variables.constants import VariableConfigNode as VarConf
+from chk.modules.variables.constants import VariableConfigNode as VarConf, LexicalAnalysisType
 from chk.modules.variables.validation_rules import variable_schema
 
 
@@ -34,11 +34,10 @@ class VariableMixin(object):
         except Exception as ex:
             raise SystemExit(err_message('fatal.V0005', extra=ex))
 
-    def variable_process(self) -> dict:
+    def variable_process(self, la_type: LexicalAnalysisType) -> dict:
         symbol_tbl = self.build_symbol_table()
-        request_doc = self.request_as_dict()
 
-        return self.lexical_analysis(request_doc, symbol_tbl)
+        return self.lexical_analysis_for(la_type, symbol_tbl)
 
     def build_symbol_table(self) -> dict:
         """ Fill variable space"""
@@ -47,11 +46,15 @@ class VariableMixin(object):
 
         return doc
 
-    @staticmethod
-    def lexical_analysis(document: dict, symbol_table: dict) -> dict:
+    def lexical_analysis_for(self, la_type: LexicalAnalysisType, symbol_table: dict) -> dict:
         """lexical validation"""
+        document_part = {}
+
+        if la_type is LexicalAnalysisType.REQUEST:
+            document_part = self.request_as_dict()
+
         return {
-            RequestConfigNode.ROOT: RequestValueHandler.request_fill_val(document, symbol_table)
+            RequestConfigNode.ROOT: RequestValueHandler.request_fill_val(document_part, symbol_table)
         }
 
     @staticmethod

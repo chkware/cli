@@ -5,6 +5,7 @@ from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
 from chk.modules.http.support import RequestMixin
 from chk.modules.variables.support import VariableMixin
 from chk.modules.version.support import VersionMixin
+from chk.modules.variables.constants import LexicalAnalysisType
 
 
 class HttpSpec_V072(
@@ -24,6 +25,6 @@ class HttpSpec_V072(
         self.request_validated()
         self.variable_validated()
 
-        ctx_document = self.variable_process()
+        ctx_document = self.variable_process(LexicalAnalysisType.REQUEST)
         out_response = handle_request(self, ctx_document)
         return self.assemble_values(ctx_document, out_response)
