@@ -60,5 +60,5 @@ class VariableMixin(object):
         return document_replaced
 
     @staticmethod
-    def assemble_values(document: dict, response: dict) -> dict:
+    def variable_assemble_values(document: dict, response: dict) -> dict:
         return RequestValueHandler.request_get_return(document, response)
