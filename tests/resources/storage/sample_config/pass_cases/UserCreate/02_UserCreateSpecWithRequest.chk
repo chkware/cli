@@ -1,4 +1,4 @@
-version: 'default:test-spec:0.7.2'
+version: 'default:testcase:0.7.2'
 
 variables:
   Name: 'Morpheus'

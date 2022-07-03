@@ -1,5 +1,5 @@
 """
-test_spec module's driver
+testcase module's driver
 """
 from chk.infrastructure.file_loader import ChkFileLoader, FileContext
 from chk.modules.http.presentation import make_displayable
@@ -14,7 +14,7 @@ def execute(file: str):
     fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file)
 
     file_ctx = FileContext(file, fpath_mangled, fpath_hash, document)
-    test_spec = SpecificationLoader.to_spec_config(file_ctx)
+    testcase = SpecificationLoader.to_spec_config(file_ctx)
 
-    response = handle_worker(test_spec)
+    response = handle_worker(testcase)
     print(make_displayable(response))  # print data
