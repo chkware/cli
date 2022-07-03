@@ -1,10 +1,13 @@
 """
 Module for variables management
 """
+from types import MappingProxyType
+
 from cerberus.validator import DocumentError
 from chk.infrastructure.exception import err_message
 from chk.modules.http.constants import RequestConfigNode
 from chk.modules.http.support import RequestValueHandler
+from chk.modules.testcase.support import TestcaseValueHandler
 from chk.modules.variables.constants import VariableConfigNode as VarConf, LexicalAnalysisType
 from chk.modules.variables.validation_rules import variable_schema
 from chk.modules.version.constants import DocumentType
@@ -13,6 +16,16 @@ from copy import deepcopy
 
 class VariableMixin(object):
     """ Mixin for variable spec. for v0.7.2"""
+
+    def __init__mixin__(self, symbol_tbl=None):
+        """
+        Initialise mixing props
+        :param symbol_tbl: dict
+        """
+        if symbol_tbl is None:
+            self.symbol_table = self.build_symbol_table()
+        else:
+            self.symbol_table = symbol_tbl
 
     def variable_validated(self) -> dict[str, dict]:
         """Validate the schema against config"""
@@ -37,9 +50,8 @@ class VariableMixin(object):
             raise SystemExit(err_message('fatal.V0005', extra=ex))
 
     def variable_process(self, la_type: LexicalAnalysisType) -> dict:
-        symbol_tbl = self.build_symbol_table()
-
-        return self.lexical_analysis_for(la_type, symbol_tbl)
+        self.__init__mixin__()
+        return self.lexical_analysis_for(la_type, self.symbol_table)
 
     def build_symbol_table(self) -> dict:
         """ Fill variable space"""
@@ -61,6 +73,13 @@ class VariableMixin(object):
         return document_replaced
 
     def variable_assemble_values(self, document: dict, response: dict) -> dict:
+        """
+        Assemble value based on return statement
+        :param document:
+        :param response:
+        :return:
+        """
+
         if self.get_document_type() is DocumentType.HTTP:
             return RequestValueHandler.request_get_return(document, response)
 
