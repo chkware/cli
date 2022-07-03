@@ -1,4 +1,18 @@
+from enum import Enum
+
 from typing import List
+
+
+class DocumentType(Enum):
+    HTTP = 'http'
+    TESTCASE = 'testcase'
+
+    @classmethod
+    def from_value(cls, value=None):
+        for key, val in cls.__members__.items():
+            if val.value == value:
+                return val
+        return value
 
 
 class VersionConfigNode:
