@@ -7,6 +7,7 @@ from chk.modules.http.constants import RequestConfigNode
 from chk.modules.http.support import RequestValueHandler
 from chk.modules.variables.constants import VariableConfigNode as VarConf, LexicalAnalysisType
 from chk.modules.variables.validation_rules import variable_schema
+from chk.modules.version.constants import DocumentType
 from copy import deepcopy
 
 
@@ -59,6 +60,8 @@ class VariableMixin(object):
 
         return document_replaced
 
-    @staticmethod
-    def variable_assemble_values(document: dict, response: dict) -> dict:
-        return RequestValueHandler.request_get_return(document, response)
+    def variable_assemble_values(self, document: dict, response: dict) -> dict:
+        if self.get_document_type() is DocumentType.HTTP:
+            return RequestValueHandler.request_get_return(document, response)
+
+        return {}
