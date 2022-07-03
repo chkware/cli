@@ -4,7 +4,7 @@ from types import MappingProxyType
 import click
 
 import chk.modules.http.main as http_executor
-import chk.modules.test_spec.main as test_spec_executor
+import chk.modules.testcase.main as testcase_executor
 
 
 # run command
@@ -24,14 +24,14 @@ def execute_http(file, result):
 
 
 # run command
-@click.command('test-spec')
+@click.command('testcase')
 @click.argument('file', nargs=-1)
-def execute_test_spec(file):
+def execute_testcase(file):
     """Command to run HTTP request config file.\r\n
-    FILE: Any .chk file, that has 'version: default.test-spec.*' string in it."""
+    FILE: Any .chk file, that has 'version: default.testcase.*' string in it."""
 
     file = list(file).pop(0)
-    test_spec_executor.execute(file)
+    testcase_executor.execute(file)
 
 
 # root command
@@ -42,4 +42,4 @@ def execute_root():
 
 
 execute_root.add_command(execute_http)  # add `http` as sub-command
-# execute_root.add_command(execute_test_spec)  # add `http` as sub-command
+# execute_root.add_command(execute_testcase)  # add `http` as sub-command

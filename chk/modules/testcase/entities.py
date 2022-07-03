@@ -2,11 +2,12 @@ from cerberus import Validator
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.work import WorkerContract, RequestProcessorContract, handle_request
 from chk.infrastructure.exception import err_message
-from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
 from chk.modules.assertion.support import AssertionMixin
+from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
 from chk.modules.http.support import RequestMixin
-from chk.modules.test_spec.support import TestSpecMixin
+from chk.modules.testcase.support import TestSpecMixin
 from chk.modules.variables.support import VariableMixin
+from chk.modules.variables.constants import LexicalAnalysisType
 from chk.modules.version.support import VersionMixin
 
 
@@ -26,13 +27,13 @@ class TestSpec(
 
     def __work__(self) -> None:
         self.version_validated()
-        self.test_spec_validated()
+        self.testcase_validated()
         self.variable_validated()
 
         ctx_document = {}
 
         if self.is_request_infile():
-            ctx_document = self.variable_process()
+            ctx_document = self.variable_process(LexicalAnalysisType.REQUEST)
         else:
             # this is a temporary situation
             # TODO: support file linking; remove this message

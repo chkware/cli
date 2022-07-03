@@ -15,7 +15,7 @@ messages = dict(
         V0007='System exception: Not a Callable',
         V0008='System exception: Wrong spec class',
 
-        # test-spec errors
+        # testcase errors
         V0020='None or many request found',
         V0021='Pass data on same context',
         V0029='File linking not supported',

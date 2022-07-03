@@ -1,5 +1,5 @@
 """
-Constants used in test_spec modules
+Constants used in testcase modules
 """
 
 
