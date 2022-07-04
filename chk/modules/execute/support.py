@@ -1,7 +1,7 @@
 """
 execute module
 """
-from chk.modules.execute.constants import ExecuteConfigNode
+from chk.modules.testcase.constants import ExecuteConfigNode
 from collections import namedtuple
 
 
