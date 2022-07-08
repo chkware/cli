@@ -2,13 +2,15 @@
 testcase related support services
 """
 from cerberus import validator
-from chk.infrastructure.exception import err_message, messages
+from chk.infrastructure.exception import err_message
 
 from chk.modules.testcase.constants import TestSpecConfigNode, ExecuteConfigNode
 from chk.modules.http.constants import RequestConfigNode
 from chk.modules.testcase.validation_rules import testcase_schema
 
 from chk.console.helper import dict_get
+
+from types import MappingProxyType
 
 
 class ExecuteMixin:
@@ -101,3 +103,23 @@ class TestSpecMixin(ExecuteMixin):
 
         if in_file_request and out_file_with:
             raise SystemExit(err_message('fatal.V0021', extra={'spec': {'execute': {'with': 'Not allowed'}}}))
+
+
+class TestcaseValueHandler:
+    """
+    Handle variables and values regarding testcase
+    """
+    @staticmethod
+    def request_set_result(execute_doc: dict, symbol_table: MappingProxyType, request_ret: MappingProxyType) -> dict:
+        symbol_tbl = symbol_table.copy()
+        arg = [ExecuteConfigNode.ROOT, ExecuteConfigNode.RESULT]
+        result_replaceable = str(dict_get(execute_doc, '.'.join(arg))).strip()
+        
+        if request_ret.get('have_all'):
+            symbol_tbl[result_replaceable[1:]] = {key: val for key, val in request_ret.items() if key != 'have_all'}
+        else:
+            for _, val in request_ret.items():
+                if val:
+                    symbol_tbl[result_replaceable[1:]] = val
+
+        return symbol_tbl
