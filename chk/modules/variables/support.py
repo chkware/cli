@@ -79,8 +79,18 @@ class VariableMixin(object):
         :param response:
         :return:
         """
+        document_type = self.get_document_type()
 
-        if self.get_document_type() is DocumentType.HTTP:
+        if document_type is DocumentType.HTTP:
             return RequestValueHandler.request_get_return(document, response)
 
-        return {}
+        elif document_type is DocumentType.TESTCASE:
+            request_ret = RequestValueHandler.request_get_return(document, response)
+
+            return TestcaseValueHandler.request_set_result(
+                self.execute_as_dict(),
+                MappingProxyType(self.symbol_table),
+                MappingProxyType(request_ret)
+            )
+
+        raise ValueError('variable_assemble_values: `document_type` not allowed')
