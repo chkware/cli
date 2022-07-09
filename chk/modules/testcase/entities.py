@@ -3,7 +3,6 @@ from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.work import WorkerContract, RequestProcessorContract, handle_request
 from chk.infrastructure.exception import err_message
 
-from chk.modules.assertion.support import AssertionMixin
 from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
 from chk.modules.http.support import RequestMixin
 from chk.modules.testcase.support import TestSpecMixin
@@ -20,7 +19,6 @@ class TestSpec(
     RequestMixin,
     VariableMixin,
     TestSpecMixin,
-    AssertionMixin,
     WorkerContract,
     RequestProcessorContract
 ):
