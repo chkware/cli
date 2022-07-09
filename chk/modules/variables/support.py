@@ -98,13 +98,10 @@ class VariableMixin(object):
     @staticmethod
     def variable_update_symbol_table(ctx_document: dict, updated: MappingProxyType) -> dict:
         """
-
+        Update symbol table and return updated document
         :param ctx_document:
         :param updated:
         :return:
-        """
-        """
-        Update symbol table and return updated document
         """
         document = deepcopy(ctx_document)
 
