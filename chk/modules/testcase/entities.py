@@ -2,6 +2,7 @@ from cerberus import Validator
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.work import WorkerContract, RequestProcessorContract, handle_request
 from chk.infrastructure.exception import err_message
+
 from chk.modules.assertion.support import AssertionMixin
 from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
 from chk.modules.http.support import RequestMixin
@@ -9,6 +10,8 @@ from chk.modules.testcase.support import TestSpecMixin
 from chk.modules.variables.support import VariableMixin
 from chk.modules.variables.constants import LexicalAnalysisType
 from chk.modules.version.support import VersionMixin
+
+from types import MappingProxyType
 
 
 class TestSpec(
@@ -41,9 +44,15 @@ class TestSpec(
 
         if ctx_document:
             out_response = handle_request(self, ctx_document)
-            assembled_response = self.variable_assemble_values(ctx_document, out_response)
-            print(ctx_document, assembled_response)
+            request_mut = self.variable_assemble_values(ctx_document, out_response)
 
-
+            self.document = self.variable_update_symbol_table(ctx_document, MappingProxyType(request_mut))
+            self.assertion_process()
 
         exit(0)
+
+
+# validation
+# spec execution
+# spec assertion
+# spec return_preparation
