@@ -2,13 +2,13 @@
 testcase related support services
 """
 from cerberus import validator
+from chk.console.helper import dict_get
 from chk.infrastructure.exception import err_message
 
-from chk.modules.testcase.constants import TestSpecConfigNode, ExecuteConfigNode
+from chk.modules.assertion.support import AssertionHandler
 from chk.modules.http.constants import RequestConfigNode
+from chk.modules.testcase.constants import TestSpecConfigNode, ExecuteConfigNode
 from chk.modules.testcase.validation_rules import testcase_schema
-
-from chk.console.helper import dict_get
 
 from types import MappingProxyType
 
@@ -53,14 +53,13 @@ class AssertionMixin:
         except Exception as ex:
             raise SystemExit(err_message("fatal.V0005", extra=ex))
 
-    def assertion_process(self) -> dict:
+    def assertion_process(self) -> list:
         """
         Run assertion of testcase spec
         :return:
         """
         assertions = dict_get(self.assertions_as_dict(), TestSpecConfigNode.ASSERTS)
-
-        print(assertions)
+        return AssertionHandler.asserts_test_run(assertions)
 
 
 class TestSpecMixin(ExecuteMixin, AssertionMixin):
