@@ -94,3 +94,20 @@ class VariableMixin(object):
             )
 
         raise ValueError(f'variable_assemble_values: `{document_type}` not allowed')
+
+    @staticmethod
+    def variable_update_symbol_table(ctx_document: dict, updated: MappingProxyType) -> dict:
+        """
+
+        :param ctx_document:
+        :param updated:
+        :return:
+        """
+        """
+        Update symbol table and return updated document
+        """
+        document = deepcopy(ctx_document)
+
+        document[VarConf.ROOT] = document.get(VarConf.ROOT, {}) | updated
+
+        return document
