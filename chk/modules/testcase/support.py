@@ -40,11 +40,14 @@ class AssertionMixin:
         Get execute as dict
         """
         try:
-            if spec := self.document.get(TestSpecConfigNode.ROOT):
-                if asserts := spec.get(TestSpecConfigNode.ASSERTS):
-                    return {TestSpecConfigNode.ASSERTS: asserts}
-                else:
-                    raise ValueError({'spec': [{'asserts': ['required field']}]})
+            doc_key = [TestSpecConfigNode.ROOT, TestSpecConfigNode.ASSERTS]
+            if asserts := dict_get(self.document, '.'.join(doc_key)):
+                if type(asserts) != list:
+                    raise TypeError({'spec': [{'asserts': ['expected `list`']}]})
+
+                return {TestSpecConfigNode.ASSERTS: asserts}
+            else:
+                raise ValueError({'spec': [{'asserts': ['required field']}]})
         except Exception as ex:
             raise SystemExit(err_message('fatal.V0005', extra=ex))
 
