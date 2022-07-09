@@ -31,7 +31,32 @@ class ExecuteMixin:
             raise SystemExit(err_message('fatal.V0005', extra=ex))
 
 
-class TestSpecMixin(ExecuteMixin):
+class AssertionMixin:
+    """
+    Mixin for Execute sub-spec
+    """
+    def assertions_as_dict(self) -> dict[str, str]:
+        """
+        Get execute as dict
+        """
+        try:
+            if spec := self.document.get(TestSpecConfigNode.ROOT):
+                if asserts := spec.get(TestSpecConfigNode.ASSERTS):
+                    return {TestSpecConfigNode.ASSERTS: asserts}
+                else:
+                    raise ValueError({'spec': [{'asserts': ['required field']}]})
+        except Exception as ex:
+            raise SystemExit(err_message('fatal.V0005', extra=ex))
+
+    def assertion_process(self) -> dict:
+        """
+        Run assertion of testcase spec
+        :return:
+        """
+        pass
+
+
+class TestSpecMixin(ExecuteMixin, AssertionMixin):
     """
     Mixin for Testcase spec
     """
