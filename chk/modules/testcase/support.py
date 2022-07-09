@@ -111,15 +111,19 @@ class TestcaseValueHandler:
     """
     @staticmethod
     def request_set_result(execute_doc: dict, symbol_table: MappingProxyType, request_ret: MappingProxyType) -> dict:
-        symbol_tbl = symbol_table.copy()
         arg = [ExecuteConfigNode.ROOT, ExecuteConfigNode.RESULT]
         result_replaceable = str(dict_get(execute_doc, '.'.join(arg))).strip()
         
+        if result_replaceable.startswith('$'):  # if starts with $ remove it
+            result_replaceable = result_replaceable[1:]
+        
+        if symbol_table.get(result_replaceable, '##') == '##':  # if key is non-existant
+            raise SystemExit(f'Variable `${result_replaceable}` was not declared')
+        
         if request_ret.get('have_all'):
-            symbol_tbl[result_replaceable[1:]] = {key: val for key, val in request_ret.items() if key != 'have_all'}
+            return {result_replaceable: {key: val for key, val in request_ret.items() if key != 'have_all'}}
         else:
             for _, val in request_ret.items():
-                if val:
-                    symbol_tbl[result_replaceable[1:]] = val
+                if val: return {result_replaceable: val}
 
-        return symbol_tbl
+        return {}
