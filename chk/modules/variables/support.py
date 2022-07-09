@@ -93,4 +93,4 @@ class VariableMixin(object):
                 MappingProxyType(request_ret)
             )
 
-        raise ValueError('variable_assemble_values: `document_type` not allowed')
+        raise ValueError(f'variable_assemble_values: `{document_type}` not allowed')
