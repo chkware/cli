@@ -13,8 +13,13 @@ class TestSpecConfigNode:
 
 
 class ExecuteConfigNode:
-    """represent request config section"""
+    """represent execute config section"""
     ROOT = 'execute'
     FILE = 'file'
     WITH = 'with'
     RESULT = 'result'
+
+
+class AssertConfigNode:
+    """represent asserts config section"""
+    ROOT = 'asserts'
