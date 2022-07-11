@@ -119,3 +119,18 @@ class TestHttpRequestArgCompiler:
         request_arg = dict()
         HttpRequestArgCompiler.add_body(MappingProxyType(request_data), request_arg)
         assert request_arg['json'] == request_data['body[json]']
+
+    def test_add_body_text_valid(self):
+        """Tests add_body with valid text/plain."""
+        request_data = {
+            'body[text]': 'Hello, this is a text/plain body.'
+        }
+        request_arg = {
+            'data': None,
+            'headers': {
+                'content-type': None
+            },
+        }
+        HttpRequestArgCompiler.add_body(MappingProxyType(request_data), request_arg)
+        assert request_arg['data'] == request_data['body[text]']
+        assert request_arg['headers']['content-type'] == 'text/plain'
