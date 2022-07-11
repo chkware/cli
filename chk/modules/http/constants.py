@@ -40,3 +40,4 @@ class RequestConfigNode:
     BODY_FRM_DAT = 'body[form-data]'
     BODY_JSN = 'body[json]'
     BODY_XML = 'body[xml]'
+    BODY_TXT = 'body[text]'
