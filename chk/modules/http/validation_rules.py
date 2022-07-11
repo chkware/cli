@@ -1,8 +1,9 @@
 """
 Validation rules and supporting libs for http module
 """
-from chk.modules.http.constants import HttpMethod, RequestConfigNode
 from urllib.parse import urlparse
+
+from chk.modules.http.constants import HttpMethod, RequestConfigNode
 
 
 def allowed_method(value):
@@ -68,25 +69,36 @@ request_schema = {  # cerberus validation rules
                 'required': False,
                 'empty': False,
                 'type': 'dict',
-                'excludes': [RequestConfigNode.BODY_FRM_DAT, RequestConfigNode.BODY_JSN, RequestConfigNode.BODY_XML],
+                'excludes': [RequestConfigNode.BODY_FRM_DAT, RequestConfigNode.BODY_JSN, RequestConfigNode.BODY_XML,
+                             RequestConfigNode.BODY_TXT],
             },
             RequestConfigNode.BODY_FRM_DAT: {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
-                'excludes': [RequestConfigNode.BODY_FRM, RequestConfigNode.BODY_JSN, RequestConfigNode.BODY_XML],
+                'excludes': [RequestConfigNode.BODY_FRM, RequestConfigNode.BODY_JSN, RequestConfigNode.BODY_XML,
+                             RequestConfigNode.BODY_TXT],
             },
             RequestConfigNode.BODY_JSN: {
                 'required': False,
                 'empty': False,
                 'type': 'dict',
-                'excludes': [RequestConfigNode.BODY_FRM, RequestConfigNode.BODY_FRM_DAT, RequestConfigNode.BODY_XML],
+                'excludes': [RequestConfigNode.BODY_FRM, RequestConfigNode.BODY_FRM_DAT, RequestConfigNode.BODY_XML,
+                             RequestConfigNode.BODY_TXT],
             },
             RequestConfigNode.BODY_XML: {
                 'required': False,
                 'empty': False,
                 'type': 'string',
-                'excludes': [RequestConfigNode.BODY_FRM, RequestConfigNode.BODY_FRM_DAT, RequestConfigNode.BODY_JSN],
+                'excludes': [RequestConfigNode.BODY_FRM, RequestConfigNode.BODY_FRM_DAT, RequestConfigNode.BODY_JSN,
+                             RequestConfigNode.BODY_TXT],
+            },
+            RequestConfigNode.BODY_TXT: {
+                'required': False,
+                'empty': False,
+                'type': 'string',
+                'excludes': [RequestConfigNode.BODY_FRM, RequestConfigNode.BODY_FRM_DAT, RequestConfigNode.BODY_JSN,
+                             RequestConfigNode.BODY_XML],
             },
             RequestConfigNode.RETURN: {
                 'required': False,
