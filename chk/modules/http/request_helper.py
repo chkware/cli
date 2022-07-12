@@ -120,7 +120,7 @@ class HttpRequestArgCompiler:
             request_arg["data"] = body
         elif (body := request_data.get(ConfElem.BODY_TXT)) is not None:
             request_arg["headers"]["content-type"] = 'text/plain'
-            request_arg["data"] = body
+            request_arg["data"] = str(body)
 
     @staticmethod
     def add_generic_args(request_data: MappingProxyType, request_arg: dict) -> None:
