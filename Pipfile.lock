@@ -18,11 +18,11 @@
     "default": {
         "astroid": {
             "hashes": [
-                "sha256:6780c1e5581abe2af53417b51120faac23f332e0868e88a3a4f5e895d75ec5f9",
-                "sha256:eee4f9db7458cbffb9d1705f6902995ca38b522e63bdca1642ed7963828317e5"
+                "sha256:2a704303bfaacf4b4e23cf07929a22b7f6d1af635c25a8cc2d6dd58ed5863970",
+                "sha256:4675ef501edbbb143b3d9bb4c81d5f6338f08f960beed2ce41a03dc4cd20d777"
             ],
             "index": "pypi",
-            "version": "==2.12.1"
+            "version": "==2.12.2"
         },
         "cerberus": {
             "hashes": [
@@ -437,7 +437,7 @@
                 "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc",
                 "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"
             ],
-            "markers": "python_full_version < '3.11.0a7'",
+            "markers": "python_version < '3.11'",
             "version": "==2.0.1"
         },
         "typing-extensions": {
