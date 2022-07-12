@@ -134,3 +134,4 @@ class TestHttpRequestArgCompiler:
         HttpRequestArgCompiler.add_body(MappingProxyType(request_data), request_arg)
         assert request_arg['data'] == request_data['body[text]']
         assert request_arg['headers']['content-type'] == 'text/plain'
+        assert type(request_arg['data']) == str
