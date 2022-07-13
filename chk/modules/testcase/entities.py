@@ -45,12 +45,5 @@ class TestSpec(
             request_mut = self.variable_assemble_values(ctx_document, out_response)
 
             self.document = self.variable_update_symbol_table(ctx_document, MappingProxyType(request_mut))
+            self.document = self.variable_process(LexicalAnalysisType.TESTCASE)
             self.assertion_process()
-
-        exit(0)
-
-
-# validation
-# spec execution
-# spec assertion
-# spec return_preparation
