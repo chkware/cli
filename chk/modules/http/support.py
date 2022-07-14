@@ -1,32 +1,25 @@
 """
 Versioned schema repository for http specifications
 """
+from typing import Callable
+
 from cerberus.validator import DocumentError
 from chk.infrastructure.exception import err_message
 from chk.modules.http.constants import RequestConfigNode
 from chk.modules.http.validation_rules import request_schema
-from chk.modules.variables.lexicon import StringLexicalAnalyzer
 
 
 class RequestValueHandler:
     """ Handle variables and values regarding request """
 
     @staticmethod
-    def request_fill_val(document: dict, symbol_table: dict):
+    def request_fill_val(document: dict, symbol_table: dict, replace_method: Callable):
         """Convert request block variables"""
-        def process_dict(doc: dict, var_s: dict):
-            for key in doc.keys():
-                if type(doc[key]) is str:
-                    item = str(doc[key])
-                    doc[key] = StringLexicalAnalyzer.replace_in_str(item, var_s)
-                elif type(doc[key]) is dict:
-                    doc[key] = process_dict(doc[key], var_s)
-            return doc
 
         request_document = document.get(RequestConfigNode.ROOT, {})
         import copy; request_document = copy.deepcopy(request_document)
 
-        return process_dict(request_document, symbol_table)
+        return replace_method(request_document, symbol_table)
 
     @staticmethod
     def request_get_return(document: dict, response: dict) -> dict:

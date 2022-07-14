@@ -13,6 +13,24 @@ from chk.modules.variables.validation_rules import variable_schema
 from chk.modules.version.constants import DocumentType
 from copy import deepcopy
 
+from chk.modules.variables.lexicon import StringLexicalAnalyzer
+
+
+def replace_values(doc: dict, var_s: dict):
+    """
+    replace variables with values
+    :param doc:
+    :param var_s:
+    :return:
+    """
+    for key in doc.keys():
+        if type(doc[key]) is str:
+            item = str(doc[key])
+            doc[key] = StringLexicalAnalyzer.replace_in_str(item, var_s)
+        elif type(doc[key]) is dict:
+            doc[key] = replace_values(doc[key], var_s)
+    return doc
+
 
 class VariableMixin(object):
     """ Mixin for variable spec. for v0.7.2"""
@@ -68,7 +86,7 @@ class VariableMixin(object):
             document_part = self.request_as_dict()
 
         document_replaced = deepcopy(self.document)
-        document_replaced[RequestConfigNode.ROOT] = RequestValueHandler.request_fill_val(document_part, symbol_table)
+        document_replaced[RequestConfigNode.ROOT] = RequestValueHandler.request_fill_val(document_part, symbol_table, replace_values)
 
         return document_replaced
 
