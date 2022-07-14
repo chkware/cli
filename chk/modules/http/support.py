@@ -13,7 +13,7 @@ class RequestValueHandler:
     """ Handle variables and values regarding request """
 
     @staticmethod
-    def request_fill_val(document: dict, symbol_table: dict, replace_method: Callable):
+    def request_fill_val(document: dict, symbol_table: dict, replace_method: Callable[[dict, dict], dict]):
         """Convert request block variables"""
 
         request_document = document.get(RequestConfigNode.ROOT, {})
@@ -51,8 +51,8 @@ class RequestMixin(object):
         """Validate the schema against config"""
         try:
             request_doc = self.request_as_dict()
-            if not self.validator.validate(request_doc, request_schema):  # type: ignore
-                raise SystemExit(err_message('fatal.V0006', extra=self.validator.errors))  # type: ignore
+            if not self.validator.validate(request_doc, request_schema):
+                raise SystemExit(err_message('fatal.V0006', extra=self.validator.errors))
         except DocumentError as doc_err:
             raise SystemExit(err_message('fatal.V0001', extra=doc_err)) from doc_err
         else:
@@ -64,6 +64,6 @@ class RequestMixin(object):
             raise SystemExit(err_message('fatal.V0005'))
 
         try:
-            return {key: self.document[key] for key in (RequestConfigNode.ROOT,) if key in self.document}  # type: ignore
+            return {key: self.document[key] for key in (RequestConfigNode.ROOT,) if key in self.document}
         except Exception as ex:
             raise SystemExit(err_message('fatal.V0005', extra=ex))
