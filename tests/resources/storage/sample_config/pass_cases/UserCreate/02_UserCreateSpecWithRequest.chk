@@ -4,7 +4,7 @@ variables:
   Name: 'Morpheus'
   Job: 'leader'
   Code: ~
-  Server: https://reqres.io/api/v1
+  Server: https://reqres.in/api/v1
 
 request:
   url: "{$Server}/users"
@@ -22,3 +22,4 @@ spec:
 
   asserts:
     - {type: AssertEquals, actual: $Code, expected: 201}
+    - {type: AssertBoolean, actual: $Code, expected: True}
