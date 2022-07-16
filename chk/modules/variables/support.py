@@ -92,17 +92,26 @@ class VariableMixin(object):
         self, la_type: LexicalAnalysisType, symbol_table: dict
     ) -> dict:
         """lexical validation"""
-        document_part = {}
+
+        document_replaced = deepcopy(self.document)
 
         if la_type is LexicalAnalysisType.REQUEST:
             document_part = self.request_as_dict()
 
-        document_replaced = deepcopy(self.document)
-        document_replaced[
-            RequestConfigNode.ROOT
-        ] = RequestValueHandler.request_fill_val(
-            document_part, symbol_table, replace_values
-        )
+            document_replaced[
+                RequestConfigNode.ROOT
+            ] = RequestValueHandler.request_fill_val(
+                document_part, symbol_table, replace_values
+            )
+
+        elif la_type is LexicalAnalysisType.TESTCASE:
+            document_part = self.assertions_as_dict()
+
+            document_replaced[
+                RequestConfigNode.ROOT
+            ] = TestcaseValueHandler.assertions_fill_val(
+                document_part, symbol_table, replace_values
+            )
 
         return document_replaced
 
