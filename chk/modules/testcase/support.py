@@ -1,13 +1,19 @@
 """
 testcase related support services
 """
+from typing import Callable
+
 from cerberus import validator
 from chk.console.helper import dict_get
 from chk.infrastructure.exception import err_message
 
 from chk.modules.assertion.support import AssertionHandler
 from chk.modules.http.constants import RequestConfigNode
-from chk.modules.testcase.constants import TestSpecConfigNode, ExecuteConfigNode
+from chk.modules.testcase.constants import (
+    TestSpecConfigNode,
+    ExecuteConfigNode,
+    AssertConfigNode,
+)
 from chk.modules.testcase.validation_rules import testcase_schema
 
 from types import MappingProxyType
@@ -152,6 +158,22 @@ class TestcaseValueHandler:
     """
     Handle variables and values regarding testcase
     """
+
+    @staticmethod
+    def assertions_fill_val(
+        document: dict, symbol_table: dict, replace_method: Callable[[dict, dict], dict]
+    ):
+        """Convert request block variables"""
+
+        assertion_document = document.get(AssertConfigNode.ROOT, {})
+        import copy
+
+        assertion_document = copy.deepcopy(assertion_document)
+
+        for each_assert in assertion_document:
+            replace_method(each_assert, symbol_table)
+
+        return assertion_document
 
     @staticmethod
     def request_set_result(
