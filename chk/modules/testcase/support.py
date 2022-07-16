@@ -171,8 +171,9 @@ class TestcaseValueHandler:
         assertion_document = copy.deepcopy(assertion_document)
 
         for each_assert in assertion_document:
-            replace_method(each_assert, symbol_table)
+            each_assert = replace_method(each_assert, symbol_table)
 
+        print('\n--\n', assertion_document, '\n--\n')
         return assertion_document
 
     @staticmethod
