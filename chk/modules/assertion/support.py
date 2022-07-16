@@ -33,8 +33,19 @@ class AssertionHandler:
         """
         suite = TestSuite()
 
-        for each_assertion in assertions:
-            suite.addTest(AssertionCase(f"case_{each_assertion.type}", each_assertion.actual, each_assertion.expected))
+        print(assertions)
 
+        for each_assertion in assertions:
+            print(each_assertion)
+            # suite.addTest(AssertionCase(f"case_{each_assertion.type}", each_assertion.actual, each_assertion.expected))
         run_result = TextTestRunner(stream=StringIO(), verbosity=0).run(suite)
 
+        print(run_result.wasSuccessful())
+
+        print(len(run_result.failures))
+        print(run_result.failures)
+
+        for (tc, string) in run_result.failures:
+            print(tc, '\n------\n')
+            print(tc.id(), '\n------\n')
+            print(string, '\n------\n')
