@@ -17,6 +17,8 @@ from chk.modules.version.constants import DocumentType
 from copy import deepcopy
 
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
+from chk.modules.testcase.constants import TestSpecConfigNode
+from chk.console.helper import dict_set
 
 
 def replace_values(doc: dict, var_s: dict) -> dict[str, object]:
@@ -107,10 +109,13 @@ class VariableMixin(object):
         elif la_type is LexicalAnalysisType.TESTCASE:
             document_part = self.assertions_as_dict()
 
-            document_replaced[
-                RequestConfigNode.ROOT
-            ] = TestcaseValueHandler.assertions_fill_val(
-                document_part, symbol_table, replace_values
+            keys = [TestSpecConfigNode.ROOT, TestSpecConfigNode.ASSERTS]
+            dict_set(
+                document_replaced,
+                ".".join(keys),
+                TestcaseValueHandler.assertions_fill_val(
+                    document_part, symbol_table, replace_values
+                ),
             )
 
         return document_replaced
