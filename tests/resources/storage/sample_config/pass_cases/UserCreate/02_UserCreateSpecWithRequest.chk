@@ -21,5 +21,4 @@ spec:
     result: $Code
 
   asserts:
-    - {type: AssertEquals, actual: $Code, expected: 201}
-    - {type: AssertBoolean, actual: $Code, expected: True}
+    - {type: AssertEqual, actual: $Code, expected: '201'}
