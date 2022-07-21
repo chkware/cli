@@ -53,6 +53,10 @@ class AssertionMixin:
                 if type(asserts) != list:
                     raise TypeError({"spec": [{"asserts": ["expected `list`"]}]})
 
+                asrt_list = [f"{item.get('type')}.{item.get('actual')}" for item in asserts if type(item) == dict]
+                if len(asrt_list) != len(set(asrt_list)):
+                    raise TypeError({"spec": [{"asserts": ["duplicate assertion of same value"]}]})
+
                 return {TestSpecConfigNode.ASSERTS: asserts}
             else:
                 raise ValueError({"spec": [{"asserts": ["required field"]}]})
@@ -173,7 +177,6 @@ class TestcaseValueHandler:
         for each_assert in assertion_document:
             each_assert = replace_method(each_assert, symbol_table)
 
-        print('\n--\n', assertion_document, '\n--\n')
         return assertion_document
 
     @staticmethod
