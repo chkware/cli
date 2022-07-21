@@ -6,7 +6,7 @@ class VersionConfigNode:
     VERSION = 'version'
 
 
-class VersionStrToSpecConfigMapping:
-    """VersionStrToSpecConfigMapping lists all archetypes by version string"""
+class VersionStore:
+    """VersionStore lists all version strings."""
 
-    data: List = ['default:http:0.7.2']
+    request_versions: List = ['default:http:0.7.2']
