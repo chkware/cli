@@ -2,21 +2,20 @@
 Assertion related services
 """
 from io import StringIO
-from unittest import TestCase, TestSuite, TextTestRunner
+from unittest import TestCase, TestSuite, TextTestRunner, TestResult
+
+from chk.modules.testcase.presentation import AssertResult, AssertResultList
 
 
 class AssertionCase(TestCase):
-    def __init__(self, name: str, arg1, arg2):
+    def __init__(self, name: str, actual, expect):
         super(AssertionCase, self).__init__(name)
         self.type = type
-        self.arg1 = arg1
-        self.arg2 = arg2
+        self.actual = actual
+        self.expect = expect
 
     def case_AssertEqual(self):
-        self.assertEqual(self.arg1, self.arg2)
-
-    def case_AssertDictEqual(self):
-        self.assertDictEqual(self.arg1, self.arg2)
+        self.assertEqual(self.actual, self.expect)
 
 
 class AssertionHandler:
@@ -25,27 +24,37 @@ class AssertionHandler:
     """
 
     @staticmethod
-    def asserts_test_run(assertions: list):
+    def asserts_test_run(assertions: list) -> AssertResultList:
         """
         Process given assertions and run test based on those
         :param assertions: list of passed assertions
         :return:
         """
-        suite = TestSuite()
 
-        print(assertions)
+        suite = TestSuite()
+        results = []
 
         for each_assertion in assertions:
-            print(each_assertion)
-            # suite.addTest(AssertionCase(f"case_{each_assertion.type}", each_assertion.actual, each_assertion.expected))
+            suite.addTest(
+                AssertionCase(
+                    f"case_{each_assertion['type']}",
+                    each_assertion["actual"],
+                    each_assertion["expected"],
+                )
+            )
+
+            results.append(AssertResult(each_assertion["type"]))
+
         run_result = TextTestRunner(stream=StringIO(), verbosity=0).run(suite)
 
-        print(run_result.wasSuccessful())
-
-        print(len(run_result.failures))
-        print(run_result.failures)
+        if run_result.wasSuccessful():
+            return results
 
         for (tc, string) in run_result.failures:
-            print(tc, '\n------\n')
-            print(tc.id(), '\n------\n')
-            print(string, '\n------\n')
+            for item in results:
+                if item.name in tc.id():
+                    item.is_success = False
+                    item.message = string
+                    item.assert_fn = tc.id()
+
+        return results
