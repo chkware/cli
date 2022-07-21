@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import List
 
 
 class VersionConfigNode:
@@ -9,6 +9,4 @@ class VersionConfigNode:
 class VersionStrToSpecConfigMapping:
     """VersionStrToSpecConfigMapping lists all archetypes by version string"""
 
-    data: Dict = {
-        "default:http:0.7.2": "chk.modules.http.entities.HttpSpec_V072",
-    }
+    data: List = ['default:http:0.7.2']
