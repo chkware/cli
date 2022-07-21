@@ -16,8 +16,8 @@ class VersionMixin(object):
         """Validate the schema against config"""
         try:
             version_doc = self.version_as_dict()
-            if not self.validator.validate(version_doc, version_schema):  # type: ignore
-                raise SystemExit(err_message('fatal.V0006', extra=self.validator.errors))  # type: ignore
+            if not self.validator.validate(version_doc, version_schema):
+                raise SystemExit(err_message('fatal.V0006', extra=self.validator.errors))
         except validator.DocumentError as doc_err:
             raise SystemExit(err_message('fatal.V0001', extra=doc_err)) from doc_err
 
@@ -29,7 +29,6 @@ class VersionMixin(object):
             raise SystemExit(err_message('fatal.V0005'))
 
         try:
-            return {key: self.document[key] for key in (VersionConfigNode.VERSION,) if
-                    key in self.document}  # type: ignore
+            return {key: self.document[key] for key in (VersionConfigNode.VERSION,) if key in self.document}
         except Exception as ex:
             raise SystemExit(err_message('fatal.V0005', extra=ex))
