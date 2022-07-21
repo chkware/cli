@@ -8,6 +8,6 @@ version_schema = {
         'required': True,
         'type': 'string',
         'empty': False,
-        'allowed': list(VersionStrToSpecConfigMapping.data.keys())
+        'allowed': VersionStrToSpecConfigMapping.data
     }
 }
