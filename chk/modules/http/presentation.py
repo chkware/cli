@@ -1,7 +1,6 @@
 """
 Presentation related logics
 """
-from chk.infrastructure.file_loader import FileContext
 
 
 class Presentation:
