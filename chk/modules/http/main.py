@@ -2,9 +2,9 @@
 main driver
 """
 from chk.infrastructure.file_loader import ChkFileLoader, FileContext
-from chk.modules.http.presentation import make_displayable
-from chk.modules.version.support import SpecificationLoader
 from chk.infrastructure.work import handle_worker
+from chk.modules.http.entities import HttpSpec_V072
+from chk.modules.http.presentation import make_displayable
 
 
 def execute(file: str):
@@ -14,7 +14,7 @@ def execute(file: str):
     fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file)
 
     file_ctx = FileContext(file, fpath_mangled, fpath_hash, document)
-    http_spec = SpecificationLoader.to_spec_config(file_ctx)
+    http_spec = HttpSpec_V072(file_ctx)
 
     response = handle_worker(http_spec)
     print(make_displayable(response))  # print data
