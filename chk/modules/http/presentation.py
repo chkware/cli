@@ -33,7 +33,7 @@ class Presentation:
                     return '{}\r\n{}'.format(prefix, str(val))
 
     @staticmethod
-    def displayable_execution_summary(file_ctx: FileContext) -> str:
+    def displayable_execution_summary(filepath: str) -> str:
         """Return execution summary in presentable format."""
-        summary = 'File {}\r\n\nExecuting request\r\n\n- Making request [Success]\r\n===='
-        return summary.format(file_ctx.filepath)
+        summary = 'File: {}\r\n\nExecuting request\r\n\n- Making request [Success]\r\n===='
+        return summary.format(filepath)
