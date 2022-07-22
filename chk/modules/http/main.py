@@ -17,4 +17,5 @@ def execute(file: str):
     http_spec = HttpSpec_V072(file_ctx)
 
     response = handle_worker(http_spec)
-    print(Presentation.display_result(response))  # print data
+    print(Presentation.displayable_execution_summary(file_ctx))  # print execution summary
+    print(Presentation.displayable_result(response))  # print data
