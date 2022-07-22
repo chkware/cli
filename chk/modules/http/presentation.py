@@ -1,14 +1,17 @@
 """
 Presentation related logics
 """
+from chk.infrastructure.file_loader import FileContext
 
 
 class Presentation:
     """Handle presentation of the outputs of chkware commands."""
 
     @staticmethod
-    def display_result(response: dict[str, object]) -> str:
-        """Display response in presentable format."""
+    def displayable_result(response: dict[str, object]) -> str:
+        """Return result in presentable format."""
+        prefix = '[RESULT]'
+
         def headers(res) -> str:
             """Headers"""
             return '{}'.format(
@@ -22,9 +25,15 @@ class Presentation:
                 response.get('reason'),
             )
 
-            return '{}\r\n{}\r\n\r\n{}'.format(summary, headers(response), response.get('body'))
+            return '{}\r\n{}\r\n{}\r\n\r\n{}'.format(prefix, summary, headers(response), response.get('body'))
         else:
             response.pop('have_all')
             for _, val in response.items():
                 if val:
-                    return str(val)
+                    return '{}\r\n{}'.format(prefix, str(val))
+
+    @staticmethod
+    def displayable_execution_summary(file_ctx: FileContext) -> str:
+        """Return execution summary in presentable format."""
+        summary = 'File {}\r\n\nExecuting request\r\n\n- Making request [Success]\r\n===='
+        return summary.format(file_ctx.filepath)
