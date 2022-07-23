@@ -4,6 +4,8 @@ Presenting assert data
 from typing import List, TypeAlias
 from dataclasses import dataclass
 
+from chk.infrastructure.file_loader import FileContext
+
 
 @dataclass
 class AssertResult:
@@ -18,3 +20,24 @@ class AssertResult:
 
 
 AssertResultList: TypeAlias = List[AssertResult]
+
+
+class Presentation:
+    @staticmethod
+    def displayable_file_info(file_ctx: FileContext) -> str:
+        return f"File: {file_ctx.filepath}\n"
+
+    @staticmethod
+    def displayable_string(string: str) -> str:
+        if type(string) != str:
+            return str(string)
+
+        return string
+
+    @staticmethod
+    def displayable_assert_status(assert_name: str, status: str) -> str:
+        return f"\n- Running {assert_name}: [{status}]\n"
+
+    @staticmethod
+    def displayable_assert_message(message: str) -> str:
+        return f"\n===\n{message}\n"
