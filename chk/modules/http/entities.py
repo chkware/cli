@@ -8,7 +8,7 @@ from chk.modules.version.support import VersionMixin
 from chk.modules.variables.constants import LexicalAnalysisType
 
 
-class HttpSpec_V072(
+class HttpSpec(
     RequestProcessorMixin_PyRequests,
     VersionMixin,
     RequestMixin,
