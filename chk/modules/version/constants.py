@@ -23,4 +23,10 @@ class VersionConfigNode:
 class VersionStore:
     """VersionStore lists all version strings."""
 
-    request_versions: List = ['default:http:0.7.2']
+    request_versions: List = [
+        'default:http:0.7.2',
+    ]
+
+    testcase_versions: List = [
+        'default:testcase:0.7.2',
+    ]
