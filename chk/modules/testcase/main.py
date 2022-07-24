@@ -17,4 +17,3 @@ def execute(file: str):
     testcase = SpecificationLoader.to_spec_config(file_ctx)
 
     response = handle_worker(testcase)
-    print(make_displayable(response))  # print data
