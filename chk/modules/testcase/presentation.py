@@ -36,8 +36,8 @@ class Presentation:
 
     @staticmethod
     def displayable_assert_status(assert_name: str, status: str) -> str:
-        return f"\n- Running {assert_name}: [{status}]\n"
+        return f"- Running {assert_name}: [{status}]"
 
     @staticmethod
     def displayable_assert_message(message: str) -> str:
-        return f"\n===\n{message}\n"
+        return f"\n===>\n{message}"
