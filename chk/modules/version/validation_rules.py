@@ -8,6 +8,6 @@ version_schema = {
         'required': True,
         'type': 'string',
         'empty': False,
-        'allowed': VersionStore.request_versions
+        'allowed': VersionStore.request_versions + VersionStore.testcase_versions
     }
 }

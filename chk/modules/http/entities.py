@@ -8,7 +8,7 @@ from chk.modules.version.support import VersionMixin
 from chk.modules.variables.constants import LexicalAnalysisType
 
 
-class HttpSpec_V072(
+class HttpSpec(
     RequestProcessorMixin_PyRequests,
     VersionMixin,
     RequestMixin,
@@ -27,4 +27,4 @@ class HttpSpec_V072(
 
         ctx_document = self.variable_process(LexicalAnalysisType.REQUEST)
         out_response = handle_request(self, ctx_document)
-        return self.assemble_values(ctx_document, out_response)
+        return self.variable_assemble_values(ctx_document, out_response)
