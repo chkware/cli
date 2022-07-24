@@ -17,6 +17,8 @@ from chk.modules.testcase.presentation import Presentation, AssertResult
 
 from types import MappingProxyType
 
+from chk.modules.version.constants import DocumentType
+
 
 class TestSpec(
     RequestProcessorMixin_PyRequests,
@@ -35,7 +37,7 @@ class TestSpec(
         )
 
     def __work__(self) -> None:
-        self.version_validated()
+        self.version_validated(DocumentType.TESTCASE)
         self.testcase_validated()
         self.variable_validated()
 
