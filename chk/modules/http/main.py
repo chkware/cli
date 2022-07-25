@@ -15,7 +15,8 @@ def execute(file: str):
 
     file_ctx = FileContext(file, fpath_mangled, fpath_hash, document)
     http_spec = HttpSpec_V072(file_ctx)
-
-    response = handle_worker(http_spec)
-    print(Presentation.displayable_execution_summary(file_ctx.filepath))  # print execution summary
-    print(Presentation.displayable_result(response))  # print data
+    try:
+        response = handle_worker(http_spec)
+    except BaseException as error:
+        response = error
+    Presentation.present_result(file_ctx, response)
