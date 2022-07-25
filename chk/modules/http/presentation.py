@@ -22,7 +22,6 @@ class Presentation:
     @classmethod
     def displayable_result(cls, response: dict[str, object]) -> str:
         """Return result in presentable format."""
-        prefix = '[RESULT]'
 
         def headers(res) -> str:
             """Headers"""
@@ -36,18 +35,16 @@ class Presentation:
                 response.get('code'),
                 response.get('reason'),
             )
-
-            return '{}\r\n{}\r\n{}\r\n\r\n{}'.format(prefix, summary, headers(response), response.get('body'))
-        else:
-            response.pop('have_all')
-            for _, val in response.items():
-                if val:
-                    return '{}\r\n{}'.format(prefix, str(val))
+            return '{}\r\n{}\r\n\r\n{}'.format(summary, headers(response), response.get('body'))
+        response.pop('have_all')
+        for _, val in response.items():
+            if val:
+                return str(val)
 
     @classmethod
     def displayable_error(cls, error: BaseException) -> str:
         """Returns error in presentable format."""
-        return '[ERROR list / message]\r\n{}'.format(str(error))
+        return str(error)
 
     @classmethod
     def displayable_summary(cls, filepath: str, status: str) -> str:
