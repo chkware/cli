@@ -1,13 +1,26 @@
 """
 Presentation related logics
 """
+from typing import Union
+
+from chk.infrastructure.file_loader import FileContext
 
 
 class Presentation:
     """Handle presentation of the outputs of chkware commands."""
 
-    @staticmethod
-    def displayable_result(response: dict[str, object]) -> str:
+    @classmethod
+    def present_result(cls, file_ctx: FileContext, data: Union[dict, BaseException]):
+        """Shows result of execution."""
+        if isinstance(data, dict):
+            print(cls.displayable_summary(file_ctx.filepath, 'Success'))
+            print(cls.displayable_result(data))
+        if isinstance(data, BaseException):
+            print(cls.displayable_summary(file_ctx.filepath, 'Failed'))
+            print(cls.displayable_error(data))
+
+    @classmethod
+    def displayable_result(cls, response: dict[str, object]) -> str:
         """Return result in presentable format."""
         prefix = '[RESULT]'
 
@@ -31,8 +44,13 @@ class Presentation:
                 if val:
                     return '{}\r\n{}'.format(prefix, str(val))
 
-    @staticmethod
-    def displayable_execution_summary(filepath: str) -> str:
+    @classmethod
+    def displayable_error(cls, error: BaseException) -> str:
+        """Returns error in presentable format."""
+        return '[ERROR list / message]\r\n{}'.format(str(error))
+
+    @classmethod
+    def displayable_summary(cls, filepath: str, status: str) -> str:
         """Return execution summary in presentable format."""
-        summary = 'File: {}\r\n\nExecuting request\r\n\n- Making request [Success]\r\n===='
-        return summary.format(filepath)
+        summary = 'File: {}\r\n\nExecuting request\r\n\n- Making request [{}]\r\n===='
+        return summary.format(filepath, status)
