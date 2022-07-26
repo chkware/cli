@@ -4,7 +4,7 @@ main driver
 from chk.infrastructure.file_loader import ChkFileLoader, FileContext
 from chk.infrastructure.work import handle_worker
 from chk.modules.http.entities import HttpSpec
-from chk.modules.http.presentation import make_displayable
+from chk.modules.http.presentation import Presentation
 
 
 def execute(file: str):
@@ -15,6 +15,8 @@ def execute(file: str):
 
     file_ctx = FileContext(file, fpath_mangled, fpath_hash, document)
     http_spec = HttpSpec(file_ctx)
-
-    response = handle_worker(http_spec)
-    print(make_displayable(response))  # print data
+    try:
+        response = handle_worker(http_spec)
+    except BaseException as error:
+        response = error
+    Presentation.present_result(file_ctx, response)
