@@ -15,9 +15,9 @@ class Presentation:
         if isinstance(data, dict):
             print(cls.displayable_summary(file_ctx.filepath, 'Success'))
             print(cls.displayable_result(data))
-        if isinstance(data, BaseException):
+        else:
             print(cls.displayable_summary(file_ctx.filepath, 'Failed'))
-            print(cls.displayable_error(data))
+            print(str(data))
 
     @classmethod
     def displayable_result(cls, response: dict[str, object]) -> str:
@@ -40,11 +40,6 @@ class Presentation:
         for _, val in response.items():
             if val:
                 return str(val)
-
-    @classmethod
-    def displayable_error(cls, error: BaseException) -> str:
-        """Returns error in presentable format."""
-        return str(error)
 
     @classmethod
     def displayable_summary(cls, filepath: str, status: str) -> str:
