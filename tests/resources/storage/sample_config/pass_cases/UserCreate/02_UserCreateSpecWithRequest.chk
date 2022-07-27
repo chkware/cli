@@ -3,7 +3,7 @@ version: 'default:testcase:0.7.2'
 variables:
   Name: 'Morpheus'
   Job: 'leader'
-  Code: ~
+  Response: ~
   Server: https://reqres.in/api/v1
 
 request:
@@ -13,12 +13,12 @@ request:
     'name': $Name,
     'job': $Job,
   }
-  return: .code
+  return: ~
 
 spec:
   execute:
     file: ~
-    result: $Code
+    result: $Response
 
   asserts:
-    - {type: AssertEqual, actual: $Code, expected: '201'}
+    - {type: AssertEqual, actual: $Response.code, expected: '201'}

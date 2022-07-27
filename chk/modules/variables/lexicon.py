@@ -3,6 +3,8 @@ Lexical analysis functionalities
 """
 import re
 
+from chk.console.helper import data_get
+
 
 class StringLexicalAnalyzer:
     """Lexical analyzer for strings"""
@@ -17,7 +19,7 @@ class StringLexicalAnalyzer:
 
         for i, item in enumerate(line_strip):
             if item.startswith('$'):
-                value = replace_with.get(item.lstrip('$'), None)
+                value = data_get(replace_with, item.lstrip('$'), None)
                 line_strip[i] = str(value) if value else '{' + item + '}'
 
         return ''.join(line_strip)
