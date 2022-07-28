@@ -7,12 +7,13 @@ import click
 # run command
 @click.command('http')
 @click.argument('file', nargs=-1)
-def execute_http(file):
+@click.option('--result', is_flag=True)
+def execute_http(file, result):
     """Command to run HTTP request config file.\r\n
     FILE: Any .chk file, that has 'version: default.http.*' string in it."""
 
     file = list(file).pop(0)
-    http_executor.execute(file)
+    http_executor.execute(file, result)
 
 
 # run command
