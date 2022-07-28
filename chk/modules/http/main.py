@@ -7,7 +7,7 @@ from chk.modules.http.entities import HttpSpec
 from chk.modules.http.presentation import Presentation
 
 
-def execute(file: str):
+def execute(file: str, result: bool):
     """execute command"""
     ChkFileLoader.is_file_ok(file)
     document = ChkFileLoader.to_dict(file)
@@ -19,4 +19,4 @@ def execute(file: str):
         response = handle_worker(http_spec)
     except BaseException as error:
         response = error
-    Presentation.present_result(file_ctx, response)
+    Presentation.present_result(file_ctx, response, result)
