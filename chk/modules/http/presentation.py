@@ -10,14 +10,14 @@ class Presentation:
     """Handle presentation of the outputs of chkware commands."""
 
     @classmethod
-    def present_result(cls, file_ctx: FileContext, data: Union[dict, BaseException], result: bool):
+    def present_result(cls, file_ctx: FileContext, data: Union[dict, BaseException]):
         """Shows result of execution."""
         if isinstance(data, dict):
-            if not result:
+            if not file_ctx.options.get('result'):
                 print(cls.displayable_summary(file_ctx.filepath, 'Success'))
             print(cls.displayable_result(data))
         else:
-            if not result:
+            if not file_ctx.options.get('result'):
                 print(cls.displayable_summary(file_ctx.filepath, 'Failed'))
             print(str(data))
 
