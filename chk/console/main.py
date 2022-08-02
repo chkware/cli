@@ -1,7 +1,8 @@
 """Commands"""
+import click
+
 import chk.modules.http.main as http_executor
 import chk.modules.test_spec.main as test_spec_executor
-import click
 
 
 # run command
@@ -13,7 +14,10 @@ def execute_http(file, result):
     FILE: Any .chk file, that has 'version: default.http.*' string in it."""
 
     file = list(file).pop(0)
-    http_executor.execute(file, result)
+    options = dict(
+        result=result,
+    )
+    http_executor.execute(file, options)
 
 
 # run command
