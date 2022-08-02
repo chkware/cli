@@ -1,4 +1,6 @@
 """Commands"""
+from types import MappingProxyType
+
 import click
 
 import chk.modules.http.main as http_executor
@@ -14,8 +16,10 @@ def execute_http(file, result):
     FILE: Any .chk file, that has 'version: default.http.*' string in it."""
 
     file = list(file).pop(0)
-    options = dict(
-        result=result,
+    options = MappingProxyType(
+        dict(
+            result=result,
+        ),
     )
     http_executor.execute(file, options)
 
