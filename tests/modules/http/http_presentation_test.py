@@ -1,3 +1,6 @@
+from types import MappingProxyType
+
+from chk.infrastructure.file_loader import FileContext
 from chk.modules.http.presentation import Presentation
 
 
@@ -17,3 +20,29 @@ class TestHttpPresentation:
         expected_summary = 'File: {}\r\n\nExecuting request\r\n\n- Making request [Failed]\r\n===='.format(filepath)
         summary = Presentation.displayable_summary(filepath, status='Failed')
         assert expected_summary == summary
+
+    def test_present_result_suppress_summary(self, capsys):
+        """Tests suppressing result summary with --result=True."""
+        options = MappingProxyType(
+            dict(
+                result=True,
+            ),
+        )
+        file_ctx = FileContext(None, None, None, None, options)
+        response = {'have_all': False}
+        Presentation.present_result(file_ctx, response)
+        captured = capsys.readouterr()
+        assert 'Executing request' not in captured.out
+
+    def test_present_result_show_summary(self, capsys):
+        """Tests suppressing result summary with --result=False."""
+        options = MappingProxyType(
+            dict(
+                result=False,
+            ),
+        )
+        file_ctx = FileContext(None, None, None, None, options)
+        response = {'have_all': False}
+        Presentation.present_result(file_ctx, response)
+        captured = capsys.readouterr()
+        assert 'Executing request' in captured.out
