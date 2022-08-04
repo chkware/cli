@@ -1,8 +1,10 @@
-from chk.infrastructure import exception, mangle
 from collections import namedtuple
 from pathlib import Path
 from typing import Dict, Tuple
+
 from yaml import safe_load
+
+from chk.infrastructure import exception, mangle
 
 
 class ChkFileLoader:
@@ -31,4 +33,4 @@ class ChkFileLoader:
 
 
 # File context that holds file information
-FileContext = namedtuple('FileContext', ['filepath', 'filepath_mangled', 'filepath_hash', 'document'])
+FileContext = namedtuple('FileContext', ['filepath', 'filepath_mangled', 'filepath_hash', 'document', 'options'])

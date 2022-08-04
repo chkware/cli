@@ -13,10 +13,12 @@ class Presentation:
     def present_result(cls, file_ctx: FileContext, data: Union[dict, BaseException]):
         """Shows result of execution."""
         if isinstance(data, dict):
-            print(cls.displayable_summary(file_ctx.filepath, 'Success'))
+            if not file_ctx.options.get('result'):
+                print(cls.displayable_summary(file_ctx.filepath, 'Success'))
             print(cls.displayable_result(data))
         else:
-            print(cls.displayable_summary(file_ctx.filepath, 'Failed'))
+            if not file_ctx.options.get('result'):
+                print(cls.displayable_summary(file_ctx.filepath, 'Failed'))
             print(str(data))
 
     @classmethod
