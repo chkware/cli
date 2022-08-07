@@ -18,13 +18,6 @@ class RequestProcessorMixin_PyRequests(RequestProcessorContract):
     def __process__(self) -> dict:
         """Make external api call"""
 
-        def body(res) -> str:
-            """parse body"""
-            try:
-                return res.json()
-            except Exception:
-                return res.text
-
         def version(proto_ver: int) -> str:
             """parse version"""
             return 'HTTP/1.0' if proto_ver == 10 else 'HTTP/1.1'
@@ -39,7 +32,7 @@ class RequestProcessorMixin_PyRequests(RequestProcessorContract):
             code=response.status_code,
             reason=response.reason,
             headers=response.headers,
-            body=body(response),
+            body=response.text,
         )
 
     def __before_process__(self, request_data: dict[str, object]) -> None:
