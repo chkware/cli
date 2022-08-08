@@ -109,10 +109,12 @@ class HttpRequestArgCompiler:
         elif (body := request_data.get(ConfElem.BODY_JSN)) is not None:
             request_arg["json"] = dict(body)
         elif (body := request_data.get(ConfElem.BODY_XML)) is not None:
-            request_arg["headers"]["content-type"] = 'application/xml'
+            if request_arg["headers"].get("content-type") is None:
+                request_arg["headers"]["content-type"] = 'application/xml'
             request_arg["data"] = body
         elif (body := request_data.get(ConfElem.BODY_TXT)) is not None:
-            request_arg["headers"]["content-type"] = 'text/plain'
+            if request_arg["headers"].get("content-type") is None:
+                request_arg["headers"]["content-type"] = 'text/plain'
             request_arg["data"] = str(body)
 
     @staticmethod
