@@ -9,13 +9,12 @@ import chk.modules.test_spec.main as test_spec_executor
 
 # run command
 @click.command('http')
-@click.argument('file', nargs=-1)
-@click.option('--result', is_flag=True)
+@click.argument('file')
+@click.option('--result', is_flag=True, help="Only shows the returned output")
 def execute_http(file, result):
     """Command to run HTTP request config file.\r\n
     FILE: Any .chk file, that has 'version: default.http.*' string in it."""
 
-    file = list(file).pop(0)
     options = MappingProxyType(
         dict(
             result=result,
@@ -36,9 +35,9 @@ def execute_test_spec(file):
 # root command
 @click.group('chk')
 def execute_root():
-    """v0.2.0 | version strings: 0.7.2"""
+    """v0.3.4 | supported version strings: 0.7.2"""
     pass
 
 
 execute_root.add_command(execute_http)  # add `http` as sub-command
-execute_root.add_command(execute_test_spec)  # add `http` as sub-command
+# execute_root.add_command(execute_test_spec)  # add `http` as sub-command
