@@ -135,3 +135,51 @@ class TestHttpRequestArgCompiler:
         assert request_arg['data'] == request_data['body[text]']
         assert request_arg['headers']['content-type'] == 'text/plain'
         assert type(request_arg['data']) == str
+
+    def test_add_body_text_override(self):
+        """Tests add_body_text when the content-type is explicitly set by the user."""
+        request_data = {
+            'body[text]': 'Hello, this is a text/plain body.'
+        }
+        request_arg = {
+            'data': None,
+            'headers': {
+                'content-type': 'application/xml'  # wrong content type is set by the user
+            },
+        }
+        HttpRequestArgCompiler.add_body(MappingProxyType(request_data), request_arg)
+        assert request_arg['data'] == request_data['body[text]']
+        assert request_arg['headers']['content-type'] == 'application/xml'
+        assert type(request_arg['data']) == str
+
+    def test_add_body_xml_override(self):
+        """Tests add_body_xml when the content-type is explicitly set by the user."""
+        request_data = {
+            'body[xml]': '<account><name>Some Rand</name><no>900XW3D</no></account>'
+        }
+        request_arg = {
+            'data': None,
+            'headers': {
+                'content-type': 'text/plain'  # wrong content type is set by the user
+            },
+        }
+        HttpRequestArgCompiler.add_body(MappingProxyType(request_data), request_arg)
+        assert request_arg['data'] == request_data['body[xml]']
+        assert request_arg['headers']['content-type'] == 'text/plain'
+        assert type(request_arg['data']) == str
+
+    def test_add_body_xml_auto(self):
+        """Tests add_body_xml when the content-type is not set by the user."""
+        request_data = {
+            'body[xml]': '<account><name>Some Rand</name><no>900XW3D</no></account>'
+        }
+        request_arg = {
+            'data': None,
+            'headers': {
+                'content-type': None
+            },
+        }
+        HttpRequestArgCompiler.add_body(MappingProxyType(request_data), request_arg)
+        assert request_arg['data'] == request_data['body[xml]']
+        assert request_arg['headers']['content-type'] == 'application/xml'
+        assert type(request_arg['data']) == str
