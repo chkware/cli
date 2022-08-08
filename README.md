@@ -28,7 +28,10 @@ Jump to the [setup guide](https://chkware.github.io/setup) for different ways to
 ### Usage
 
 [Get started](https://chkware.github.io/quick-start) quickly here.
-Find [more examples usage](https://chkware.github.io/examples), and [reference](https://chkware.github.io/reference) here, 
+
+### Ask anything
+
+Please use tag `chkware-cli` with the question on [stackoverflow.com](https://stackoverflow.com/questions/tagged/chkware-cli) to ask or discuss anything. Follow the tag if you want to help others with your knowledge.
 
 ### Contribute
 
