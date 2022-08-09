@@ -5,6 +5,7 @@ from io import StringIO
 from unittest import TestCase, TestSuite, TextTestRunner, TestResult
 
 from chk.modules.testcase.presentation import AssertResult, AssertResultList
+from chk.modules.testcase.constants import AssertConfigNode
 
 
 class AssertionCase(TestCase):
@@ -37,9 +38,9 @@ class AssertionHandler:
         for each_assertion in assertions:
             suite.addTest(
                 AssertionCase(
-                    each_assertion['type'],
-                    each_assertion["actual"],
-                    each_assertion["expected"],
+                    each_assertion[AssertConfigNode.TYPE],
+                    each_assertion[AssertConfigNode.ACTUAL],
+                    each_assertion[AssertConfigNode.EXPECTED],
                 )
             )
 

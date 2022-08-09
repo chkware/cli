@@ -23,3 +23,6 @@ class ExecuteConfigNode:
 class AssertConfigNode:
     """represent asserts config section"""
     ROOT = 'asserts'
+    TYPE = 'type'
+    ACTUAL = 'actual'
+    EXPECTED = 'expected'
