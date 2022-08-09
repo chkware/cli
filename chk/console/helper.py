@@ -98,5 +98,5 @@ def data_get(var: dict | list, keymap: str, default=None) -> object:
             return var[key]
         else:
             return data_get(var[key], key_last, default)
-    except LookupError:
+    except (LookupError, TypeError):
         return default
