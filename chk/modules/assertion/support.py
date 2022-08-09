@@ -9,7 +9,7 @@ from chk.modules.testcase.presentation import AssertResult, AssertResultList
 
 class AssertionCase(TestCase):
     def __init__(self, name: str, actual, expect):
-        super(AssertionCase, self).__init__(name)
+        super(AssertionCase, self).__init__(f"case_{name}")
         self.type = type
         self.actual = actual
         self.expect = expect
@@ -37,7 +37,7 @@ class AssertionHandler:
         for each_assertion in assertions:
             suite.addTest(
                 AssertionCase(
-                    f"case_{each_assertion['type']}",
+                    each_assertion['type'],
                     each_assertion["actual"],
                     each_assertion["expected"],
                 )
