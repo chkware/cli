@@ -42,4 +42,4 @@ def execute_root():
 
 
 execute_root.add_command(execute_http)  # add `http` as sub-command
-# execute_root.add_command(execute_testcase)  # add `http` as sub-command
+execute_root.add_command(execute_testcase)  # add `testcase` as sub-command

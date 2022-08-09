@@ -12,7 +12,7 @@ def execute(file: str):
     document = ChkFileLoader.to_dict(file)
     fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file)
 
-    file_ctx = FileContext(file, fpath_mangled, fpath_hash, document)
+    file_ctx = FileContext(file, fpath_mangled, fpath_hash, document, None)
     testcase = TestSpec(file_ctx)
 
     response = handle_worker(testcase)
