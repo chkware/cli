@@ -14,6 +14,7 @@ class AssertResult:
     """
 
     name: str
+    name_run: str
     is_success: bool = True
     message: str = ''
     assert_fn: str = ''

@@ -7,15 +7,32 @@ from unittest import TestCase, TestSuite, TextTestRunner, TestResult
 from chk.modules.testcase.presentation import AssertResult, AssertResultList
 from chk.modules.testcase.constants import AssertConfigNode
 
+import uuid
+
 
 class AssertionCase(TestCase):
-    def __init__(self, name: str, actual, expect):
-        super(AssertionCase, self).__init__(f"case_{name}")
+    """
+    each assertion case
+    """
+
+    def __init__(self, name: str, name_run: str, actual, expect):
+        """
+        constructor for AssertionCase
+        """
+        method_name = f"case_{name}"
+        method_name_run = f"case_{name_run}"
+
+        setattr(self, method_name_run, getattr(self, method_name))
+        super(AssertionCase, self).__init__(method_name_run)
+
         self.type = type
         self.actual = actual
         self.expect = expect
 
     def case_AssertEqual(self):
+        """
+        asserts equals for any type
+        """
         self.assertEqual(self.actual, self.expect)
 
 
@@ -36,15 +53,18 @@ class AssertionHandler:
         results = []
 
         for each_assertion in assertions:
+            name_run = f"{each_assertion[AssertConfigNode.TYPE]}_{uuid.uuid1().hex}"
+
             suite.addTest(
                 AssertionCase(
                     each_assertion[AssertConfigNode.TYPE],
+                    name_run,
                     each_assertion[AssertConfigNode.ACTUAL],
                     each_assertion[AssertConfigNode.EXPECTED],
                 )
             )
 
-            results.append(AssertResult(each_assertion["type"]))
+            results.append(AssertResult(each_assertion[AssertConfigNode.TYPE], name_run))
 
         run_result = TextTestRunner(stream=StringIO(), verbosity=0).run(suite)
 
@@ -53,7 +73,7 @@ class AssertionHandler:
 
         for (tc, string) in run_result.failures:
             for item in results:
-                if item.name in tc.id():
+                if item.name_run in tc.id():
                     item.is_success = False
                     item.message = string
                     item.assert_fn = tc.id()
