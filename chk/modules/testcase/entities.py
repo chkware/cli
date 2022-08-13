@@ -10,6 +10,7 @@ from chk.infrastructure.exception import err_message
 from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
 from chk.modules.http.support import RequestMixin
 from chk.modules.testcase.support import TestSpecMixin
+from chk.modules.variables.entities import ApiResponse
 from chk.modules.variables.support import VariableMixin
 from chk.modules.variables.constants import LexicalAnalysisType
 from chk.modules.version.support import VersionMixin
@@ -60,6 +61,8 @@ class TestSpec(
         if ctx_document:
             try:
                 out_response = handle_request(self, ctx_document)
+                out_response = ApiResponse.from_dict(out_response).dict()
+
                 print(Presentation.displayable_string(f"- Making request [Success]"))
             except Exception as ex:
                 print(Presentation.displayable_string(f"- Making request [Fail]"))
