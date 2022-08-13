@@ -175,7 +175,9 @@ class TestcaseValueHandler:
         assertion_document = copy.deepcopy(assertion_document)
 
         for each_assert in assertion_document:
-            each_assert = replace_method(each_assert, symbol_table)
+            actual_original = each_assert[AssertConfigNode.ACTUAL]
+            replace_method(each_assert, symbol_table)
+            each_assert[f"{AssertConfigNode.ACTUAL}_original"] = actual_original
 
         return assertion_document
 
