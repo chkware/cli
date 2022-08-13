@@ -64,7 +64,13 @@ class AssertionHandler:
                 )
             )
 
-            results.append(AssertResult(each_assertion[AssertConfigNode.TYPE], name_run))
+            results.append(
+                AssertResult(
+                    each_assertion[AssertConfigNode.TYPE],
+                    name_run,
+                    each_assertion[AssertConfigNode.ACTUAL_ORIG],
+                )
+            )
 
         run_result = TextTestRunner(stream=StringIO(), verbosity=0).run(suite)
 

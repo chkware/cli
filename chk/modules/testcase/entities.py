@@ -94,9 +94,14 @@ class TestSpec(
                 print(
                     Presentation.displayable_assert_status(
                         assertion_result.name,
+                        assertion_result.actual_original,
                         "Success" if assertion_result.is_success else "Fail",
                     )
                 )
 
                 if assertion_result.is_success is False:
-                    print(Presentation.displayable_assert_message(assertion_result.message))
+                    print(
+                        Presentation.displayable_assert_message(
+                            assertion_result.message
+                        )
+                    )

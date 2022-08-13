@@ -15,9 +15,10 @@ class AssertResult:
 
     name: str
     name_run: str
+    actual_original: str
     is_success: bool = True
-    message: str = ''
-    assert_fn: str = ''
+    message: str = ""
+    assert_fn: str = ""
 
 
 AssertResultList: TypeAlias = List[AssertResult]
@@ -36,9 +37,9 @@ class Presentation:
         return string
 
     @staticmethod
-    def displayable_assert_status(assert_name: str, status: str) -> str:
-        return f"- Running {assert_name}: [{status}]"
+    def displayable_assert_status(assert_name: str, actual: str, status: str) -> str:
+        return f"- Running `{assert_name}` on `{actual}` [{status}]"
 
     @staticmethod
     def displayable_assert_message(message: str) -> str:
-        return f"\n===>\n{message}"
+        return f"---\n{message}"
