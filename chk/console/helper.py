@@ -100,3 +100,25 @@ def data_get(var: dict | list, keymap: str, default=None) -> object:
             return data_get(var[key], key_last, default)
     except (LookupError, TypeError):
         return default
+
+
+def type_converter(var: str) -> object:
+    """Convert to appropriate type from string value"""
+    try:
+        return int(var)
+    except ValueError:
+        pass  # not int
+
+    try:
+        return float(var)
+    except ValueError:
+        pass  # not float
+
+    if var in ("true", "True"):
+        return True
+    elif var in ("false", "False"):
+        return False
+    elif var == "null":
+        return None
+    else:
+        return var
