@@ -54,6 +54,13 @@ class AssertionCase(TestCase):
         """
         self.assertTrue(self.actual)
 
+    def case_AssertIsInt(self):
+        """
+        asserts emptiness for any type
+        """
+        if type(self.actual) != int:
+            raise AssertionError(f"`{self.actual}` is not int")
+
 
 class AssertionHandler:
     """
