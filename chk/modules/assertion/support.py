@@ -30,55 +30,39 @@ class AssertionCase(TestCase):
         self.expect = expect
 
     def case_AssertEqual(self):
-        """
-        asserts equals for any type
-        """
+        """Asserts equality for actual value on expected value"""
         self.assertEqual(self.actual, self.expect)
 
     def case_AssertEmpty(self):
-        """
-        asserts emptiness for any type
-        """
+        """Asserts emptiness for actual value"""
         if self.actual:
             raise AssertionError(f"`{self.actual}` is not empty")
 
     def case_AssertFalse(self):
-        """
-        asserts emptiness for any type
-        """
+        """Asserts Falsy for actual value"""
         self.assertFalse(self.actual)
 
     def case_AssertTrue(self):
-        """
-        asserts emptiness for any type
-        """
+        """Asserts truthy for actual value"""
         self.assertTrue(self.actual)
 
     def case_AssertIsInt(self):
-        """
-        asserts emptiness for any type
-        """
+        """Asserts integer for actual value"""
         if type(self.actual) != int:
             raise AssertionError(f"`{self.actual}` is not int")
 
     def case_AssertIsString(self):
-        """
-        asserts emptiness for any type
-        """
+        """Asserts string for actual value"""
         if type(self.actual) != str:
             raise AssertionError(f"`{self.actual}` is not string")
 
     def case_AssertIsFloat(self):
-        """
-        asserts emptiness for any type
-        """
+        """Asserts float for actual value"""
         if type(self.actual) != float:
             raise AssertionError(f"`{self.actual}` is not floating point")
 
     def case_AssertIsBool(self):
-        """
-        asserts emptiness for any type
-        """
+        """Asserts boolean for any type"""
         if type(self.actual) != bool:
             raise AssertionError(f"`{self.actual}` is not boolean")
 
