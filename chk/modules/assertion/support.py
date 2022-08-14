@@ -42,6 +42,13 @@ class AssertionCase(TestCase):
         if self.actual:
             raise AssertionError(f"`{self.actual}` is not empty")
 
+    def case_AssertFalse(self):
+        """
+        asserts emptiness for any type
+        """
+        self.assertFalse(self.actual)
+
+
 
 class AssertionHandler:
     """
