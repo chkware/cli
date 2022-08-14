@@ -68,6 +68,13 @@ class AssertionCase(TestCase):
         if type(self.actual) != str:
             raise AssertionError(f"`{self.actual}` is not string")
 
+    def case_AssertIsFloat(self):
+        """
+        asserts emptiness for any type
+        """
+        if type(self.actual) != float:
+            raise AssertionError(f"`{self.actual}` is not floating point")
+
 
 class AssertionHandler:
     """
