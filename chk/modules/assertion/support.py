@@ -35,6 +35,13 @@ class AssertionCase(TestCase):
         """
         self.assertEqual(self.actual, self.expect)
 
+    def case_AssertEmpty(self):
+        """
+        asserts emptiness for any type
+        """
+        if self.actual:
+            raise AssertionError(f"`{self.actual}` is not empty")
+
 
 class AssertionHandler:
     """
@@ -60,7 +67,7 @@ class AssertionHandler:
                     each_assertion[AssertConfigNode.TYPE],
                     name_run,
                     each_assertion[AssertConfigNode.ACTUAL],
-                    each_assertion[AssertConfigNode.EXPECTED],
+                    each_assertion.get(AssertConfigNode.EXPECTED),
                 )
             )
 
