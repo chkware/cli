@@ -48,6 +48,11 @@ class AssertionCase(TestCase):
         """
         self.assertFalse(self.actual)
 
+    def case_AssertTrue(self):
+        """
+        asserts emptiness for any type
+        """
+        self.assertTrue(self.actual)
 
 
 class AssertionHandler:
