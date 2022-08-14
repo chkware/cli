@@ -3,7 +3,7 @@ version: default:testcase:0.7.2
 request:
   url: https://api.coinstats.app/public/v1/coins/bitcoin?currency=USD
   method: GET
-  return: .body
+#  return: .body
 
 variables:
   Response: ~
@@ -13,4 +13,5 @@ spec:
     result: $Response
 
   asserts:
-    - {type: AssertEqual, actual: $Response.code, expected: '200'}
+    - {type: AssertEqual, actual: $Response.code, expected: 200}
+    - {type: AssertEqual, actual: $Response.body.coin.rank, expected: 1}
