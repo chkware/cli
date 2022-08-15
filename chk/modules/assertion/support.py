@@ -80,6 +80,12 @@ class AssertionCase(TestCase):
         if type(actual) != dict:
             raise AssertionError(f"`{self.actual}` is not map")
 
+    def case_AssertIsList(self):
+        """Asserts boolean for any type"""
+        actual = type_converter(self.actual)
+        if type(actual) != list:
+            raise AssertionError(f"`{self.actual}` is not list")
+
 
 class AssertionHandler:
     """
