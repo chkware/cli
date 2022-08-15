@@ -1,6 +1,7 @@
 """
 Helper functions module
 """
+import ast
 
 
 def dict_get(var: dict, keymap: str, default=None) -> object:
@@ -120,5 +121,10 @@ def type_converter(var: str) -> object:
         return False
     elif var == "null":
         return None
+    elif type(var) == str:
+        try:
+            return ast.literal_eval(var)
+        except (ValueError, TypeError, SyntaxError):
+            pass
     else:
         return var

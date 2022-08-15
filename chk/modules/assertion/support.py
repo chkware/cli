@@ -76,9 +76,8 @@ class AssertionCase(TestCase):
 
     def case_AssertIsMap(self):
         """Asserts boolean for any type"""
-        print(type(self.actual)); exit()
-
-        if type(self.actual) != dict:
+        actual = type_converter(self.actual)
+        if type(actual) != dict:
             raise AssertionError(f"`{self.actual}` is not map")
 
 
