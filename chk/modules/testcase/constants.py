@@ -3,7 +3,7 @@ Constants used in testcase modules
 """
 
 
-class TestSpecConfigNode:
+class TestcaseConfigNode:
     """represent request config section"""
 
     ROOT = "spec"

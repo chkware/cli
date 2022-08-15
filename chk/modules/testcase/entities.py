@@ -9,7 +9,7 @@ from chk.infrastructure.exception import err_message
 
 from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
 from chk.modules.http.support import RequestMixin
-from chk.modules.testcase.support import TestSpecMixin
+from chk.modules.testcase.support import TestcaseMixin
 from chk.modules.variables.entities import ApiResponse
 from chk.modules.variables.support import VariableMixin
 from chk.modules.variables.constants import LexicalAnalysisType
@@ -21,12 +21,12 @@ from types import MappingProxyType
 from chk.modules.version.constants import DocumentType
 
 
-class TestSpec(
+class Testcase(
     RequestProcessorMixin_PyRequests,
     VersionMixin,
     RequestMixin,
     VariableMixin,
-    TestSpecMixin,
+    TestcaseMixin,
     WorkerContract,
     RequestProcessorContract,
 ):

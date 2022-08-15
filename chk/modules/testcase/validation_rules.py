@@ -1,7 +1,7 @@
 """
 Validation rules and supporting libs for http module
 """
-from chk.modules.testcase.constants import TestSpecConfigNode, ExecuteConfigNode
+from chk.modules.testcase.constants import TestcaseConfigNode, ExecuteConfigNode
 
 execute_schema = {
     ExecuteConfigNode.ROOT: {
@@ -33,11 +33,11 @@ execute_schema = {
 }
 
 testcase_schema = {
-    TestSpecConfigNode.ROOT: {
+    TestcaseConfigNode.ROOT: {
         'required': True,
         'type': 'dict',
         'schema': execute_schema | {
-            TestSpecConfigNode.ASSERTS: {
+            TestcaseConfigNode.ASSERTS: {
                 'required': True,
                 'empty': False,
                 'type': 'list',

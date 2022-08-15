@@ -10,7 +10,7 @@ from chk.infrastructure.exception import err_message
 from chk.modules.assertion.support import AssertionHandler
 from chk.modules.http.constants import RequestConfigNode
 from chk.modules.testcase.constants import (
-    TestSpecConfigNode,
+    TestcaseConfigNode,
     ExecuteConfigNode,
     AssertConfigNode,
 )
@@ -29,7 +29,7 @@ class ExecuteMixin:
         Get execute as dict
         """
         try:
-            if spec := self.document.get(TestSpecConfigNode.ROOT):
+            if spec := self.document.get(TestcaseConfigNode.ROOT):
                 if execute := spec.get(ExecuteConfigNode.ROOT):
                     return {ExecuteConfigNode.ROOT: execute}
                 else:
@@ -48,7 +48,7 @@ class AssertionMixin:
         Get execute as dict
         """
         try:
-            doc_key = [TestSpecConfigNode.ROOT, TestSpecConfigNode.ASSERTS]
+            doc_key = [TestcaseConfigNode.ROOT, TestcaseConfigNode.ASSERTS]
             if asserts := dict_get(self.document, ".".join(doc_key)):
                 if type(asserts) != list:
                     raise TypeError({"spec": [{"asserts": ["expected `list`"]}]})
@@ -57,7 +57,7 @@ class AssertionMixin:
                 if len(asrt_list) != len(set(asrt_list)):
                     raise TypeError({"spec": [{"asserts": ["duplicate assertion of same value"]}]})
 
-                return {TestSpecConfigNode.ASSERTS: asserts}
+                return {TestcaseConfigNode.ASSERTS: asserts}
             else:
                 raise ValueError({"spec": [{"asserts": ["required field"]}]})
         except Exception as ex:
@@ -68,11 +68,11 @@ class AssertionMixin:
         Run assertion of testcase spec
         :return:
         """
-        assertions = dict_get(self.assertions_as_dict(), TestSpecConfigNode.ASSERTS)
+        assertions = dict_get(self.assertions_as_dict(), TestcaseConfigNode.ASSERTS)
         return AssertionHandler.asserts_test_run(assertions)
 
 
-class TestSpecMixin(ExecuteMixin, AssertionMixin):
+class TestcaseMixin(ExecuteMixin, AssertionMixin):
     """
     Mixin for Testcase spec
     """
@@ -112,7 +112,7 @@ class TestSpecMixin(ExecuteMixin, AssertionMixin):
         try:
             return {
                 key: self.document[key]
-                for key in (TestSpecConfigNode.ROOT,)
+                for key in (TestcaseConfigNode.ROOT,)
                 if key in self.document
             }
         except Exception as ex:
@@ -123,7 +123,7 @@ class TestSpecMixin(ExecuteMixin, AssertionMixin):
         If request in file validate it or set False to internal in_file
         :return: None
         """
-        keys = [TestSpecConfigNode.ROOT, ExecuteConfigNode.ROOT, ExecuteConfigNode.FILE]
+        keys = [TestcaseConfigNode.ROOT, ExecuteConfigNode.ROOT, ExecuteConfigNode.FILE]
         out_file_request = dict_get(self.document, ".".join(keys)) is not None
         in_file_request = self.document.get(RequestConfigNode.ROOT) is not None
 
@@ -147,7 +147,7 @@ class TestSpecMixin(ExecuteMixin, AssertionMixin):
         """
         in_file_request = self.document.get(RequestConfigNode.ROOT) is not None
 
-        keys = [TestSpecConfigNode.ROOT, ExecuteConfigNode.ROOT, ExecuteConfigNode.WITH]
+        keys = [TestcaseConfigNode.ROOT, ExecuteConfigNode.ROOT, ExecuteConfigNode.WITH]
         out_file_with = dict_get(self.document, ".".join(keys)) is not None
 
         if in_file_request and out_file_with:

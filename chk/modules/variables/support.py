@@ -17,7 +17,7 @@ from chk.modules.version.constants import DocumentType
 from copy import deepcopy
 
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
-from chk.modules.testcase.constants import TestSpecConfigNode
+from chk.modules.testcase.constants import TestcaseConfigNode
 from chk.console.helper import dict_set
 
 
@@ -109,7 +109,7 @@ class VariableMixin(object):
         elif la_type is LexicalAnalysisType.TESTCASE:
             document_part = self.assertions_as_dict()
 
-            keys = [TestSpecConfigNode.ROOT, TestSpecConfigNode.ASSERTS]
+            keys = [TestcaseConfigNode.ROOT, TestcaseConfigNode.ASSERTS]
             dict_set(
                 document_replaced,
                 ".".join(keys),
