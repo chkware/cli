@@ -102,6 +102,11 @@ class AssertionCase(TestCase):
         actual = type_converter(self.actual)
         self.assertGreater(actual, self.expect)
 
+    def case_AssertGreaterOrEqual(self):
+        """Asserts count of sequence on actual"""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+        self.assertGreaterEqual(actual, self.expect)
+
 
 class AssertionHandler:
     """
@@ -140,6 +145,12 @@ class AssertionHandler:
             )
 
         run_result = TextTestRunner(stream=StringIO(), verbosity=0).run(suite)
+
+        # print('---')
+        # print('run_result.wasSuccessful(): ', run_result.wasSuccessful())
+        # print('run_result.failures: ', run_result.failures)
+        # print('run_result.errors: ', run_result.errors)
+        # print('---')
 
         if run_result.wasSuccessful() is False:
             for run_result_kind in ["failures", "errors"]:
