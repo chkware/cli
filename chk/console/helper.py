@@ -114,9 +114,9 @@ def type_converter(var: str) -> object:
     except ValueError:
         pass  # not float
 
-    if var in ("true", "True"):
+    if var == "true":
         return True
-    elif var in ("false", "False"):
+    elif var == "false":
         return False
     elif var == "null":
         return None
