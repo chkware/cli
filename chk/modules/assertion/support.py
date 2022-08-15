@@ -103,6 +103,11 @@ class AssertionCase(TestCase):
         actual = type_converter(self.actual) if type(self.actual) == str else self.actual
         self.assertLess(actual, self.expect)
 
+    def case_AssertLessOrEqual(self):
+        """Asserts count of sequence on actual"""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+        self.assertLessEqual(actual, self.expect)
+
 
 class AssertionHandler:
     """
