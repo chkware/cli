@@ -35,6 +35,11 @@ class AssertionCase(TestCase):
         actual = type_converter(self.actual)
         self.assertEqual(actual, self.expect)
 
+    def case_AssertNotEqual(self):
+        """Asserts equality for actual value on expected value"""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+        self.assertNotEqual(actual, self.expect)
+
     def case_AssertEmpty(self):
         """Asserts emptiness for actual value"""
         assert not self.actual, f"`{self.actual}` is not empty"

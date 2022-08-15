@@ -37,3 +37,4 @@ spec:
     - {type: AssertLessOrEqual, actual: '3', expected: 5}
     - {type: AssertLessOrEqual, actual: 0.5, expected: 0.5}
     - {type: AssertLessOrEqual, actual: 5, expected: 5}
+    - {type: AssertNotEqual, actual: $Response.body.coin.priceBtc, expected: 2}
