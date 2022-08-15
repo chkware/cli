@@ -1,6 +1,7 @@
 """
 Helper functions module
 """
+import ast
 
 
 def dict_get(var: dict, keymap: str, default=None) -> object:
@@ -114,11 +115,16 @@ def type_converter(var: str) -> object:
     except ValueError:
         pass  # not float
 
-    if var in ("true", "True"):
+    if var == "true":
         return True
-    elif var in ("false", "False"):
+    elif var == "false":
         return False
     elif var == "null":
         return None
-    else:
-        return var
+    elif type(var) == str:
+        try:
+            return ast.literal_eval(var)
+        except (ValueError, TypeError, SyntaxError):
+            pass
+
+    return var

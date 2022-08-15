@@ -2,8 +2,9 @@
 Assertion related services
 """
 from io import StringIO
-from unittest import TestCase, TestSuite, TextTestRunner, TestResult
+from unittest import TestCase, TestSuite, TextTestRunner
 
+from chk.console.helper import type_converter
 from chk.modules.testcase.presentation import AssertResult, AssertResultList
 from chk.modules.testcase.constants import AssertConfigNode
 
@@ -30,10 +31,87 @@ class AssertionCase(TestCase):
         self.expect = expect
 
     def case_AssertEqual(self):
-        """
-        asserts equals for any type
-        """
-        self.assertEqual(self.actual, self.expect)
+        """Asserts equality for actual value on expected value"""
+        actual = type_converter(self.actual)
+        self.assertEqual(actual, self.expect)
+
+    def case_AssertNotEqual(self):
+        """Asserts equality for actual value on expected value"""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+        self.assertNotEqual(actual, self.expect)
+
+    def case_AssertEmpty(self):
+        """Asserts emptiness for actual value"""
+        assert not self.actual, f"`{self.actual}` is not empty"
+
+    def case_AssertFalse(self):
+        """Asserts Falsy for actual value"""
+        actual = type_converter(self.actual)
+        self.assertFalse(actual)
+
+    def case_AssertTrue(self):
+        """Asserts truthy for actual value"""
+        actual = type_converter(self.actual)
+        self.assertTrue(actual)
+
+    def case_AssertIsInt(self):
+        """Asserts integer for actual value"""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+        assert type(actual) == int, f"`{self.actual}` is not int"
+
+    def case_AssertIsString(self):
+        """Asserts string for actual value"""
+        # actual = type_converter(self.actual)
+        assert type(self.actual) == str, f"`{self.actual}` is not string"
+
+    def case_AssertIsFloat(self):
+        """Asserts float for actual value"""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+        assert type(actual) == float, f"`{self.actual}` is not floating point"
+
+    def case_AssertIsBool(self):
+        """Asserts boolean for any type"""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+        assert type(actual) == bool, f"`{self.actual}` is not boolean"
+
+    def case_AssertIsMap(self):
+        """Asserts map for any value on actual"""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+        assert type(actual) == dict, f"`{self.actual}` is not map"
+
+    def case_AssertIsList(self):
+        """Asserts list for any value on actual"""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+        assert type(actual) == list, f"`{self.actual}` is not list"
+
+    def case_AssertCount(self):
+        """Asserts count of sequence on actual"""
+        assert type(self.expect) == int, f"`{self.expect}` is not int"
+
+        actual = type_converter(self.actual)
+        assert hasattr(actual, '__len__'), f"`{self.actual}` is not countable"
+
+        self.assertEqual(len(actual), self.expect)
+
+    def case_AssertGreater(self):
+        """Asserts count of sequence on actual"""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+        self.assertGreater(actual, self.expect)
+
+    def case_AssertGreaterOrEqual(self):
+        """Asserts count of sequence on actual"""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+        self.assertGreaterEqual(actual, self.expect)
+
+    def case_AssertLess(self):
+        """Asserts count of sequence on actual"""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+        self.assertLess(actual, self.expect)
+
+    def case_AssertLessOrEqual(self):
+        """Asserts count of sequence on actual"""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+        self.assertLessEqual(actual, self.expect)
 
 
 class AssertionHandler:
@@ -60,7 +138,7 @@ class AssertionHandler:
                     each_assertion[AssertConfigNode.TYPE],
                     name_run,
                     each_assertion[AssertConfigNode.ACTUAL],
-                    each_assertion[AssertConfigNode.EXPECTED],
+                    each_assertion.get(AssertConfigNode.EXPECTED),
                 )
             )
 
@@ -74,14 +152,20 @@ class AssertionHandler:
 
         run_result = TextTestRunner(stream=StringIO(), verbosity=0).run(suite)
 
-        if run_result.wasSuccessful():
-            return results
+        # print('---')
+        # print('run_result.wasSuccessful(): ', run_result.wasSuccessful())
+        # print('run_result.failures: ', run_result.failures)
+        # print('run_result.errors: ', run_result.errors)
+        # print('---')
 
-        for (tc, string) in run_result.failures:
-            for item in results:
-                if item.name_run in tc.id():
-                    item.is_success = False
-                    item.message = string
-                    item.assert_fn = tc.id()
+        if run_result.wasSuccessful() is False:
+            for run_result_kind in ["failures", "errors"]:
+                for (tc, string) in getattr(run_result, run_result_kind):
+                    for item in results:
+                        if item.name_run in tc.id():
+                            item.is_success = False
+                            item.message = string
+                            item.assert_fn = tc.id()
+
 
         return results

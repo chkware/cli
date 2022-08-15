@@ -14,4 +14,27 @@ spec:
 
   asserts:
     - {type: AssertEqual, actual: $Response.code, expected: 200}
-    - {type: AssertEqual, actual: $Response.body.coin.rank, expected: 1}
+    - {type: AssertEmpty, actual: ~}
+    - {type: AssertFalse, actual: 'false'}
+    - {type: AssertTrue, actual: 'true'}
+    - {type: AssertIsInt, actual: $Response.body.coin.priceBtc}
+    - {type: AssertIsInt, actual: 10}
+    - {type: AssertIsString, actual: $Response.body.coin.websiteUrl}
+    - {type: AssertIsFloat, actual: $Response.body.coin.priceChange1w}
+    - {type: AssertIsFloat, actual: 1.0}
+    - {type: AssertIsBool, actual: "true"}
+    - {type: AssertIsBool, actual: true}
+    - {type: AssertIsMap, actual: $Response.body.coin}
+    - {type: AssertIsMap, actual: {'a': 1, 'b': 2}}
+    - {type: AssertIsList, actual: $Response.body.coin.exp}
+    - {type: AssertIsList, actual: [1, 1, 2]}
+    - {type: AssertCount, actual: $Response.body.coin.exp, expected: 3}
+    - {type: AssertGreater, actual: 1.2, expected: 0.5}
+    - {type: AssertGreaterOrEqual, actual: 1.4, expected: 0.5}
+    - {type: AssertLess, actual: 0.4, expected: 0.5}
+    - {type: AssertLess, actual: '3', expected: 5}
+    - {type: AssertLessOrEqual, actual: 0.4, expected: 0.5}
+    - {type: AssertLessOrEqual, actual: '3', expected: 5}
+    - {type: AssertLessOrEqual, actual: 0.5, expected: 0.5}
+    - {type: AssertLessOrEqual, actual: 5, expected: 5}
+    - {type: AssertNotEqual, actual: $Response.body.coin.priceBtc, expected: 2}
