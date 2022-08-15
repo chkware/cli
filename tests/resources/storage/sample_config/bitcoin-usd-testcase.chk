@@ -31,3 +31,5 @@ spec:
     - {type: AssertCount, actual: $Response.body.coin.exp, expected: 3}
     - {type: AssertGreater, actual: 1.2, expected: 0.5}
     - {type: AssertGreaterOrEqual, actual: 1.4, expected: 0.5}
+    - {type: AssertLess, actual: 0.4, expected: 0.5}
+    - {type: AssertLess, actual: '3', expected: 5}
