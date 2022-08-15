@@ -75,16 +75,27 @@ class AssertionCase(TestCase):
             raise AssertionError(f"`{self.actual}` is not boolean")
 
     def case_AssertIsMap(self):
-        """Asserts boolean for any type"""
+        """Asserts map for any value on actual"""
         actual = type_converter(self.actual)
         if type(actual) != dict:
             raise AssertionError(f"`{self.actual}` is not map")
 
     def case_AssertIsList(self):
-        """Asserts boolean for any type"""
+        """Asserts list for any value on actual"""
         actual = type_converter(self.actual)
         if type(actual) != list:
             raise AssertionError(f"`{self.actual}` is not list")
+
+    def case_AssertCount(self):
+        """Asserts count of sequence on actual"""
+        if type(self.expect) != int:
+            raise AssertionError(f"`{self.expect}` is not int")
+
+        actual = type_converter(self.actual)
+        if not hasattr(actual, '__len__'):
+            raise AssertionError(f"`{self.actual}` is not countable")
+
+        self.assertEqual(len(actual), self.expect)
 
 
 class AssertionHandler:
