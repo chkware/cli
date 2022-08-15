@@ -97,6 +97,11 @@ class AssertionCase(TestCase):
 
         self.assertEqual(len(actual), self.expect)
 
+    def case_AssertGreater(self):
+        """Asserts count of sequence on actual"""
+        actual = type_converter(self.actual)
+        self.assertGreater(actual, self.expect)
+
 
 class AssertionHandler:
     """
