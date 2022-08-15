@@ -18,7 +18,7 @@ from copy import deepcopy
 
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
 from chk.modules.testcase.constants import TestSpecConfigNode
-from chk.console.helper import dict_set, type_converter
+from chk.console.helper import dict_set
 
 
 def replace_values(doc: dict, var_s: dict) -> dict[str, object]:
@@ -32,7 +32,7 @@ def replace_values(doc: dict, var_s: dict) -> dict[str, object]:
     for key in doc.keys():
         if type(doc[key]) is str:
             item = str(doc[key])
-            doc[key] = type_converter(StringLexicalAnalyzer.replace_in_str(item, var_s))
+            doc[key] = StringLexicalAnalyzer.replace_in_str(item, var_s)
         elif type(doc[key]) is dict:
             doc[key] = replace_values(doc[key], var_s)
     return doc
