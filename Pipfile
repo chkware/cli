@@ -25,6 +25,7 @@ cerberus = "*"
 [dev-packages]
 pytest = "*"
 mypy = "*"
+black = "*"
 
 [requires]
 python_version = "3.10"

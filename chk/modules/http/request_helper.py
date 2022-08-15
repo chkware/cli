@@ -31,7 +31,7 @@ class RequestProcessorMixin_PyRequests(RequestProcessorContract):
             version=version(response.raw.version),
             code=response.status_code,
             reason=response.reason,
-            headers=response.headers,
+            headers=dict(response.headers),
             body=response.text,
         )
 

@@ -1,0 +1,15 @@
+version: 'default:testcase:0.7.2'
+
+variables:
+  $Code: ~
+
+spec:
+  execute:
+    file: './01_UserCreateRequest.chk'
+#    result: $Response
+#    with:
+#      Name: "Neo"
+#      Job: "choosen-one"
+
+  asserts:
+    - {type: AssertEquals, actual: $Code, expected: 201}

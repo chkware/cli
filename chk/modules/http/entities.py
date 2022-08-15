@@ -6,6 +6,7 @@ from chk.modules.http.support import RequestMixin
 from chk.modules.variables.support import VariableMixin
 from chk.modules.version.support import VersionMixin
 from chk.modules.variables.constants import LexicalAnalysisType
+from chk.modules.version.constants import DocumentType
 
 
 class HttpSpec(
@@ -21,10 +22,10 @@ class HttpSpec(
         self.file_ctx, self.document, self.validator = file_ctx, file_ctx.document, Validator()
 
     def __work__(self) -> dict:
-        self.version_validated()
+        self.version_validated(DocumentType.HTTP)
         self.request_validated()
         self.variable_validated()
 
         ctx_document = self.variable_process(LexicalAnalysisType.REQUEST)
         out_response = handle_request(self, ctx_document)
-        return self.assemble_values(ctx_document, out_response)
+        return self.variable_assemble_values(ctx_document, out_response)

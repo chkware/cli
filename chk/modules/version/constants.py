@@ -1,4 +1,18 @@
+from enum import Enum
+
 from typing import List
+
+
+class DocumentType(Enum):
+    HTTP = 'http'
+    TESTCASE = 'testcase'
+
+    @classmethod
+    def from_value(cls, value=None):
+        for key, val in cls.__members__.items():
+            if val.value == value:
+                return val
+        return value
 
 
 class VersionConfigNode:
@@ -9,4 +23,10 @@ class VersionConfigNode:
 class VersionStore:
     """VersionStore lists all version strings."""
 
-    request_versions: List = ['default:http:0.7.2']
+    request_versions: List = [
+        'default:http:0.7.2',
+    ]
+
+    testcase_versions: List = [
+        'default:testcase:0.7.2',
+    ]

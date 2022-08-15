@@ -11,3 +11,4 @@ class VariableConfigNode:
 
 class LexicalAnalysisType(Enum):
     REQUEST = 1
+    TESTCASE = 2
