@@ -126,5 +126,5 @@ def type_converter(var: str) -> object:
             return ast.literal_eval(var)
         except (ValueError, TypeError, SyntaxError):
             pass
-    else:
-        return var
+
+    return var
