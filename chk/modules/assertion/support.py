@@ -136,14 +136,14 @@ class AssertionHandler:
 
         run_result = TextTestRunner(stream=StringIO(), verbosity=0).run(suite)
 
-        if run_result.wasSuccessful():
-            return results
+        if run_result.wasSuccessful() is False:
+            for run_result_kind in ["failures", "errors"]:
+                for (tc, string) in getattr(run_result, run_result_kind):
+                    for item in results:
+                        if item.name_run in tc.id():
+                            item.is_success = False
+                            item.message = string
+                            item.assert_fn = tc.id()
 
-        for (tc, string) in run_result.failures:
-            for item in results:
-                if item.name_run in tc.id():
-                    item.is_success = False
-                    item.message = string
-                    item.assert_fn = tc.id()
 
         return results
