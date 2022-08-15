@@ -21,4 +21,5 @@ spec:
     result: $Response
 
   asserts:
-    - {type: AssertEqual, actual: $Response.code, expected: '201'}
+    - {type: AssertEqual, actual: $Response.code, expected: 201}
+    - {type: AssertIsMap, actual: $Response.body}
