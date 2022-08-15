@@ -2,8 +2,9 @@
 Assertion related services
 """
 from io import StringIO
-from unittest import TestCase, TestSuite, TextTestRunner, TestResult
+from unittest import TestCase, TestSuite, TextTestRunner
 
+from chk.console.helper import type_converter
 from chk.modules.testcase.presentation import AssertResult, AssertResultList
 from chk.modules.testcase.constants import AssertConfigNode
 
@@ -31,7 +32,8 @@ class AssertionCase(TestCase):
 
     def case_AssertEqual(self):
         """Asserts equality for actual value on expected value"""
-        self.assertEqual(self.actual, self.expect)
+        actual = type_converter(self.actual)
+        self.assertEqual(actual, self.expect)
 
     def case_AssertEmpty(self):
         """Asserts emptiness for actual value"""
@@ -40,31 +42,44 @@ class AssertionCase(TestCase):
 
     def case_AssertFalse(self):
         """Asserts Falsy for actual value"""
-        self.assertFalse(self.actual)
+        actual = type_converter(self.actual)
+        self.assertFalse(actual)
 
     def case_AssertTrue(self):
         """Asserts truthy for actual value"""
-        self.assertTrue(self.actual)
+        actual = type_converter(self.actual)
+        self.assertTrue(actual)
 
     def case_AssertIsInt(self):
         """Asserts integer for actual value"""
-        if type(self.actual) != int:
+        actual = type_converter(self.actual)
+        if type(actual) != int:
             raise AssertionError(f"`{self.actual}` is not int")
 
     def case_AssertIsString(self):
         """Asserts string for actual value"""
-        if type(self.actual) != str:
+        actual = type_converter(self.actual)
+        if type(actual) != str:
             raise AssertionError(f"`{self.actual}` is not string")
 
     def case_AssertIsFloat(self):
         """Asserts float for actual value"""
-        if type(self.actual) != float:
+        actual = type_converter(self.actual)
+        if type(actual) != float:
             raise AssertionError(f"`{self.actual}` is not floating point")
 
     def case_AssertIsBool(self):
         """Asserts boolean for any type"""
-        if type(self.actual) != bool:
+        actual = type_converter(self.actual)
+        if type(actual) != bool:
             raise AssertionError(f"`{self.actual}` is not boolean")
+
+    def case_AssertIsMap(self):
+        """Asserts boolean for any type"""
+        print(type(self.actual)); exit()
+
+        if type(self.actual) != dict:
+            raise AssertionError(f"`{self.actual}` is not map")
 
 
 class AssertionHandler:
