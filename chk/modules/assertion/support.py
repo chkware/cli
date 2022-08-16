@@ -113,6 +113,13 @@ class AssertionCase(TestCase):
         actual = type_converter(self.actual) if type(self.actual) == str else self.actual
         self.assertLessEqual(actual, self.expect)
 
+    def case_AssertListContains(self):
+        """Asserts expected exist in the actual."""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+        expect = type_converter(self.expect) if type(self.expect) == str else self.expect
+        assert type(actual) == list, f"`{self.actual}` is not list"
+        assert expect in actual, f"`{self.expect}` is not in the list"
+
 
 class AssertionHandler:
     """
