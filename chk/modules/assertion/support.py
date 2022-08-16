@@ -167,5 +167,4 @@ class AssertionHandler:
                             item.message = string
                             item.assert_fn = tc.id()
 
-
         return results
