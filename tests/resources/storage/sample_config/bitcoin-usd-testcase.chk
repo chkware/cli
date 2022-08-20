@@ -20,6 +20,7 @@ spec:
     - {type: AssertIsInt, actual: $Response.body.coin.priceBtc}
     - {type: AssertIsInt, actual: 10}
     - {type: AssertIsString, actual: $Response.body.coin.websiteUrl}
+    - {type: AssertStrContains, actual: 'https://someurl.com', expected: 'https'}
     - {type: AssertIsFloat, actual: $Response.body.coin.priceChange1w}
     - {type: AssertIsFloat, actual: 1.0}
     - {type: AssertIsBool, actual: "true"}
