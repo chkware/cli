@@ -1,14 +1,13 @@
 """
 Assertion related services
 """
+import uuid
 from io import StringIO
 from unittest import TestCase, TestSuite, TextTestRunner
 
 from chk.console.helper import type_converter
-from chk.modules.testcase.presentation import AssertResult, AssertResultList
 from chk.modules.testcase.constants import AssertConfigNode
-
-import uuid
+from chk.modules.testcase.presentation import AssertResult, AssertResultList
 
 
 class AssertionCase(TestCase):
@@ -116,8 +115,14 @@ class AssertionCase(TestCase):
     def case_AssertListContains(self):
         """Asserts expected exist in the actual."""
         actual = type_converter(self.actual) if type(self.actual) == str else self.actual
-        assert type(actual) == list, f"`{self.actual}` is not list"
+        assert type(actual) == list, f"`{self.actual}` is not a list"
         assert self.expect in actual, f"`{self.expect}` is not in the list"
+
+    def case_AsserMapContains(self):
+        """Asserts expected key exists in the map."""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+        assert type(actual) == dict, f"`{self.actual}` is not a map"
+        assert self.expect in actual, f"key `{self.expect}` is not in the map"
 
 
 class AssertionHandler:
