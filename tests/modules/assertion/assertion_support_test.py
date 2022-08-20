@@ -66,4 +66,32 @@ class TestAssertionCase:
         with pytest.raises(AssertionError):
             assertion_case.case_AssertMapHasKey()
 
+    def test_assert_map_do_not_has_key_expect_exist(self):
+        """Tests AssertMapDoNotHasKey when expect is in the actual."""
+        name = 'AssertMapDoNotHasKey'
+        name_run = 'AssertMapDoNotHasKey_72a688341d4611edb365ebb9b969d060'
+        actual = {'a': 1, 'b': 2}
+        expect = 'a'
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        with pytest.raises(AssertionError):
+            assertion_case.case_AssertMapDoNotHasKey()
 
+    def test_assert_map_do_not_has_key_not_map(self):
+        """Tests AssertMapDoNotHasKey when actual is not a map."""
+        name = 'AssertMapDoNotHasKey'
+        name_run = 'AssertMapDoNotHasKey_72a688341d4611edb365ebb9b969d060'
+        actual = [1, 2, 3]
+        expect = 3
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        with pytest.raises(AssertionError):
+            assertion_case.case_AssertMapDoNotHasKey()
