@@ -37,9 +37,9 @@ class TestAssertionCase:
             assertion_case.case_AssertListContains()
 
     def test_assert_map_contains_expect_not_exist(self):
-        """Tests AssertMapContains when expect is not in actual."""
-        name = 'AssertMapContains'
-        name_run = 'AssertMapContains_72a688341d4611edb365ebb9b969d060'
+        """Tests AssertMapHasKey when expect is not in actual."""
+        name = 'AssertMapHasKey'
+        name_run = 'AssertMapHasKey_72a688341d4611edb365ebb9b969d060'
         actual = {'a': 1, 'b': 2}
         expect = 'd'
         assertion_case = AssertionCase(
@@ -49,12 +49,12 @@ class TestAssertionCase:
             expect=expect
         )
         with pytest.raises(AssertionError):
-            assertion_case.case_AssertMapContains()
+            assertion_case.case_AssertMapHasKey()
 
     def test_assert_map_contains_actual_not_map(self):
         """Tests AsserMapContains when actual is not a map."""
-        name = 'AssertMapContains'
-        name_run = 'AssertMapContains_72a688341d4611edb365ebb9b969d060'
+        name = 'AssertMapHasKey'
+        name_run = 'AssertMapHasKey_72a688341d4611edb365ebb9b969d060'
         actual = [1, 2, 3]
         expect = 3
         assertion_case = AssertionCase(
@@ -64,4 +64,4 @@ class TestAssertionCase:
             expect=expect
         )
         with pytest.raises(AssertionError):
-            assertion_case.case_AssertMapContains()
+            assertion_case.case_AssertMapHasKey()

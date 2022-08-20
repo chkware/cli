@@ -118,7 +118,7 @@ class AssertionCase(TestCase):
         assert type(actual) == list, f"`{self.actual}` is not a list"
         assert self.expect in actual, f"`{self.expect}` is not in the list"
 
-    def case_AssertMapContains(self):
+    def case_AssertMapHasKey(self):
         """Asserts expected key exists in the map."""
         actual = type_converter(self.actual) if type(self.actual) == str else self.actual
         assert type(actual) == dict, f"`{self.actual}` is not a map"
