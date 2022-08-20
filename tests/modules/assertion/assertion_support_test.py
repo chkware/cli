@@ -95,3 +95,33 @@ class TestAssertionCase:
         )
         with pytest.raises(AssertionError):
             assertion_case.case_AssertMapDoNotHasKey()
+
+    def test_assert_str_contains_expect_not_exist(self):
+        """Tests AssertStrContains when expect is not in the actual."""
+        name = 'AssertStrContains'
+        name_run = 'AssertStrContains_72a688341d4611edb365ebb9b969d060'
+        actual = 'https://someurl.com'
+        expect = 'not_exists'
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        with pytest.raises(AssertionError):
+            assertion_case.case_AssertStrContains()
+
+    def test_assert_str_actual_not_str(self):
+        """Tests AssertStrContains when actual is not a string."""
+        name = 'AssertStrContains'
+        name_run = 'AssertStrContains_72a688341d4611edb365ebb9b969d060'
+        actual = 123456
+        expect = '3'
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        with pytest.raises(AssertionError):
+            assertion_case.case_AssertStrContains()
