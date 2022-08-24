@@ -139,4 +139,19 @@ class TestAssertionCase:
             expect=expect
         )
         with pytest.raises(AssertionError):
-            assertion_case.case_AssertStrContains()
+            assertion_case.case_AssertMapKeyCount()
+
+    def test_assert_map_has_keys_failed(self):
+        """Tests AssertMapHasKeys when actual keys do not contain expect."""
+        name = 'AssertMapHasKeys'
+        name_run = 'AssertMapHasKeys_72a688341d4611edb365ebb9b969d060'
+        actual = {'a': 1, 'b': 2}
+        expect = ['a', 'c']
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        with pytest.raises(AssertionError):
+            assertion_case.case_AssertMapHasKeys()
