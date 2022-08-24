@@ -173,6 +173,19 @@ class AssertionCase(TestCase):
                 break
         assert has_keys, f"key `{failed_key}` is not present in the map"
 
+    def case_AssertMapDoNotHasKeys(self):
+        """Asserts expected is not a subset of map keys."""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+
+        assert type(actual) == dict, f"`{self.actual}` is not a map"
+
+        has_keys, failed_key = False, None
+        for key in self.expect:
+            if key in self.actual.keys():
+                failed_key, has_keys = key, True
+                break
+        assert not has_keys, f"key `{failed_key}` is present in the map"
+
 
 class AssertionHandler:
     """
