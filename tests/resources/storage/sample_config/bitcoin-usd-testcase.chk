@@ -29,6 +29,8 @@ spec:
     - {type: AssertIsMap, actual: {'a': 1, 'b': 2}}
     - {type: AssertMapHasKey, actual: {'a': 1, 'b': 2}, expected: 'a'}
     - {type: AssertMapDoNotHasKey, actual: {'a': 1, 'b': 2}, expected: 'c'}
+    - {type: AssertMapHasKeys, actual: {'a': 1, 'b': 2}, expected: ['a']}
+    - {type: AssertMapHasKeys, actual: {'a': 1, 'b': 2, 'c': 3}, expected: ['a', 'b', 'c']}
     - {type: AssertMapKeyCount, actual: {'a': 1, 'b': 2}, expected: 2}
     - {type: AssertIsList, actual: $Response.body.coin.exp}
     - {type: AssertIsList, actual: [1, 1, 2]}
