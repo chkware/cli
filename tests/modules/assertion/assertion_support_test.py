@@ -111,7 +111,7 @@ class TestAssertionCase:
         with pytest.raises(AssertionError):
             assertion_case.case_AssertStrContains()
 
-    def test_assert_str_actual_not_str(self):
+    def test_assert_str_contains_actual_not_str(self):
         """Tests AssertStrContains when actual is not a string."""
         name = 'AssertStrContains'
         name_run = 'AssertStrContains_72a688341d4611edb365ebb9b969d060'
