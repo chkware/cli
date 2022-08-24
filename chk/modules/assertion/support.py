@@ -153,6 +153,13 @@ class AssertionCase(TestCase):
         assert type(actual) == str, f"`{self.actual}` is not a string"
         assert self.expect in actual, f"key `{self.expect}` is not in the str"
 
+    def case_AssertMapKeyCount(self):
+        """Asserts expected is equal to the number of keys in the map."""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+
+        assert type(actual) == dict, f"`{self.actual}` is not a map"
+        assert self.expect == len(actual), f" the map has `{len(self.actual)}` keys"
+
 
 class AssertionHandler:
     """
