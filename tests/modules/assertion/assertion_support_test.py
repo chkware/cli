@@ -125,3 +125,18 @@ class TestAssertionCase:
         )
         with pytest.raises(AssertionError):
             assertion_case.case_AssertStrContains()
+
+    def test_assert_map_key_count_invalid(self):
+        """Tests AssertMapKeyCount with invalid params."""
+        name = 'AssertMapKeyCount'
+        name_run = 'AssertMapKeyCount_72a688341d4611edb365ebb9b969d060'
+        actual = {'a': 1, 'b': 2}
+        expect = 4
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        with pytest.raises(AssertionError):
+            assertion_case.case_AssertStrContains()
