@@ -155,3 +155,18 @@ class TestAssertionCase:
         )
         with pytest.raises(AssertionError):
             assertion_case.case_AssertMapHasKeys()
+
+    def test_assert_map_do_not_has_keys_failed(self):
+        """Tests AssertMapDoNotHasKeys when expect is a subset of the actual.keys."""
+        name = 'AssertMapDoNotHasKeys'
+        name_run = 'AssertMapDoNotHasKeys_72a688341d4611edb365ebb9b969d060'
+        actual = {'a': 1, 'b': 2}
+        expect = ['a', 'c']
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        with pytest.raises(AssertionError):
+            assertion_case.case_AssertMapDoNotHasKeys()
