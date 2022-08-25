@@ -186,6 +186,23 @@ class AssertionCase(TestCase):
                 break
         assert not has_keys, f"key `{failed_key}` is present in the map"
 
+    def case_AssertMapExactKeys(self):
+        """Asserts all keys of the map is present in expected."""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+
+        assert type(actual) == dict, f"`{self.actual}` is not a map"
+        assert type(self.expect) == list, f"`{self.expect}` is not a list"
+        assert len(self.expect) == len(actual.keys()), f"number of keys are not equal"
+        exact_key = True
+        actual_keys = sorted(actual.keys())
+        expected_keys = sorted(self.expect)
+        k = 0
+        for k in range(len(actual_keys)):
+            if actual_keys[k] != expected_keys[k]:
+                exact_key = False
+                break
+        assert exact_key, f"`{actual_keys[k]}!={expected_keys[k]}` keys do not match"
+
 
 class AssertionHandler:
     """
