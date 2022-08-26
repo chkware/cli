@@ -165,43 +165,23 @@ class AssertionCase(TestCase):
         actual = type_converter(self.actual) if type(self.actual) == str else self.actual
 
         assert type(actual) == dict, f"`{self.actual}` is not a map"
-
-        has_keys, failed_key = True, None
-        for key in self.expect:
-            if key not in actual.keys():
-                failed_key, has_keys = key, False
-                break
-        assert has_keys, f"key `{failed_key}` is not present in the map"
+        intersection = set(actual.keys()) & set(self.expect)
+        assert intersection == set(self.expect), f"key(s) `{set(self.expect) - intersection}` not present in the map"
 
     def case_AssertMapDoNotHasKeys(self):
         """Asserts expected is not a subset of map keys."""
         actual = type_converter(self.actual) if type(self.actual) == str else self.actual
 
         assert type(actual) == dict, f"`{self.actual}` is not a map"
-
-        has_keys, failed_key = False, None
-        for key in self.expect:
-            if key in actual.keys():
-                failed_key, has_keys = key, True
-                break
-        assert not has_keys, f"key `{failed_key}` is present in the map"
+        intersection = set(actual.keys()) & set(self.expect)
+        assert not intersection, f"key(s) `{intersection}` present in the map"
 
     def case_AssertMapExactKeys(self):
         """Asserts all keys of the map is present in expected."""
         actual = type_converter(self.actual) if type(self.actual) == str else self.actual
 
         assert type(actual) == dict, f"`{self.actual}` is not a map"
-        assert type(self.expect) == list, f"`{self.expect}` is not a list"
-        assert len(self.expect) == len(actual.keys()), f"number of keys are not equal"
-        exact_key = True
-        actual_keys = sorted(actual.keys())
-        expected_keys = sorted(self.expect)
-        k = 0
-        for k in range(len(actual_keys)):
-            if actual_keys[k] != expected_keys[k]:
-                exact_key = False
-                break
-        assert exact_key, f"`{actual_keys[k]}!={expected_keys[k]}` keys do not match"
+        assert set(actual.keys()) & set(self.expect) == set(self.expect) == set(actual.keys()), f"`key(s) are not exactly matched"
 
 
 class AssertionHandler:
