@@ -183,6 +183,13 @@ class AssertionCase(TestCase):
         assert type(actual) == dict, f"`{self.actual}` is not a map"
         assert set(actual.keys()) & set(self.expect) == set(self.expect) == set(actual.keys()), f"`key(s) are not exactly matched"
 
+    def case_AssertListHasIndex(self):
+        """Asserts list has `expected` index."""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+
+        assert type(actual) == list, f"`{self.actual}` is not a list"
+        assert 0 <= self.expect < len(actual), f"`{self.expect}` is an invalid index"
+
 
 class AssertionHandler:
     """
