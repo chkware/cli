@@ -168,7 +168,7 @@ class AssertionCase(TestCase):
 
         has_keys, failed_key = True, None
         for key in self.expect:
-            if key not in self.actual.keys():
+            if key not in actual.keys():
                 failed_key, has_keys = key, False
                 break
         assert has_keys, f"key `{failed_key}` is not present in the map"
@@ -181,7 +181,7 @@ class AssertionCase(TestCase):
 
         has_keys, failed_key = False, None
         for key in self.expect:
-            if key in self.actual.keys():
+            if key in actual.keys():
                 failed_key, has_keys = key, True
                 break
         assert not has_keys, f"key `{failed_key}` is present in the map"
