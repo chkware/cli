@@ -226,3 +226,32 @@ class TestAssertionCase:
         )
         with pytest.raises(AssertionError):
             assertion_case.case_AssertMapDoNotHasKeys()
+
+    def test_assert_map_exact_keys_passed(self):
+        """Tests AssertMapExactKeys when map has exactly same keys as expect."""
+        name = 'AssertMapExactKeys'
+        name_run = 'AssertMapExactKeys_72a688341d4611edb365ebb9b969d060'
+        actual = {'a': 1, 'b': 2}
+        expect = ['a', 'b']
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        assert assertion_case.case_AssertMapExactKeys() is None
+
+    def test_assert_map_exact_keys_failed(self):
+        """Tests AssertMapExactKeys when map has exactly same keys as expect."""
+        name = 'AssertMapExactKeys'
+        name_run = 'AssertMapExactKeys_72a688341d4611edb365ebb9b969d060'
+        actual = {'a': 1, 'b': 2}
+        expect = ['a']
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        with pytest.raises(AssertionError):
+            assertion_case.case_AssertMapExactKeys()
