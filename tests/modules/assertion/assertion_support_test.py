@@ -255,3 +255,47 @@ class TestAssertionCase:
         )
         with pytest.raises(AssertionError):
             assertion_case.case_AssertMapExactKeys()
+
+    def test_assert_list_has_index_passed(self):
+        """Tests AssertListHasIndex expected index is present."""
+        name = 'AssertListHasIndex'
+        name_run = 'AssertListHasIndex_72a688341d4611edb365ebb9b969d060'
+        actual = [1, 2, 3, 4, 5]
+        expect = 4
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        assert assertion_case.case_AssertListHasIndex() is None
+
+    def test_assert_list_has_index_overflow(self):
+        """Tests AssertListHasIndex expected index greater than the len of the list."""
+        name = 'AssertListHasIndex'
+        name_run = 'AssertListHasIndex_72a688341d4611edb365ebb9b969d060'
+        actual = [1, 2, 3, 4, 5]
+        expect = 5
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        with pytest.raises(AssertionError):
+            assertion_case.case_AssertListHasIndex()
+
+    def test_assert_list_has_index_underflow(self):
+        """Tests AssertListHasIndex expected index is negative."""
+        name = 'AssertListHasIndex'
+        name_run = 'AssertListHasIndex_72a688341d4611edb365ebb9b969d060'
+        actual = [1, 2, 3, 4, 5]
+        expect = -1
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        with pytest.raises(AssertionError):
+            assertion_case.case_AssertListHasIndex()
