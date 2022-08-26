@@ -36,7 +36,21 @@ class TestAssertionCase:
         with pytest.raises(AssertionError):
             assertion_case.case_AssertListContains()
 
-    def test_assert_map_has_key_expect_not_exist(self):
+    def test_assert_map_has_key_passed(self):
+        """Tests AssertMapHasKey when expect in actual."""
+        name = 'AssertMapHasKey'
+        name_run = 'AssertMapHasKey_72a688341d4611edb365ebb9b969d060'
+        actual = {'a': 1, 'b': 2}
+        expect = 'b'
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        assert assertion_case.case_AssertMapHasKey() is None
+
+    def test_assert_map_has_key_failed(self):
         """Tests AssertMapHasKey when expect is not in actual."""
         name = 'AssertMapHasKey'
         name_run = 'AssertMapHasKey_72a688341d4611edb365ebb9b969d060'
@@ -126,6 +140,20 @@ class TestAssertionCase:
         with pytest.raises(AssertionError):
             assertion_case.case_AssertStrContains()
 
+    def test_assert_map_key_count_valid(self):
+        """Tests AssertMapKeyCount with valid params."""
+        name = 'AssertMapKeyCount'
+        name_run = 'AssertMapKeyCount_72a688341d4611edb365ebb9b969d060'
+        actual = {'a': 1, 'b': 2}
+        expect = 2
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        assert assertion_case.case_AssertMapKeyCount() is None
+
     def test_assert_map_key_count_invalid(self):
         """Tests AssertMapKeyCount with invalid params."""
         name = 'AssertMapKeyCount'
@@ -140,6 +168,20 @@ class TestAssertionCase:
         )
         with pytest.raises(AssertionError):
             assertion_case.case_AssertMapKeyCount()
+
+    def test_assert_map_has_keys_passed(self):
+        """Tests AssertMapHasKeys when actual keys contain expect."""
+        name = 'AssertMapHasKeys'
+        name_run = 'AssertMapHasKeys_72a688341d4611edb365ebb9b969d060'
+        actual = {'a': 1, 'b': 2}
+        expect = ['a', 'b']
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        assert assertion_case.case_AssertMapHasKeys() is None
 
     def test_assert_map_has_keys_failed(self):
         """Tests AssertMapHasKeys when actual keys do not contain expect."""
@@ -156,8 +198,22 @@ class TestAssertionCase:
         with pytest.raises(AssertionError):
             assertion_case.case_AssertMapHasKeys()
 
+    def test_assert_map_do_not_has_keys_passed(self):
+        """Tests AssertMapDoNotHasKeys when expect does not contain a key of actual."""
+        name = 'AssertMapDoNotHasKeys'
+        name_run = 'AssertMapDoNotHasKeys_72a688341d4611edb365ebb9b969d060'
+        actual = {'a': 1, 'b': 2}
+        expect = ['d', 'c']
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        assert assertion_case.case_AssertMapDoNotHasKeys() is None
+
     def test_assert_map_do_not_has_keys_failed(self):
-        """Tests AssertMapDoNotHasKeys when expect is a subset of the actual.keys."""
+        """Tests AssertMapDoNotHasKeys when expect contains a key of actual."""
         name = 'AssertMapDoNotHasKeys'
         name_run = 'AssertMapDoNotHasKeys_72a688341d4611edb365ebb9b969d060'
         actual = {'a': 1, 'b': 2}
