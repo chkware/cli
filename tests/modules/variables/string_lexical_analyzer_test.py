@@ -36,24 +36,3 @@ def test_replace_in_str_alter_replace_with_fail():
 
     assert 'https://httpbin.org/put?foo=1&bar={$var_2}' == \
            StringLexicalAnalyzer.replace_in_str(container, replace_with)
-
-
-def test_replace_success():
-    container = '$var_3'
-    replace_with = {'var_1': 1, 'var_3': 'my name'}
-
-    assert 'my name' == StringLexicalAnalyzer.replace(container, replace_with)
-
-
-def test_replace_any_string_success():
-    container = 'var 3'
-    replace_with = {'var_1': 1, 'var_3': 'my name'}
-
-    assert container == StringLexicalAnalyzer.replace(container, replace_with)
-
-
-def test_replace_any_variable_success():
-    container = '$var_2'
-    replace_with = {'var_1': 1, 'var_3': 'my name'}
-
-    assert container == StringLexicalAnalyzer.replace(container, replace_with)
