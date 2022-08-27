@@ -190,6 +190,13 @@ class AssertionCase(TestCase):
         assert type(actual) == list, f"`{self.actual}` is not a list"
         assert 0 <= self.expect < len(actual), f"`{self.expect}` is an invalid index"
 
+    def case_AssertMapContains(self):
+        """Asserts map contains expected as value"""
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
+
+        assert type(actual) == dict, f"`{self.actual}` is not a map"
+        assert self.expect in actual.values(), f"`{self.expect}` is not in the map"
+
 
 class AssertionHandler:
     """
