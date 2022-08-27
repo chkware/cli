@@ -299,3 +299,60 @@ class TestAssertionCase:
         )
         with pytest.raises(AssertionError):
             assertion_case.case_AssertListHasIndex()
+
+    def test_assert_map_contains_int(self):
+        """Tests AssertMapContains when expect is an integer"""
+        name = 'AssertMapContains'
+        name_run = 'AssertMapContains_72a688341d4611edb365ebb9b969d060'
+        actual = {'a': 1, 'b': 2}
+        expect = 1
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        assert assertion_case.case_AssertMapContains() is None
+
+    def test_assert_map_contains_list(self):
+        """Tests AssertMapContains when expect is a list"""
+        name = 'AssertMapContains'
+        name_run = 'AssertMapContains_72a688341d4611edb365ebb9b969d060'
+        actual = {'a': [1, 2], 'b': 2}
+        expect = [1, 2]
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        assert assertion_case.case_AssertMapContains() is None
+
+    def test_assert_map_contains_map(self):
+        """Tests AssertMapContains when expect is a map"""
+        name = 'AssertMapContains'
+        name_run = 'AssertMapContains_72a688341d4611edb365ebb9b969d060'
+        actual = {"a": {"foo": "bar"}, "b": 2}
+        expect = {"foo": "bar"}
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        assert assertion_case.case_AssertMapContains() is None
+
+    def test_assert_map_contains_failed(self):
+        """Tests AssertMapContains when expect not in the map"""
+        name = 'AssertMapContains'
+        name_run = 'AssertMapContains_72a688341d4611edb365ebb9b969d060'
+        actual = {"a": {"foo": "bar"}, "b": 2}
+        expect = [1, 3]
+        assertion_case = AssertionCase(
+            name=name,
+            name_run=name_run,
+            actual=actual,
+            expect=expect
+        )
+        with pytest.raises(AssertionError):
+            assertion_case.case_AssertMapContains()
