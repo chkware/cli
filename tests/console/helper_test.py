@@ -3,14 +3,14 @@ test global helper functions
 """
 import pytest
 
-from chk.console.helper import dict_set, data_set
+from chk.console.helper import dict_set, data_set, dict_get
 
 
 def test_dict_set_pass_when_key_one_dimensional():
     dct = {"a": 1, "b": 2}
 
     assert dict_set(dct, "a", 21)
-    assert dct['a'] == 21
+    assert dct["a"] == 21
 
 
 def test_dict_set_pass_when_key_multi_dimensional():
@@ -18,7 +18,7 @@ def test_dict_set_pass_when_key_multi_dimensional():
     to_set = [1, 2]
 
     assert dict_set(dct, "a.aa", to_set)
-    assert dct['a']['aa'] == to_set
+    assert dct["a"]["aa"] == to_set
 
 
 def test_dict_set_fail_when_key_do_not_exists():
@@ -31,7 +31,7 @@ def test_data_set_pass_when_key_one_dimensional():
     dct = {"a": 1, "b": 2}
 
     assert data_set(dct, "a", 21)
-    assert dct['a'] == 21
+    assert dct["a"] == 21
 
 
 def test_data_set_pass_when_key_multi_dimensional():
@@ -39,7 +39,7 @@ def test_data_set_pass_when_key_multi_dimensional():
     to_set = [1, 2]
 
     assert data_set(dct, "a.aa", to_set)
-    assert dct['a']['aa'] == to_set
+    assert dct["a"]["aa"] == to_set
 
 
 def test_data_set_pass_when_key_do_not_exists():
@@ -54,7 +54,7 @@ def test_data_set_pass_when_keymap_deep_dict():
     keymap = "a.aa.aaa"
 
     assert data_set(dct, keymap, to_set)
-    assert dct['a']['aa']['aaa'] == to_set
+    assert dct["a"]["aa"]["aaa"] == to_set
 
 
 def test_data_set_fail_when_keymap_deep_dict_but_var_is_list():
@@ -64,7 +64,7 @@ def test_data_set_fail_when_keymap_deep_dict_but_var_is_list():
 
     with pytest.raises(Exception):
         assert data_set(dct, keymap, to_set)
-        assert dct['a']['aa']['aaa'] == to_set
+        assert dct["a"]["aa"]["aaa"] == to_set
 
 
 def test_data_set_pass_when_keymap_deep_dict_or_list_mixed():
@@ -73,7 +73,7 @@ def test_data_set_pass_when_keymap_deep_dict_or_list_mixed():
     keymap = "a.0.aa.0.aaa"
 
     assert data_set(dct, keymap, to_set)
-    assert dct['a'][0]['aa'][0]['aaa'] == to_set
+    assert dct["a"][0]["aa"][0]["aaa"] == to_set
 
 
 def test_data_set_pass_when_keymap_starts_as_list_mixed():
@@ -82,7 +82,7 @@ def test_data_set_pass_when_keymap_starts_as_list_mixed():
     keymap = "0.aa.0.aaa"
 
     assert data_set(dct, keymap, to_set)
-    assert dct[0]['aa'][0]['aaa'] == to_set
+    assert dct[0]["aa"][0]["aaa"] == to_set
 
 
 def test_data_set_pass_when_keymap_starts_as_list_mixed_var_is_list():
@@ -91,11 +91,11 @@ def test_data_set_pass_when_keymap_starts_as_list_mixed_var_is_list():
     keymap = "0.aa.0.aaa"
 
     assert data_set(dct, keymap, to_set)
-    assert dct[0]['aa'][0]['aaa'] == to_set
+    assert dct[0]["aa"][0]["aaa"] == to_set
 
 
 def test_data_set_fail_when_incompatible_type_found():
-    dct = {'a': [1, {"aa": 1}]}
+    dct = {"a": [1, {"aa": 1}]}
     to_set = [1, 2]
     keymap = "a.0.aa"
 
@@ -104,9 +104,31 @@ def test_data_set_fail_when_incompatible_type_found():
 
 
 def test_data_set_pass_when_key_found():
-    dct = {'a': [1, {"aa": 1}]}
+    dct = {"a": [1, {"aa": 1}]}
     to_set = [1, 2]
     keymap = "a.1.aa"
 
     assert data_set(dct, keymap, to_set)
-    assert dct['a'][1]['aa'] == to_set
+    assert dct["a"][1]["aa"] == to_set
+
+
+def test_dict_get_pass_when_key_found():
+    dct = {"a": {"aa": {"aaa": 1}}}
+    keymap = "a.aa.aaa"
+
+    assert dict_get(dct, keymap) == 1
+
+
+def test_dict_get_pass_return_none_when_key_not_found():
+    dct = {"a": {"aa": {"aaa": 1}}}
+    keymap = "a.aa.aaaa"
+
+    assert not dict_get(dct, keymap)
+
+
+def test_dict_get_fail_for_incompatible_type():
+    dct = {"a": {"aa": {"aaa": 1}}}
+    keymap = "a.aa.aaa.aaaa"
+
+    with pytest.raises(Exception):
+        assert not dict_get(dct, keymap)
