@@ -67,7 +67,7 @@ def dict_set(var: dict, keymap: str, value: object) -> bool:
         return False
 
 
-def data_set(var: dict|list, keymap: str, value: object) -> bool:
+def data_set(var: dict | list, keymap: str, value: object) -> bool:
     """
     Set a value of a dictionary by dot notation key and given value
     If the key do not exist, this function create the key by keymap

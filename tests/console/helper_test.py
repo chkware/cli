@@ -3,7 +3,7 @@ test global helper functions
 """
 import pytest
 
-from chk.console.helper import dict_set, data_set, dict_get
+from chk.console.helper import dict_set, data_set, dict_get, data_get
 
 
 def test_dict_set_pass_when_key_one_dimensional():
@@ -132,3 +132,38 @@ def test_dict_get_fail_for_incompatible_type():
 
     with pytest.raises(Exception):
         assert not dict_get(dct, keymap)
+
+
+def test_data_get_pass_when_key_found():
+    dct = {"a": {"aa": {"aaa": 1}}}
+    keymap = "a.aa.aaa"
+
+    assert data_get(dct, keymap) == 1
+
+
+def test_data_get_pass_return_none_when_key_not_found():
+    dct = {"a": {"aa": {"aaa": 1}}}
+    keymap = "a.aa.aaaa"
+
+    assert not data_get(dct, keymap)
+
+
+def test_data_get_pass_for_non_existent_key():
+    dct = {"a": {"aa": {"aaa": 1}}}
+    keymap = "a.aa.aaa.aaaa"
+
+    assert not data_get(dct, keymap)
+
+
+def test_data_get_pass_for_list():
+    dct = {"a": {"aa": {"aaa": [1, 2]}}}
+    keymap = "a.aa.aaa.1"
+
+    assert data_get(dct, keymap) == 2
+
+
+def test_data_get_pass_for_list_stating_index():
+    dct = [{"aa": {"aaa": [1, 2]}}, 2]
+    keymap = "0.aa.aaa.1"
+
+    assert data_get(dct, keymap) == 2
