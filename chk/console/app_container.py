@@ -1,17 +1,19 @@
 """
 Global application functionality
 """
+from dataclasses import dataclass
 
-from chk.infrastructure.exception import messages as exception_messages
 
-
+@dataclass
 class App:
-    """Global app"""
+    """
+    Global app container; used to bootstrap global level data structure
+    """
 
-    messages = {
-        'exception': exception_messages
+    documents = {
+        "original": {},
+        "compiled": {},
     }
 
-
-# global application object
-app = App()
+    variables = {}
+    display_buffer = {}
