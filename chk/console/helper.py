@@ -39,6 +39,7 @@ def dict_get(var: dict, keymap: str, default=None) -> object:
 def dict_set(var: dict, keymap: str, value: object) -> bool:
     """
     Set a value of a dictionary by dot notation key and given value
+    If the key do not exist, this function returns False, True otherwise
     :param var: the dictionary we'll get value for
     :param keymap: dot separated keys
     :param value:
