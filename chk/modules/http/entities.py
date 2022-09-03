@@ -1,12 +1,45 @@
+"""
+Entities for http document specification
+"""
+
 from cerberus import Validator
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.work import WorkerContract, RequestProcessorContract, handle_request
 from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
 from chk.modules.http.support import RequestMixin
+from chk.modules.http.constants import RequestConfigNode as RConst
 from chk.modules.variables.support import VariableMixin
 from chk.modules.version.support import VersionMixin
 from chk.modules.variables.constants import LexicalAnalysisType
 from chk.modules.version.constants import DocumentType
+
+__request_document_specification = {
+    RConst.ROOT: {
+        RConst.URL: "",
+        RConst.METHOD: "",
+        RConst.PARAMS: {},
+        RConst.HEADERS: {},
+        RConst.AUTH_BA: {
+            RConst.AUTH_BA_USR: "",
+            RConst.AUTH_BA_PAS: "",
+        },
+        RConst.AUTH_BE: {
+            RConst.AUTH_BE_TOK: "",
+        },
+        RConst.BODY_FRM: {},
+        RConst.BODY_FRM_DAT: {},
+        RConst.BODY_TXT: "",
+        RConst.BODY_XML: "",
+        RConst.BODY_JSN: {},
+    }
+}
+
+
+def get_request_doc_spec() -> dict:
+    """
+    Get request document specification
+    """
+    return __request_document_specification
 
 
 class HttpSpec(
