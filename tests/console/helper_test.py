@@ -3,7 +3,7 @@ test global helper functions
 """
 import pytest
 
-from chk.console.helper import dict_set, data_set, dict_get, data_get
+from chk.infrastructure.helper import dict_set, data_set, dict_get, data_get
 
 
 def test_dict_set_pass_when_key_one_dimensional():

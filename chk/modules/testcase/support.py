@@ -4,7 +4,7 @@ testcase related support services
 from typing import Callable
 
 from cerberus import validator
-from chk.console.helper import dict_get
+from chk.infrastructure.helper import dict_get
 from chk.infrastructure.exception import err_message
 
 from chk.modules.assertion.support import AssertionHandler

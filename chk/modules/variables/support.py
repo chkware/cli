@@ -18,7 +18,7 @@ from copy import deepcopy
 
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
 from chk.modules.testcase.constants import TestcaseConfigNode
-from chk.console.helper import dict_set
+from chk.infrastructure.helper import dict_set
 
 
 def replace_values(doc: dict, var_s: dict) -> dict[str, object]:
