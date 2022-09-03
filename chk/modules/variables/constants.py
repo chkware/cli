@@ -1,12 +1,18 @@
 """
 Constants used in http modules
 """
+from dataclasses import dataclass
 from enum import Enum
 
 
+@dataclass
 class VariableConfigNode:
-    """represent variable config section"""
+    """
+    Represent variables config section
+    """
     ROOT = 'variables'
+    RETURN = 'return'
+    RESULT = 'result'
 
 
 class LexicalAnalysisType(Enum):

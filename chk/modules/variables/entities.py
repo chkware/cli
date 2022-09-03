@@ -10,10 +10,24 @@ __variable_document_specification = {
     VConst.ROOT: {},
 }
 
+
 __returnable_variable_document_specification = {
-    VConst.ROOT: {},
+    VConst.RETURN: None,
 }
 
+
+def get_variable_doc_spec() -> dict:
+    """
+    Get variable document specification
+    """
+    return __variable_document_specification
+
+
+def get_returnable_variable_doc_spec() -> dict:
+    """
+    Get variable document specification
+    """
+    return __returnable_variable_document_specification
 
 
 @dataclass
