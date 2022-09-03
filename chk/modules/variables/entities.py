@@ -4,6 +4,17 @@ Variable entities
 from json import loads, decoder
 from dataclasses import dataclass, asdict
 
+from chk.modules.variables.constants import VariableConfigNode as VConst
+
+__variable_document_specification = {
+    VConst.ROOT: {},
+}
+
+__returnable_variable_document_specification = {
+    VConst.ROOT: {},
+}
+
+
 
 @dataclass
 class ApiResponse:
