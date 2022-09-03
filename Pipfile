@@ -26,6 +26,8 @@ cerberus = "*"
 pytest = "*"
 mypy = "*"
 black = "*"
+pylint = "*"
+flake8 = "*"
 
 [requires]
 python_version = "3.10"
