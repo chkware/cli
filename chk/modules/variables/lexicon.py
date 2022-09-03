@@ -3,7 +3,7 @@ Lexical analysis functionalities
 """
 import re
 
-from chk.console.helper import data_get
+from chk.infrastructure.helper import data_get
 
 
 class StringLexicalAnalyzer:
