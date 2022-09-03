@@ -1,6 +1,7 @@
 from enum import Enum
 
 from typing import List
+from dataclasses import dataclass
 
 
 class DocumentType(Enum):
@@ -15,6 +16,7 @@ class DocumentType(Enum):
         return value
 
 
+@dataclass
 class VersionConfigNode:
     """represent the base of all kind of documents"""
     VERSION = 'version'
