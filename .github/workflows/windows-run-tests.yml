@@ -40,7 +40,7 @@ jobs:
         if: steps.cache-dependencies.outputs.cache-hit != 'true'
         run: |
           pipenv install --dev --verbose
-          pipenv install atomicwrites
+          pipenv install atomicwrites 
 
       - name: Run tests
         run: pipenv run python -m pytest
