@@ -37,7 +37,7 @@ def execute_testcase(file):
 # root command
 @click.group('chk')
 def execute_root():
-    """v0.3.4 | supported version strings: 0.7.2"""
+    """v0.4.0 | supported version strings: 0.7.2"""
     pass
 
 
