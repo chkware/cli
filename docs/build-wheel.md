@@ -24,7 +24,7 @@ Follow the steps to do a manual release on PyPi.
     """v0.X.X | supported version strings: 0.7.2, ..."""
     ```
 
-- Update `docs/CHANGELOG.md` with the release information
+- Update [_docs/CHANGELOG.md_](CHANGELOG.md) with the release _0.X.X_ information
 
 - Make directory for local _virtualenv_ setup
     ```bash
@@ -50,8 +50,6 @@ Follow the steps to do a manual release on PyPi.
     ```bash
     $ pipenv run twine upload dist/*
     ```
-
-- Write proper [_changelog_](CHANGELOG.md) for the release _0.X.X_
 
 - Publish and push an annotated tag
     ```bash
