@@ -24,6 +24,8 @@ Follow the steps to do a manual release on PyPi.
     """v0.X.X | supported version strings: 0.7.2, ..."""
     ```
 
+- Update `docs/CHANGELOG.md` with the release information
+
 - Make directory for local _virtualenv_ setup
     ```bash
     $ mkdir ./.venv
