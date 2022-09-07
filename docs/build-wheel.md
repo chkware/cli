@@ -6,12 +6,12 @@ Follow the steps to do a manual release on PyPi.
 - Please confirm that Python 3.10.x with [Pipenv](https://pipenv.pypa.io/en/latest/#install-pipenv-today) is installed and setup on this machine
 - Clone the repo 
     ```
-    $ git clone https://github.com/chkware/cli.git ./cli-release
+    $ git clone https://github.com/chkware/cli.git ./cli-wheel
     ```
 
 - Change to the directory 
     ```bash
-    $ cd ./cli-release
+    $ cd ./cli-wheel
     ```
 
 - Update version number on `setup.cfg`
@@ -56,6 +56,6 @@ Follow the steps to do a manual release on PyPi.
     $ git tag -a v0.X.X -m "..."
     $ git push -u origin v0.X.X
     ```
-- [tbd] build and zipapp, and release a version
+- [_OPTIONAL_] [build a zipapp](build-zipapp.md), and release a version
 
-And a new version is release!
+A new version is release. Cheers!

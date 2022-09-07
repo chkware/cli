@@ -1,6 +1,6 @@
 ## Zipapp build process
 
-Follow these steps to bundle `chkware` as zipapp.
+Follow these steps to bundle `chkware` as [zipapp](https://docs.python.org/3/library/zipapp.html).
 
 - Please confirm that Python 3.10.x with [Pipenv](https://pipenv.pypa.io/en/latest/#install-pipenv-today) is installed and setup on this machine
 - Clone the repo 
