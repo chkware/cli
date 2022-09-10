@@ -1,7 +1,7 @@
 """
 test global chk functions
 """
-from chk.infrastructure.app_container import App
+from chk.infrastructure.containers import App
 from chk.infrastructure.helper import data_set, data_get
 
 app = App()
