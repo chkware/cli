@@ -20,13 +20,18 @@ class ExecutionContextBuilder:
     """
     Build `ExecutionContext` from different execution context
     """
+
     @staticmethod
-    def from_dict(document: dict[str, object]) -> ExecutionContext:
-        file = document.get(ExecuteConfigNode.FILE)
-        if not file: raise SystemExit(f'`{ExecuteConfigNode.FILE}` is required')
+    def from_testcase_spec(document: dict[str, object]) -> ExecutionContext:
+        """
+        Create execution context from testcase.spec for request
+        """
+
+        file = str(document.get(ExecuteConfigNode.FILE))
+        if not file:
+            raise SystemExit(f"`{ExecuteConfigNode.FILE}` is required")
 
         return ExecutionContext(
             file,
-            document.get(ExecuteConfigNode.WITH),
-            document.get(ExecuteConfigNode.RESULT)
+            [document.get(ExecuteConfigNode.WITH)],
         )
