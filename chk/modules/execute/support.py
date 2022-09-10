@@ -1,12 +1,19 @@
 """
-execute module
+Execute module
 """
+from typing import NamedTuple
+
 from chk.modules.testcase.constants import ExecuteConfigNode
-from collections import namedtuple
 
 
-# File context that holds file information
-ExecutionContext = namedtuple('ExecutionContext', ['file', 'variables', 'result'])
+class ExecutionContext(NamedTuple):
+    """
+    File context that holds file information
+    """
+
+    file: str
+    arguments: list = []
+    options: list = []
 
 
 class ExecutionContextBuilder:
