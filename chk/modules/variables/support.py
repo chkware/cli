@@ -21,6 +21,19 @@ from chk.modules.testcase.constants import TestcaseConfigNode
 from chk.infrastructure.helper import dict_set
 
 
+def parse_args(argv_s: list[str], delimiter="=") -> dict:
+    """
+    parse and return args to dict
+    :return: dict
+    """
+
+    if argv_s:
+        argv_sa = [item for item in argv_s if delimiter in item]
+        return {items[0]: items[1] for items in [item.split(delimiter) for item in argv_sa]}
+
+    return {}
+
+
 def replace_values(doc: dict, var_s: dict) -> dict[str, object]:
     """
     replace variables with values
