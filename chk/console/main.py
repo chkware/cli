@@ -31,7 +31,6 @@ def execute_http(file, result):
         filepath=file,
         filepath_mangled=fpath_mangled,
         filepath_hash=fpath_hash,
-        document=document,
         options=options,
     )
 

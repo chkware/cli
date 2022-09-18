@@ -40,7 +40,6 @@ class ChkFileLoader:
 class FileContext(NamedTuple):
     """ File context that holds file information """
 
-    document: MappingProxyType[str, object] = {}
     options: MappingProxyType[str, object] = {}
     arguments: MappingProxyType[str, object] = {}
     filepath: str = ""
