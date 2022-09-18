@@ -6,6 +6,8 @@ import click
 import chk.modules.http.main as http_executor
 import chk.modules.testcase.main as testcase_executor
 
+from chk.infrastructure.file_loader import ChkFileLoader, FileContext
+
 
 # run command
 @click.command('http')
@@ -20,7 +22,20 @@ def execute_http(file, result):
             result=result,
         ),
     )
-    http_executor.execute(file, options)
+
+    ChkFileLoader.is_file_ok(file)
+    document = MappingProxyType(ChkFileLoader.to_dict(file))
+    fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file)
+
+    ctx = FileContext(
+        filepath=file,
+        filepath_mangled=fpath_mangled,
+        filepath_hash=fpath_hash,
+        document=document,
+        options=options,
+    )
+
+    http_executor.execute(ctx)
 
 
 # run command
