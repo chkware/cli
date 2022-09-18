@@ -3,6 +3,7 @@ File loader utility
 """
 
 from pathlib import Path
+from types import MappingProxyType
 from typing import NamedTuple
 
 from yaml import safe_load
@@ -39,9 +40,9 @@ class ChkFileLoader:
 class FileContext(NamedTuple):
     """ File context that holds file information """
 
-    document: dict
-    options: dict
-    arguments: dict
+    document: MappingProxyType[str, object] = {}
+    options: MappingProxyType[str, object] = {}
+    arguments: MappingProxyType[str, object] = {}
     filepath: str = ""
     filepath_mangled: str = ""
     filepath_hash: str = ""
