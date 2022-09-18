@@ -12,6 +12,10 @@ def execute(file_ctx: FileContext):
     """ Execute command functionality """
     http_spec = HttpSpec(file_ctx)
     try:
+        http_spec.pre_process()
+        http_spec.process()
+        http_spec.make_response()
+
         response = handle_worker(http_spec)
     except BaseException as error:
         response = error

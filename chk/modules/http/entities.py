@@ -59,13 +59,9 @@ class HttpSpec(
     """
 
     def __init__(self, file_ctx: FileContext):
-        self.file_ctx, self.document, self.validator = file_ctx, file_ctx.document, Validator()
+        self.file_ctx = file_ctx
 
     def __work__(self) -> dict:
-        self.version_validated(DocumentType.HTTP)
-        self.request_validated()
-        self.variable_validated()
-
         ctx_document = self.variable_process(LexicalAnalysisType.REQUEST)
         out_response = handle_request(self, ctx_document)
         return self.variable_assemble_values(ctx_document, out_response)
@@ -77,3 +73,14 @@ class HttpSpec(
         """
         request_dict = get_request_doc_spec()[RConst.ROOT] | get_returnable_variable_doc_spec()
         return get_version_doc_spec() | {RConst.ROOT: request_dict}
+
+    def pre_process(self):
+        self.version_validated(DocumentType.HTTP)
+        self.request_validated()
+        self.variable_validated()
+
+    def process(self):
+        pass
+
+    def make_response(self):
+        pass
