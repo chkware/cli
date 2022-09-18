@@ -1,18 +1,14 @@
 """
 Global application functionality
 """
-from dataclasses import dataclass, field
+from typing import NamedTuple
 
 
-@dataclass
-class App:
+class App(NamedTuple):
     """
     Global app container; used to bootstrap global level data structure
     """
-    documents = {
-        "original": field(default_factory=dict),
-        "compiled": field(default_factory=dict),
-    }
 
-    variables: dict = field(default_factory=dict)
-    display_buffer: dict = field(default_factory=dict)
+    original_doc: dict[str, object] = {}
+    compiled_doc: dict = {}
+    display_buffer: dict = {}
