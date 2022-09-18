@@ -1,21 +1,24 @@
 """
 Entities for http document specification
 """
-
-from cerberus import Validator
-
 from chk.infrastructure.file_loader import FileContext
-from chk.infrastructure.work import WorkerContract, RequestProcessorContract, handle_request
+from chk.infrastructure.work import (
+    WorkerContract,
+    RequestProcessorContract,
+    handle_request,
+)
+
+from chk.modules.version.support import VersionMixin
+from chk.modules.version.constants import DocumentType
+from chk.modules.version.entities import get_version_doc_spec
+
 from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
 from chk.modules.http.support import RequestMixin
 from chk.modules.http.constants import RequestConfigNode as RConst
-from chk.modules.variables.support import VariableMixin
-from chk.modules.version.support import VersionMixin
-from chk.modules.variables.constants import LexicalAnalysisType
-from chk.modules.version.constants import DocumentType
 
+from chk.modules.variables.support import VariableMixin
+from chk.modules.variables.constants import LexicalAnalysisType
 from chk.modules.variables.entities import get_returnable_variable_doc_spec
-from chk.modules.version.entities import get_version_doc_spec
 
 __request_document_specification = {
     RConst.ROOT: {
@@ -52,7 +55,7 @@ class HttpSpec(
     RequestMixin,
     VariableMixin,
     WorkerContract,
-    RequestProcessorContract
+    RequestProcessorContract,
 ):
     """
     Holds http specification activity
