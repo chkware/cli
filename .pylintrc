@@ -1,3 +1,6 @@
+[MASTER]
+init-hook='import sys; sys.path.append(f"./.venv/lib/python{sys.version[:3]}/site-packages"); sys.path.append(f"./");'
+
 [MAIN]
 
 # Specify a configuration file.
