@@ -1,6 +1,9 @@
-from collections import namedtuple
+"""
+File loader utility
+"""
+
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, Tuple, NamedTuple
 
 from yaml import safe_load
 
@@ -32,5 +35,12 @@ class ChkFileLoader:
         return mangle.filename(file_name), mangle.uniq_sha255(file_name)
 
 
-# File context that holds file information
-FileContext = namedtuple('FileContext', ['filepath', 'filepath_mangled', 'filepath_hash', 'document', 'options'])
+class FileContext(NamedTuple):
+    """ File context that holds file information """
+
+    document: dict
+    options: dict
+    arguments: dict
+    filepath: str = ""
+    filepath_mangled: str = ""
+    filepath_hash: str = ""
