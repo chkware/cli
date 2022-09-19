@@ -1,7 +1,8 @@
 """
 Entities for http document specification
 """
-from chk.infrastructure.file_loader import FileContext
+from chk.infrastructure.contexts import app
+from chk.infrastructure.file_loader import ChkFileLoader, FileContext
 from chk.infrastructure.work import (
     WorkerContract,
     RequestProcessorContract,
@@ -9,7 +10,6 @@ from chk.infrastructure.work import (
 )
 
 from chk.modules.version.support import VersionMixin
-from chk.modules.version.constants import DocumentType
 from chk.modules.version.entities import get_version_doc_spec
 
 from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
@@ -64,6 +64,9 @@ class HttpSpec(
     def __init__(self, file_ctx: FileContext):
         self.file_ctx = file_ctx
 
+    def get_file_context(self) -> FileContext:
+        return self.file_ctx
+
     def __work__(self) -> dict:
         ctx_document = self.variable_process(LexicalAnalysisType.REQUEST)
         out_response = handle_request(self, ctx_document)
@@ -78,7 +81,10 @@ class HttpSpec(
         return get_version_doc_spec() | {RConst.ROOT: request_dict}
 
     def pre_process(self):
-        self.version_validated(DocumentType.HTTP)
+        document = ChkFileLoader.to_dict(self.file_ctx.filepath)
+        app.original_doc[self.file_ctx.filepath_hash] = document
+
+        self.version_validated()
         self.request_validated()
         self.variable_validated()
 

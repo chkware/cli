@@ -24,7 +24,6 @@ def execute_http(file, result):
     )
 
     ChkFileLoader.is_file_ok(file)
-    document = MappingProxyType(ChkFileLoader.to_dict(file))
     fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file)
 
     ctx = FileContext(
