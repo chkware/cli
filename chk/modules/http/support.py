@@ -1,7 +1,8 @@
 """
 Versioned schema repository for http specifications
 """
-from typing import Callable
+from collections.abc import Callable
+from copy import deepcopy
 
 from cerberus.validator import DocumentError
 from chk.infrastructure.exception import err_message
@@ -17,7 +18,7 @@ class RequestValueHandler:
         """Convert request block variables"""
 
         request_document = document.get(RequestConfigNode.ROOT, {})
-        import copy; request_document = copy.deepcopy(request_document)
+        request_document = deepcopy(request_document)
 
         return replace_method(request_document, symbol_table)
 
