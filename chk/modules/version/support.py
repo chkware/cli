@@ -39,7 +39,7 @@ class VersionMixin:
         return version_doc  # or is a success
 
     def version_as_dict(self) -> dict[str, str]:
-        """Get version string"""
+        """ Get version as dictionary """
 
         file_ctx = self.get_file_context()
         document = app.original_doc.get(file_ctx.filepath_hash)
@@ -50,10 +50,7 @@ class VersionMixin:
             raise SystemExit(err_message('fatal.V0005', extra=ex)) from ex
 
     def get_document_type(self) -> DocumentType:
-        """
-        Get document type
-        :return: DocumentType
-        """
+        """ Get document type """
 
         version_doc = self.version_as_dict().get(VersionConfigNode.VERSION)
         version_doc_l = str(version_doc).split(':')
