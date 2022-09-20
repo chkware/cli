@@ -9,6 +9,9 @@ class App(NamedTuple):
     Global app container; used to bootstrap global level data structure
     """
 
-    original_doc: dict[str, object] = {}
+    original_doc: dict = {}
     compiled_doc: dict = {}
     display_buffer: dict = {}
+
+    def __str__(self):
+        return format(self)
