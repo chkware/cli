@@ -84,9 +84,15 @@ class HttpSpec(
         document = ChkFileLoader.to_dict(self.file_ctx.filepath)
         app.original_doc[self.file_ctx.filepath_hash] = document
 
-        self.version_validated()
-        self.request_validated()
-        self.variable_validated()
+        version_doc = self.version_validated()
+        request_doc = self.request_validated()
+        variable_doc = self.variable_validated()
+
+        app.compiled_doc[self.file_ctx.filepath_hash] = {
+            "version": version_doc,
+            "request": request_doc,
+            "variable": variable_doc,
+        }
 
     def process(self):
         pass
