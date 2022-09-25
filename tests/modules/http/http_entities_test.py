@@ -1,3 +1,5 @@
+from types import MappingProxyType
+
 import tests
 
 from chk.modules.http.entities import HttpSpec
@@ -7,9 +9,21 @@ from chk.infrastructure.work import handle_worker
 
 class TestHttpSpec:
     def test_get_plain_pass(self):
-        doc = ChkFileLoader.to_dict(tests.RES_DIR + 'pass_cases/GET-Plain.chk')
-        file_ctx = FileContext(None, None, None, doc, None)
+        file = tests.RES_DIR + 'pass_cases/GET-Plain.chk'
+
+        ChkFileLoader.is_file_ok(file)
+        f_mangled, f_hash = ChkFileLoader.get_mangled_name(file)
+
+        file_ctx = FileContext(
+            filepath=file,
+            filepath_mangled=f_mangled,
+            filepath_hash=f_hash,
+        )
 
         http = HttpSpec(file_ctx)
+        http.pre_process()
+        http.process()
+        http.make_response()
+
         response = handle_worker(http)
-        assert type(response) == dict
+        assert isinstance(response, dict)
