@@ -11,6 +11,7 @@ from chk.infrastructure.work import (
     handle_request,
 )
 
+from chk.modules.version.entities import DefaultVersionDoc
 from chk.modules.version.support import VersionMixin
 
 from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
@@ -50,7 +51,7 @@ class DefaultRequestDoc(NamedTuple):
         if not doc:
             doc = {}
 
-        return doc | self.doc
+        return self.doc | doc
 
 
 class HttpSpec(
@@ -85,7 +86,7 @@ class HttpSpec(
         variable_doc = self.variable_validated()
 
         app.compiled_doc[self.file_ctx.filepath_hash] = {
-            "version": version_doc,
+            "version": DefaultVersionDoc().merged(version_doc),
             "request": DefaultRequestDoc().merged(request_doc),
             "variable": variable_doc,
         }

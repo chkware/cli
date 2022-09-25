@@ -1,16 +1,22 @@
 """
 Entities for version document specification
 """
+from typing import NamedTuple
+
 from chk.modules.version.constants import VersionConfigNode as VConst
 
-__version_document_specification = {
-    VConst.VERSION: None,
-    VConst.EXPOSE: None
-}
 
+class DefaultVersionDoc(NamedTuple):
+    """ Default version doc """
 
-def get_version_doc_spec() -> dict:
-    """
-    Get variable document specification
-    """
-    return __version_document_specification
+    doc: dict[str, object] = {
+        VConst.VERSION: None,
+        VConst.EXPOSE: None
+    }
+
+    def merged(self, doc: dict) -> dict:
+        """ Merge given doc with default one """
+        if not doc:
+            doc = {}
+
+        return self.doc | doc
