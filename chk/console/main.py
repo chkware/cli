@@ -14,7 +14,7 @@ from chk.infrastructure.file_loader import ChkFileLoader, FileContext
 @click.argument('file')
 @click.option('--result', is_flag=True, help="Only shows the returned output")
 def execute_http(file, result):
-    """Command to run HTTP request config file.\r\n
+    """Command to run Http config file.\r\n
     FILE: Any .chk file, that has 'version: default.http.*' string in it."""
 
     options = MappingProxyType(
@@ -40,7 +40,7 @@ def execute_http(file, result):
 @click.command('testcase')
 @click.argument('file', nargs=-1)
 def execute_testcase(file):
-    """Command to run HTTP request config file.\r\n
+    """Command to run Testcase config file.\r\n
     FILE: Any .chk file, that has 'version: default.testcase.*' string in it."""
 
     file = list(file).pop(0)
@@ -51,7 +51,6 @@ def execute_testcase(file):
 @click.group('chk')
 def execute_root():
     """v0.4.0 | supported version strings: 0.7.2"""
-    pass
 
 
 execute_root.add_command(execute_http)  # add `http` as sub-command
