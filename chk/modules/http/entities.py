@@ -18,6 +18,7 @@ from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
 from chk.modules.http.support import RequestMixin
 from chk.modules.http.constants import RequestConfigNode as RConst
 
+from chk.modules.variables.entities import DefaultVariableDoc
 from chk.modules.variables.support import VariableMixin
 from chk.modules.variables.constants import LexicalAnalysisType
 
@@ -88,7 +89,7 @@ class HttpSpec(
         app.compiled_doc[self.file_ctx.filepath_hash] = {
             "version": DefaultVersionDoc().merged(version_doc),
             "request": DefaultRequestDoc().merged(request_doc),
-            "variable": variable_doc,
+            "variable": DefaultVariableDoc().merged(variable_doc),
         }
 
     def process(self):
