@@ -3,19 +3,19 @@ test global chk functions
 """
 import pytest
 
-from chk.infrastructure.contexts import app
+from chk.infrastructure.exception import messages
+from chk.infrastructure.helper import dict_get
 from chk.infrastructure.translation import l10n
 
 
 class TestTranslation:
     """Test chk functions"""
-    def test_l10n_should_pass(self):
-        retstr = l10n(app.messages['exception']['key'], {'name': 'Hasan'})
+    def test_l10n_should_pass(self) -> None:
+        message = str(dict_get(messages, 'fatal.V0003', {}))
 
-        assert retstr == 'Some name: Hasan'
+        assert l10n(message, {'file_name': 'test.chk'}) == \
+               'Document exception: `test.chk` is not a valid YAML'
 
-    def test_l10n_should_fail_on_empty_message(self):
+    def test_l10n_should_fail_on_empty_message(self) -> None:
         with pytest.raises(ValueError):
-            l10n(None, {'name': 'Hasan'})
-
-
+            l10n('', {'name': 'Hasan'})
