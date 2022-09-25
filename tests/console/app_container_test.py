@@ -12,9 +12,9 @@ class TestChk:
 
     @staticmethod
     def test_app_variables_set():
-        data_set(app.variables, "some.key", "Some name: {name}")
-        assert app.variables["some"]["key"] == "Some name: {name}"
+        data_set(app.original_doc, "some.key", "Some name: {name}")
+        assert app.original_doc["some"]["key"] == "Some name: {name}"
 
     @staticmethod
     def test_app_variables_get():
-        assert data_get(app.variables, "some.key") == "Some name: {name}"
+        assert data_get(app.original_doc, "some.key") == "Some name: {name}"
