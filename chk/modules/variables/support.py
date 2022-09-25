@@ -1,24 +1,44 @@
 """
 Module for variables management
 """
+import abc
+from copy import deepcopy
 from types import MappingProxyType
 
 from cerberus.validator import DocumentError
+
+from chk.infrastructure.contexts import app, validator
 from chk.infrastructure.exception import err_message
+from chk.infrastructure.file_loader import FileContext
+from chk.infrastructure.helper import dict_set
+
+from chk.modules.version.constants import DocumentType
+
 from chk.modules.http.constants import RequestConfigNode
 from chk.modules.http.support import RequestValueHandler
-from chk.modules.testcase.support import TestcaseValueHandler
+
 from chk.modules.variables.constants import (
     VariableConfigNode as VarConf,
     LexicalAnalysisType,
 )
 from chk.modules.variables.validation_rules import variable_schema
-from chk.modules.version.constants import DocumentType
-from copy import deepcopy
-
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
+
+from chk.modules.testcase.support import TestcaseValueHandler
 from chk.modules.testcase.constants import TestcaseConfigNode
-from chk.console.helper import dict_set
+
+
+def parse_args(argv_s: list[str], delimiter="=") -> dict:
+    """
+    parse and return args to dict
+    :return: dict
+    """
+
+    if argv_s:
+        argv_sa = [item for item in argv_s if delimiter in item]
+        return {items[0]: items[1] for items in [item.split(delimiter) for item in argv_sa]}
+
+    return {}
 
 
 def replace_values(doc: dict, var_s: dict) -> dict[str, object]:
@@ -38,27 +58,32 @@ def replace_values(doc: dict, var_s: dict) -> dict[str, object]:
     return doc
 
 
-class VariableMixin(object):
-    """Mixin for variable spec. for v0.7.2"""
+class VariableMixin:
+    """ Mixin for variable spec. for v0.7.2 """
 
-    def __init__mixin__(self, symbol_tbl=None):
-        """
-        Initialise mixing props
-        :param symbol_tbl: dict
-        """
+    @abc.abstractmethod
+    def get_file_context(self) -> FileContext:
+        """ Abstract method to get file context """
+
+    def __init___(self, symbol_tbl=None):
+        """ Initialise mixing props """
+
+        self.file_ctx = self.get_file_context()
+
         if symbol_tbl is None:
             self.symbol_table = self.build_symbol_table()
         else:
             self.symbol_table = symbol_tbl
 
     def variable_validated(self) -> dict[str, dict]:
-        """Validate the schema against config"""
+        """ Validate the schema against config """
+
         try:
             request_doc = self.variable_as_dict()
-            if not self.validator.validate(request_doc, variable_schema):
-                raise SystemExit(
-                    err_message("fatal.V0006", extra=self.validator.errors)
-                )
+
+            if not validator.validate(request_doc, variable_schema):
+                raise SystemExit(err_message("fatal.V0006", extra=validator.errors))
+
         except DocumentError as doc_err:
             raise SystemExit(err_message("fatal.V0001", extra=doc_err)) from doc_err
 
@@ -66,20 +91,15 @@ class VariableMixin(object):
 
     def variable_as_dict(self) -> dict[str, dict]:
         """Get variable dict"""
-        if not hasattr(self, "validator") or not hasattr(self, "document"):
-            raise SystemExit(err_message("fatal.V0005"))
 
+        document = app.original_doc.get(self.file_ctx.filepath_hash)
         try:
-            return {
-                key: self.document[key]
-                for key in (VarConf.ROOT,)
-                if key in self.document
-            }
+            return {key: document[key] for key in (VarConf.ROOT,) if key in document}
         except Exception as ex:
-            raise SystemExit(err_message("fatal.V0005", extra=ex))
+            raise SystemExit(err_message("fatal.V0005", extra=ex)) from ex
 
     def variable_process(self, la_type: LexicalAnalysisType) -> dict:
-        self.__init__mixin__()
+        self.__init___()
         return self.lexical_analysis_for(la_type, self.symbol_table)
 
     def build_symbol_table(self) -> dict:
@@ -95,7 +115,8 @@ class VariableMixin(object):
     ) -> dict:
         """lexical validation"""
 
-        document_replaced = deepcopy(self.document)
+        document = app.original_doc.get(self.file_ctx.filepath_hash)
+        document_replaced = deepcopy(document)
 
         if la_type is LexicalAnalysisType.REQUEST:
             document_part = self.request_as_dict()

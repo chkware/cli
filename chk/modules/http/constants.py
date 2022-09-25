@@ -2,6 +2,7 @@
 Constants used in http modules
 """
 from enum import Enum
+from dataclasses import dataclass
 
 
 class HttpMethod(Enum):
@@ -15,6 +16,7 @@ class HttpMethod(Enum):
     OPTIONS = 'OPTIONS'
 
 
+@dataclass
 class RequestConfigNode:
     """represent request config section"""
     ROOT = 'request'

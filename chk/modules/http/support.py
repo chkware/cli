@@ -1,10 +1,16 @@
 """
 Versioned schema repository for http specifications
 """
-from typing import Callable
+import abc
+from collections.abc import Callable
+from copy import deepcopy
 
 from cerberus.validator import DocumentError
+
+from chk.infrastructure.contexts import validator, app
 from chk.infrastructure.exception import err_message
+from chk.infrastructure.file_loader import FileContext
+
 from chk.modules.http.constants import RequestConfigNode
 from chk.modules.http.validation_rules import request_schema
 
@@ -17,7 +23,7 @@ class RequestValueHandler:
         """Convert request block variables"""
 
         request_document = document.get(RequestConfigNode.ROOT, {})
-        import copy; request_document = copy.deepcopy(request_document)
+        request_document = deepcopy(request_document)
 
         return replace_method(request_document, symbol_table)
 
@@ -44,26 +50,32 @@ class RequestValueHandler:
         return returnable
 
 
-class RequestMixin(object):
-    """ Mixin for request spec. for v0.7.2"""
+class RequestMixin:
+    """ Mixin for request spec. for v0.7.2 """
+
+    @abc.abstractmethod
+    def get_file_context(self) -> FileContext:
+        """ Abstract method to get file context """
 
     def request_validated(self) -> dict[str, dict]:
         """Validate the schema against config"""
+
         try:
             request_doc = self.request_as_dict()
-            if not self.validator.validate(request_doc, request_schema):
-                raise SystemExit(err_message('fatal.V0006', extra=self.validator.errors))
+            if not validator.validate(request_doc, request_schema):
+                raise SystemExit(err_message('fatal.V0006', extra=validator.errors))
         except DocumentError as doc_err:
             raise SystemExit(err_message('fatal.V0001', extra=doc_err)) from doc_err
         else:
             return request_doc  # or is a success
 
     def request_as_dict(self) -> dict[str, dict]:
-        """Get version string"""
-        if not hasattr(self, 'validator') or not hasattr(self, 'document'):
-            raise SystemExit(err_message('fatal.V0005'))
+        """ Get request as a dictionary """
+
+        file_ctx = self.get_file_context()
+        document = app.original_doc.get(file_ctx.filepath_hash)
 
         try:
-            return {key: self.document[key] for key in (RequestConfigNode.ROOT,) if key in self.document}
+            return {key: document[key] for key in (RequestConfigNode.ROOT,) if key in document}
         except Exception as ex:
-            raise SystemExit(err_message('fatal.V0005', extra=ex))
+            raise SystemExit(err_message('fatal.V0005', extra=ex)) from ex

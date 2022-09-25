@@ -3,7 +3,7 @@ Lexical analysis functionalities
 """
 import re
 
-from chk.console.helper import data_get
+from chk.infrastructure.helper import data_get
 
 
 class StringLexicalAnalyzer:
@@ -24,14 +24,3 @@ class StringLexicalAnalyzer:
                 line_strip[i] = str(value) if value else '{' + item + '}'
 
         return ''.join(line_strip)
-
-    @staticmethod
-    def replace(container: str, replace_with: dict) -> str:
-        if type(container) is not str: raise TypeError
-        if len(replace_with) == 0: return container
-
-        if container.startswith('$'):
-            value = replace_with.get(container.lstrip('$'), None)
-            return value if value else container
-
-        return container

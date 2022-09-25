@@ -5,7 +5,7 @@ import uuid
 from io import StringIO
 from unittest import TestCase, TestSuite, TextTestRunner
 
-from chk.console.helper import type_converter
+from chk.infrastructure.helper import type_converter
 from chk.modules.testcase.constants import AssertConfigNode
 from chk.modules.testcase.presentation import AssertResult, AssertResultList
 

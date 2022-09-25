@@ -39,6 +39,7 @@ def dict_get(var: dict, keymap: str, default=None) -> object:
 def dict_set(var: dict, keymap: str, value: object) -> bool:
     """
     Set a value of a dictionary by dot notation key and given value
+    If the key do not exist, this function returns False, True otherwise
     :param var: the dictionary we'll get value for
     :param keymap: dot separated keys
     :param value:
@@ -64,6 +65,44 @@ def dict_set(var: dict, keymap: str, value: object) -> bool:
             return True
     else:
         return False
+
+
+def data_set(var: dict | list, keymap: str, value: object) -> bool:
+    """
+    Set a value of a dictionary by dot notation key and given value
+    If the key do not exist, this function create the key by keymap
+    Returns False if keymap is empty
+    :param var: the dictionary we'll get value for
+    :param keymap: dot separated keys
+    :param value:
+    :return:
+    """
+
+    km_l = keymap.split(".")
+
+    while km_i := km_l.pop(0) if len(km_l) > 0 else False:
+        if km_i.isnumeric():
+            km_i = int(km_i)
+
+        if km_i in var:
+            if km_l:
+                return data_set(var[km_i], ".".join(km_l), value)
+            else:
+                var[km_i] = value
+                return True
+
+        else:
+            if km_l:
+                _tmp = [] if km_l[0].isnumeric() else {}
+                if type(var) is list:
+                    var.append(_tmp)
+                elif type(var) is dict:
+                    var[km_i] = _tmp
+
+                return data_set(var[km_i], ".".join(km_l), value)
+            else:
+                var[km_i] = value
+                return True
 
 
 def data_get(var: dict | list, keymap: str, default=None) -> object:
