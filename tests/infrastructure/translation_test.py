@@ -3,7 +3,7 @@ test global chk functions
 """
 import pytest
 
-from chk.infrastructure.containers import app
+from chk.infrastructure.contexts import app
 from chk.infrastructure.translation import l10n
 
 
