@@ -24,11 +24,12 @@ from chk.modules.variables.constants import LexicalAnalysisType
 
 
 class DefaultRequestDoc(NamedTuple):
-    """ Default request doc """
+    """Default request doc"""
+
     returnable: dict = DefaultReturnableDoc().doc
 
     def merged(self, doc: dict) -> dict:
-        """ Merge given doc with default one """
+        """Merge given doc with default one"""
         if not doc:
             doc = {}
 
@@ -59,7 +60,7 @@ class HttpSpec(
         return self.variable_assemble_values(ctx_document, out_response)
 
     def pre_process(self) -> None:
-        """ Validate and prepare doc components """
+        """Validate and prepare doc components"""
 
         # save original doc
         document = ChkFileLoader.to_dict(self.file_ctx.filepath)
@@ -71,9 +72,11 @@ class HttpSpec(
         variable_doc = self.variable_validated()
 
         # compile data with defaults
-        app.compiled_doc[self.file_ctx.filepath_hash] = version_doc |\
-            DefaultRequestDoc().merged(request_doc) |\
-            DefaultVariableDoc().merged(variable_doc)
+        app.compiled_doc[self.file_ctx.filepath_hash] = (
+            version_doc
+            | DefaultRequestDoc().merged(request_doc)
+            | DefaultVariableDoc().merged(variable_doc)
+        )
 
     def process(self):
         pass
