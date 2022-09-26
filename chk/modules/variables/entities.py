@@ -3,38 +3,37 @@ Variable entities
 """
 from json import loads, decoder
 from dataclasses import dataclass, asdict
+from typing import NamedTuple
 
 from chk.modules.variables.constants import VariableConfigNode as VConst
 
-__variable_document_specification = {
-    VConst.ROOT: {},
-}
+
+class DefaultVariableDoc(NamedTuple):
+    """ Default variable doc """
+
+    doc: dict[str, object] = {
+        VConst.ROOT: {},
+    }
+
+    def merged(self, doc: dict) -> dict:
+        """ Merge given doc with default one """
+        if not doc:
+            doc = {}
+
+        return self.doc | doc
 
 
-__returnable_variable_document_specification = {
-    VConst.RETURN: None,
-}
+class DefaultReturnableDoc(NamedTuple):
+    """ Default return-able doc """
 
-
-def get_variable_doc_spec() -> dict:
-    """
-    Get variable document specification
-    """
-    return __variable_document_specification
-
-
-def get_returnable_variable_doc_spec() -> dict:
-    """
-    Get variable document specification
-    """
-    return __returnable_variable_document_specification
+    doc: dict[str, object] = {
+        VConst.RETURN: None,
+    }
 
 
 @dataclass
 class ApiResponse:
-    """
-    Generic class to hold API response data and parsing
-    """
+    """ Generic class to hold API response data and parsing """
 
     code: int
     version: str
@@ -42,13 +41,9 @@ class ApiResponse:
     headers: list
     body: dict
 
-    dict = asdict
-
     @staticmethod
     def from_dict(response: dict) -> "ApiResponse":
-        """
-        Convert response dict to ApiResponse
-        """
+        """ Convert response dict to ApiResponse """
 
         if code := response.get("code"):
             response["code"] = int(code)
@@ -60,3 +55,5 @@ class ApiResponse:
             SystemExit('`json` data not found')
 
         return ApiResponse(**response)
+
+    dict = asdict

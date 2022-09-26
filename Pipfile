@@ -25,9 +25,9 @@ cerberus = "*"
 [dev-packages]
 pytest = "*"
 mypy = "*"
-black = "*"
 pylint = "*"
 flake8 = "*"
+black = {extras = ["d"], version = "*"}
 
 [requires]
 python_version = "3.10"
