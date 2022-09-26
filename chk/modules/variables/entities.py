@@ -30,13 +30,6 @@ class DefaultReturnableDoc(NamedTuple):
         VConst.RETURN: None,
     }
 
-    def merged(self, doc: dict) -> dict:
-        """ Merge given doc with default one """
-        if not doc:
-            doc = {}
-
-        return self.doc | doc
-
 
 @dataclass
 class ApiResponse:
