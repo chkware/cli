@@ -72,10 +72,13 @@ class HttpSpec(
         variable_doc = self.variable_validated()
 
         # compile data with defaults
-        app.compiled_doc[self.file_ctx.filepath_hash] = (
-            version_doc
-            | DefaultRequestDoc().merged(request_doc)
-            | DefaultVariableDoc().merged(variable_doc)
+        app.set_compiled_doc(
+            self.file_ctx.filepath_hash,
+            (
+                version_doc
+                | DefaultRequestDoc().merged(request_doc)
+                | DefaultVariableDoc().merged(variable_doc)
+            ),
         )
 
     def process(self):
