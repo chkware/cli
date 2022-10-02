@@ -63,8 +63,7 @@ class HttpSpec(
         """Validate and prepare doc components"""
 
         # save original doc
-        document = ChkFileLoader.to_dict(self.file_ctx.filepath)
-        app.set_original_doc(self.file_ctx.filepath_hash, document)
+        app.load_original_doc_from_file_context(self.file_ctx)
 
         # validation
         version_doc = self.version_validated()
