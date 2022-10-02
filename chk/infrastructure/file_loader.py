@@ -27,7 +27,8 @@ class ChkFileLoader:
     @staticmethod
     def is_file_ok(file_name: str) -> bool:
         """Check if chk file exists, extension is okay"""
-        if Path(file_name).is_file() and Path(file_name).suffix == '.chk':
+        if (Path(file_name).is_file()
+                and Path(file_name).suffix in {'.chk', '.yaml.chk', }):
             return True
 
         raise SystemExit(exception.err_message('fatal.V0002'))
