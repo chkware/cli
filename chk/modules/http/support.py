@@ -73,7 +73,7 @@ class RequestMixin:
         """ Get request as a dictionary """
 
         file_ctx = self.get_file_context()
-        document = app.original_doc.get(file_ctx.filepath_hash)
+        document = app.get_original_doc(file_ctx.filepath_hash).copy()
 
         try:
             return {key: document[key] for key in (RequestConfigNode.ROOT,) if key in document}

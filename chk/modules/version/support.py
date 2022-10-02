@@ -42,7 +42,7 @@ class VersionMixin:
         """ Get version as dictionary """
 
         file_ctx = self.get_file_context()
-        document = app.original_doc.get(file_ctx.filepath_hash)
+        document = app.get_original_doc(file_ctx.filepath_hash)
 
         try:
             return {key: document[key] for key in (VersionConfigNode.VERSION,) if key in document}

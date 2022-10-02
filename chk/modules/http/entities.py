@@ -64,7 +64,7 @@ class HttpSpec(
 
         # save original doc
         document = ChkFileLoader.to_dict(self.file_ctx.filepath)
-        app.original_doc[self.file_ctx.filepath_hash] = document
+        app.set_original_doc(self.file_ctx.filepath_hash, document)
 
         # validation
         version_doc = self.version_validated()

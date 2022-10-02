@@ -92,7 +92,8 @@ class VariableMixin:
     def variable_as_dict(self) -> dict[str, dict]:
         """Get variable dict"""
 
-        document = app.original_doc.get(self.file_ctx.filepath_hash)
+        document = app.get_original_doc(self.file_ctx.filepath_hash)
+
         try:
             return {key: document[key] for key in (VarConf.ROOT,) if key in document}
         except Exception as ex:
@@ -114,9 +115,7 @@ class VariableMixin:
         self, la_type: LexicalAnalysisType, symbol_table: dict
     ) -> dict:
         """lexical validation"""
-
-        document = app.original_doc.get(self.file_ctx.filepath_hash)
-        document_replaced = deepcopy(document)
+        document_replaced = app.get_original_doc(self.file_ctx.filepath_hash).copy()
 
         if la_type is LexicalAnalysisType.REQUEST:
             document_part = self.request_as_dict()
