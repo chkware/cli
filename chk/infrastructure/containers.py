@@ -6,21 +6,24 @@ from typing import NamedTuple, Any
 
 
 class CompiledDocBlockType(Enum):
+    """Support compiled doc blocks"""
+
     REQUEST = "request"
     VERSION = "version"
     VARIABLES = "variables"
 
+
 class App(NamedTuple):
-    """
-    Global app container; used to bootstrap global level data structure
-    """
+    """Global app container"""
 
     original_doc: dict = {}
     compiled_doc: dict = {}
     display_buffer: dict = {}
 
     def __str__(self) -> str:
-        return format(self.__str__())
+        return "original_doc: {}\n\ncompiled_doc: {}\n\ndisplay_buffer: {}".format(
+            str(self.original_doc), str(self.compiled_doc), str(self.display_buffer)
+        )
 
     def set_original_doc(self, key: str, value: dict) -> None:
         """Set original file doc"""
