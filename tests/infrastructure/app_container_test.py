@@ -40,3 +40,26 @@ class TestApp:
     def test_app_get_original_doc_pass():
         ret_doc = app.get_original_doc("ab12")
         assert ret_doc == {'a': 1}
+
+    @staticmethod
+    def test_app_set_compiled_doc_fail_key_len():
+        with pytest.raises(SystemExit):
+            app.set_compiled_doc("ab22", {'a': 1})
+
+    @staticmethod
+    def test_app_set_compiled_doc_fail_allowed_key():
+        with pytest.raises(SystemExit):
+            app.set_compiled_doc("ab22", {'a': 1, 'b': 2, 'c': 3, })
+
+    @staticmethod
+    def test_app_set_compiled_doc_pass():
+        app.set_compiled_doc("ab22", {'request': 1, 'version': 2, 'variables': 3, })
+
+    @staticmethod
+    def test_app_set_compiled_doc_part_fail():
+        with pytest.raises(SystemExit):
+            app.set_compiled_doc("ab22", part="re", value={'a': 1, 'b': 2, 'c': 3, })
+
+    @staticmethod
+    def test_app_set_compiled_doc_part_pass():
+        app.set_compiled_doc("ab22", part="request", value={'a': 1, 'b': 2, 'c': 3, })
