@@ -2,8 +2,10 @@
 test global chk functions
 """
 import pytest
+import tests
 
 from chk.infrastructure.containers import App
+from chk.infrastructure.file_loader import FileContext, ChkFileLoader
 from chk.infrastructure.helper import data_set, data_get
 
 app = App()
@@ -72,3 +74,17 @@ class TestApp:
     @staticmethod
     def test_app_get_compiled_doc_part_pass():
         assert app.get_compiled_doc("ab22", part="request") == {'a': 1, 'b': 2, 'c': 3, }
+
+    @staticmethod
+    def test_app_load_original_doc_from_file_context_pass():
+        file = tests.RES_DIR + "UserOk.chk"
+        fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file)
+
+        ctx = FileContext(
+            filepath=file,
+            filepath_mangled=fpath_mangled,
+            filepath_hash=fpath_hash,
+        )
+
+        app.load_original_doc_from_file_context(ctx)
+        assert app.original_doc[ctx.filepath_hash] == ChkFileLoader.to_dict(ctx.filepath)

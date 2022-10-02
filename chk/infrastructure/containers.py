@@ -4,6 +4,8 @@ Global application functionality
 from enum import Enum
 from typing import NamedTuple, Any
 
+from chk.infrastructure.file_loader import FileContext, ChkFileLoader
+
 
 class CompiledDocBlockType(Enum):
     """Support compiled doc blocks"""
@@ -73,3 +75,9 @@ class App(NamedTuple):
             return self.compiled_doc[key][part]
 
         return self.original_doc.get(key)
+
+    def load_original_doc_from_file_context(self, file_ctx: FileContext) -> None:
+        """Load original doc from a given file context"""
+
+        document = ChkFileLoader.to_dict(file_ctx.filepath)
+        self.set_original_doc(file_ctx.filepath_hash, document)
