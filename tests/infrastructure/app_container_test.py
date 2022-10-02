@@ -63,3 +63,12 @@ class TestApp:
     @staticmethod
     def test_app_set_compiled_doc_part_pass():
         app.set_compiled_doc("ab22", part="request", value={'a': 1, 'b': 2, 'c': 3, })
+
+    @staticmethod
+    def test_app_get_compiled_doc_part_fail():
+        with pytest.raises(SystemExit):
+            app.get_compiled_doc("ab22", part="re")
+
+    @staticmethod
+    def test_app_get_compiled_doc_part_pass():
+        assert app.get_compiled_doc("ab22", part="request") == {'a': 1, 'b': 2, 'c': 3, }

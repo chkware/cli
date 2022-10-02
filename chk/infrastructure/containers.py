@@ -2,7 +2,7 @@
 Global application functionality
 """
 from enum import Enum
-from typing import NamedTuple
+from typing import NamedTuple, Any
 
 
 class CompiledDocBlockType(Enum):
@@ -57,3 +57,16 @@ class App(NamedTuple):
                 raise SystemExit("Unmatched allowed keys for compiled doc")
 
             self.compiled_doc[key] = value
+
+    def get_compiled_doc(self, key: str, part: str | None = None) -> Any:
+        """Get compiled file doc"""
+
+        allowed_keys = set(e.value for e in CompiledDocBlockType)
+
+        if part is not None:
+            if part not in allowed_keys:
+                raise SystemExit("Unsupported key for compiled doc")
+
+            return self.compiled_doc[key][part]
+
+        return self.original_doc.get(key)
