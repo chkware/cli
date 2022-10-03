@@ -6,15 +6,15 @@ from urllib.parse import urlparse
 from chk.modules.http.constants import HttpMethod, RequestConfigNode
 
 
-def allowed_method(value):
+def allowed_method(value: str) -> bool:
     """Validate if given method is allowed"""
     if value not in set(method.value for method in HttpMethod):
         raise ValueError('Unsupported method')
-    else:
-        return True
+
+    return True
 
 
-def allowed_url(value):
+def allowed_url(value: str) -> bool:
     """Validate if given URL is allowed"""
 
     parsed_url = urlparse(value)
