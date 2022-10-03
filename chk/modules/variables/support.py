@@ -21,7 +21,7 @@ from chk.modules.variables.constants import (
     VariableConfigNode as VarConf,
     LexicalAnalysisType,
 )
-from chk.modules.variables.validation_rules import variable_schema
+from chk.modules.variables.validation_rules import variable_schema, allowed_variable_name
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
 
 from chk.modules.testcase.support import TestcaseValueHandler
@@ -79,15 +79,20 @@ class VariableMixin:
         """ Validate the schema against config """
 
         try:
-            request_doc = self.variable_as_dict()
+            variables_doc = self.variable_as_dict()
 
-            if not validator.validate(request_doc, variable_schema):
+            if not validator.validate(variables_doc, variable_schema):
                 raise SystemExit(err_message("fatal.V0006", extra=validator.errors))
+
+            for key in variables_doc[VarConf.ROOT].keys():
+                allowed_variable_name(key)
 
         except DocumentError as doc_err:
             raise SystemExit(err_message("fatal.V0001", extra=doc_err)) from doc_err
+        except ValueError as val_err:
+            raise SystemExit(err_message("fatal.V0009", {'name': "H"}, extra=val_err)) from val_err
 
-        return request_doc  # or is a success
+        return variables_doc  # or is a success
 
     def variable_as_dict(self) -> dict[str, dict]:
         """Get variable dict"""

@@ -8,7 +8,7 @@ def allowed_variable_name(name: str) -> bool:
     """Check if the name start or ends with __"""
 
     if name.startswith("__") or name.endswith("__"):
-        raise ValueError("Unsupported variable naming")
+        raise ValueError(f"Unsupported variable naming: {name}",)
 
     return True
 

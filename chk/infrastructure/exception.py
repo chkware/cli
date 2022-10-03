@@ -1,7 +1,7 @@
 """
 exception messages
 """
-from typing import Any, Dict
+from typing import Any
 from chk.infrastructure.translation import l10n
 
 messages = dict(
@@ -14,6 +14,7 @@ messages = dict(
         V0006='File exception: Validation failed',
         V0007='System exception: Not a Callable',
         V0008='System exception: Wrong spec class',
+        V0009='Document exception: variable name starts or ends with __',
 
         # testcase errors
         V0020='None or many request found',
@@ -23,7 +24,7 @@ messages = dict(
 )
 
 
-def err_message(key: str, repl: Dict | None = None, extra: Any = None) -> str:
+def err_message(key: str, repl: dict | None = None, extra: Any = None) -> str:
     """prepare error message"""
     if not isinstance(key, str): raise ValueError('Invalid `key`.')
 
