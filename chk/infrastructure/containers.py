@@ -52,6 +52,9 @@ class App(NamedTuple):
             if part not in allowed_keys:
                 raise SystemExit("Unsupported key for compiled doc")
 
+            if not self.compiled_doc:
+                self.compiled_doc[key] = {}
+
             self.compiled_doc[key][part] = value
         else:
             # Match against all key given and allowed
