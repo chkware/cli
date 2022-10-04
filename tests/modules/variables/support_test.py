@@ -42,7 +42,8 @@ class TestVariablePrepareValueTable:
         ver = HavingVariables(file_ctx)
 
         variables: dict = {}
-        ver.variable_handle_value_table_for_absolute(variables)
+        variables_orig: dict = app.get_compiled_doc(file_ctx.filepath_hash, part="variables")
+        ver.variable_handle_value_table_for_absolute(variables_orig, variables)
 
         assert len(variables) == 2
         assert variables == {'var_1': "bar", 'var_2': 2}

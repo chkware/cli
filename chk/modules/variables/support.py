@@ -21,22 +21,25 @@ from chk.modules.variables.constants import (
     VariableConfigNode as VarConf,
     LexicalAnalysisType,
 )
-from chk.modules.variables.validation_rules import variable_schema, allowed_variable_name
+from chk.modules.variables.validation_rules import (
+    variable_schema,
+    allowed_variable_name,
+)
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
 
 from chk.modules.testcase.support import TestcaseValueHandler
 from chk.modules.testcase.constants import TestcaseConfigNode
 
 
-def parse_args(argv_s: list[str], delimiter="=") -> dict:
+def parse_args(argv_s: list[str], delimiter: str = "=") -> dict:
     """
     parse and return args to dict
     :return: dict
     """
 
     if argv_s:
-        argv_sa = [item for item in argv_s if delimiter in item]
-        return {items[0]: items[1] for items in [item.split(delimiter) for item in argv_sa]}
+        argv = [item for item in argv_s if delimiter in item]
+        return {item[0]: item[1] for item in [item.split(delimiter) for item in argv]}
 
     return {}
 
@@ -59,14 +62,14 @@ def replace_values(doc: dict, var_s: dict) -> dict[str, object]:
 
 
 class VariableMixin:
-    """ Mixin for variable spec. for v0.7.2 """
+    """Mixin for variable spec. for v0.7.2"""
 
     @abc.abstractmethod
     def get_file_context(self) -> FileContext:
-        """ Abstract method to get file context """
+        """Abstract method to get file context"""
 
     def __init___(self, symbol_tbl=None):
-        """ Initialise mixing props """
+        """Initialise mixing props"""
 
         self.file_ctx = self.get_file_context()
 
@@ -76,7 +79,7 @@ class VariableMixin:
             self.symbol_table = symbol_tbl
 
     def variable_validated(self) -> dict[str, dict]:
-        """ Validate the schema against config """
+        """Validate the schema against config"""
 
         try:
             variables_doc = self.variable_as_dict()
@@ -90,9 +93,9 @@ class VariableMixin:
         except DocumentError as doc_err:
             raise SystemExit(err_message("fatal.V0001", extra=doc_err)) from doc_err
         except ValueError as val_err:
-            raise SystemExit(err_message("fatal.V0009", {'name': "H"}, extra=val_err)) from val_err
+            raise SystemExit(err_message("fatal.V0009", extra=val_err)) from val_err
 
-        return variables_doc  # or is a success
+        return variables_doc
 
     def variable_as_dict(self) -> dict[str, dict]:
         """Get variable dict"""
@@ -184,13 +187,22 @@ class VariableMixin:
 
         return document
 
-    def variable_handle_value_table_for_absolute(self, variables: dict) -> None:
+    def variable_prepare_value_table(self) -> None:
+        updated_vars: dict = {}
+        original_vars: dict = app.get_compiled_doc(
+            self.file_ctx.filepath_hash, "variables"
+        )
+
+        # TODO: variable_handle_value_table_for_import()
+        self.variable_handle_value_table_for_absolute(original_vars, updated_vars)
+        # self.variable_handle_value_table_for_composite(original_vars, updated_vars)
+
+    @staticmethod
+    def variable_handle_value_table_for_absolute(actual: dict, updated: dict) -> None:
         """Detect only variable with absolute value"""
 
-        variables_doc: dict = app.get_compiled_doc(self.file_ctx.filepath_hash, "variables")
-
-        for key, val in variables_doc.items():
+        for key, val in actual.items():
             if isinstance(val, str) and "{$" in val:
                 continue
 
-            variables[key] = val
+            updated[key] = val
