@@ -183,3 +183,14 @@ class VariableMixin:
         document[VarConf.ROOT] = document.get(VarConf.ROOT, {}) | updated
 
         return document
+
+    def variable_handle_value_table_for_absolute(self, variables: dict) -> None:
+        """Detect only variable with absolute value"""
+
+        variables_doc: dict = app.get_compiled_doc(self.file_ctx.filepath_hash, "variables")
+
+        for key, val in variables_doc.items():
+            if isinstance(val, str) and "{$" in val:
+                continue
+
+            variables[key] = val
