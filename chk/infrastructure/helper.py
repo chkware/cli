@@ -167,3 +167,8 @@ def type_converter(var: str) -> object:
             pass
 
     return var
+
+
+def is_scalar(val: object) -> bool:
+    """Check is a value is scalar"""
+    return not (hasattr(val, "__len__") and (not isinstance(val, str)))
