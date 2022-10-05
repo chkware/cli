@@ -195,7 +195,7 @@ class VariableMixin:
 
         # TODO: variable_handle_value_table_for_import()
         self.variable_handle_value_table_for_absolute(original_vars, updated_vars)
-        # self.variable_handle_value_table_for_composite(original_vars, updated_vars)
+        self.variable_handle_value_table_for_composite(original_vars, updated_vars)
 
     @staticmethod
     def variable_handle_value_table_for_absolute(actual: dict, updated: dict) -> None:
@@ -206,3 +206,13 @@ class VariableMixin:
                 continue
 
             updated[key] = val
+
+    @staticmethod
+    def variable_handle_value_table_for_composite(actual: dict, updated: dict) -> None:
+        """Detect only variable with composite value"""
+
+        temp = {key: val for key, val in actual.items() if key not in updated}
+
+        replace_values(temp, updated)
+
+        updated |= temp

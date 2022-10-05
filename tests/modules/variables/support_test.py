@@ -47,3 +47,23 @@ class TestVariablePrepareValueTable:
 
         assert len(variables) == 2
         assert variables == {'var_1': "bar", 'var_2': 2}
+
+    def test_variable_handle_value_table_for_composite_pass(self):
+        config = {
+            'var_1': "bar",
+            'var_2': 2,
+            'var_3': 'ajax{$var_1}',
+            'var_4': 'ajax{$Var_1}',
+            'var_5': '{$var_2}',
+        }
+
+        file_ctx = FileContext(filepath_hash='ab12')
+        app.set_compiled_doc(file_ctx.filepath_hash, part="variables", value=config)
+        ver = HavingVariables(file_ctx)
+
+        variables: dict = {'var_1': "bar", 'var_2': 2}
+        variables_orig: dict = app.get_compiled_doc(file_ctx.filepath_hash, part="variables")
+        ver.variable_handle_value_table_for_composite(variables_orig, variables)
+
+        assert len(variables) == 2
+        assert variables == {'var_1': "bar", 'var_2': 2}
