@@ -8,7 +8,7 @@ from chk.modules.http.presentation import Presentation
 from chk.infrastructure.file_loader import FileContext
 
 
-def execute(file_ctx: FileContext):
+def execute(file_ctx: FileContext) -> None:
     """Execute command functionality"""
     http_spec = HttpSpec(file_ctx)
     try:
