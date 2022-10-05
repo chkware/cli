@@ -4,7 +4,7 @@ Entities for http document specification
 from typing import NamedTuple
 
 from chk.infrastructure.contexts import app
-from chk.infrastructure.file_loader import ChkFileLoader, FileContext
+from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
 from chk.infrastructure.work import (
     WorkerContract,
@@ -54,12 +54,7 @@ class HttpSpec(
     def get_file_context(self) -> FileContext:
         return self.file_ctx
 
-    def __work__(self) -> dict:
-        ctx_document = self.variable_process(LexicalAnalysisType.REQUEST)
-        out_response = handle_request(self, ctx_document)
-        return self.variable_assemble_values(ctx_document, out_response)
-
-    def pre_process(self) -> None:
+    def __before_main__(self) -> None:
         """Validate and prepare doc components"""
 
         # save original doc
@@ -80,8 +75,12 @@ class HttpSpec(
             ),
         )
 
-    def process(self) -> None:
+    def __main__(self) -> None:
+        """Process http document"""
         self.variable_prepare_value_table()
+        self.ctx_document = self.variable_process(LexicalAnalysisType.REQUEST)
+        self.out_response = handle_request(self, self.ctx_document)
 
-    def make_response(self):
-        pass
+    def __after_main__(self) -> dict:
+        """Prepare response for http document"""
+        return self.variable_assemble_values(self.ctx_document, self.out_response)
