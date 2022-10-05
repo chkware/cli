@@ -1,4 +1,5 @@
-from cerberus import Validator
+from types import MappingProxyType
+
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.work import (
     WorkerContract,
@@ -7,18 +8,17 @@ from chk.infrastructure.work import (
 )
 from chk.infrastructure.exception import err_message
 
-from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
-from chk.modules.http.support import RequestMixin
-from chk.modules.testcase.support import TestcaseMixin
+from chk.modules.version.support import VersionMixin
+
 from chk.modules.variables.entities import ApiResponse
 from chk.modules.variables.support import VariableMixin
 from chk.modules.variables.constants import LexicalAnalysisType
-from chk.modules.version.support import VersionMixin
+
+from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
+from chk.modules.http.support import RequestMixin
+
+from chk.modules.testcase.support import TestcaseMixin
 from chk.modules.testcase.presentation import Presentation, AssertResult
-
-from types import MappingProxyType
-
-from chk.modules.version.constants import DocumentType
 
 
 class Testcase(
@@ -31,19 +31,21 @@ class Testcase(
     RequestProcessorContract,
 ):
     def __init__(self, file_ctx: FileContext):
-        self.file_ctx, self.document, self.validator = (
-            file_ctx,
-            file_ctx.document,
-            Validator(),
-        )
+        self.file_ctx = file_ctx
 
-    def __work__(self) -> None:
-        self.version_validated(DocumentType.TESTCASE)
+    def get_file_context(self) -> FileContext:
+        return self.file_ctx
+
+    def __before_main__(self) -> None:
+        pass
+
+    def __main__(self) -> None:
+        self.version_validated()
         self.testcase_validated()
         self.variable_validated()
 
         print(Presentation.displayable_file_info(self.file_ctx))
-        print(Presentation.displayable_string(f"Executing spec"))
+        print(Presentation.displayable_string("Executing spec"))
         ctx_document = {}
 
         if self.is_request_infile():
@@ -63,9 +65,9 @@ class Testcase(
                 out_response = handle_request(self, ctx_document)
                 out_response = ApiResponse.from_dict(out_response).dict()
 
-                print(Presentation.displayable_string(f"- Making request [Success]"))
+                print(Presentation.displayable_string("- Making request [Success]"))
             except Exception as ex:
-                print(Presentation.displayable_string(f"- Making request [Fail]"))
+                print(Presentation.displayable_string("- Making request [Fail]"))
                 raise ex
 
             try:
@@ -78,13 +80,13 @@ class Testcase(
 
                 print(
                     Presentation.displayable_string(
-                        f"- Process data for assertion [Success]"
+                        "- Process data for assertion [Success]"
                     )
                 )
             except Exception as ex:
                 print(
                     Presentation.displayable_string(
-                        f"- Process data for assertion [Fail]"
+                        "- Process data for assertion [Fail]"
                     )
                 )
                 raise ex
@@ -105,3 +107,6 @@ class Testcase(
                             assertion_result.message
                         )
                     )
+
+    def __after_main__(self) -> dict:
+        return {}
