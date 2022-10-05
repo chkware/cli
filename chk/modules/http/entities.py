@@ -80,8 +80,8 @@ class HttpSpec(
             ),
         )
 
-    def process(self):
-        pass
+    def process(self) -> None:
+        self.variable_prepare_value_table()
 
     def make_response(self):
         pass

@@ -197,6 +197,10 @@ class VariableMixin:
         self.variable_handle_value_table_for_absolute(original_vars, updated_vars)
         self.variable_handle_value_table_for_composite(original_vars, updated_vars)
 
+        app.set_compiled_doc(
+            self.file_ctx.filepath_hash, part="variables", value=updated_vars
+        )
+
     @staticmethod
     def variable_handle_value_table_for_absolute(actual: dict, updated: dict) -> None:
         """Detect only variable with absolute value"""
