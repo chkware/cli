@@ -4,28 +4,32 @@ Http module helpers
 from types import MappingProxyType
 from urllib.parse import unquote, urlparse
 
-from requests import Response, request
+from requests import request
 from requests.auth import HTTPBasicAuth
 
-from chk.infrastructure.work import RequestProcessorContract
 from chk.modules.http.constants import RequestConfigNode as ConfElem
 from chk.modules.http.validation_rules import allowed_method, allowed_url
 
 
-class RequestProcessorMixin_PyRequests(RequestProcessorContract):
-    """ Request class that use python requests """
+class RequestProcessorPyRequests:
+    """Request class that use python requests"""
 
-    def __process__(self) -> dict:
+    @staticmethod
+    def perform(request_data: dict) -> dict:
         """Make external api call"""
+
+        request_args: dict = {}
+
+        HttpRequestArgCompiler.add_generic_args(
+            MappingProxyType(request_data),
+            request_args,
+        )
+
+        response = request(**request_args)
 
         def version(proto_ver: int) -> str:
             """parse version"""
-            return 'HTTP/1.0' if proto_ver == 10 else 'HTTP/1.1'
-
-        if not hasattr(self, 'request_args'):
-            raise SystemExit('RequestProcessorContract not inherited.')
-
-        response: Response = request(**self.request_args)
+            return "HTTP/1.0" if proto_ver == 10 else "HTTP/1.1"
 
         return dict(
             version=version(response.raw.version),
@@ -35,27 +39,13 @@ class RequestProcessorMixin_PyRequests(RequestProcessorContract):
             body=response.text,
         )
 
-    def __before_process__(self, request_data: dict[str, object]) -> None:
-        """Prepare dotmap to dict before making request"""
-
-        if not hasattr(self, 'request_args'):
-            raise SystemExit('RequestProcessorContract not inherited.')
-
-        if ConfElem.ROOT not in request_data:
-            raise SystemExit('Wrong document format.')
-
-        HttpRequestArgCompiler.add_generic_args(
-            MappingProxyType(request_data[ConfElem.ROOT]),  # type: ignore
-            self.request_args,
-        )
-
 
 class HttpRequestArgCompiler:
-    """ HttpRequestArgCompiler """
+    """HttpRequestArgCompiler"""
 
     @staticmethod
     def add_url_and_method(request_data: MappingProxyType, request_arg: dict) -> None:
-        """ add default request url and request method """
+        """add default request url and request method"""
         if allowed_method(request_data.get(ConfElem.METHOD)):
             request_arg["method"] = request_data.get(ConfElem.METHOD)
 
@@ -80,11 +70,14 @@ class HttpRequestArgCompiler:
         # handle basic auth
         if (tag_ba := request_data.get(ConfElem.AUTH_BA)) is not None:
             request_arg["auth"] = HTTPBasicAuth(
-                tag_ba.get(ConfElem.AUTH_BA_USR), tag_ba.get(ConfElem.AUTH_BA_PAS))
+                tag_ba.get(ConfElem.AUTH_BA_USR), tag_ba.get(ConfElem.AUTH_BA_PAS)
+            )
 
         # handle bearer auth
         if (tag_be := request_data.get(ConfElem.AUTH_BE)) is not None:
-            request_arg["headers"]["authorization"] = "Bearer " + tag_be.get(ConfElem.AUTH_BE_TOK)
+            request_arg["headers"]["authorization"] = "Bearer " + tag_be.get(
+                ConfElem.AUTH_BE_TOK
+            )
 
     @staticmethod
     def add_body(request_data: MappingProxyType, request_arg: dict) -> None:
@@ -97,9 +90,9 @@ class HttpRequestArgCompiler:
 
             for body_i in dict(body).items():
                 (key, val) = body_i
-                if val.startswith('file://'):
+                if val.startswith("file://"):
                     val = unquote(urlparse(val).path)
-                    files[key] = open(val, 'rb')
+                    files[key] = open(val, "rb")
                 else:
                     non_files[key] = val
 
@@ -110,11 +103,11 @@ class HttpRequestArgCompiler:
             request_arg["json"] = dict(body)
         elif (body := request_data.get(ConfElem.BODY_XML)) is not None:
             if request_arg["headers"].get("content-type") is None:
-                request_arg["headers"]["content-type"] = 'application/xml'
+                request_arg["headers"]["content-type"] = "application/xml"
             request_arg["data"] = body
         elif (body := request_data.get(ConfElem.BODY_TXT)) is not None:
             if request_arg["headers"].get("content-type") is None:
-                request_arg["headers"]["content-type"] = 'text/plain'
+                request_arg["headers"]["content-type"] = "text/plain"
             request_arg["data"] = str(body)
 
     @staticmethod
