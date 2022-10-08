@@ -21,6 +21,10 @@ class CompiledDocBlockType(Enum):
             e.value for e in CompiledDocBlockType if not str(e.value).startswith("__")
         }
 
+    @staticmethod
+    def all_keys() -> set:
+        return {e.value for e in CompiledDocBlockType}
+
 
 class App(NamedTuple):
     """Global app container"""
@@ -55,17 +59,20 @@ class App(NamedTuple):
         if not isinstance(value, dict):
             raise SystemExit("Unsupported format for compiled doc")
 
-        allowed_keys = CompiledDocBlockType.allowed_keys()
+        allowed_keys = CompiledDocBlockType.all_keys()
+
+        if not self.compiled_doc:
+            for item in allowed_keys:
+                self.compiled_doc[item] = {}
 
         if part is not None:
             if part not in allowed_keys:
                 raise SystemExit("Unsupported key for compiled doc")
 
-            if not self.compiled_doc:
-                self.compiled_doc[key] = {}
-
             self.compiled_doc[key][part] = value
         else:
+            allowed_keys = CompiledDocBlockType.allowed_keys()
+
             # Match against all key given and allowed
             if len(value.keys()) != len(allowed_keys):
                 raise SystemExit("Unmatched key length for compiled doc")
@@ -78,7 +85,7 @@ class App(NamedTuple):
     def get_compiled_doc(self, key: str, part: str | None = None) -> Any:
         """Get compiled file doc"""
 
-        allowed_keys = CompiledDocBlockType.allowed_keys()
+        allowed_keys = CompiledDocBlockType.all_keys()
 
         if part is not None:
             if part not in allowed_keys:
