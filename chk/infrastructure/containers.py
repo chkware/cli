@@ -26,18 +26,30 @@ class CompiledDocBlockType(Enum):
         return {e.value for e in CompiledDocBlockType}
 
 
+class EventLog:
+    __slots__ = (
+        "name",
+        "message",
+        "kind",
+        "level",
+    )
+
+    def __init__(self, name: str, message: str = "", kind: str = "", level: str = ""):
+        self.name, self.message, self.kind, self.level = name, message, kind, level
+
+
 class App(NamedTuple):
     """Global app container"""
 
     original_doc: dict = {}
     compiled_doc: dict = {}
-    display_buffer: dict = {}
+    event_log: dict = {}
 
     def __str__(self) -> str:
         return (
             f"original_doc: {str(self.original_doc)}\n\n"
             + f"compiled_doc: {str(self.compiled_doc)}\n\n"
-            + f"display_buffer: {str(self.display_buffer)}"
+            + f"event_log: {str(self.event_log)}"
         )
 
     def set_original_doc(self, key: str, value: dict) -> None:
@@ -99,3 +111,14 @@ class App(NamedTuple):
 
         document = ChkFileLoader.to_dict(file_ctx.filepath)
         self.set_original_doc(file_ctx.filepath_hash, document)
+
+    def set_event_log(self, key: str, val: EventLog) -> None:
+        """Set a event log"""
+        if not self.event_log:
+            self.event_log[key] = []
+
+        self.event_log[key].append(val)
+
+    def get_event_log(self, key: str) -> list[EventLog]:
+        """Get a event logs for one type"""
+        return list(self.event_log[key])
