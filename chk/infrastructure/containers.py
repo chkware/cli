@@ -4,6 +4,8 @@ Global application functionality
 from enum import Enum
 from typing import NamedTuple, Any
 
+from datetime import datetime
+
 from chk.infrastructure.file_loader import FileContext, ChkFileLoader
 
 
@@ -32,6 +34,7 @@ class EventLog:
         "message",
         "kind",
         "level",
+        "time",
         "extra",
     )
 
@@ -50,6 +53,7 @@ class EventLog:
             level,
             extra,
         )
+        self.time = datetime.now()
 
 
 class App(NamedTuple):
