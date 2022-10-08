@@ -3,24 +3,20 @@ Entities for http document specification
 """
 from typing import NamedTuple
 
+from chk.infrastructure.containers import EventLog
 from chk.infrastructure.contexts import app
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
-from chk.infrastructure.work import (
-    WorkerContract,
-    RequestProcessorContract,
-    handle_request,
-)
+from chk.infrastructure.work import WorkerContract
 
 from chk.modules.version.support import VersionMixin
 
-from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
+from chk.modules.http.request_helper import RequestProcessorPyRequests
 from chk.modules.http.support import RequestMixin
 from chk.modules.http.constants import RequestConfigNode as RConst
 
 from chk.modules.variables.entities import DefaultVariableDoc, DefaultReturnableDoc
 from chk.modules.variables.support import VariableMixin
-from chk.modules.variables.constants import LexicalAnalysisType
 
 
 class DefaultRequestDoc(NamedTuple):
@@ -37,12 +33,10 @@ class DefaultRequestDoc(NamedTuple):
 
 
 class HttpSpec(
-    RequestProcessorMixin_PyRequests,
     VersionMixin,
     RequestMixin,
     VariableMixin,
     WorkerContract,
-    RequestProcessorContract,
 ):
     """
     Holds http specification activity
@@ -78,9 +72,14 @@ class HttpSpec(
     def __main__(self) -> None:
         """Process http document"""
         self.variable_prepare_value_table()
-        self.ctx_document = self.variable_process(LexicalAnalysisType.REQUEST)
-        self.out_response = handle_request(self, self.ctx_document)
+        self.lexical_analysis_for_request()
+
+        request_doc = app.get_compiled_doc(self.file_ctx.filepath_hash, RConst.ROOT)
+        response = RequestProcessorPyRequests.perform(request_doc)
+        app.set_compiled_doc(
+            self.file_ctx.filepath_hash, part="__local", value={RConst.ROOT: response}
+        )
 
     def __after_main__(self) -> dict:
         """Prepare response for http document"""
-        return self.variable_assemble_values(self.ctx_document, self.out_response)
+        # return self.variable_assemble_values(self.ctx_document, self.out_response)
