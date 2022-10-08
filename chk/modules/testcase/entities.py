@@ -14,7 +14,7 @@ from chk.modules.variables.entities import ApiResponse
 from chk.modules.variables.support import VariableMixin
 from chk.modules.variables.constants import LexicalAnalysisType
 
-from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
+from chk.modules.http.request_helper import RequestProcessorPyRequests
 from chk.modules.http.support import RequestMixin
 
 from chk.modules.testcase.support import TestcaseMixin
@@ -22,13 +22,11 @@ from chk.modules.testcase.presentation import Presentation, AssertResult
 
 
 class Testcase(
-    RequestProcessorMixin_PyRequests,
     VersionMixin,
     RequestMixin,
     VariableMixin,
     TestcaseMixin,
     WorkerContract,
-    RequestProcessorContract,
 ):
     def __init__(self, file_ctx: FileContext):
         self.file_ctx = file_ctx
@@ -62,7 +60,7 @@ class Testcase(
 
         if ctx_document:
             try:
-                out_response = handle_request(self, ctx_document)
+                out_response = RequestProcessorPyRequests.perform(ctx_document)
                 out_response = ApiResponse.from_dict(out_response).dict()
 
                 print(Presentation.displayable_string("- Making request [Success]"))
