@@ -36,8 +36,8 @@ class App(NamedTuple):
     def __str__(self) -> str:
         return (
             f"original_doc: {str(self.original_doc)}\n\n"
-            + "compiled_doc: {str(self.compiled_doc)}\n\n"
-            + "display_buffer: {str(self.display_buffer)}"
+            + f"compiled_doc: {str(self.compiled_doc)}\n\n"
+            + f"display_buffer: {str(self.display_buffer)}"
         )
 
     def set_original_doc(self, key: str, value: dict) -> None:
@@ -62,8 +62,7 @@ class App(NamedTuple):
         allowed_keys = CompiledDocBlockType.all_keys()
 
         if not self.compiled_doc:
-            for item in allowed_keys:
-                self.compiled_doc[item] = {}
+            self.compiled_doc[key] = {item: {} for item in allowed_keys}
 
         if part is not None:
             if part not in allowed_keys:
