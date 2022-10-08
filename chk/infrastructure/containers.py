@@ -13,6 +13,13 @@ class CompiledDocBlockType(Enum):
     REQUEST = "request"
     VERSION = "version"
     VARIABLES = "variables"
+    LOCAL = "__local"
+
+    @staticmethod
+    def allowed_keys() -> set:
+        return {
+            e.value for e in CompiledDocBlockType if not str(e.value).startswith("__")
+        }
 
 
 class App(NamedTuple):
@@ -46,7 +53,7 @@ class App(NamedTuple):
         if not isinstance(value, dict):
             raise SystemExit("Unsupported format for compiled doc")
 
-        allowed_keys = set(e.value for e in CompiledDocBlockType)
+        allowed_keys = CompiledDocBlockType.allowed_keys()
 
         if part is not None:
             if part not in allowed_keys:
@@ -69,7 +76,7 @@ class App(NamedTuple):
     def get_compiled_doc(self, key: str, part: str | None = None) -> Any:
         """Get compiled file doc"""
 
-        allowed_keys = set(e.value for e in CompiledDocBlockType)
+        allowed_keys = CompiledDocBlockType.allowed_keys()
 
         if part is not None:
             if part not in allowed_keys:
