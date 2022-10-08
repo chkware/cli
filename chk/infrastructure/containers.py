@@ -30,8 +30,10 @@ class App(NamedTuple):
     display_buffer: dict = {}
 
     def __str__(self) -> str:
-        return "original_doc: {}\n\ncompiled_doc: {}\n\ndisplay_buffer: {}".format(
-            str(self.original_doc), str(self.compiled_doc), str(self.display_buffer)
+        return (
+            f"original_doc: {str(self.original_doc)}\n\n"
+            + "compiled_doc: {str(self.compiled_doc)}\n\n"
+            + "display_buffer: {str(self.display_buffer)}"
         )
 
     def set_original_doc(self, key: str, value: dict) -> None:
