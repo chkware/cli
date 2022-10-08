@@ -68,6 +68,10 @@ class VariableMixin:
     def get_file_context(self) -> FileContext:
         """Abstract method to get file context"""
 
+    @abc.abstractmethod
+    def request_as_dict(self) -> dict:
+        """Abstract method to get request"""
+
     def __init___(self, symbol_tbl=None):
         """Initialise mixing props"""
 
@@ -148,6 +152,39 @@ class VariableMixin:
 
         return document_replaced
 
+    def lexical_analysis_for_request(self) -> None:
+        """Lexical analysis for request block"""
+        file_ctx = self.get_file_context()
+
+        request_document = app.get_compiled_doc(
+            file_ctx.filepath_hash, RequestConfigNode.ROOT
+        )
+        symbol_table = app.get_compiled_doc(file_ctx.filepath_hash, VarConf.ROOT)
+
+        request_document_replaced = replace_values(request_document, symbol_table)
+
+        app.set_compiled_doc(
+            file_ctx.filepath_hash,
+            part=RequestConfigNode.ROOT,
+            value=request_document_replaced,
+        )
+
+    @staticmethod
+    def variable_update_symbol_table(
+        ctx_document: dict, updated: MappingProxyType
+    ) -> dict:
+        """
+        Update symbol table and return updated document
+        :param ctx_document:
+        :param updated:
+        :return:
+        """
+        document = deepcopy(ctx_document)
+
+        document[VarConf.ROOT] = document.get(VarConf.ROOT, {}) | updated
+
+        return document
+
     def variable_assemble_values(self, document: dict, response: dict) -> dict:
         """
         Assemble value based on return statement
@@ -171,21 +208,28 @@ class VariableMixin:
 
         raise ValueError(f"variable_assemble_values: `{document_type}` not allowed")
 
-    @staticmethod
-    def variable_update_symbol_table(
-        ctx_document: dict, updated: MappingProxyType
-    ) -> dict:
+    def assemble_values_for_request(self) -> dict:
         """
-        Update symbol table and return updated document
-        :param ctx_document:
-        :param updated:
+        Assemble value based on return statement
+        :param document:
+        :param response:
         :return:
         """
-        document = deepcopy(ctx_document)
+        document_type = self.get_document_type()
 
-        document[VarConf.ROOT] = document.get(VarConf.ROOT, {}) | updated
+        if document_type is DocumentType.HTTP:
+            return RequestValueHandler.request_get_return(document, response)
 
-        return document
+        elif document_type is DocumentType.TESTCASE:
+            request_ret = RequestValueHandler.request_get_return(document, response)
+
+            return TestcaseValueHandler.request_set_result(
+                self.execute_as_dict(),
+                MappingProxyType(self.symbol_table),
+                MappingProxyType(request_ret),
+            )
+
+        raise ValueError(f"variable_assemble_values: `{document_type}` not allowed")
 
     def variable_prepare_value_table(self) -> None:
         updated_vars: dict = {}
