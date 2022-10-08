@@ -32,10 +32,24 @@ class EventLog:
         "message",
         "kind",
         "level",
+        "extra",
     )
 
-    def __init__(self, name: str, message: str = "", kind: str = "", level: str = ""):
-        self.name, self.message, self.kind, self.level = name, message, kind, level
+    def __init__(
+        self,
+        name: str,
+        message: str = "",
+        kind: str = "action",
+        level: str = "INFO",
+        extra: object = None,
+    ):
+        self.name, self.message, self.kind, self.level, self.extra = (
+            name,
+            message,
+            kind,
+            level,
+            extra,
+        )
 
 
 class App(NamedTuple):
@@ -113,12 +127,12 @@ class App(NamedTuple):
         self.set_original_doc(file_ctx.filepath_hash, document)
 
     def set_event_log(self, key: str, val: EventLog) -> None:
-        """Set a event log"""
+        """Set an event log"""
         if not self.event_log:
             self.event_log[key] = []
 
         self.event_log[key].append(val)
 
     def get_event_log(self, key: str) -> list[EventLog]:
-        """Get a event logs for one type"""
+        """Get an event logs for one type"""
         return list(self.event_log[key])
