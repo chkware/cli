@@ -96,3 +96,10 @@ class TestApp:
 
         app.load_original_doc_from_file_context(ctx)
         assert app.original_doc[ctx.filepath_hash] == ChkFileLoader.to_dict(ctx.filepath)
+
+    @staticmethod
+    def test_config_pass():
+
+        assert app.config("buffer_access_off") is True
+        assert app.config("buffer_access_off", {"d": 1}) == {"d": 1}
+        assert app.config("buffer_access_off") == {"d": 1}

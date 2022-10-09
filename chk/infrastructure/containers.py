@@ -5,6 +5,7 @@ from enum import Enum
 from typing import NamedTuple
 
 from chk.infrastructure.file_loader import FileContext, ChkFileLoader
+from chk.infrastructure.helper import dict_get, dict_set
 
 
 class CompiledDocBlockType(Enum):
@@ -31,6 +32,12 @@ class App(NamedTuple):
 
     original_doc: dict = {}
     compiled_doc: dict = {}
+
+    environment_ctx: dict = {
+        "config": {
+            "buffer_access_off": True
+        },
+    }
 
     def __str__(self) -> str:
         return (
@@ -97,3 +104,9 @@ class App(NamedTuple):
 
         document = ChkFileLoader.to_dict(file_ctx.filepath)
         self.set_original_doc(file_ctx.filepath_hash, document)
+
+    def config(self, key: str, val: object = None) -> object:
+        if val is not None:
+            dict_set(self.environment_ctx, f"config.{key}", val)
+
+        return dict_get(self.environment_ctx, f"config.{key}", None)
