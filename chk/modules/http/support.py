@@ -43,7 +43,9 @@ class RequestValueHandler:
                 if ret not in ('version', 'code', 'reason', 'headers', 'body'):
                     raise ValueError('Unsupported key in request.return')
 
-                fx = lambda k, v: None if k != ret else v
+                def fx(k: object, v: object) -> object:
+                    return None if k != ret else v
+
                 returnable = {key: fx(key, value) for key, value in response.items()}
                 returnable['have_all'] = False
 

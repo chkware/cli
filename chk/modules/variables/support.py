@@ -208,28 +208,16 @@ class VariableMixin:
 
         raise ValueError(f"variable_assemble_values: `{document_type}` not allowed")
 
-    def assemble_values_for_request(self) -> dict:
-        """
-        Assemble value based on return statement
-        :param document:
-        :param response:
-        :return:
-        """
-        document_type = self.get_document_type()
+    def assemble_local_vars_for_request(self) -> dict:
+        """Assemble value based on return statement"""
+        document = self.request_as_dict()
+        response = dict(app.get_compiled_doc(self.file_ctx.filepath_hash, "__local"))
 
-        if document_type is DocumentType.HTTP:
-            return RequestValueHandler.request_get_return(document, response)
+        compiled_return: dict = RequestValueHandler.request_get_return(
+            document, response.get(RequestConfigNode.ROOT, {})
+        )
 
-        elif document_type is DocumentType.TESTCASE:
-            request_ret = RequestValueHandler.request_get_return(document, response)
-
-            return TestcaseValueHandler.request_set_result(
-                self.execute_as_dict(),
-                MappingProxyType(self.symbol_table),
-                MappingProxyType(request_ret),
-            )
-
-        raise ValueError(f"variable_assemble_values: `{document_type}` not allowed")
+        return compiled_return
 
     def variable_prepare_value_table(self) -> None:
         updated_vars: dict = {}
