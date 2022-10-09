@@ -2,7 +2,7 @@
 Global application functionality
 """
 from enum import Enum
-from typing import NamedTuple, Any
+from typing import NamedTuple
 
 from chk.infrastructure.file_loader import FileContext, ChkFileLoader
 
@@ -31,13 +31,11 @@ class App(NamedTuple):
 
     original_doc: dict = {}
     compiled_doc: dict = {}
-    event_log: dict = {}
 
     def __str__(self) -> str:
         return (
-            f"original_doc: {str(self.original_doc)}\n\n"
-            + f"compiled_doc: {str(self.compiled_doc)}\n\n"
-            + f"event_log: {str(self.event_log)}"
+            f"original_doc: {str(self.original_doc)}\r\n\r\n"
+            + f"compiled_doc: {str(self.compiled_doc)}\r\n\r\n"
         )
 
     def set_original_doc(self, key: str, value: dict) -> None:
@@ -81,7 +79,7 @@ class App(NamedTuple):
 
             self.compiled_doc[key] = value
 
-    def get_compiled_doc(self, key: str, part: str | None = None) -> Any:
+    def get_compiled_doc(self, key: str, part: str | None = None) -> object:
         """Get compiled file doc"""
 
         allowed_keys = CompiledDocBlockType.all_keys()
@@ -99,14 +97,3 @@ class App(NamedTuple):
 
         document = ChkFileLoader.to_dict(file_ctx.filepath)
         self.set_original_doc(file_ctx.filepath_hash, document)
-
-    def set_event_log(self, key: str, val: object) -> None:
-        """Set an event log"""
-        if not self.event_log:
-            self.event_log[key] = []
-
-        self.event_log[key].append(val)
-
-    def get_event_log(self, key: str) -> list:
-        """Get an event logs for one type"""
-        return list(self.event_log[key])

@@ -96,14 +96,3 @@ class TestApp:
 
         app.load_original_doc_from_file_context(ctx)
         assert app.original_doc[ctx.filepath_hash] == ChkFileLoader.to_dict(ctx.filepath)
-
-    @staticmethod
-    def test_set_event_log_pass():
-        app.set_event_log("ab12", ("some_event_1", "some event 1", "INFO", "DEBUG"))
-
-    @staticmethod
-    def test_get_event_log_pass():
-        e_lst = app.get_event_log("ab12")
-
-        assert isinstance(e_lst, list)
-        assert isinstance(e_lst[0], tuple)
