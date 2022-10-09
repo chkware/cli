@@ -4,7 +4,7 @@ test global chk functions
 import pytest
 import tests
 
-from chk.infrastructure.containers import App, EventLog
+from chk.infrastructure.containers import App
 from chk.infrastructure.file_loader import FileContext, ChkFileLoader
 from chk.infrastructure.helper import data_set, data_get
 
@@ -99,11 +99,11 @@ class TestApp:
 
     @staticmethod
     def test_set_event_log_pass():
-        app.set_event_log("ab12", EventLog("some_event_1", "some event 1", "INFO", "DEBUG"))
+        app.set_event_log("ab12", ("some_event_1", "some event 1", "INFO", "DEBUG"))
 
     @staticmethod
     def test_get_event_log_pass():
         e_lst = app.get_event_log("ab12")
 
         assert isinstance(e_lst, list)
-        assert isinstance(e_lst[0], EventLog)
+        assert isinstance(e_lst[0], tuple)

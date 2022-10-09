@@ -4,8 +4,6 @@ Global application functionality
 from enum import Enum
 from typing import NamedTuple, Any
 
-from datetime import datetime
-
 from chk.infrastructure.file_loader import FileContext, ChkFileLoader
 
 
@@ -26,34 +24,6 @@ class CompiledDocBlockType(Enum):
     @staticmethod
     def all_keys() -> set:
         return {e.value for e in CompiledDocBlockType}
-
-
-class EventLog:
-    __slots__ = (
-        "name",
-        "message",
-        "kind",
-        "level",
-        "time",
-        "extra",
-    )
-
-    def __init__(
-        self,
-        name: str,
-        message: str = "",
-        kind: str = "action",
-        level: str = "INFO",
-        extra: object = None,
-    ):
-        self.name, self.message, self.kind, self.level, self.extra = (
-            name,
-            message,
-            kind,
-            level,
-            extra,
-        )
-        self.time = datetime.now()
 
 
 class App(NamedTuple):
@@ -130,13 +100,13 @@ class App(NamedTuple):
         document = ChkFileLoader.to_dict(file_ctx.filepath)
         self.set_original_doc(file_ctx.filepath_hash, document)
 
-    def set_event_log(self, key: str, val: EventLog) -> None:
+    def set_event_log(self, key: str, val: object) -> None:
         """Set an event log"""
         if not self.event_log:
             self.event_log[key] = []
 
         self.event_log[key].append(val)
 
-    def get_event_log(self, key: str) -> list[EventLog]:
+    def get_event_log(self, key: str) -> list:
         """Get an event logs for one type"""
         return list(self.event_log[key])
