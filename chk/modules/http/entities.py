@@ -3,7 +3,6 @@ Entities for http document specification
 """
 from typing import NamedTuple
 
-from chk.infrastructure.containers import EventLog
 from chk.infrastructure.contexts import app
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
@@ -82,4 +81,4 @@ class HttpSpec(
 
     def __after_main__(self) -> dict:
         """Prepare response for http document"""
-        # return self.variable_assemble_values(self.ctx_document, self.out_response)
+        return self.assemble_local_vars_for_request()
