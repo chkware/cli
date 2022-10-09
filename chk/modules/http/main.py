@@ -15,4 +15,4 @@ def execute(file_ctx: FileContext) -> None:
         response = handle_worker(http_spec)
     except BaseException as error:
         response = error
-    Presentation.present_result(file_ctx, response)
+    Presentation.present_result(response)
