@@ -66,7 +66,7 @@ class App(NamedTuple):
 
         allowed_keys = CompiledDocBlockType.all_keys()
 
-        if not self.compiled_doc:
+        if key not in self.compiled_doc:
             self.compiled_doc[key] = {item: {} for item in allowed_keys}
 
         if part is not None:
