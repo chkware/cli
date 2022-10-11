@@ -3,7 +3,7 @@ test global helper functions
 """
 import pytest
 
-from chk.infrastructure.helper import dict_set, data_set, dict_get, data_get
+from chk.infrastructure.helper import dict_set, data_set, dict_get, data_get, is_scalar
 
 
 def test_dict_set_pass_when_key_one_dimensional():
@@ -167,3 +167,17 @@ def test_data_get_pass_for_list_stating_index():
     keymap = "0.aa.aaa.1"
 
     assert data_get(dct, keymap) == 2
+
+
+def test_is_scalar_pass():
+    lst = [{"aa": {"aaa": [1, 2]}}, 2]
+    dct = {'a':1, 'b':2}
+    s = 'jo'
+    i = 2000000000
+    f = 2000000000.222222222
+
+    assert not is_scalar(lst)
+    assert not is_scalar(dct)
+    assert is_scalar(s)
+    assert is_scalar(i)
+    assert is_scalar(f)

@@ -105,7 +105,7 @@ def data_set(var: dict | list, keymap: str, value: object) -> bool:
                 return True
 
 
-def data_get(var: dict | list, keymap: str, default=None) -> object:
+def data_get(var: dict | list, keymap: str, default: object=None) -> object:
     """
     Get a value of a dictionary|list by dot notation key
     :param var: the dictionary|list we'll get value for
@@ -115,7 +115,7 @@ def data_get(var: dict | list, keymap: str, default=None) -> object:
     """
     if len(keymap) == 0:
         return default
-    elif not var:
+    if not var:
         return default
 
     dot_loc = keymap.find(".")
@@ -156,14 +156,19 @@ def type_converter(var: str) -> object:
 
     if var == "true":
         return True
-    elif var == "false":
+    if var == "false":
         return False
-    elif var == "null":
+    if var == "null":
         return None
-    elif type(var) == str:
+    if isinstance(var, str):
         try:
             return ast.literal_eval(var)
         except (ValueError, TypeError, SyntaxError):
             pass
 
     return var
+
+
+def is_scalar(val: object) -> bool:
+    """Check is a value is scalar"""
+    return not (hasattr(val, "__len__") and (not isinstance(val, str)))

@@ -1,4 +1,6 @@
-from chk.modules.variables.support import parse_args
+from chk.infrastructure.contexts import app
+from chk.infrastructure.file_loader import FileContext
+from chk.modules.variables.support import parse_args, VariableMixin
 
 
 class TestParseArgs:
@@ -15,3 +17,79 @@ class TestParseArgs:
 
         assert isinstance(response, dict)
         assert len(response) == 3
+
+
+class HavingVariables(VariableMixin):
+    def __init__(self, file_ctx: FileContext) -> None:
+        self.file_ctx = file_ctx
+
+    def get_file_context(self) -> FileContext:
+        return self.file_ctx
+
+
+class TestVariablePrepareValueTable:
+
+    def test_variable_prepare_value_table_pass(self):
+        config = {
+            'var_1': "bar",
+            'var_2': 2,
+            'var_3': 'ajax{$var_1}',
+            'var_4': 'ajax{$Var_1}',
+            'var_5': '{$var_2}',
+        }
+
+        file_ctx = FileContext(filepath_hash='ab12')
+        app.set_compiled_doc(file_ctx.filepath_hash, part="variables", value=config)
+        ver = HavingVariables(file_ctx)
+
+        ver.variable_prepare_value_table()
+
+        variables: dict = app.get_compiled_doc(file_ctx.filepath_hash, part="variables")
+
+        assert variables == {
+            'var_1': "bar",
+            'var_2': 2,
+            'var_3': 'ajaxbar',
+            'var_4': 'ajax{$Var_1}',
+            'var_5': '2',
+        }
+
+    def test_variable_handle_value_table_for_absolute_pass(self):
+        config = {
+            'var_1': "bar",
+            'var_2': 2,
+            'var_3': 'ajax{$var_1}',
+            'var_4': 'ajax{$Var_1}',
+            'var_5': '{$var_2}',
+        }
+
+        file_ctx = FileContext(filepath_hash='ab12')
+        app.set_compiled_doc(file_ctx.filepath_hash, part="variables", value=config)
+        ver = HavingVariables(file_ctx)
+
+        variables: dict = {}
+        variables_orig: dict = app.get_compiled_doc(file_ctx.filepath_hash, part="variables")
+        ver.variable_handle_value_table_for_absolute(variables_orig, variables)
+
+        assert len(variables) == 2
+        assert variables == {'var_1': "bar", 'var_2': 2}
+
+    def test_variable_handle_value_table_for_composite_pass(self):
+        config = {
+            'var_1': "bar",
+            'var_2': 2,
+            'var_3': 'ajax{$var_1}',
+            'var_4': 'ajax{$Var_1}',
+            'var_5': '{$var_2}',
+        }
+
+        file_ctx = FileContext(filepath_hash='ab12')
+        app.set_compiled_doc(file_ctx.filepath_hash, part="variables", value=config)
+        ver = HavingVariables(file_ctx)
+
+        variables: dict = {'var_1': "bar", 'var_2': 2}
+        variables_orig: dict = app.get_compiled_doc(file_ctx.filepath_hash, part="variables")
+        ver.variable_handle_value_table_for_composite(variables_orig, variables)
+
+        assert len(variables) == 2
+        assert variables == {'var_1': "bar", 'var_2': 2}

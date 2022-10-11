@@ -21,22 +21,25 @@ from chk.modules.variables.constants import (
     VariableConfigNode as VarConf,
     LexicalAnalysisType,
 )
-from chk.modules.variables.validation_rules import variable_schema
+from chk.modules.variables.validation_rules import (
+    variable_schema,
+    allowed_variable_name,
+)
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
 
 from chk.modules.testcase.support import TestcaseValueHandler
 from chk.modules.testcase.constants import TestcaseConfigNode
 
 
-def parse_args(argv_s: list[str], delimiter="=") -> dict:
+def parse_args(argv_s: list[str], delimiter: str = "=") -> dict:
     """
     parse and return args to dict
     :return: dict
     """
 
     if argv_s:
-        argv_sa = [item for item in argv_s if delimiter in item]
-        return {items[0]: items[1] for items in [item.split(delimiter) for item in argv_sa]}
+        argv = [item for item in argv_s if delimiter in item]
+        return {item[0]: item[1] for item in [item.split(delimiter) for item in argv]}
 
     return {}
 
@@ -59,14 +62,18 @@ def replace_values(doc: dict, var_s: dict) -> dict[str, object]:
 
 
 class VariableMixin:
-    """ Mixin for variable spec. for v0.7.2 """
+    """Mixin for variable spec. for v0.7.2"""
 
     @abc.abstractmethod
     def get_file_context(self) -> FileContext:
-        """ Abstract method to get file context """
+        """Abstract method to get file context"""
+
+    @abc.abstractmethod
+    def request_as_dict(self) -> dict:
+        """Abstract method to get request"""
 
     def __init___(self, symbol_tbl=None):
-        """ Initialise mixing props """
+        """Initialise mixing props"""
 
         self.file_ctx = self.get_file_context()
 
@@ -76,23 +83,29 @@ class VariableMixin:
             self.symbol_table = symbol_tbl
 
     def variable_validated(self) -> dict[str, dict]:
-        """ Validate the schema against config """
+        """Validate the schema against config"""
 
         try:
-            request_doc = self.variable_as_dict()
+            variables_doc = self.variable_as_dict()
 
-            if not validator.validate(request_doc, variable_schema):
+            if not validator.validate(variables_doc, variable_schema):
                 raise SystemExit(err_message("fatal.V0006", extra=validator.errors))
+
+            for key in variables_doc[VarConf.ROOT].keys():
+                allowed_variable_name(key)
 
         except DocumentError as doc_err:
             raise SystemExit(err_message("fatal.V0001", extra=doc_err)) from doc_err
+        except ValueError as val_err:
+            raise SystemExit(err_message("fatal.V0009", extra=val_err)) from val_err
 
-        return request_doc  # or is a success
+        return variables_doc
 
     def variable_as_dict(self) -> dict[str, dict]:
         """Get variable dict"""
 
-        document = app.original_doc.get(self.file_ctx.filepath_hash)
+        document = app.get_original_doc(self.file_ctx.filepath_hash)
+
         try:
             return {key: document[key] for key in (VarConf.ROOT,) if key in document}
         except Exception as ex:
@@ -114,9 +127,7 @@ class VariableMixin:
         self, la_type: LexicalAnalysisType, symbol_table: dict
     ) -> dict:
         """lexical validation"""
-
-        document = app.original_doc.get(self.file_ctx.filepath_hash)
-        document_replaced = deepcopy(document)
+        document_replaced = app.get_original_doc(self.file_ctx.filepath_hash).copy()
 
         if la_type is LexicalAnalysisType.REQUEST:
             document_part = self.request_as_dict()
@@ -141,6 +152,39 @@ class VariableMixin:
 
         return document_replaced
 
+    def lexical_analysis_for_request(self) -> None:
+        """Lexical analysis for request block"""
+        file_ctx = self.get_file_context()
+
+        request_document = app.get_compiled_doc(
+            file_ctx.filepath_hash, RequestConfigNode.ROOT
+        )
+        symbol_table = app.get_compiled_doc(file_ctx.filepath_hash, VarConf.ROOT)
+
+        request_document_replaced = replace_values(request_document, symbol_table)
+
+        app.set_compiled_doc(
+            file_ctx.filepath_hash,
+            part=RequestConfigNode.ROOT,
+            value=request_document_replaced,
+        )
+
+    @staticmethod
+    def variable_update_symbol_table(
+        ctx_document: dict, updated: MappingProxyType
+    ) -> dict:
+        """
+        Update symbol table and return updated document
+        :param ctx_document:
+        :param updated:
+        :return:
+        """
+        document = deepcopy(ctx_document)
+
+        document[VarConf.ROOT] = document.get(VarConf.ROOT, {}) | updated
+
+        return document
+
     def variable_assemble_values(self, document: dict, response: dict) -> dict:
         """
         Assemble value based on return statement
@@ -164,18 +208,47 @@ class VariableMixin:
 
         raise ValueError(f"variable_assemble_values: `{document_type}` not allowed")
 
+    def assemble_local_vars_for_request(self) -> dict:
+        """Assemble value based on return statement"""
+        document = self.request_as_dict()
+        response = dict(app.get_compiled_doc(self.file_ctx.filepath_hash, "__local"))
+
+        compiled_return: dict = RequestValueHandler.request_get_return(
+            document, response.get(RequestConfigNode.ROOT, {})
+        )
+
+        return compiled_return
+
+    def variable_prepare_value_table(self) -> None:
+        updated_vars: dict = {}
+        original_vars: dict = app.get_compiled_doc(
+            self.file_ctx.filepath_hash, "variables"
+        )
+
+        # TODO: variable_handle_value_table_for_import()
+        self.variable_handle_value_table_for_absolute(original_vars, updated_vars)
+        self.variable_handle_value_table_for_composite(original_vars, updated_vars)
+
+        app.set_compiled_doc(
+            self.file_ctx.filepath_hash, part="variables", value=updated_vars
+        )
+
     @staticmethod
-    def variable_update_symbol_table(
-        ctx_document: dict, updated: MappingProxyType
-    ) -> dict:
-        """
-        Update symbol table and return updated document
-        :param ctx_document:
-        :param updated:
-        :return:
-        """
-        document = deepcopy(ctx_document)
+    def variable_handle_value_table_for_absolute(actual: dict, updated: dict) -> None:
+        """Detect only variable with absolute value"""
 
-        document[VarConf.ROOT] = document.get(VarConf.ROOT, {}) | updated
+        for key, val in actual.items():
+            if isinstance(val, str) and "{$" in val:
+                continue
 
-        return document
+            updated[key] = val
+
+    @staticmethod
+    def variable_handle_value_table_for_composite(actual: dict, updated: dict) -> None:
+        """Detect only variable with composite value"""
+
+        temp = {key: val for key, val in actual.items() if key not in updated}
+
+        replace_values(temp, updated)
+
+        updated |= temp

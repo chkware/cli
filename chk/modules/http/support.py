@@ -43,7 +43,9 @@ class RequestValueHandler:
                 if ret not in ('version', 'code', 'reason', 'headers', 'body'):
                     raise ValueError('Unsupported key in request.return')
 
-                fx = lambda k, v: None if k != ret else v
+                def fx(k: object, v: object) -> object:
+                    return None if k != ret else v
+
                 returnable = {key: fx(key, value) for key, value in response.items()}
                 returnable['have_all'] = False
 
@@ -73,7 +75,7 @@ class RequestMixin:
         """ Get request as a dictionary """
 
         file_ctx = self.get_file_context()
-        document = app.original_doc.get(file_ctx.filepath_hash)
+        document = app.get_original_doc(file_ctx.filepath_hash).copy()
 
         try:
             return {key: document[key] for key in (RequestConfigNode.ROOT,) if key in document}

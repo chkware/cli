@@ -4,23 +4,19 @@ Entities for http document specification
 from typing import NamedTuple
 
 from chk.infrastructure.contexts import app
-from chk.infrastructure.file_loader import ChkFileLoader, FileContext
+from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
-from chk.infrastructure.work import (
-    WorkerContract,
-    RequestProcessorContract,
-    handle_request,
-)
+from chk.infrastructure.work import WorkerContract
+from chk.modules.http.presentation import buffer_msg
 
 from chk.modules.version.support import VersionMixin
 
-from chk.modules.http.request_helper import RequestProcessorMixin_PyRequests
+from chk.modules.http.request_helper import RequestProcessorPyRequests
 from chk.modules.http.support import RequestMixin
 from chk.modules.http.constants import RequestConfigNode as RConst
 
 from chk.modules.variables.entities import DefaultVariableDoc, DefaultReturnableDoc
 from chk.modules.variables.support import VariableMixin
-from chk.modules.variables.constants import LexicalAnalysisType
 
 
 class DefaultRequestDoc(NamedTuple):
@@ -37,34 +33,28 @@ class DefaultRequestDoc(NamedTuple):
 
 
 class HttpSpec(
-    RequestProcessorMixin_PyRequests,
     VersionMixin,
     RequestMixin,
     VariableMixin,
     WorkerContract,
-    RequestProcessorContract,
 ):
     """
     Holds http specification activity
     """
 
     def __init__(self, file_ctx: FileContext):
+        app.config("buffer_access_off", bool(file_ctx.options["result"]))
         self.file_ctx = file_ctx
+        buffer_msg(f"File: {file_ctx.filepath}\r\n")
 
     def get_file_context(self) -> FileContext:
         return self.file_ctx
 
-    def __work__(self) -> dict:
-        ctx_document = self.variable_process(LexicalAnalysisType.REQUEST)
-        out_response = handle_request(self, ctx_document)
-        return self.variable_assemble_values(ctx_document, out_response)
-
-    def pre_process(self) -> None:
+    def __before_main__(self) -> None:
         """Validate and prepare doc components"""
 
         # save original doc
-        document = ChkFileLoader.to_dict(self.file_ctx.filepath)
-        app.original_doc[self.file_ctx.filepath_hash] = document
+        app.load_original_doc_from_file_context(self.file_ctx)
 
         # validation
         version_doc = self.version_validated()
@@ -72,14 +62,31 @@ class HttpSpec(
         variable_doc = self.variable_validated()
 
         # compile data with defaults
-        app.compiled_doc[self.file_ctx.filepath_hash] = (
-            version_doc
-            | DefaultRequestDoc().merged(request_doc)
-            | DefaultVariableDoc().merged(variable_doc)
+        app.set_compiled_doc(
+            self.file_ctx.filepath_hash,
+            (
+                version_doc
+                | DefaultRequestDoc().merged(request_doc)
+                | DefaultVariableDoc().merged(variable_doc)
+            ),
         )
 
-    def process(self):
-        pass
+    def __main__(self) -> None:
+        """Process http document"""
+        self.variable_prepare_value_table()
+        self.lexical_analysis_for_request()
 
-    def make_response(self):
-        pass
+        request_doc = app.get_compiled_doc(self.file_ctx.filepath_hash, RConst.ROOT)
+        try:
+            response = RequestProcessorPyRequests.perform(request_doc)
+            buffer_msg("- Making request [Success]")
+        except Exception:
+            buffer_msg("- Making request [Fail]")
+
+        app.set_compiled_doc(
+            self.file_ctx.filepath_hash, part="__local", value={RConst.ROOT: response}
+        )
+
+    def __after_main__(self) -> dict:
+        """Prepare response for http document"""
+        return self.assemble_local_vars_for_request()
