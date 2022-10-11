@@ -18,12 +18,11 @@ class TestHttpSpec:
             filepath=file,
             filepath_mangled=f_mangled,
             filepath_hash=f_hash,
+            options={"result": False},
         )
 
         http = HttpSpec(file_ctx)
-        http.pre_process()
-        http.process()
-        http.make_response()
+        handle_worker(http)
 
         response = handle_worker(http)
         assert isinstance(response, dict)
