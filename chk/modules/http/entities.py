@@ -7,7 +7,7 @@ from chk.infrastructure.contexts import app
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
 from chk.infrastructure.work import WorkerContract
-from chk.modules.http.presentation import buffer_msg
+from chk.modules.http.presentation import Presentation
 
 from chk.modules.version.support import VersionMixin
 
@@ -45,7 +45,7 @@ class HttpSpec(
     def __init__(self, file_ctx: FileContext):
         app.config("buffer_access_off", bool(file_ctx.options["result"]))
         self.file_ctx = file_ctx
-        buffer_msg(f"File: {file_ctx.filepath}\r\n")
+        Presentation.buffer_msg(f"File: {file_ctx.filepath}\r\n")
 
     def get_file_context(self) -> FileContext:
         return self.file_ctx
@@ -79,9 +79,9 @@ class HttpSpec(
         request_doc = app.get_compiled_doc(self.file_ctx.filepath_hash, RConst.ROOT)
         try:
             response = RequestProcessorPyRequests.perform(request_doc)
-            buffer_msg("- Making request [Success]")
+            Presentation.buffer_msg("- Making request [Success]")
         except Exception:
-            buffer_msg("- Making request [Fail]")
+            Presentation.buffer_msg("- Making request [Fail]")
 
         app.set_compiled_doc(
             self.file_ctx.filepath_hash, part="__local", value={RConst.ROOT: response}

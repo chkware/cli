@@ -91,8 +91,9 @@ class VariableMixin:
             if not validator.validate(variables_doc, variable_schema):
                 raise SystemExit(err_message("fatal.V0006", extra=validator.errors))
 
-            for key in variables_doc[VarConf.ROOT].keys():
-                allowed_variable_name(key)
+            if variables_doc:
+                for key in variables_doc[VarConf.ROOT].keys():
+                    allowed_variable_name(key)
 
         except DocumentError as doc_err:
             raise SystemExit(err_message("fatal.V0001", extra=doc_err)) from doc_err
