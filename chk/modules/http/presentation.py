@@ -3,18 +3,17 @@ Presentation related logics
 """
 from chk.infrastructure.contexts import app
 
-display_buffer: list[str] = []
-
-
-def buffer_msg(message: str) -> None:
-    """Buffer display message"""
-
-    if not app.config("buffer_access_off"):
-        display_buffer.append(message)
-
 
 class Presentation:
     """Handle presentation of the outputs of chkware commands."""
+    display_buffer: list[str] = []
+
+    @classmethod
+    def buffer_msg(cls, message: str) -> None:
+        """Buffer display message"""
+
+        if not app.config("buffer_access_off"):
+            cls.display_buffer.append(message)
 
     @classmethod
     def present_result(cls, data: dict | BaseException) -> None:
@@ -63,7 +62,7 @@ class Presentation:
 
         info_string = ""
 
-        for item in display_buffer:
+        for item in cls.display_buffer:
             info_string += item + "\r\n"
 
         return f"{info_string}\r\n===="
