@@ -81,3 +81,19 @@ class TestRawFileVersionParser:
     def test_find_version_str_fails_when_file_not_found(self):
         file = tests.RES_DIR + "UserCommentedVersions.chk"
         assert not RawFileVersionParser.find_version_str(file)
+
+    def test_convert_version_str_to_num_success_with_full_version_doc(self):
+        v1 = "version: 'default:http:0.7.2'"
+        assert RawFileVersionParser.convert_version_str_to_num(v1) == "072"
+
+    def test_convert_version_str_to_num_success_with_version_value(self):
+        v1 = "default:http:0.7.2"
+        assert RawFileVersionParser.convert_version_str_to_num(v1) == "072"
+
+    def test_convert_version_str_to_num_success_with_version_value_underscore(self):
+        v1 = "default:http:0.7_2"
+        assert RawFileVersionParser.convert_version_str_to_num(v1) == "072"
+
+    def test_convert_version_str_to_num_success_with_version_value_dash(self):
+        v1 = "default:http:0.7-2"
+        assert RawFileVersionParser.convert_version_str_to_num(v1) == "072"

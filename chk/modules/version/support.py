@@ -96,3 +96,15 @@ class RawFileVersionParser:
 
         except (FileNotFoundError, StopIteration):
             return ""
+
+    @staticmethod
+    def convert_version_str_to_num(version_str: str) -> str:
+        """Convert a chkware supported version string to numeric"""
+
+        if len(version_str) == 0:
+            return ""
+
+        version_part_list = version_str.split(":")
+        version_number = version_part_list[-1].strip("'")
+
+        return version_number.replace(".", "").replace("_", "").replace("-", "")
