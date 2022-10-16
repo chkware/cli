@@ -1,12 +1,10 @@
 from types import MappingProxyType
 
-from chk.infrastructure.file_loader import FileContext
-from chk.infrastructure.work import (
-    WorkerContract,
-    RequestProcessorContract,
-    handle_request,
-)
+from chk.infrastructure.contexts import app
 from chk.infrastructure.exception import err_message
+from chk.infrastructure.file_loader import FileContext
+from chk.infrastructure.helper import dict_get
+from chk.infrastructure.work import WorkerContract
 
 from chk.modules.version.support import VersionMixin
 
@@ -38,6 +36,7 @@ class Testcase(
         pass
 
     def __main__(self) -> None:
+        app.load_original_doc_from_file_context(self.file_ctx)
         self.version_validated()
         self.testcase_validated()
         self.variable_validated()
@@ -60,7 +59,9 @@ class Testcase(
 
         if ctx_document:
             try:
-                out_response = RequestProcessorPyRequests.perform(ctx_document)
+                out_response = RequestProcessorPyRequests.perform(
+                    dict_get(ctx_document, "request")
+                )
                 out_response = ApiResponse.from_dict(out_response).dict()
 
                 print(Presentation.displayable_string("- Making request [Success]"))
@@ -70,11 +71,12 @@ class Testcase(
 
             try:
                 request_mut = self.variable_assemble_values(ctx_document, out_response)
-
-                self.document = self.variable_update_symbol_table(
+                document = self.variable_update_symbol_table(
                     ctx_document, MappingProxyType(request_mut)
                 )
-                self.document = self.variable_process(LexicalAnalysisType.TESTCASE)
+                self.document = self.variable_process(
+                    LexicalAnalysisType.TESTCASE, dict_get(document, "variables")
+                )
 
                 print(
                     Presentation.displayable_string(

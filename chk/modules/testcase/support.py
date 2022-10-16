@@ -1,9 +1,14 @@
 """
 testcase related support services
 """
+import abc
 from typing import Callable
+from types import MappingProxyType
 
-from cerberus import validator
+from cerberus import validator as cer_validator
+
+from chk.infrastructure.contexts import app, validator
+from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
 from chk.infrastructure.exception import err_message
 
@@ -16,20 +21,25 @@ from chk.modules.testcase.constants import (
 )
 from chk.modules.testcase.validation_rules import testcase_schema
 
-from types import MappingProxyType
-
 
 class ExecuteMixin:
     """
     Mixin for Execute sub-spec
     """
 
+    @abc.abstractmethod
+    def get_file_context(self) -> FileContext:
+        """Abstract method to get file context"""
+
     def execute_as_dict(self) -> dict[str, str]:
         """
         Get execute as dict
         """
+        file_ctx = self.get_file_context()
+        document = app.get_original_doc(file_ctx.filepath_hash)
+
         try:
-            if spec := self.document.get(TestcaseConfigNode.ROOT):
+            if spec := document.get(TestcaseConfigNode.ROOT):
                 if execute := spec.get(ExecuteConfigNode.ROOT):
                     return {ExecuteConfigNode.ROOT: execute}
                 else:
@@ -39,23 +49,33 @@ class ExecuteMixin:
 
 
 class AssertionMixin:
-    """
-    Mixin for Execute sub-spec
-    """
+    """Mixin for Execute sub-spec"""
+
+    @abc.abstractmethod
+    def get_file_context(self) -> FileContext:
+        """Abstract method to get file context"""
 
     def assertions_as_dict(self) -> dict[str, object]:
-        """
-        Get execute as dict
-        """
+        """Get execute as dict"""
+
         try:
+            file_ctx = self.get_file_context()
+            document = app.get_original_doc(file_ctx.filepath_hash)
+
             doc_key = [TestcaseConfigNode.ROOT, TestcaseConfigNode.ASSERTS]
-            if asserts := dict_get(self.document, ".".join(doc_key)):
+            if asserts := dict_get(document, ".".join(doc_key)):
                 if type(asserts) != list:
                     raise TypeError({"spec": [{"asserts": ["expected `list`"]}]})
 
-                asrt_list = [f"{item.get('type')}.{item.get('actual')}" for item in asserts if type(item) == dict]
+                asrt_list = [
+                    f"{item.get('type')}.{item.get('actual')}"
+                    for item in asserts
+                    if type(item) == dict
+                ]
                 if len(asrt_list) != len(set(asrt_list)):
-                    raise TypeError({"spec": [{"asserts": ["duplicate assertion of same value"]}]})
+                    raise TypeError(
+                        {"spec": [{"asserts": ["duplicate assertion of same value"]}]}
+                    )
 
                 return {TestcaseConfigNode.ASSERTS: asserts}
             else:
@@ -77,6 +97,10 @@ class TestcaseMixin(ExecuteMixin, AssertionMixin):
     Mixin for Testcase spec
     """
 
+    @abc.abstractmethod
+    def get_file_context(self) -> FileContext:
+        """Abstract method to get file context"""
+
     def __init_testcase_mixin(self):
         self.in_file = True
 
@@ -89,31 +113,28 @@ class TestcaseMixin(ExecuteMixin, AssertionMixin):
         """
         try:
             testcase_doc = self.testcase_as_dict()
-            if not self.validator.validate(testcase_doc, testcase_schema):
-                raise SystemExit(
-                    err_message("fatal.V0006", extra=self.validator.errors)
-                )
+            if not validator.validate(testcase_doc, testcase_schema):
+                raise SystemExit(err_message("fatal.V0006", extra=validator.errors))
 
             # validate request if it exists in-file
             self.validate_request_block()
             self.validate_with_block()
-        except validator.DocumentError as doc_err:
+        except cer_validator.DocumentError as doc_err:
             raise SystemExit(err_message("fatal.V0001", extra=doc_err)) from doc_err
 
         return testcase_doc  # or is a success
 
     def testcase_as_dict(self) -> dict[str, str]:
-        """
-        Get version string
-        """
-        if not hasattr(self, "validator") or not hasattr(self, "document"):
-            raise SystemExit(err_message("fatal.V0005"))
+        """Get version string"""
+
+        file_ctx = self.get_file_context()
+        document = app.get_original_doc(file_ctx.filepath_hash)
 
         try:
             return {
-                key: self.document[key]
+                key: document[key]
                 for key in (TestcaseConfigNode.ROOT,)
-                if key in self.document
+                if key in document
             }
         except Exception as ex:
             raise SystemExit(err_message("fatal.V0005", extra=ex))
@@ -123,9 +144,13 @@ class TestcaseMixin(ExecuteMixin, AssertionMixin):
         If request in file validate it or set False to internal in_file
         :return: None
         """
+
+        file_ctx = self.get_file_context()
+        document = app.get_original_doc(file_ctx.filepath_hash)
+
         keys = [TestcaseConfigNode.ROOT, ExecuteConfigNode.ROOT, ExecuteConfigNode.FILE]
-        out_file_request = dict_get(self.document, ".".join(keys)) is not None
-        in_file_request = self.document.get(RequestConfigNode.ROOT) is not None
+        out_file_request = dict_get(document, ".".join(keys)) is not None
+        in_file_request = document.get(RequestConfigNode.ROOT) is not None
 
         if in_file_request is out_file_request:
             raise SystemExit(
@@ -145,10 +170,13 @@ class TestcaseMixin(ExecuteMixin, AssertionMixin):
         Check is data passing to same context
         :return: None
         """
-        in_file_request = self.document.get(RequestConfigNode.ROOT) is not None
+        file_ctx = self.get_file_context()
+        document = app.get_original_doc(file_ctx.filepath_hash)
+
+        in_file_request = document.get(RequestConfigNode.ROOT) is not None
 
         keys = [TestcaseConfigNode.ROOT, ExecuteConfigNode.ROOT, ExecuteConfigNode.WITH]
-        out_file_with = dict_get(self.document, ".".join(keys)) is not None
+        out_file_with = dict_get(document, ".".join(keys)) is not None
 
         if in_file_request and out_file_with:
             raise SystemExit(

@@ -4,12 +4,13 @@ Entities for http document specification
 from typing import NamedTuple
 
 from chk.infrastructure.contexts import app
+from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
 from chk.infrastructure.work import WorkerContract
 from chk.modules.http.presentation import Presentation
 
-from chk.modules.version.support import VersionMixin
+from chk.modules.version.support import VersionMixin, RawFileVersionParser
 
 from chk.modules.http.request_helper import RequestProcessorPyRequests
 from chk.modules.http.support import RequestMixin
@@ -32,7 +33,24 @@ class DefaultRequestDoc(NamedTuple):
         return {RConst.ROOT: {**self.returnable, **dict_get(doc, RConst.ROOT, {})}}
 
 
-class HttpSpec(
+class HttpSpec:
+    """Http versioned functionality wrapper"""
+
+    def __new__(cls, file_ctx: FileContext) -> WorkerContract:
+        """Create a http spec utility based on version"""
+
+        version = RawFileVersionParser.convert_version_str_to_num(
+            RawFileVersionParser.find_version_str(file_ctx.filepath)
+        )
+
+        if version == "072":
+            return HttpSpec_072(file_ctx)
+
+        # if none of the version matches
+        raise SystemExit(err_message("fatal.V0001"))
+
+
+class HttpSpec_072(
     VersionMixin,
     RequestMixin,
     VariableMixin,

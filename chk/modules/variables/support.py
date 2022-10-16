@@ -112,8 +112,8 @@ class VariableMixin:
         except Exception as ex:
             raise SystemExit(err_message("fatal.V0005", extra=ex)) from ex
 
-    def variable_process(self, la_type: LexicalAnalysisType) -> dict:
-        self.__init___()
+    def variable_process(self, la_type: LexicalAnalysisType, symbol_table=None) -> dict:
+        self.__init___(symbol_table)
         return self.lexical_analysis_for(la_type, self.symbol_table)
 
     def build_symbol_table(self) -> dict:
@@ -193,7 +193,11 @@ class VariableMixin:
         :param response:
         :return:
         """
-        document_type = self.get_document_type()
+        document_type = (
+            DocumentType.HTTP
+            if ":http:" in str(self.version_as_dict())
+            else DocumentType.TESTCASE
+        )
 
         if document_type is DocumentType.HTTP:
             return RequestValueHandler.request_get_return(document, response)
