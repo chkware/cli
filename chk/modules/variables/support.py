@@ -193,7 +193,11 @@ class VariableMixin:
         :param response:
         :return:
         """
-        document_type = self.get_document_type()
+        document_type = (
+            DocumentType.HTTP
+            if ":http:" in str(self.version_as_dict())
+            else DocumentType.TESTCASE
+        )
 
         if document_type is DocumentType.HTTP:
             return RequestValueHandler.request_get_return(document, response)
