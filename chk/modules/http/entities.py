@@ -4,6 +4,7 @@ Entities for http document specification
 from typing import NamedTuple
 
 from chk.infrastructure.contexts import app
+from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
 from chk.infrastructure.work import WorkerContract
@@ -45,7 +46,8 @@ class HttpSpec:
         if version == "072":
             return HttpSpec_072(file_ctx)
 
-        raise SystemExit
+        # if none of the version matches
+        raise SystemExit(err_message("fatal.V0001"))
 
 
 class HttpSpec_072(
