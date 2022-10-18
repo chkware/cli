@@ -4,19 +4,22 @@ Entities for http document specification
 from typing import NamedTuple
 
 from chk.infrastructure.contexts import app
-from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
 from chk.infrastructure.work import WorkerContract
 from chk.modules.http.presentation import Presentation
 
-from chk.modules.version.support import VersionMixin, RawFileVersionParser
+from chk.modules.version.support import VersionMixin
 
 from chk.modules.http.request_helper import RequestProcessorPyRequests
 from chk.modules.http.support import RequestMixin
 from chk.modules.http.constants import RequestConfigNode as RConst
 
-from chk.modules.variables.entities import DefaultVariableDoc, DefaultReturnableDoc
+from chk.modules.variables.entities import (
+    DefaultVariableDoc,
+    DefaultReturnableDoc,
+    DefaultExposableDoc,
+)
 from chk.modules.variables.support import VariableMixin
 
 
@@ -67,8 +70,9 @@ class HttpSpec(
             self.file_ctx.filepath_hash,
             (
                 version_doc
-                | DefaultRequestDoc().merged(request_doc)
                 | DefaultVariableDoc().merged(variable_doc)
+                | DefaultExposableDoc().doc
+                | request_doc
             ),
         )
 

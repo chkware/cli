@@ -14,6 +14,7 @@ class CompiledDocBlockType(Enum):
     REQUEST = "request"
     VERSION = "version"
     VARIABLES = "variables"
+    EXPOSE = "expose"
     LOCAL = "__local"
 
     @staticmethod
