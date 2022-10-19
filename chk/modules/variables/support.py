@@ -113,7 +113,21 @@ class VariableMixin:
         except Exception as ex:
             raise SystemExit(err_message("fatal.V0005", extra=ex)) from ex
 
-    def expose_as_list(self) -> dict:
+    def expose_validated(self) -> dict:
+        """Validate the schema against config"""
+
+        try:
+            expose_doc = self.expose_as_dict()
+
+            if not validator.validate(expose_doc, expose_schema):
+                raise SystemExit(err_message("fatal.V0006", extra=validator.errors))
+
+        except DocumentError as doc_err:
+            raise SystemExit(err_message("fatal.V0001", extra=doc_err)) from doc_err
+
+        return expose_doc
+
+    def expose_as_dict(self) -> dict:
         """Get expose dict"""
 
         document = app.get_original_doc(self.file_ctx.filepath_hash)

@@ -109,7 +109,7 @@ class TestVariablePrepareValueTable:
 class TestVariableMixin:
     """Test VariableMixin"""
 
-    def test_expose_as_list_pass_for_null_doc(self):
+    def test_expose_as_dict_pass_for_null_doc(self):
         app = App()
         config = {
             "expose": []
@@ -120,9 +120,9 @@ class TestVariableMixin:
 
         var = HavingVariables(file_ctx)
 
-        assert var.expose_as_list() == config
+        assert var.expose_as_dict() == config
 
-    def test_expose_as_list_pass_for_doc(self):
+    def test_expose_as_dict_pass_for_doc(self):
         app = App()
         config = {
             "expose": [
@@ -136,4 +136,19 @@ class TestVariableMixin:
 
         var = HavingVariables(file_ctx)
 
-        assert var.expose_as_list() == config
+        assert var.expose_as_dict() == config
+
+    def test_expose_validated_for_doc(self):
+        app = App()
+        config = {
+            "expose": [
+                ".response.code",
+                ".response.headers"
+            ]
+        }
+
+        file_ctx = FileContext(filepath_hash="ab31")
+        data_set(app.original_doc, file_ctx.filepath_hash, config)
+        var = HavingVariables(file_ctx)
+
+        assert var.expose_validated() == config
