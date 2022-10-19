@@ -5,7 +5,7 @@ from enum import Enum
 from typing import NamedTuple
 
 from chk.infrastructure.file_loader import FileContext, ChkFileLoader
-from chk.infrastructure.helper import dict_get, dict_set
+from chk.infrastructure.helper import dict_get, dict_set, data_set
 
 
 class CompiledDocBlockType(Enum):
@@ -27,6 +27,11 @@ class CompiledDocBlockType(Enum):
     def all_keys() -> set:
         return {e.value for e in CompiledDocBlockType}
 
+    @staticmethod
+    def default() -> dict:
+        return {item: {} for item in CompiledDocBlockType.all_keys()}
+
+
 
 class App(NamedTuple):
     """Global app container"""
@@ -35,9 +40,7 @@ class App(NamedTuple):
     compiled_doc: dict = {}
 
     environment_ctx: dict = {
-        "config": {
-            "buffer_access_off": True
-        },
+        "config": {"buffer_access_off": True},
     }
 
     def __str__(self) -> str:
@@ -68,7 +71,7 @@ class App(NamedTuple):
         allowed_keys = CompiledDocBlockType.all_keys()
 
         if key not in self.compiled_doc:
-            self.compiled_doc[key] = {item: {} for item in allowed_keys}
+            self.compiled_doc[key] = CompiledDocBlockType.default()
 
         if part is not None:
             if part not in allowed_keys:
@@ -107,6 +110,7 @@ class App(NamedTuple):
         self.set_original_doc(file_ctx.filepath_hash, document)
 
     def config(self, key: str, val: object = None) -> object:
+        """Set and retrieve config"""
         if val is not None:
             dict_set(self.environment_ctx, f"config.{key}", val)
 
