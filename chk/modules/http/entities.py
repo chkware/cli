@@ -86,7 +86,7 @@ class HttpSpec(
             response = RequestProcessorPyRequests.perform(request_doc)
             Presentation.buffer_msg("- Making request [Success]")
         except RuntimeError as err:
-            Presentation.buffer_msg(f"- Making request [Fail]: {str(err)}")
+            Presentation.buffer_msg("- Making request [Fail]")
             raise err
         else:
             app.set_compiled_doc(
