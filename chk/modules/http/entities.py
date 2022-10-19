@@ -85,12 +85,15 @@ class HttpSpec(
         try:
             response = RequestProcessorPyRequests.perform(request_doc)
             Presentation.buffer_msg("- Making request [Success]")
-        except Exception:
-            Presentation.buffer_msg("- Making request [Fail]")
-
-        app.set_compiled_doc(
-            self.file_ctx.filepath_hash, part="__local", value={RConst.ROOT: response}
-        )
+        except RuntimeError as err:
+            Presentation.buffer_msg(f"- Making request [Fail]: {str(err)}")
+            raise err
+        else:
+            app.set_compiled_doc(
+                self.file_ctx.filepath_hash,
+                part="__local",
+                value={RConst.ROOT: response},
+            )
 
     def __after_main__(self) -> dict:
         """Prepare response for http document"""

@@ -4,7 +4,14 @@ Http module helpers
 from types import MappingProxyType
 from urllib.parse import unquote, urlparse
 
-from requests import request
+from requests import (
+    request,
+    TooManyRedirects,
+    ConnectionError,
+    ConnectTimeout,
+    ReadTimeout,
+    RequestException,
+)
 from requests.auth import HTTPBasicAuth
 
 from chk.modules.http.constants import RequestConfigNode as ConfElem
@@ -25,7 +32,18 @@ class RequestProcessorPyRequests:
             request_args,
         )
 
-        response = request(**request_args)
+        try:
+            response = request(**request_args)
+        except ConnectTimeout as err:
+            raise RuntimeError("Connection time out") from err
+        except ConnectionError as err:
+            raise RuntimeError("Connection error") from err
+        except ReadTimeout as err:
+            raise RuntimeError("Read time out") from err
+        except TooManyRedirects as err:
+            raise RuntimeError("Too many redirects") from err
+        except RequestException as err:
+            raise RuntimeError("Request error") from err
 
         def version(proto_ver: int) -> str:
             """parse version"""
