@@ -89,11 +89,7 @@ class HttpSpec(
             Presentation.buffer_msg("- Making request [Fail]")
             raise err
         else:
-            app.set_compiled_doc(
-                self.file_ctx.filepath_hash,
-                part="__local",
-                value={RConst.ROOT: response},
-            )
+            app.set_local(self.file_ctx.filepath_hash, part=RConst.ROOT, val=response)
 
     def __after_main__(self) -> dict:
         """Prepare response for http document"""
