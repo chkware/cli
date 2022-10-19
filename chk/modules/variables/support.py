@@ -23,6 +23,7 @@ from chk.modules.variables.constants import (
 )
 from chk.modules.variables.validation_rules import (
     variable_schema,
+    expose_schema,
     allowed_variable_name,
 )
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
@@ -109,6 +110,16 @@ class VariableMixin:
 
         try:
             return {key: document[key] for key in (VarConf.ROOT,) if key in document}
+        except Exception as ex:
+            raise SystemExit(err_message("fatal.V0005", extra=ex)) from ex
+
+    def expose_as_list(self) -> dict:
+        """Get expose dict"""
+
+        document = app.get_original_doc(self.file_ctx.filepath_hash)
+
+        try:
+            return {key: document[key] for key in (VarConf.EXPOSE,) if key in document}
         except Exception as ex:
             raise SystemExit(err_message("fatal.V0005", extra=ex)) from ex
 
