@@ -61,11 +61,8 @@ class App(NamedTuple):
 
         return self.original_doc.get(key, {})
 
-    def set_compiled_doc(self, key: str, value: dict, part: str | None = None) -> None:
+    def set_compiled_doc(self, key: str, value: object, part: str | None = None) -> None:
         """Set compiled file doc"""
-
-        if not isinstance(value, dict):
-            raise SystemExit("Unsupported format for compiled doc")
 
         allowed_keys = CompiledDocBlockType.all_keys()
 
