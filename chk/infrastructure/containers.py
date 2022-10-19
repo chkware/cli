@@ -32,7 +32,6 @@ class CompiledDocBlockType(Enum):
         return {item: {} for item in CompiledDocBlockType.all_keys()}
 
 
-
 class App(NamedTuple):
     """Global app container"""
 
@@ -115,3 +114,13 @@ class App(NamedTuple):
             dict_set(self.environment_ctx, f"config.{key}", val)
 
         return dict_get(self.environment_ctx, f"config.{key}", None)
+
+    def set_local(self, key: str, val: object, part: str) -> bool:
+        """Set local variable values in compiled_doc dict"""
+        if key not in self.compiled_doc:
+            self.compiled_doc[key] = CompiledDocBlockType.default()
+        return data_set(self.compiled_doc[key], f"__local.{part}", val)
+
+    def get_local(self, key: str, part: str) -> object:
+        """Set local variable values in compiled_doc dict"""
+        return dict_get(self.compiled_doc[key], f"__local.{part}")

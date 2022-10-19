@@ -159,3 +159,13 @@ class TestApp:
         assert app.config("buffer_access_off") is True
         assert app.config("buffer_access_off", {"d": 1}) == {"d": 1}
         assert app.config("buffer_access_off") == {"d": 1}
+
+    @staticmethod
+    def test_app_set_local_pass():
+        app = App()
+        assert app.set_local("ab22", part="re", val=12) is True
+
+    @staticmethod
+    def test_app_get_local_pass():
+        app = App()
+        assert app.get_local("ab22", "re") == 12
