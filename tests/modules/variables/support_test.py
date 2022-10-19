@@ -122,6 +122,19 @@ class TestVariableMixin:
 
         assert var.expose_as_dict() == config
 
+    def test_expose_as_dict_pass_for_doc_value_none(self):
+        app = App()
+        config = {
+            "expose": None
+        }
+
+        file_ctx = FileContext(filepath_hash="ab31")
+        data_set(app.original_doc, file_ctx.filepath_hash, config)
+
+        var = HavingVariables(file_ctx)
+
+        assert var.expose_as_dict() == config
+
     def test_expose_as_dict_pass_for_doc(self):
         app = App()
         config = {

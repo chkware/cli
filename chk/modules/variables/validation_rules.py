@@ -22,3 +22,13 @@ variable_schema = {
         "empty": True,
     }
 }
+
+# cerberus validation rules for variables
+expose_schema = {
+    VarConf.EXPOSE: {
+        "required": False,
+        "type": "list",
+        "empty": True,
+        "nullable": True,
+    }
+}
