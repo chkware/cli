@@ -15,7 +15,7 @@ messages = dict(
         V0006="File exception: Validation failed",
         V0007="System exception: Not a Callable",
         V0008="System exception: Wrong spec class",
-        V0009="Document exception: variable name starts or ends with __",
+        V0009="Document exception: ",
         # testcase errors
         V0020="None or many request found",
         V0021="Pass data on same context",
