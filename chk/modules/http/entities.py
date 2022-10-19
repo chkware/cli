@@ -64,6 +64,7 @@ class HttpSpec(
         version_doc = self.version_validated()
         request_doc = self.request_validated()
         variable_doc = self.variable_validated()
+        expose_doc = self.expose_validated()
 
         # compile data with defaults
         app.set_compiled_doc(
@@ -71,7 +72,7 @@ class HttpSpec(
             (
                 version_doc
                 | DefaultVariableDoc().merged(variable_doc)
-                | DefaultExposableDoc().doc
+                | DefaultExposableDoc().merged(expose_doc)
                 | request_doc
             ),
         )
