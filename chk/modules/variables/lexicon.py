@@ -11,8 +11,11 @@ class StringLexicalAnalyzer:
 
     @staticmethod
     def replace_in_str(container: str, replace_with: dict) -> str:
-        if type(container) is not str: raise TypeError
-        if len(replace_with) == 0: return container
+        if not isinstance(container, str):
+            raise TypeError
+
+        if len(replace_with) == 0:
+            return container
 
         line_split = re.split(r'({\s*\$\w+\s*})', container)
         line_strip = [''.join(item.split()) for item in line_split if item]
