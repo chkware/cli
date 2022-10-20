@@ -15,6 +15,7 @@ class VariableConfigNode:
     RETURN = "return"
     RESULT = "result"
     EXPOSE = "expose"
+    LOCAL = "__local"
 
 
 class LexicalAnalysisType(Enum):

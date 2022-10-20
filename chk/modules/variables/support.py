@@ -10,7 +10,7 @@ from cerberus.validator import DocumentError
 from chk.infrastructure.contexts import app, validator
 from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
-from chk.infrastructure.helper import dict_set
+from chk.infrastructure.helper import dict_set, data_get, dict_get
 
 from chk.modules.version.constants import DocumentType
 
@@ -248,6 +248,26 @@ class VariableMixin:
         )
 
         return compiled_return
+
+    def get_exposable(self) -> list:
+        """Get exposable data"""
+
+        hf_name = self.get_file_context().filepath_hash
+        scope_vars = app.get_compiled_doc(hf_name, VarConf.LOCAL)
+        local_vars = app.get_compiled_doc(hf_name, VarConf.ROOT)
+        expose_items = data_get(self.expose_as_dict(), VarConf.EXPOSE)
+
+        if not isinstance(expose_items, list):
+            raise ValueError
+
+        for index, item in enumerate(expose_items):
+            if isinstance(item, str):
+                if item.startswith("$"):
+                    expose_items[index] = StringLexicalAnalyzer.replace_in_str(item, local_vars)
+                elif item.startswith("_"):
+                    expose_items[index] = dict_get(scope_vars, item)
+
+        return expose_items
 
     def variable_prepare_value_table(self) -> None:
         updated_vars: dict = {}
