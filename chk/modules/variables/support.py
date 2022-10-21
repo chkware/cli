@@ -255,7 +255,7 @@ class VariableMixin:
         hf_name = self.get_file_context().filepath_hash
         scope_vars = app.get_compiled_doc(hf_name, VarConf.LOCAL)
         local_vars = app.get_compiled_doc(hf_name, VarConf.ROOT)
-        expose_items = data_get(self.expose_as_dict(), VarConf.EXPOSE)
+        expose_items = app.get_compiled_doc(hf_name, VarConf.EXPOSE)
 
         if not isinstance(expose_items, list):
             raise ValueError
