@@ -92,6 +92,7 @@ class HttpSpec(
         else:
             app.set_local(self.file_ctx.filepath_hash, part=RConst.LOCAL, val=response)
 
-    def __after_main__(self) -> dict:
+    def __after_main__(self) -> list:
         """Prepare response for http document"""
-        return self.assemble_local_vars_for_request()
+        Presentation.buffer_msg("- Prepare exposable [Success]")
+        return self.get_exposable()
