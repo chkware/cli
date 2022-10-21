@@ -6,6 +6,7 @@ from chk.infrastructure.contexts import app
 
 class Presentation:
     """Handle presentation of the outputs of chkware commands."""
+
     display_buffer: list[str] = []
 
     @classmethod
@@ -16,17 +17,25 @@ class Presentation:
             cls.display_buffer.append(message)
 
     @classmethod
-    def present_result(cls, data: dict | BaseException) -> None:
+    def present_result(cls, data: list | BaseException) -> None:
         """Shows result of execution."""
 
         if isinstance(data, dict):
             if not app.config("buffer_access_off"):
                 print(cls.displayable_summary())
             print(cls.displayable_result(data))
+        if isinstance(data, list):
+            if not app.config("buffer_access_off"):
+                print(cls.displayable_summary())
+            print(cls.displayable_expose(data))
         else:
             if not app.config("buffer_access_off"):
                 print(cls.displayable_summary())
             print(str(data))
+
+    @classmethod
+    def displayable_expose(cls, exposable: list) -> str:
+        return "\r\n\r\n".join([str(item) for item in exposable])
 
     @classmethod
     def displayable_result(cls, response: dict[str, object]) -> str:
