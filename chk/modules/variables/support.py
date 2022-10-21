@@ -244,7 +244,7 @@ class VariableMixin:
         response = dict(app.get_compiled_doc(self.file_ctx.filepath_hash, "__local"))
 
         compiled_return: dict = RequestValueHandler.request_get_return(
-            document, response.get(RequestConfigNode.ROOT, {})
+            document, response.get(RequestConfigNode.LOCAL, {})
         )
 
         return compiled_return

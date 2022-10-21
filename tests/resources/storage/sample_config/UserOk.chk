@@ -5,5 +5,5 @@ request:
   method: GET
 
 expose:
-  - .response.code
-  - .response.body
+  - _response.code
+  - _response.body
