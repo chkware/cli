@@ -1,5 +1,5 @@
 -i https://pypi.org/simple
-astroid==2.12.11
+astroid==2.12.12
 cerberus==1.3.4
 certifi==2022.9.24
 charset-normalizer==2.1.1
