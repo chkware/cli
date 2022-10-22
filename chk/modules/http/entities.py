@@ -95,4 +95,5 @@ class HttpSpec(
     def __after_main__(self) -> list:
         """Prepare response for http document"""
         Presentation.buffer_msg("- Prepare exposable [Success]")
+        self.make_exposable()
         return self.get_exposable()

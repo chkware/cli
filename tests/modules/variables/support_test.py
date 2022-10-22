@@ -169,6 +169,7 @@ class TestVariableMixin:
         data_set(app.compiled_doc, file_ctx.filepath_hash, compiled_doc)
 
         var = HavingVariables(file_ctx)
+        var.make_exposable()
         assert isinstance(var.get_exposable(), list)
         assert var.get_exposable() == [
             201,
