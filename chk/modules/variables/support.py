@@ -238,16 +238,9 @@ class VariableMixin:
 
         raise ValueError(f"variable_assemble_values: `{document_type}` not allowed")
 
-    def assemble_local_vars_for_request(self) -> dict:
-        """Assemble value based on return statement"""
-        document = self.request_as_dict()
-        response = dict(app.get_compiled_doc(self.file_ctx.filepath_hash, "__local"))
-
-        compiled_return: dict = RequestValueHandler.request_get_return(
-            document, response.get(RequestConfigNode.LOCAL, {})
-        )
-
-        return compiled_return
+    def store_local_vars_for_request(self, data: object) -> bool:
+        """Store value based on return statement"""
+        return app.set_local(self.file_ctx.filepath_hash, data, RequestConfigNode.LOCAL)
 
     def make_exposable(self) -> None:
         """Prepare exposable data"""
