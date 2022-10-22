@@ -17,7 +17,7 @@ class StringLexicalAnalyzer:
         if len(replace_with) == 0:
             return container
 
-        line_split = re.split(r"({\s*\$\w+\s*})|(\s*\$\w+)", container)
+        line_split = re.split(r"({\s*\$[a-zA-Z0-9_.]+\s*})|(\s*\$[a-zA-Z0-9_.]+)", container)
         line_strip = ["".join(item.split()) for item in line_split if item]
 
         for i, item in enumerate(line_strip):
