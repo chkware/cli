@@ -162,17 +162,11 @@ class TestVariableMixin:
                     "headers": ["Header 1: Head val 1", "Header 2: Head val 2"],
                 }
             },
+            "expose": ["$_response.code", "$_response.headers", "$var1:$var2"]
         }
-
-        config = {"expose": ["_response.code", "_response.headers", "$var1:$var2"]}
 
         file_ctx = FileContext(filepath_hash="ab31")
         data_set(app.compiled_doc, file_ctx.filepath_hash, compiled_doc)
-        data_set(
-            app.original_doc,
-            f"{file_ctx.filepath_hash}.expose",
-            data_get(config, "expose"),
-        )
 
         var = HavingVariables(file_ctx)
         assert isinstance(var.get_exposable(), list)

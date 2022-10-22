@@ -1,9 +1,12 @@
 version: 'default:http:0.7.2'
 
+variables:
+  Id: 1
+
 request:
-  url: https://reqres.in/api/users/1
+  url: https://reqres.in/api/users/{$Id}
   method: GET
 
 expose:
-  - _response.code
-  - _response.body
+  - $_response.code
+  - $_response.body

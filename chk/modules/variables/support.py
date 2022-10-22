@@ -253,21 +253,21 @@ class VariableMixin:
         """Get exposable data"""
 
         hf_name = self.get_file_context().filepath_hash
-        scope_vars = app.get_compiled_doc(hf_name, VarConf.LOCAL)
-        local_vars = app.get_compiled_doc(hf_name, VarConf.ROOT)
+
+        symbol_table = app.get_compiled_doc(
+            hf_name, VarConf.LOCAL
+        ) | app.get_compiled_doc(hf_name, VarConf.ROOT)
+
         expose_items = app.get_compiled_doc(hf_name, VarConf.EXPOSE)
 
         if not isinstance(expose_items, list):
             raise ValueError
 
-        for index, item in enumerate(expose_items):
-            if isinstance(item, str):
-                if item.startswith("$"):
-                    expose_items[index] = StringLexicalAnalyzer.replace_in_str(item, local_vars)
-                elif item.startswith("_"):
-                    expose_items[index] = dict_get(scope_vars, item)
-
-        return expose_items
+        return [
+            StringLexicalAnalyzer.replace(item, symbol_table)
+            for item in expose_items
+            if isinstance(item, str)
+        ]
 
     def variable_prepare_value_table(self) -> None:
         updated_vars: dict = {}
