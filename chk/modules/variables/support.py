@@ -10,7 +10,7 @@ from cerberus.validator import DocumentError
 from chk.infrastructure.contexts import app, validator
 from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
-from chk.infrastructure.helper import dict_set
+from chk.infrastructure.helper import dict_set, data_get, dict_get
 
 from chk.modules.version.constants import DocumentType
 
@@ -23,6 +23,7 @@ from chk.modules.variables.constants import (
 )
 from chk.modules.variables.validation_rules import (
     variable_schema,
+    expose_schema,
     allowed_variable_name,
 )
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
@@ -53,10 +54,10 @@ def replace_values(doc: dict, var_s: dict) -> dict[str, object]:
     """
 
     for key in doc.keys():
-        if type(doc[key]) is str:
+        if isinstance(doc[key], str):
             item = str(doc[key])
             doc[key] = StringLexicalAnalyzer.replace_in_str(item, var_s)
-        elif type(doc[key]) is dict:
+        elif isinstance(doc[key], dict):
             doc[key] = replace_values(doc[key], var_s)
     return doc
 
@@ -109,6 +110,30 @@ class VariableMixin:
 
         try:
             return {key: document[key] for key in (VarConf.ROOT,) if key in document}
+        except Exception as ex:
+            raise SystemExit(err_message("fatal.V0005", extra=ex)) from ex
+
+    def expose_validated(self) -> dict:
+        """Validate the schema against config"""
+
+        try:
+            expose_doc = self.expose_as_dict()
+
+            if not validator.validate(expose_doc, expose_schema):
+                raise SystemExit(err_message("fatal.V0006", extra=validator.errors))
+
+        except DocumentError as doc_err:
+            raise SystemExit(err_message("fatal.V0001", extra=doc_err)) from doc_err
+
+        return expose_doc
+
+    def expose_as_dict(self) -> dict:
+        """Get expose dict"""
+
+        document = app.get_original_doc(self.file_ctx.filepath_hash)
+
+        try:
+            return {key: document[key] for key in (VarConf.EXPOSE,) if key in document}
         except Exception as ex:
             raise SystemExit(err_message("fatal.V0005", extra=ex)) from ex
 
@@ -213,16 +238,37 @@ class VariableMixin:
 
         raise ValueError(f"variable_assemble_values: `{document_type}` not allowed")
 
-    def assemble_local_vars_for_request(self) -> dict:
-        """Assemble value based on return statement"""
-        document = self.request_as_dict()
-        response = dict(app.get_compiled_doc(self.file_ctx.filepath_hash, "__local"))
+    def store_local_vars_for_request(self, data: object) -> bool:
+        """Store value based on return statement"""
+        return app.set_local(self.file_ctx.filepath_hash, data, RequestConfigNode.LOCAL)
 
-        compiled_return: dict = RequestValueHandler.request_get_return(
-            document, response.get(RequestConfigNode.ROOT, {})
-        )
+    def make_exposable(self) -> None:
+        """Prepare exposable data"""
 
-        return compiled_return
+        hf_name = self.get_file_context().filepath_hash
+
+        symbol_table = app.get_compiled_doc(
+            hf_name, VarConf.LOCAL
+        ) | app.get_compiled_doc(hf_name, VarConf.ROOT)
+
+        expose_items = app.get_compiled_doc(hf_name, VarConf.EXPOSE)
+
+        if not isinstance(expose_items, list):
+            raise ValueError
+
+        exposables = [
+            StringLexicalAnalyzer.replace(item, symbol_table)
+            for item in expose_items
+            if isinstance(item, str)
+        ]
+
+        app.set_compiled_doc(hf_name, part=VarConf.EXPOSE, value=exposables)
+
+    def get_exposable(self) -> list:
+        """Get exposable data"""
+
+        hf_name = self.get_file_context().filepath_hash
+        return app.get_compiled_doc(hf_name, VarConf.EXPOSE)
 
     def variable_prepare_value_table(self) -> None:
         updated_vars: dict = {}

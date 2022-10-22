@@ -20,7 +20,6 @@ class DocumentType(Enum):
 class VersionConfigNode:
     """represent the base of all kind of documents"""
     VERSION = 'version'
-    EXPOSE = 'expose'
 
 
 class VersionStore:

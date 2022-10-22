@@ -30,59 +30,96 @@ class TestApp:
     @staticmethod
     def test_app_set_original_doc_pass():
         app = App()
-        app.set_original_doc("ab12", {'a': 1})
-        assert app.original_doc["ab12"] == {'a': 1}
+        app.set_original_doc("ab12", {"a": 1})
+        assert app.original_doc["ab12"] == {"a": 1}
 
     @staticmethod
     def test_app_set_original_doc_fail():
         app = App()
         with pytest.raises(SystemExit):
-            app.set_original_doc("ab12", ['a', 1])
-            assert app.original_doc["ab12"] == ['a', 1]
+            app.set_original_doc("ab12", ["a", 1])
+            assert app.original_doc["ab12"] == ["a", 1]
 
     @staticmethod
     def test_app_get_original_doc_pass():
         app = App()
         ret_doc = app.get_original_doc("ab12")
-        assert ret_doc == {'a': 1}
+        assert ret_doc == {"a": 1}
 
     @staticmethod
     def test_app_set_compiled_doc_fail_key_len():
         app = App()
         with pytest.raises(SystemExit):
-            app.set_compiled_doc("ab22", {'a': 1})
+            app.set_compiled_doc("ab22", {"a": 1})
 
     @staticmethod
     def test_app_set_compiled_doc_fail_allowed_key():
         app = App()
         with pytest.raises(SystemExit):
-            app.set_compiled_doc("ab22", {'a': 1, 'b': 2, 'c': 3, })
+            app.set_compiled_doc(
+                "ab22",
+                {
+                    "a": 1,
+                    "b": 2,
+                    "c": 3,
+                },
+            )
 
     @staticmethod
     def test_app_set_compiled_doc_pass():
         app = App()
-        app.set_compiled_doc("ab22", {'request': 1, 'version': 2, 'variables': 3, })
+        app.set_compiled_doc(
+            "ab22", {"request": 1, "version": 2, "variables": 3, "expose": None}
+        )
 
     @staticmethod
     def test_app_set_compiled_doc_part_fail():
         app = App()
         with pytest.raises(SystemExit):
-            app.set_compiled_doc("ab22", part="re", value={'a': 1, 'b': 2, 'c': 3, })
+            app.set_compiled_doc(
+                "ab22",
+                part="re",
+                value={
+                    "a": 1,
+                    "b": 2,
+                    "c": 3,
+                },
+            )
 
     @staticmethod
     def test_app_set_compiled_doc_part_pass():
         app = App()
-        app.set_compiled_doc("ab22", part="request", value={'a': 1, 'b': 2, 'c': 3, })
+        app.set_compiled_doc(
+            "ab22",
+            part="request",
+            value={
+                "a": 1,
+                "b": 2,
+                "c": 3,
+            },
+        )
 
     @staticmethod
     def test_app_set_compiled_doc_local_part_pass():
         app = App()
-        app.set_compiled_doc("ab22", part="__local", value={'a': 1, 'b': 2, 'c': 3, })
+        app.set_compiled_doc(
+            "ab22",
+            part="__local",
+            value={
+                "a": 1,
+                "b": 2,
+                "c": 3,
+            },
+        )
 
     @staticmethod
     def test_app_get_compiled_doc_local_part_pass():
         app = App()
-        assert app.get_compiled_doc("ab22", part="__local") == {'a': 1, 'b': 2, 'c': 3, }
+        assert app.get_compiled_doc("ab22", part="__local") == {
+            "a": 1,
+            "b": 2,
+            "c": 3,
+        }
 
     @staticmethod
     def test_app_get_compiled_doc_part_fail():
@@ -93,7 +130,11 @@ class TestApp:
     @staticmethod
     def test_app_get_compiled_doc_part_pass():
         app = App()
-        assert app.get_compiled_doc("ab22", part="request") == {'a': 1, 'b': 2, 'c': 3, }
+        assert app.get_compiled_doc("ab22", part="request") == {
+            "a": 1,
+            "b": 2,
+            "c": 3,
+        }
 
     @staticmethod
     def test_app_load_original_doc_from_file_context_pass():
@@ -108,7 +149,9 @@ class TestApp:
         )
 
         app.load_original_doc_from_file_context(ctx)
-        assert app.original_doc[ctx.filepath_hash] == ChkFileLoader.to_dict(ctx.filepath)
+        assert app.original_doc[ctx.filepath_hash] == ChkFileLoader.to_dict(
+            ctx.filepath
+        )
 
     @staticmethod
     def test_config_pass():
@@ -116,3 +159,13 @@ class TestApp:
         assert app.config("buffer_access_off") is True
         assert app.config("buffer_access_off", {"d": 1}) == {"d": 1}
         assert app.config("buffer_access_off") == {"d": 1}
+
+    @staticmethod
+    def test_app_set_local_pass():
+        app = App()
+        assert app.set_local("ab22", part="re", val=12) is True
+
+    @staticmethod
+    def test_app_get_local_pass():
+        app = App()
+        assert app.get_local("ab22", "re") == 12

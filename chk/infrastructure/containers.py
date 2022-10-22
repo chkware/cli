@@ -5,7 +5,7 @@ from enum import Enum
 from typing import NamedTuple
 
 from chk.infrastructure.file_loader import FileContext, ChkFileLoader
-from chk.infrastructure.helper import dict_get, dict_set
+from chk.infrastructure.helper import dict_get, dict_set, data_set
 
 
 class CompiledDocBlockType(Enum):
@@ -14,6 +14,7 @@ class CompiledDocBlockType(Enum):
     REQUEST = "request"
     VERSION = "version"
     VARIABLES = "variables"
+    EXPOSE = "expose"
     LOCAL = "__local"
 
     @staticmethod
@@ -26,6 +27,10 @@ class CompiledDocBlockType(Enum):
     def all_keys() -> set:
         return {e.value for e in CompiledDocBlockType}
 
+    @staticmethod
+    def default() -> dict:
+        return {item: {} for item in CompiledDocBlockType.all_keys()}
+
 
 class App(NamedTuple):
     """Global app container"""
@@ -34,9 +39,7 @@ class App(NamedTuple):
     compiled_doc: dict = {}
 
     environment_ctx: dict = {
-        "config": {
-            "buffer_access_off": True
-        },
+        "config": {"buffer_access_off": True},
     }
 
     def __str__(self) -> str:
@@ -58,16 +61,13 @@ class App(NamedTuple):
 
         return self.original_doc.get(key, {})
 
-    def set_compiled_doc(self, key: str, value: dict, part: str | None = None) -> None:
+    def set_compiled_doc(self, key: str, value: object, part: str | None = None) -> None:
         """Set compiled file doc"""
-
-        if not isinstance(value, dict):
-            raise SystemExit("Unsupported format for compiled doc")
 
         allowed_keys = CompiledDocBlockType.all_keys()
 
         if key not in self.compiled_doc:
-            self.compiled_doc[key] = {item: {} for item in allowed_keys}
+            self.compiled_doc[key] = CompiledDocBlockType.default()
 
         if part is not None:
             if part not in allowed_keys:
@@ -106,7 +106,18 @@ class App(NamedTuple):
         self.set_original_doc(file_ctx.filepath_hash, document)
 
     def config(self, key: str, val: object = None) -> object:
+        """Set and retrieve config"""
         if val is not None:
             dict_set(self.environment_ctx, f"config.{key}", val)
 
         return dict_get(self.environment_ctx, f"config.{key}", None)
+
+    def set_local(self, key: str, val: object, part: str) -> bool:
+        """Set local variable values in compiled_doc dict"""
+        if key not in self.compiled_doc:
+            self.compiled_doc[key] = CompiledDocBlockType.default()
+        return data_set(self.compiled_doc[key], f"__local.{part}", val)
+
+    def get_local(self, key: str, part: str) -> object:
+        """Set local variable values in compiled_doc dict"""
+        return dict_get(self.compiled_doc[key], f"__local.{part}")

@@ -9,14 +9,14 @@ from chk.modules.variables.constants import VariableConfigNode as VConst
 
 
 class DefaultVariableDoc(NamedTuple):
-    """ Default variable doc """
+    """Default variable doc"""
 
     doc: dict[str, object] = {
         VConst.ROOT: {},
     }
 
     def merged(self, doc: dict) -> dict:
-        """ Merge given doc with default one """
+        """Merge given doc with default one"""
         if not doc:
             doc = {}
 
@@ -24,16 +24,31 @@ class DefaultVariableDoc(NamedTuple):
 
 
 class DefaultReturnableDoc(NamedTuple):
-    """ Default return-able doc """
+    """Default return-able doc"""
 
     doc: dict[str, object] = {
         VConst.RETURN: None,
     }
 
 
+class DefaultExposableDoc(NamedTuple):
+    """Default expose-able doc"""
+
+    doc: dict[str, object] = {
+        VConst.EXPOSE: None,
+    }
+
+    def merged(self, doc: dict) -> dict:
+        """Merge given doc with default one"""
+        if not doc:
+            doc = {}
+
+        return self.doc | doc
+
+
 @dataclass
 class ApiResponse:
-    """ Generic class to hold API response data and parsing """
+    """Generic class to hold API response data and parsing"""
 
     code: int
     version: str
@@ -43,7 +58,7 @@ class ApiResponse:
 
     @staticmethod
     def from_dict(response: dict) -> "ApiResponse":
-        """ Convert response dict to ApiResponse """
+        """Convert response dict to ApiResponse"""
 
         if code := response.get("code"):
             response["code"] = int(code)
@@ -52,7 +67,7 @@ class ApiResponse:
             if body := response.get("body"):
                 response["body"] = loads(body)
         except decoder.JSONDecodeError:
-            SystemExit('`json` data not found')
+            SystemExit("`json` data not found")
 
         return ApiResponse(**response)
 

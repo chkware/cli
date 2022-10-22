@@ -16,10 +16,12 @@ from chk.modules.http.validation_rules import request_schema
 
 
 class RequestValueHandler:
-    """ Handle variables and values regarding request """
+    """Handle variables and values regarding request"""
 
     @staticmethod
-    def request_fill_val(document: dict, symbol_table: dict, replace_method: Callable[[dict, dict], dict]):
+    def request_fill_val(
+        document: dict, symbol_table: dict, replace_method: Callable[[dict, dict], dict]
+    ):
         """Convert request block variables"""
 
         request_document = document.get(RequestConfigNode.ROOT, {})
@@ -31,33 +33,33 @@ class RequestValueHandler:
     def request_get_return(document: dict, response: dict) -> dict:
         """Return request block variables"""
         returnable = response
-        returnable['have_all'] = True
+        returnable["have_all"] = True
 
         if req := document.get(RequestConfigNode.ROOT, {}):
             if ret := req.get(RequestConfigNode.RETURN):
                 ret = str(ret)
-                if not ret.startswith('.'):
-                    raise ValueError('Unsupported key format in request.return')
+                if not ret.startswith("."):
+                    raise ValueError("Unsupported key format in request.return")
 
-                ret = ret.lstrip('.')
-                if ret not in ('version', 'code', 'reason', 'headers', 'body'):
-                    raise ValueError('Unsupported key in request.return')
+                ret = ret.lstrip(".")
+                if ret not in ("version", "code", "reason", "headers", "body"):
+                    raise ValueError("Unsupported key in request.return")
 
                 def fx(k: object, v: object) -> object:
                     return None if k != ret else v
 
                 returnable = {key: fx(key, value) for key, value in response.items()}
-                returnable['have_all'] = False
+                returnable["have_all"] = False
 
         return returnable
 
 
 class RequestMixin:
-    """ Mixin for request spec. for v0.7.2 """
+    """Mixin for request spec. for v0.7.2"""
 
     @abc.abstractmethod
     def get_file_context(self) -> FileContext:
-        """ Abstract method to get file context """
+        """Abstract method to get file context"""
 
     def request_validated(self) -> dict[str, dict]:
         """Validate the schema against config"""
@@ -65,19 +67,27 @@ class RequestMixin:
         try:
             request_doc = self.request_as_dict()
             if not validator.validate(request_doc, request_schema):
-                raise SystemExit(err_message('fatal.V0006', extra=validator.errors))
+                raise SystemExit(err_message("fatal.V0006", extra=validator.errors))
         except DocumentError as doc_err:
-            raise SystemExit(err_message('fatal.V0001', extra=doc_err)) from doc_err
+            raise SystemExit(err_message("fatal.V0001", extra=doc_err)) from doc_err
         else:
             return request_doc  # or is a success
 
-    def request_as_dict(self) -> dict[str, dict]:
-        """ Get request as a dictionary """
+    def request_as_dict(self, compiled=False) -> dict:
+        """Get request as a dictionary"""
 
-        file_ctx = self.get_file_context()
-        document = app.get_original_doc(file_ctx.filepath_hash).copy()
+        hf_name = self.get_file_context().filepath_hash
+        document = (
+            app.get_original_doc(hf_name).copy()
+            if compiled is False
+            else app.get_compiled_doc(hf_name).copy()
+        )
 
         try:
-            return {key: document[key] for key in (RequestConfigNode.ROOT,) if key in document}
+            return {
+                key: document[key]
+                for key in (RequestConfigNode.ROOT,)
+                if key in document
+            }
         except Exception as ex:
-            raise SystemExit(err_message('fatal.V0005', extra=ex)) from ex
+            raise SystemExit(err_message("fatal.V0005", extra=ex)) from ex

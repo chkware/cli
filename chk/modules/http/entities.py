@@ -4,19 +4,22 @@ Entities for http document specification
 from typing import NamedTuple
 
 from chk.infrastructure.contexts import app
-from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
 from chk.infrastructure.work import WorkerContract
 from chk.modules.http.presentation import Presentation
 
-from chk.modules.version.support import VersionMixin, RawFileVersionParser
+from chk.modules.version.support import VersionMixin
 
 from chk.modules.http.request_helper import RequestProcessorPyRequests
 from chk.modules.http.support import RequestMixin
 from chk.modules.http.constants import RequestConfigNode as RConst
 
-from chk.modules.variables.entities import DefaultVariableDoc, DefaultReturnableDoc
+from chk.modules.variables.entities import (
+    DefaultVariableDoc,
+    DefaultReturnableDoc,
+    DefaultExposableDoc,
+)
 from chk.modules.variables.support import VariableMixin
 
 
@@ -33,24 +36,7 @@ class DefaultRequestDoc(NamedTuple):
         return {RConst.ROOT: {**self.returnable, **dict_get(doc, RConst.ROOT, {})}}
 
 
-class HttpSpec:
-    """Http versioned functionality wrapper"""
-
-    def __new__(cls, file_ctx: FileContext) -> WorkerContract:
-        """Create a http spec utility based on version"""
-
-        version = RawFileVersionParser.convert_version_str_to_num(
-            RawFileVersionParser.find_version_str(file_ctx.filepath)
-        )
-
-        if version == "072":
-            return HttpSpec_072(file_ctx)
-
-        # if none of the version matches
-        raise SystemExit(err_message("fatal.V0001"))
-
-
-class HttpSpec_072(
+class HttpSpec(
     VersionMixin,
     RequestMixin,
     VariableMixin,
@@ -78,14 +64,16 @@ class HttpSpec_072(
         version_doc = self.version_validated()
         request_doc = self.request_validated()
         variable_doc = self.variable_validated()
+        expose_doc = self.expose_validated()
 
         # compile data with defaults
         app.set_compiled_doc(
             self.file_ctx.filepath_hash,
             (
                 version_doc
-                | DefaultRequestDoc().merged(request_doc)
                 | DefaultVariableDoc().merged(variable_doc)
+                | DefaultExposableDoc({"expose": ["_response"]}).merged(expose_doc)
+                | request_doc
             ),
         )
 
@@ -94,17 +82,19 @@ class HttpSpec_072(
         self.variable_prepare_value_table()
         self.lexical_analysis_for_request()
 
-        request_doc = app.get_compiled_doc(self.file_ctx.filepath_hash, RConst.ROOT)
         try:
-            response = RequestProcessorPyRequests.perform(request_doc)
+            request_doc = dict_get(self.request_as_dict(True), RConst.ROOT)
+            self.store_local_vars_for_request(
+                RequestProcessorPyRequests.perform(request_doc)
+            )
+
             Presentation.buffer_msg("- Making request [Success]")
-        except Exception:
+        except RuntimeError as err:
             Presentation.buffer_msg("- Making request [Fail]")
+            raise err
 
-        app.set_compiled_doc(
-            self.file_ctx.filepath_hash, part="__local", value={RConst.ROOT: response}
-        )
-
-    def __after_main__(self) -> dict:
+    def __after_main__(self) -> list:
         """Prepare response for http document"""
-        return self.assemble_local_vars_for_request()
+        Presentation.buffer_msg("- Prepare exposable [Success]")
+        self.make_exposable()
+        return self.get_exposable()

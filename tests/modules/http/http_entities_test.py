@@ -25,4 +25,4 @@ class TestHttpSpec:
         handle_worker(http)
 
         response = handle_worker(http)
-        assert isinstance(response, dict)
+        assert isinstance(response, list)

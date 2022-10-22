@@ -10,9 +10,12 @@ class VariableConfigNode:
     """
     Represent variables config section
     """
-    ROOT = 'variables'
-    RETURN = 'return'
-    RESULT = 'result'
+
+    ROOT = "variables"
+    RETURN = "return"
+    RESULT = "result"
+    EXPOSE = "expose"
+    LOCAL = "__local"
 
 
 class LexicalAnalysisType(Enum):
