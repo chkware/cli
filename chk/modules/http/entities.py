@@ -82,15 +82,16 @@ class HttpSpec(
         self.variable_prepare_value_table()
         self.lexical_analysis_for_request()
 
-        request_doc = app.get_compiled_doc(self.file_ctx.filepath_hash, RConst.ROOT)
         try:
-            response = RequestProcessorPyRequests.perform(request_doc)
+            request_doc = dict_get(self.request_as_dict(True), RConst.ROOT)
+            self.store_local_vars_for_request(
+                RequestProcessorPyRequests.perform(request_doc)
+            )
+
             Presentation.buffer_msg("- Making request [Success]")
         except RuntimeError as err:
             Presentation.buffer_msg("- Making request [Fail]")
             raise err
-        else:
-            app.set_local(self.file_ctx.filepath_hash, part=RConst.LOCAL, val=response)
 
     def __after_main__(self) -> list:
         """Prepare response for http document"""
