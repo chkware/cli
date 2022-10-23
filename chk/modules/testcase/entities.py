@@ -15,7 +15,7 @@ from chk.modules.variables.constants import LexicalAnalysisType
 from chk.modules.http.request_helper import RequestProcessorPyRequests
 from chk.modules.http.support import RequestMixin
 
-from chk.modules.testcase.support import TestcaseMixin
+from chk.modules.testcase.support.testcase import TestcaseMixin
 from chk.modules.testcase.presentation import Presentation, AssertResult
 
 
@@ -36,13 +36,19 @@ class Testcase(
         pass
 
     def __main__(self) -> None:
+        """Validate and prepare doc components"""
+
+        # save original doc
         app.load_original_doc_from_file_context(self.file_ctx)
+
+        # validation
         self.version_validated()
         self.testcase_validated()
         self.variable_validated()
+        self.expose_validated()
 
-        print(Presentation.displayable_file_info(self.file_ctx))
-        print(Presentation.displayable_string("Executing spec"))
+        # print(Presentation.displayable_file_info(self.file_ctx))
+        # print(Presentation.displayable_string("Executing spec"))
         ctx_document = {}
 
         if self.is_request_infile():
