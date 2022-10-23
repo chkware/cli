@@ -1,95 +1,24 @@
-"""
-testcase related support services
-"""
 import abc
-from typing import Callable
+import copy
+from collections.abc import Callable
 from types import MappingProxyType
 
 from cerberus import validator as cer_validator
 
-from chk.infrastructure.contexts import app, validator
+from chk.infrastructure.contexts import validator, app
+from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
-from chk.infrastructure.exception import err_message
+from chk.modules.http.constants import RequestConfigNode as RConf
+from chk.modules.testcase.support.execute import ExecuteMixin
 
-from chk.modules.assertion.support import AssertionHandler
-from chk.modules.http.constants import RequestConfigNode
+from chk.modules.testcase.support.assertion import AssertionMixin
+
 from chk.modules.testcase.constants import (
-    TestcaseConfigNode,
-    ExecuteConfigNode,
-    AssertConfigNode,
+    AssertConfigNode as AtConf,
+    TestcaseConfigNode as TstConf, ExecuteConfigNode as ExConf,
 )
 from chk.modules.testcase.validation_rules import testcase_schema
-
-
-class ExecuteMixin:
-    """
-    Mixin for Execute sub-spec
-    """
-
-    @abc.abstractmethod
-    def get_file_context(self) -> FileContext:
-        """Abstract method to get file context"""
-
-    def execute_as_dict(self) -> dict[str, str]:
-        """
-        Get execute as dict
-        """
-        file_ctx = self.get_file_context()
-        document = app.get_original_doc(file_ctx.filepath_hash)
-
-        try:
-            if spec := document.get(TestcaseConfigNode.ROOT):
-                if execute := spec.get(ExecuteConfigNode.ROOT):
-                    return {ExecuteConfigNode.ROOT: execute}
-                else:
-                    raise ValueError({"spec": [{"execute": ["required field"]}]})
-        except Exception as ex:
-            raise SystemExit(err_message("fatal.V0005", extra=ex))
-
-
-class AssertionMixin:
-    """Mixin for Execute sub-spec"""
-
-    @abc.abstractmethod
-    def get_file_context(self) -> FileContext:
-        """Abstract method to get file context"""
-
-    def assertions_as_dict(self) -> dict[str, object]:
-        """Get execute as dict"""
-
-        try:
-            file_ctx = self.get_file_context()
-            document = app.get_original_doc(file_ctx.filepath_hash)
-
-            doc_key = [TestcaseConfigNode.ROOT, TestcaseConfigNode.ASSERTS]
-            if asserts := dict_get(document, ".".join(doc_key)):
-                if type(asserts) != list:
-                    raise TypeError({"spec": [{"asserts": ["expected `list`"]}]})
-
-                asrt_list = [
-                    f"{item.get('type')}.{item.get('actual')}"
-                    for item in asserts
-                    if type(item) == dict
-                ]
-                if len(asrt_list) != len(set(asrt_list)):
-                    raise TypeError(
-                        {"spec": [{"asserts": ["duplicate assertion of same value"]}]}
-                    )
-
-                return {TestcaseConfigNode.ASSERTS: asserts}
-            else:
-                raise ValueError({"spec": [{"asserts": ["required field"]}]})
-        except Exception as ex:
-            raise SystemExit(err_message("fatal.V0005", extra=ex))
-
-    def assertion_process(self) -> list:
-        """
-        Run assertion of testcase spec
-        :return:
-        """
-        assertions = dict_get(self.assertions_as_dict(), TestcaseConfigNode.ASSERTS)
-        return AssertionHandler.asserts_test_run(assertions)
 
 
 class TestcaseMixin(ExecuteMixin, AssertionMixin):
@@ -101,7 +30,7 @@ class TestcaseMixin(ExecuteMixin, AssertionMixin):
     def get_file_context(self) -> FileContext:
         """Abstract method to get file context"""
 
-    def __init_testcase_mixin(self):
+    def __init_testcase_mixin(self) -> None:
         self.in_file = True
 
     def is_request_infile(self) -> bool:
@@ -111,6 +40,7 @@ class TestcaseMixin(ExecuteMixin, AssertionMixin):
         """
         Validate the schema against config
         """
+
         try:
             testcase_doc = self.testcase_as_dict()
             if not validator.validate(testcase_doc, testcase_schema):
@@ -131,11 +61,7 @@ class TestcaseMixin(ExecuteMixin, AssertionMixin):
         document = app.get_original_doc(file_ctx.filepath_hash)
 
         try:
-            return {
-                key: document[key]
-                for key in (TestcaseConfigNode.ROOT,)
-                if key in document
-            }
+            return {key: document[key] for key in (TstConf.ROOT,) if key in document}
         except Exception as ex:
             raise SystemExit(err_message("fatal.V0005", extra=ex))
 
@@ -148,9 +74,9 @@ class TestcaseMixin(ExecuteMixin, AssertionMixin):
         file_ctx = self.get_file_context()
         document = app.get_original_doc(file_ctx.filepath_hash)
 
-        keys = [TestcaseConfigNode.ROOT, ExecuteConfigNode.ROOT, ExecuteConfigNode.FILE]
+        keys = [TstConf.ROOT, ExConf.ROOT, ExConf.FILE]
         out_file_request = dict_get(document, ".".join(keys)) is not None
-        in_file_request = document.get(RequestConfigNode.ROOT) is not None
+        in_file_request = document.get(RConf.ROOT) is not None
 
         if in_file_request is out_file_request:
             raise SystemExit(
@@ -170,12 +96,13 @@ class TestcaseMixin(ExecuteMixin, AssertionMixin):
         Check is data passing to same context
         :return: None
         """
+
         file_ctx = self.get_file_context()
         document = app.get_original_doc(file_ctx.filepath_hash)
 
-        in_file_request = document.get(RequestConfigNode.ROOT) is not None
+        in_file_request = document.get(RConf.ROOT) is not None
 
-        keys = [TestcaseConfigNode.ROOT, ExecuteConfigNode.ROOT, ExecuteConfigNode.WITH]
+        keys = [TstConf.ROOT, ExConf.ROOT, ExConf.WITH]
         out_file_with = dict_get(document, ".".join(keys)) is not None
 
         if in_file_request and out_file_with:
@@ -197,15 +124,13 @@ class TestcaseValueHandler:
     ):
         """Convert request block variables"""
 
-        assertion_document = document.get(AssertConfigNode.ROOT, {})
-        import copy
-
+        assertion_document = document.get(AtConf.ROOT, {})
         assertion_document = copy.deepcopy(assertion_document)
 
         for each_assert in assertion_document:
-            actual_original = each_assert[AssertConfigNode.ACTUAL]
+            actual_original = each_assert[AtConf.ACTUAL]
             replace_method(each_assert, symbol_table)
-            each_assert[f"{AssertConfigNode.ACTUAL}_original"] = actual_original
+            each_assert[f"{AtConf.ACTUAL}_original"] = actual_original
 
         return assertion_document
 
@@ -213,7 +138,7 @@ class TestcaseValueHandler:
     def request_set_result(
         execute_doc: dict, symbol_table: MappingProxyType, request_ret: MappingProxyType
     ) -> dict:
-        arg = [ExecuteConfigNode.ROOT, ExecuteConfigNode.RESULT]
+        arg = [ExConf.ROOT, ExConf.RESULT]
         result_replaceable = str(dict_get(execute_doc, ".".join(arg))).strip()
 
         if result_replaceable.startswith("$"):  # if starts with $ remove it

@@ -28,7 +28,7 @@ from chk.modules.variables.validation_rules import (
 )
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
 
-from chk.modules.testcase.support import TestcaseValueHandler
+from chk.modules.testcase.support.testcase import TestcaseValueHandler
 from chk.modules.testcase.constants import TestcaseConfigNode
 
 

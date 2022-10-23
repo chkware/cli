@@ -11,5 +11,5 @@ def execute(file_ctx: FileContext) -> None:
     testcase = Testcase(file_ctx)
     try:
         handle_worker(testcase)
-    except BaseException:
-        pass
+    except RuntimeError as ex:
+        raise SystemExit(ex) from ex
