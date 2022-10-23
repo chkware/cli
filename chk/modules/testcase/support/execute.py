@@ -1,3 +1,6 @@
+import abc
+
+from chk.infrastructure.contexts import app
 from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
 from chk.modules.testcase.constants import (

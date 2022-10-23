@@ -5,7 +5,7 @@ from types import MappingProxyType
 
 from cerberus import validator as cer_validator
 
-from chk.infrastructure.contexts import validator
+from chk.infrastructure.contexts import validator, app
 from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
