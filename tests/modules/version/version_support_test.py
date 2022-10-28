@@ -5,6 +5,7 @@ from chk.infrastructure.contexts import app
 from chk.infrastructure.file_loader import FileContext
 from chk.modules.version.constants import DocumentType
 from chk.modules.version.support import VersionMixin, RawFileVersionParser
+from chk.modules.version.validation_rules import version_schema_testcase
 
 
 class HavingVersion(VersionMixin):
@@ -93,6 +94,25 @@ class TestVersionMixin:
 
         assert isinstance(ver.get_document_type(), str)
         assert not isinstance(ver.get_document_type(), DocumentType)
+
+    def test_get_validation_schema_pass(self):
+        config = {"version": "default:testcase:0.8.0"}
+
+        file_ctx = FileContext(filepath_hash="a1b2")
+        app.original_doc[file_ctx.filepath_hash] = config
+
+        ver = HavingVersion(file_ctx)
+        assert ver.get_validation_schema() == version_schema_testcase
+
+    def test_get_validation_schema_fail(self):
+        config = {"version": "default:unsupported:0.8.0"}
+
+        file_ctx = FileContext(filepath_hash="a1b2")
+        app.original_doc[file_ctx.filepath_hash] = config
+
+        ver = HavingVersion(file_ctx)
+        with pytest.raises(RuntimeError):
+            ver.get_validation_schema()
 
 
 class TestRawFileVersionParser:

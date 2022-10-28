@@ -28,13 +28,7 @@ class VersionMixin:
 
         try:
             version_doc = self.version_as_dict()
-            version_schema = {}
-
-            match self.get_document_type():
-                case DocumentType.HTTP:
-                    version_schema = version_schema_http
-                case DocumentType.TESTCASE:
-                    version_schema = version_schema_testcase
+            version_schema = self.get_validation_schema()
 
             if not validator.validate(version_doc, version_schema):
                 raise SystemExit(err_message("fatal.V0006", extra=validator.errors))
@@ -68,6 +62,17 @@ class VersionMixin:
             raise SystemExit("get_document_type: Invalid version type")
 
         return DocumentType.from_value(version_doc_l.pop(1))
+
+    def get_validation_schema(self) -> dict[str, dict]:
+        """Get validation schema based on document version"""
+
+        match self.get_document_type():
+            case DocumentType.HTTP:
+                return version_schema_http
+            case DocumentType.TESTCASE:
+                return version_schema_testcase
+            case _:
+                raise RuntimeError(err_message('fatal.V0004'))
 
 
 class RawFileVersionParser:
