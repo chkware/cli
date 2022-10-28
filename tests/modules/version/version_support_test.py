@@ -3,6 +3,7 @@ import tests
 
 from chk.infrastructure.contexts import app
 from chk.infrastructure.file_loader import FileContext
+from chk.modules.version.constants import DocumentType
 from chk.modules.version.support import VersionMixin, RawFileVersionParser
 
 
@@ -63,6 +64,35 @@ class TestVersionMixin:
         ver = HavingVersion(file_ctx)
         with pytest.raises(SystemExit):
             ver.version_validated()
+
+    def test_get_document_type_pass_with_http_doc(self):
+        config = {"version": "default:http:0.7.2"}
+
+        file_ctx = FileContext(filepath_hash="a1b2")
+        app.original_doc[file_ctx.filepath_hash] = config
+
+        ver = HavingVersion(file_ctx)
+        assert ver.get_document_type() == DocumentType.HTTP
+
+    def test_get_document_type_pass_with_testcase_doc(self):
+        config = {"version": "default:testcase:0.7.2"}
+
+        file_ctx = FileContext(filepath_hash="a1b2")
+        app.original_doc[file_ctx.filepath_hash] = config
+
+        ver = HavingVersion(file_ctx)
+        assert ver.get_document_type() == DocumentType.TESTCASE
+
+    def test_get_document_type_fail_with_unsupported_doc(self):
+        config = {"version": "default:unsupported:0.8.0"}
+
+        file_ctx = FileContext(filepath_hash="a1b2")
+        app.original_doc[file_ctx.filepath_hash] = config
+
+        ver = HavingVersion(file_ctx)
+
+        assert isinstance(ver.get_document_type(), str)
+        assert not isinstance(ver.get_document_type(), DocumentType)
 
 
 class TestRawFileVersionParser:
