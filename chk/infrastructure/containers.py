@@ -97,7 +97,7 @@ class App(NamedTuple):
 
             return self.compiled_doc[key][part]
 
-        return self.original_doc.get(key)
+        return self.compiled_doc[key]
 
     def load_original_doc_from_file_context(self, file_ctx: FileContext) -> None:
         """Load original doc from a given file context"""
