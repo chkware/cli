@@ -24,6 +24,8 @@ class TestVersionMixin:
         ver = HavingVersion(file_ctx)
         assert isinstance(ver.version_validated(), dict)
 
+        del app.original_doc[file_ctx.filepath_hash]
+
     def test_validate_config_empty_version(self):
         file_ctx = FileContext(filepath_hash="a1b2")
         app.original_doc[file_ctx.filepath_hash] = {"version": ""}
@@ -31,6 +33,8 @@ class TestVersionMixin:
         ver = HavingVersion(file_ctx)
         with pytest.raises(SystemExit):
             ver.version_validated()
+
+        del app.original_doc[file_ctx.filepath_hash]
 
     def test_validate_config_fail_non_exist_ver(self):
         file_ctx = FileContext(filepath_hash="a1b2")
@@ -40,6 +44,8 @@ class TestVersionMixin:
         with pytest.raises(SystemExit):
             ver.version_validated()
 
+        del app.original_doc[file_ctx.filepath_hash]
+
     def test_validate_config_fail_no_doc(self):
         file_ctx = FileContext(filepath_hash="a1b2")
         app.original_doc[file_ctx.filepath_hash] = {}
@@ -48,6 +54,8 @@ class TestVersionMixin:
         with pytest.raises(SystemExit):
             ver.version_validated()
 
+        del app.original_doc[file_ctx.filepath_hash]
+
     def test_validate_config_fail_on_none(self):
         file_ctx = FileContext(filepath_hash="a1b2")
         app.original_doc[file_ctx.filepath_hash] = None
@@ -55,6 +63,8 @@ class TestVersionMixin:
         ver = HavingVersion(file_ctx)
         with pytest.raises(SystemExit):
             ver.version_validated()
+
+        del app.original_doc[file_ctx.filepath_hash]
 
     def test_validate_config_fail_no_version(self):
         config = {"request": {"url": "some.url"}}
@@ -66,6 +76,8 @@ class TestVersionMixin:
         with pytest.raises(SystemExit):
             ver.version_validated()
 
+        del app.original_doc[file_ctx.filepath_hash]
+
     def test_get_document_type_pass_with_http_doc(self):
         config = {"version": "default:http:0.7.2"}
 
@@ -75,6 +87,8 @@ class TestVersionMixin:
         ver = HavingVersion(file_ctx)
         assert ver.get_document_type() == DocumentType.HTTP
 
+        del app.original_doc[file_ctx.filepath_hash]
+
     def test_get_document_type_pass_with_testcase_doc(self):
         config = {"version": "default:testcase:0.7.2"}
 
@@ -83,6 +97,8 @@ class TestVersionMixin:
 
         ver = HavingVersion(file_ctx)
         assert ver.get_document_type() == DocumentType.TESTCASE
+
+        del app.original_doc[file_ctx.filepath_hash]
 
     def test_get_document_type_fail_with_unsupported_doc(self):
         config = {"version": "default:unsupported:0.8.0"}
@@ -95,6 +111,8 @@ class TestVersionMixin:
         assert isinstance(ver.get_document_type(), str)
         assert not isinstance(ver.get_document_type(), DocumentType)
 
+        del app.original_doc[file_ctx.filepath_hash]
+
     def test_get_validation_schema_pass(self):
         config = {"version": "default:testcase:0.8.0"}
 
@@ -103,6 +121,8 @@ class TestVersionMixin:
 
         ver = HavingVersion(file_ctx)
         assert ver.get_validation_schema() == version_schema_testcase
+        
+        del app.original_doc[file_ctx.filepath_hash]
 
     def test_get_validation_schema_fail(self):
         config = {"version": "default:unsupported:0.8.0"}
@@ -113,6 +133,8 @@ class TestVersionMixin:
         ver = HavingVersion(file_ctx)
         with pytest.raises(RuntimeError):
             ver.get_validation_schema()
+
+        del app.original_doc[file_ctx.filepath_hash]
 
 
 class TestRawFileVersionParser:
