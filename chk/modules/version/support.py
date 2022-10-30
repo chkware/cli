@@ -2,6 +2,7 @@
 version related support services
 """
 import abc
+from typing import Optional
 
 from cerberus.validator import DocumentError
 
@@ -24,7 +25,9 @@ class DocumentMixin:
     def get_file_context(self) -> FileContext:
         """Abstract method to get file context"""
 
-    def as_dict(self, key: str, with_key: bool = True, compiled: bool = False) -> dict:
+    def as_dict(
+        self, key: str, with_key: bool = True, compiled: bool = False
+    ) -> Optional[dict]:
         """Get a spec part of doc by its key"""
 
         hf_name = self.get_file_context().filepath_hash
@@ -38,9 +41,6 @@ class DocumentMixin:
             raise RuntimeError(err_message("fatal.V0009", extra="Document missing"))
 
         value = dict_get(document, key)
-        if not value:
-            raise RuntimeError(err_message("fatal.V0009", extra="Value missing"))
-
         return value if with_key is False else {key: value}
 
 
