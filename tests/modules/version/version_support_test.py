@@ -147,3 +147,24 @@ class TestRawFileVersionParser:
     def test_convert_version_str_to_num_success_with_version_value_dash(self):
         v1 = "default:http:0.7-2"
         assert RawFileVersionParser.convert_version_str_to_num(v1) == "072"
+
+
+class TestDocumentMixin:
+    def test_as_dict_success(self):
+        file_ctx = FileContext(filepath_hash="a1b2")
+        app.original_doc[file_ctx.filepath_hash] = {"version": "default:http:0.7.2"}
+
+        ver = HavingVersion(file_ctx)
+
+        assert isinstance(ver.as_dict("version"), dict)
+        assert ver.as_dict("version").get("version") == "default:http:0.7.2"
+        assert isinstance(ver.as_dict("version", False), str)
+
+    def test_as_dict_or_fail_pass(self):
+        file_ctx = FileContext(filepath_hash="a1b2")
+        app.original_doc[file_ctx.filepath_hash] = {"version": "default:http:0.7.2"}
+
+        ver = HavingVersion(file_ctx)
+
+        with pytest.raises(RuntimeError):
+            ver.as_dict("request")

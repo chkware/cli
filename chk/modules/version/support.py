@@ -8,6 +8,7 @@ from cerberus.validator import DocumentError
 from chk.infrastructure.exception import err_message
 from chk.infrastructure.contexts import validator, app
 from chk.infrastructure.file_loader import FileContext
+from chk.infrastructure.helper import dict_get
 
 from chk.modules.version.constants import VersionConfigNode, DocumentType
 from chk.modules.version.validation_rules import (
@@ -16,7 +17,33 @@ from chk.modules.version.validation_rules import (
 )
 
 
-class VersionMixin:
+class DocumentMixin:
+    """Document mixin"""
+
+    @abc.abstractmethod
+    def get_file_context(self) -> FileContext:
+        """Abstract method to get file context"""
+
+    def as_dict(self, key: str, include_key: bool = True) -> dict:
+        """Get a spec part of doc by its key"""
+
+        document = app.get_original_doc(self.get_file_context().filepath_hash)
+
+        if not document:
+            raise RuntimeError(
+                err_message("fatal.V0009", extra="Original document missing")
+            )
+
+        value = dict_get(document, key)
+        if not value:
+            raise RuntimeError(
+                err_message("fatal.V0009", extra="Document missing")
+            )
+
+        return value if include_key is False else {key: value}
+
+
+class VersionMixin(DocumentMixin):
     """Mixin for version spec. for v0.7.2"""
 
     @abc.abstractmethod
