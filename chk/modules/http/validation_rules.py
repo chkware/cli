@@ -100,12 +100,6 @@ request_schema = {  # cerberus validation rules
                 'excludes': [RequestConfigNode.BODY_FRM, RequestConfigNode.BODY_FRM_DAT, RequestConfigNode.BODY_JSN,
                              RequestConfigNode.BODY_XML],
             },
-            RequestConfigNode.RETURN: {
-                'required': False,
-                'empty': False,
-                'nullable': True,
-                'type': 'string',
-            },
         }
     }
 }
