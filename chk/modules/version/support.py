@@ -24,23 +24,24 @@ class DocumentMixin:
     def get_file_context(self) -> FileContext:
         """Abstract method to get file context"""
 
-    def as_dict(self, key: str, include_key: bool = True) -> dict:
+    def as_dict(self, key: str, with_key: bool = True, compiled: bool = False) -> dict:
         """Get a spec part of doc by its key"""
 
-        document = app.get_original_doc(self.get_file_context().filepath_hash)
+        hf_name = self.get_file_context().filepath_hash
+        document = (
+            app.get_original_doc(hf_name)
+            if compiled is False
+            else app.get_compiled_doc(hf_name)
+        )
 
         if not document:
-            raise RuntimeError(
-                err_message("fatal.V0009", extra="Original document missing")
-            )
+            raise RuntimeError(err_message("fatal.V0009", extra="Document missing"))
 
         value = dict_get(document, key)
         if not value:
-            raise RuntimeError(
-                err_message("fatal.V0009", extra="Document missing")
-            )
+            raise RuntimeError(err_message("fatal.V0009", extra="Value missing"))
 
-        return value if include_key is False else {key: value}
+        return value if with_key is False else {key: value}
 
 
 class VersionMixin(DocumentMixin):
@@ -99,7 +100,7 @@ class VersionMixin(DocumentMixin):
             case DocumentType.TESTCASE:
                 return version_schema_testcase
             case _:
-                raise RuntimeError(err_message('fatal.V0004'))
+                raise RuntimeError(err_message("fatal.V0004"))
 
 
 class RawFileVersionParser:

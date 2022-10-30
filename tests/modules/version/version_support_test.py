@@ -160,7 +160,9 @@ class TestDocumentMixin:
         assert ver.as_dict("version").get("version") == "default:http:0.7.2"
         assert isinstance(ver.as_dict("version", False), str)
 
-    def test_as_dict_or_fail_pass(self):
+        del app.original_doc[file_ctx.filepath_hash]
+
+    def test_as_dict_fail(self):
         file_ctx = FileContext(filepath_hash="a1b2")
         app.original_doc[file_ctx.filepath_hash] = {"version": "default:http:0.7.2"}
 
@@ -168,3 +170,14 @@ class TestDocumentMixin:
 
         with pytest.raises(RuntimeError):
             ver.as_dict("request")
+
+        del app.original_doc[file_ctx.filepath_hash]
+
+    def test_as_dict_pass_for_compiled_doc(self):
+        file_ctx = FileContext(filepath_hash="a1b2")
+        app.compiled_doc[file_ctx.filepath_hash] = {"version": "default:http:0.7.2"}
+
+        ver = HavingVersion(file_ctx)
+
+        assert ver.as_dict("version", False, True) == "default:http:0.7.2"
+        del app.compiled_doc[file_ctx.filepath_hash]
