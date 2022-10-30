@@ -2,7 +2,6 @@
 version related support services
 """
 import abc
-from typing import Optional
 
 from cerberus.validator import DocumentError
 
@@ -27,7 +26,7 @@ class DocumentMixin:
 
     def as_dict(
         self, key: str, with_key: bool = True, compiled: bool = False
-    ) -> Optional[dict]:
+    ) -> dict | None:
         """Get a spec part of doc by its key"""
 
         hf_name = self.get_file_context().filepath_hash
@@ -51,7 +50,7 @@ class VersionMixin(DocumentMixin):
     def get_file_context(self) -> FileContext:
         """Abstract method to get file context"""
 
-    def version_validated(self) -> dict[str, str]:
+    def version_validated(self) -> dict:
         """Validate the schema against config"""
 
         try:
@@ -59,35 +58,25 @@ class VersionMixin(DocumentMixin):
             version_schema = self.get_validation_schema()
 
             if not validator.validate(version_doc, version_schema):
-                raise SystemExit(err_message("fatal.V0006", extra=validator.errors))
+                raise RuntimeError(err_message("fatal.V0006", extra=validator.errors))
         except DocumentError as doc_err:
-            raise SystemExit(err_message("fatal.V0001", extra=doc_err)) from doc_err
+            raise RuntimeError(err_message("fatal.V0001", extra=doc_err)) from doc_err
 
-        return version_doc  # or is a success
+        return version_doc if isinstance(version_doc, dict) else {}
 
-    def version_as_dict(self) -> dict[str, str]:
+    def version_as_dict(self, with_key: bool = True) -> dict | None:
         """Get version as dictionary"""
 
-        file_ctx = self.get_file_context()
-        document = app.get_original_doc(file_ctx.filepath_hash)
-
-        try:
-            return {
-                key: document[key]
-                for key in (VersionConfigNode.VERSION,)
-                if key in document
-            }
-        except Exception as ex:
-            raise SystemExit(err_message("fatal.V0005", extra=ex)) from ex
+        return self.as_dict(VersionConfigNode.VERSION, with_key)
 
     def get_document_type(self) -> DocumentType:
         """Get document type"""
 
-        version_doc = self.version_as_dict().get(VersionConfigNode.VERSION)
+        version_doc = self.version_as_dict(False)
         version_doc_l = str(version_doc).split(":")
 
         if len(version_doc_l) < 2:
-            raise SystemExit("get_document_type: Invalid version type")
+            raise RuntimeError("get_document_type: Invalid version type")
 
         return DocumentType.from_value(version_doc_l.pop(1))
 
@@ -132,7 +121,7 @@ class RawFileVersionParser:
 
     @staticmethod
     def convert_version_str_to_num(version_str: str) -> str:
-        """Convert a chkware supported version string to numeric"""
+        """Convert a supported version string to numeric"""
 
         if len(version_str) == 0:
             return ""

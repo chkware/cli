@@ -31,7 +31,7 @@ class TestVersionMixin:
         app.original_doc[file_ctx.filepath_hash] = {"version": ""}
 
         ver = HavingVersion(file_ctx)
-        with pytest.raises(SystemExit):
+        with pytest.raises(RuntimeError):
             ver.version_validated()
 
         del app.original_doc[file_ctx.filepath_hash]
@@ -41,7 +41,7 @@ class TestVersionMixin:
         app.original_doc[file_ctx.filepath_hash] = {"version": "default:http:0.7"}
 
         ver = HavingVersion(file_ctx)
-        with pytest.raises(SystemExit):
+        with pytest.raises(RuntimeError):
             ver.version_validated()
 
         del app.original_doc[file_ctx.filepath_hash]
@@ -51,7 +51,7 @@ class TestVersionMixin:
         app.original_doc[file_ctx.filepath_hash] = {}
 
         ver = HavingVersion(file_ctx)
-        with pytest.raises(SystemExit):
+        with pytest.raises(RuntimeError):
             ver.version_validated()
 
         del app.original_doc[file_ctx.filepath_hash]
@@ -61,7 +61,7 @@ class TestVersionMixin:
         app.original_doc[file_ctx.filepath_hash] = None
 
         ver = HavingVersion(file_ctx)
-        with pytest.raises(SystemExit):
+        with pytest.raises(RuntimeError):
             ver.version_validated()
 
         del app.original_doc[file_ctx.filepath_hash]
@@ -73,7 +73,7 @@ class TestVersionMixin:
         app.original_doc[file_ctx.filepath_hash] = config
 
         ver = HavingVersion(file_ctx)
-        with pytest.raises(SystemExit):
+        with pytest.raises(RuntimeError):
             ver.version_validated()
 
         del app.original_doc[file_ctx.filepath_hash]
