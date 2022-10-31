@@ -10,7 +10,7 @@ from cerberus.validator import DocumentError
 from chk.infrastructure.contexts import app, validator
 from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
-from chk.infrastructure.helper import dict_set, data_get, dict_get
+from chk.infrastructure.helper import dict_set
 
 from chk.modules.version.constants import DocumentType
 
@@ -100,9 +100,7 @@ class VariableMixin(DocumentMixin):
         """Get variable dict"""
 
         try:
-            variable_data = self.as_dict(VarConf.ROOT, False, compiled)
-
-            if not variable_data:
+            if not (variable_data := self.as_dict(VarConf.ROOT, False, compiled)):
                 return {VarConf.ROOT: {}} if with_key else {}
 
             return {VarConf.ROOT: variable_data} if with_key else variable_data
