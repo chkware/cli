@@ -43,6 +43,9 @@ class DefaultExposableDoc(NamedTuple):
         if not doc:
             doc = {}
 
+        if doc == DefaultExposableDoc().doc:
+            doc = {}
+
         return self.doc | doc
 
 
