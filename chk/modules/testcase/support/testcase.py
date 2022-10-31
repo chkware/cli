@@ -54,16 +54,12 @@ class TestcaseMixin(ExecuteMixin, AssertionMixin):
 
         return testcase_doc  # or is a success
 
-    def testcase_as_dict(self) -> dict[str, str]:
-        """Get version string"""
+    def testcase_as_dict(
+        self, with_key: bool = True, compiled: bool = False
+    ) -> dict | None:
+        """Get testcase as a dictionary"""
 
-        file_ctx = self.get_file_context()
-        document = app.get_original_doc(file_ctx.filepath_hash)
-
-        try:
-            return {key: document[key] for key in (TstConf.ROOT,) if key in document}
-        except Exception as ex:
-            raise SystemExit(err_message("fatal.V0005", extra=ex))
+        return self.as_dict(TstConf.ROOT, with_key, compiled)
 
     def validate_request_block(self) -> None:
         """
