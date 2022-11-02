@@ -3,7 +3,7 @@
 from chk.infrastructure.containers import App
 from chk.infrastructure.file_loader import FileContext
 from chk.modules.testcase.support.testcase import TestcaseMixin
-from tests import RES_DIR, create_file_context_for_test
+from tests import RES_DIR
 
 app = App()
 
@@ -19,10 +19,23 @@ class HavingTestcase(TestcaseMixin):
 class TestTestcaseMixin:
     def test_testcase_as_dict_pass(self):
         file = RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequest.chk"
-        ctx = create_file_context_for_test(file, {})
+        ctx = FileContext.from_file(file, {})
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingTestcase(ctx)
         assert isinstance(tc.testcase_as_dict(), dict)
+
+        del app.original_doc[ctx.filepath_hash]
+
+    def test_testcase_as_dict_pass_when_spec_not_found(self):
+        file = RES_DIR + "fail_cases/testcases/GET-Plain.chk"
+        ctx = FileContext.from_file(file, {})
+        app.load_original_doc_from_file_context(ctx)
+
+        tc = HavingTestcase(ctx)
+        print(tc.testcase_as_dict())
+
+        assert isinstance(tc.testcase_as_dict(), dict)
+        assert tc.testcase_as_dict() == {"spec": None}
 
         del app.original_doc[ctx.filepath_hash]
