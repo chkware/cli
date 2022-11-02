@@ -7,9 +7,10 @@ from chk.infrastructure.helper import dict_get
 
 from chk.modules.assertion.support import AssertionHandler
 from chk.modules.testcase.constants import TestcaseConfigNode as TstConf
+from chk.modules.version.support import DocumentMixin
 
 
-class AssertionMixin:
+class AssertionMixin(DocumentMixin):
     """Mixin for Execute sub-spec"""
 
     @abc.abstractmethod

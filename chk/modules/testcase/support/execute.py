@@ -7,9 +7,10 @@ from chk.modules.testcase.constants import (
     TestcaseConfigNode as TstConf,
     ExecuteConfigNode as ExConf,
 )
+from chk.modules.version.support import DocumentMixin
 
 
-class ExecuteMixin:
+class ExecuteMixin(DocumentMixin):
     """
     Mixin for Execute sub-spec
     """
