@@ -16,7 +16,8 @@ from chk.modules.testcase.support.assertion import AssertionMixin
 
 from chk.modules.testcase.constants import (
     AssertConfigNode as AtConf,
-    TestcaseConfigNode as TstConf, ExecuteConfigNode as ExConf,
+    TestcaseConfigNode as TstConf,
+    ExecuteConfigNode as ExConf,
 )
 from chk.modules.testcase.validation_rules import testcase_schema
 
@@ -37,22 +38,17 @@ class TestcaseMixin(ExecuteMixin, AssertionMixin):
         return self.in_file
 
     def testcase_validated(self) -> dict[str, str]:
-        """
-        Validate the schema against config
-        """
+        """Validate the schema against config"""
 
         try:
             testcase_doc = self.testcase_as_dict()
             if not validator.validate(testcase_doc, testcase_schema):
-                raise SystemExit(err_message("fatal.V0006", extra=validator.errors))
+                raise RuntimeError(err_message("fatal.V0006", extra=validator.errors))
 
-            # validate request if it exists in-file
-            self.validate_request_block()
-            self.validate_with_block()
         except cer_validator.DocumentError as doc_err:
-            raise SystemExit(err_message("fatal.V0001", extra=doc_err)) from doc_err
+            raise RuntimeError(err_message("fatal.V0001", extra=doc_err)) from doc_err
 
-        return testcase_doc  # or is a success
+        return testcase_doc if isinstance(testcase_doc, dict) else {}
 
     def testcase_as_dict(
         self, with_key: bool = True, compiled: bool = False
