@@ -35,7 +35,10 @@ class TestcaseMixin(ExecuteMixin, AssertionMixin):
         self.in_file = True
 
     def is_request_infile(self) -> bool:
-        return self.in_file
+        return isinstance(
+            app.get_original_doc(self.get_file_context().filepath_hash).get(RConf.ROOT),
+            dict,
+        )
 
     def testcase_validated(self) -> dict[str, str]:
         """Validate the schema against config"""

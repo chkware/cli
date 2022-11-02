@@ -60,3 +60,23 @@ class TestTestcaseMixin:
             tc.testcase_validated()
 
         del app.original_doc[ctx.filepath_hash]
+
+    def test_is_request_infile_pass(self):
+        file = RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequest.chk"
+        ctx = FileContext.from_file(file, {})
+        app.load_original_doc_from_file_context(ctx)
+
+        tc = HavingTestcase(ctx)
+        assert tc.is_request_infile()
+
+        del app.original_doc[ctx.filepath_hash]
+
+    def test_is_request_infile_fails(self):
+        file = RES_DIR + "pass_cases/testcases/01_UserCreateSpec.chk"
+        ctx = FileContext.from_file(file, {})
+        app.load_original_doc_from_file_context(ctx)
+
+        tc = HavingTestcase(ctx)
+        assert not tc.is_request_infile()
+
+        del app.original_doc[ctx.filepath_hash]
