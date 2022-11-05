@@ -1,0 +1,5 @@
+version: 'default:testcase:0.7.2'
+
+spec:
+  asserts:
+    - {type: AssertEquals, actual: $Code, expected: 201}

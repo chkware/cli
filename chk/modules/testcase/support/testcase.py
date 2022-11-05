@@ -48,13 +48,19 @@ class TestcaseMixin(ExecuteMixin, AssertionMixin):
             if not validator.validate(testcase_doc, testcase_schema):
                 raise RuntimeError(err_message("fatal.V0006", extra=validator.errors))
 
+            # case: spec with no request
+            if not self.is_request_infile() and not dict_get(
+                testcase_doc, f"{TstConf.ROOT}.{TstConf.EXECUTE}.{ExConf.FILE}"
+            ):
+                raise RuntimeError(err_message("fatal.V0006", extra="No request found"))
+
         except cer_validator.DocumentError as doc_err:
             raise RuntimeError(err_message("fatal.V0001", extra=doc_err)) from doc_err
 
         return testcase_doc if isinstance(testcase_doc, dict) else {}
 
     def testcase_as_dict(
-        self, with_key: bool = True, compiled: bool = False
+            self, with_key: bool = True, compiled: bool = False
     ) -> dict | None:
         """Get testcase as a dictionary"""
 
@@ -115,7 +121,8 @@ class TestcaseValueHandler:
 
     @staticmethod
     def assertions_fill_val(
-        document: dict, symbol_table: dict, replace_method: Callable[[dict, dict], dict]
+            document: dict, symbol_table: dict,
+            replace_method: Callable[[dict, dict], dict]
     ):
         """Convert request block variables"""
 
@@ -131,7 +138,8 @@ class TestcaseValueHandler:
 
     @staticmethod
     def request_set_result(
-        execute_doc: dict, symbol_table: MappingProxyType, request_ret: MappingProxyType
+            execute_doc: dict, symbol_table: MappingProxyType,
+            request_ret: MappingProxyType
     ) -> dict:
         arg = [ExConf.ROOT, ExConf.RESULT]
         result_replaceable = str(dict_get(execute_doc, ".".join(arg))).strip()

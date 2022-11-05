@@ -40,7 +40,7 @@ class TestTestcaseMixin:
 
         del app.original_doc[ctx.filepath_hash]
 
-    def test_testcase_validated_pass(self):
+    def test_testcase_validated_pass_when_spec_found(self):
         file = RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequest.chk"
         ctx = FileContext.from_file(file, {})
         app.load_original_doc_from_file_context(ctx)
@@ -50,8 +50,19 @@ class TestTestcaseMixin:
 
         del app.original_doc[ctx.filepath_hash]
 
-    def test_testcase_validated_fails(self):
+    def test_testcase_validated_fails_when_no_spec(self):
         file = RES_DIR + "fail_cases/testcases/GET-Plain.chk"
+        ctx = FileContext.from_file(file, {})
+        app.load_original_doc_from_file_context(ctx)
+
+        tc = HavingTestcase(ctx)
+        with pytest.raises(RuntimeError):
+            tc.testcase_validated()
+
+        del app.original_doc[ctx.filepath_hash]
+
+    def test_testcase_validated_fails_when_no_in_file_request_spec(self):
+        file = RES_DIR + "fail_cases/testcases/GET-NoRequest.chk"
         ctx = FileContext.from_file(file, {})
         app.load_original_doc_from_file_context(ctx)
 
