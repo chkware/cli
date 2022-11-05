@@ -1,3 +1,4 @@
+# type: ignore
 import pytest
 
 from chk.infrastructure.containers import App
