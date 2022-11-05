@@ -18,7 +18,7 @@ messages = dict(
         V0009="Document exception: ",
         # testcase errors
         V0020="None or many request found",
-        V0021="Pass data on same context",
+        V0021="Passing value on same context",
         V0029="File linking not supported",
     )
 )
