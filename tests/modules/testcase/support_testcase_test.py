@@ -103,6 +103,16 @@ class TestTestcaseMixin:
 
         del app.original_doc[ctx.filepath_hash]
 
+    def test_testcase_validated_pass_with_declarative_execute_and_var(self):
+        file = RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequestAndSpecFullVar.chk"
+        ctx = FileContext.from_file(file, {})
+        app.load_original_doc_from_file_context(ctx)
+
+        tc = HavingTestcase(ctx)
+        tc.testcase_validated()
+
+        del app.original_doc[ctx.filepath_hash]
+
     def test_is_request_infile_pass(self):
         file = RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequest.chk"
         ctx = FileContext.from_file(file, {})
