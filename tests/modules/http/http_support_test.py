@@ -1,9 +1,12 @@
+# type: ignore
 import pytest
 
 import tests
-from chk.infrastructure.contexts import app
+from chk.infrastructure.containers import App
 from chk.infrastructure.file_loader import ChkFileLoader, FileContext
 from chk.modules.http.support import RequestMixin
+
+app = App()
 
 
 class HavingRequest(RequestMixin):
