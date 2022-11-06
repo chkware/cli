@@ -70,6 +70,10 @@ class TestcaseMixin(RequestMixin, ExecuteMixin, AssertionMixin):
                     )
                 )
 
+            # case: validate in-file request
+            if self.is_request_infile():
+                self.request_validated()
+
         except cer_validator.DocumentError as doc_err:
             raise RuntimeError(err_message("fatal.V0001", extra=doc_err)) from doc_err
 
