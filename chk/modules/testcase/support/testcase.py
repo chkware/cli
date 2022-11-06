@@ -14,6 +14,7 @@ from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
 from chk.modules.http.constants import RequestConfigNode as RConf
+from chk.modules.http.support import RequestMixin
 from chk.modules.testcase.support.execute import ExecuteMixin
 
 from chk.modules.testcase.support.assertion import AssertionMixin
@@ -26,7 +27,7 @@ from chk.modules.testcase.constants import (
 from chk.modules.testcase.validation_rules import testcase_schema
 
 
-class TestcaseMixin(ExecuteMixin, AssertionMixin):
+class TestcaseMixin(RequestMixin, ExecuteMixin, AssertionMixin):
     """
     Mixin for Testcase spec
     """
@@ -44,7 +45,7 @@ class TestcaseMixin(ExecuteMixin, AssertionMixin):
             dict,
         )
 
-    def testcase_validated(self) -> dict[str, str]:
+    def testcase_validated(self) -> dict:
         """Validate the schema against config"""
 
         try:
