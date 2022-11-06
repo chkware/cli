@@ -29,11 +29,13 @@ class DocumentMixin:
     ) -> dict | None:
         """Get a spec part of doc by its key"""
 
-        hf_name = self.get_file_context().filepath_hash
+        if not (context := self.get_file_context()):
+            return None
+
         document = (
-            app.get_original_doc(hf_name)
+            app.get_original_doc(context.filepath_hash)
             if compiled is False
-            else app.get_compiled_doc(hf_name)
+            else app.get_compiled_doc(context.filepath_hash)
         )
 
         if not document:

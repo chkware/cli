@@ -1,10 +1,16 @@
+# type: ignore
+
 import pytest
 import tests
 
 from chk.infrastructure.contexts import app
 from chk.infrastructure.file_loader import FileContext
 from chk.modules.version.constants import DocumentType
-from chk.modules.version.support import VersionMixin, RawFileVersionParser
+from chk.modules.version.support import (
+    VersionMixin,
+    RawFileVersionParser,
+    DocumentMixin,
+)
 from chk.modules.version.validation_rules import version_schema_testcase
 
 
@@ -121,7 +127,7 @@ class TestVersionMixin:
 
         ver = HavingVersion(file_ctx)
         assert ver.get_validation_schema() == version_schema_testcase
-        
+
         del app.original_doc[file_ctx.filepath_hash]
 
     def test_get_validation_schema_fail(self):
@@ -192,3 +198,7 @@ class TestDocumentMixin:
 
         assert ver.as_dict("version", False, True) == "default:http:0.7.2"
         del app.compiled_doc[file_ctx.filepath_hash]
+
+    def test_as_dict_pass_no_ctx(self):
+        ver = DocumentMixin()
+        assert ver.as_dict("version", False, True) is None
