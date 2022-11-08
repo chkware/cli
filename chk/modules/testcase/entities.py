@@ -33,13 +33,11 @@ class Testcase(
         return self.file_ctx
 
     def __before_main__(self) -> None:
-        pass
-
-    def __main__(self) -> None:
         """Validate and prepare doc components"""
 
         # save original doc
         app.load_original_doc_from_file_context(self.file_ctx)
+        # print(app)
 
         # validation
         self.version_validated()
@@ -47,8 +45,9 @@ class Testcase(
         self.variable_validated()
         self.expose_validated()
 
-        # print(Presentation.displayable_file_info(self.file_ctx))
-        # print(Presentation.displayable_string("Executing spec"))
+    def __main__(self) -> None:
+        """Process document"""
+
         ctx_document = {}
 
         if self.is_request_infile():

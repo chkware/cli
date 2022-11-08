@@ -14,7 +14,6 @@ from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
 from chk.modules.http.constants import RequestConfigNode as RConf
-from chk.modules.http.support import RequestMixin
 from chk.modules.testcase.support.execute import ExecuteMixin
 
 from chk.modules.testcase.support.assertion import AssertionMixin
@@ -27,7 +26,7 @@ from chk.modules.testcase.constants import (
 from chk.modules.testcase.validation_rules import testcase_schema
 
 
-class TestcaseMixin(RequestMixin, ExecuteMixin, AssertionMixin):
+class TestcaseMixin(ExecuteMixin, AssertionMixin):
     """
     Mixin for Testcase spec
     """
