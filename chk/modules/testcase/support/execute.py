@@ -26,8 +26,8 @@ class ExecuteMixin(DocumentMixin):
         _data: dict[object, object] = {}
         execute_doc = self.as_dict(f"{TstConf.ROOT}.{ExConf.ROOT}", False, compiled)
 
-        if with_key:
-            data_set(_data, f"{TstConf.ROOT}.{ExConf.ROOT}", execute_doc)
-            return _data
+        if not with_key:
+            return execute_doc
 
-        return execute_doc
+        data_set(_data, f"{TstConf.ROOT}.{ExConf.ROOT}", execute_doc)
+        return _data

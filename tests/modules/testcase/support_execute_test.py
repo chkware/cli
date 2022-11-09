@@ -1,10 +1,10 @@
 # type: ignore
 
-from chk.modules.testcase.support.execute import ExecuteMixin
 from tests import RES_DIR
 
 from chk.infrastructure.containers import App
 from chk.infrastructure.file_loader import FileContext
+from chk.modules.testcase.support.execute import ExecuteMixin
 
 app = App()
 
@@ -37,6 +37,17 @@ class TestExecuteMixin:
 
         assert isinstance(tc.execute_as_dict(), dict)
         assert tc.execute_as_dict() == {"spec": {"execute": None}}
+
+        del app.original_doc[ctx.filepath_hash]
+
+    def test_execute_as_dict_pass_with_none(self):
+        file = RES_DIR + "fail_cases/testcases/GET-Plain.chk"
+        ctx = FileContext.from_file(file, {})
+        app.load_original_doc_from_file_context(ctx)
+
+        tc = HavingExecute(ctx)
+
+        assert tc.execute_as_dict(with_key=False) is None
 
         del app.original_doc[ctx.filepath_hash]
 
