@@ -42,6 +42,10 @@ class Testcase(
         # validation
         self.version_validated()
         self.testcase_validated()
+
+        if self.is_request_infile():
+            self.request_validated()  # case: validate in-file request
+
         self.variable_validated()
         self.expose_validated()
 
