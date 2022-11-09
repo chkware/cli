@@ -1,9 +1,7 @@
 import abc
 
-from chk.infrastructure.contexts import app
-from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
-from chk.infrastructure.helper import dict_get
+from chk.infrastructure.helper import dict_get, data_set
 
 from chk.modules.assertion.support import AssertionHandler
 from chk.modules.testcase.constants import TestcaseConfigNode as TstConf
@@ -17,33 +15,19 @@ class AssertionMixin(DocumentMixin):
     def get_file_context(self) -> FileContext:
         """Abstract method to get file context"""
 
-    def assertions_as_dict(self) -> dict[str, object]:
-        """Get execute as dict"""
+    def assertions_as_dict(
+            self, with_key: bool = True, compiled: bool = False
+    ) -> dict | None:
+        """Get assertion as dict"""
 
-        try:
-            file_ctx = self.get_file_context()
-            document = app.get_original_doc(file_ctx.filepath_hash)
+        _data: dict[object, object] = {}
+        execute_doc = self.as_dict(f"{TstConf.ROOT}.{TstConf.ASSERTS}", False, compiled)
 
-            doc_key = [TstConf.ROOT, TstConf.ASSERTS]
-            if asserts := dict_get(document, ".".join(doc_key)):
-                if type(asserts) != list:
-                    raise TypeError({"spec": [{"asserts": ["expected `list`"]}]})
+        if not with_key:
+            return execute_doc
 
-                asrt_list = [
-                    f"{item.get('type')}.{item.get('actual')}"
-                    for item in asserts
-                    if type(item) == dict
-                ]
-                if len(asrt_list) != len(set(asrt_list)):
-                    raise TypeError(
-                        {"spec": [{"asserts": ["duplicate assertion of same value"]}]}
-                    )
-
-                return {TstConf.ASSERTS: asserts}
-            else:
-                raise ValueError({"spec": [{"asserts": ["required field"]}]})
-        except Exception as ex:
-            raise SystemExit(err_message("fatal.V0005", extra=ex))
+        data_set(_data, f"{TstConf.ROOT}.{TstConf.ASSERTS}", execute_doc)
+        return _data
 
     def assertion_process(self) -> list:
         """
