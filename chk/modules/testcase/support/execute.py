@@ -1,8 +1,7 @@
 import abc
 
-from chk.infrastructure.contexts import app
-from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
+from chk.infrastructure.helper import data_set
 from chk.modules.testcase.constants import (
     TestcaseConfigNode as TstConf,
     ExecuteConfigNode as ExConf,
@@ -19,18 +18,16 @@ class ExecuteMixin(DocumentMixin):
     def get_file_context(self) -> FileContext:
         """Abstract method to get file context"""
 
-    def execute_as_dict(self) -> dict[str, str]:
-        """
-        Get execute as dict
-        """
-        file_ctx = self.get_file_context()
-        document = app.get_original_doc(file_ctx.filepath_hash)
+    def execute_as_dict(
+        self, with_key: bool = True, compiled: bool = False
+    ) -> dict | None:
+        """Get execute as dictionary"""
 
-        try:
-            if spec := document.get(TstConf.ROOT):
-                if execute := spec.get(ExConf.ROOT):
-                    return {ExConf.ROOT: execute}
-                else:
-                    raise ValueError({"spec": [{"execute": ["required field"]}]})
-        except Exception as ex:
-            raise SystemExit(err_message("fatal.V0005", extra=ex))
+        _data: dict[object, object] = {}
+        execute_doc = self.as_dict(f"{TstConf.ROOT}.{ExConf.ROOT}", False, compiled)
+
+        if with_key:
+            data_set(_data, f"{TstConf.ROOT}.{ExConf.ROOT}", execute_doc)
+            return _data
+
+        return execute_doc
