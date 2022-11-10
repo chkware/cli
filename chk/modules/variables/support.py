@@ -283,6 +283,7 @@ class VariableMixin(DocumentMixin):
         """Detect only variable with absolute value"""
 
         for key, val in actual.items():
+            # TODO: "{$" parsing don't feel right; need more test
             if isinstance(val, str) and "{$" in val:
                 continue
 
