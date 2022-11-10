@@ -11,6 +11,7 @@ from chk.infrastructure.helper import dict_get, dict_set, data_set
 class CompiledDocBlockType(Enum):
     """Support compiled doc blocks"""
 
+    SPEC = "spec"
     REQUEST = "request"
     VERSION = "version"
     VARIABLES = "variables"
@@ -52,7 +53,7 @@ class App(NamedTuple):
         """Set original file doc"""
 
         if not isinstance(value, dict):
-            raise SystemExit("Unsupported format for original doc")
+            raise RuntimeError("Unsupported format for original doc")
 
         self.original_doc[key] = value
 
@@ -61,7 +62,9 @@ class App(NamedTuple):
 
         return self.original_doc.get(key, {})
 
-    def set_compiled_doc(self, key: str, value: object, part: str | None = None) -> None:
+    def set_compiled_doc(
+        self, key: str, value: object, part: str | None = None
+    ) -> None:
         """Set compiled file doc"""
 
         allowed_keys = CompiledDocBlockType.all_keys()
@@ -71,18 +74,15 @@ class App(NamedTuple):
 
         if part is not None:
             if part not in allowed_keys:
-                raise SystemExit("Unsupported key for compiled doc")
+                raise RuntimeError("Unsupported key for compiled doc")
 
             self.compiled_doc[key][part] = value
         else:
             allowed_keys = CompiledDocBlockType.allowed_keys()
 
             # Match against all key given and allowed
-            if len(value.keys()) != len(allowed_keys):
-                raise SystemExit("Unmatched key length for compiled doc")
-
             if set(value.keys()) != allowed_keys:
-                raise SystemExit("Unmatched allowed keys for compiled doc")
+                raise RuntimeError("Unmatched allowed keys for compiled doc")
 
             self.compiled_doc[key] = value
 
@@ -93,7 +93,7 @@ class App(NamedTuple):
 
         if part is not None:
             if part not in allowed_keys:
-                raise SystemExit("Unsupported key for compiled doc")
+                raise RuntimeError("Unsupported key for compiled doc")
 
             return self.compiled_doc[key][part]
 
