@@ -36,7 +36,7 @@ class TestApp:
     @staticmethod
     def test_app_set_original_doc_fail():
         app = App()
-        with pytest.raises(SystemExit):
+        with pytest.raises(RuntimeError):
             app.set_original_doc("ab12", ["a", 1])
             assert app.original_doc["ab12"] == ["a", 1]
 
@@ -49,13 +49,13 @@ class TestApp:
     @staticmethod
     def test_app_set_compiled_doc_fail_key_len():
         app = App()
-        with pytest.raises(SystemExit):
+        with pytest.raises(RuntimeError):
             app.set_compiled_doc("ab22", {"a": 1})
 
     @staticmethod
     def test_app_set_compiled_doc_fail_allowed_key():
         app = App()
-        with pytest.raises(SystemExit):
+        with pytest.raises(RuntimeError):
             app.set_compiled_doc(
                 "ab22",
                 {
@@ -75,7 +75,7 @@ class TestApp:
     @staticmethod
     def test_app_set_compiled_doc_part_fail():
         app = App()
-        with pytest.raises(SystemExit):
+        with pytest.raises(RuntimeError):
             app.set_compiled_doc(
                 "ab22",
                 part="re",
@@ -124,7 +124,7 @@ class TestApp:
     @staticmethod
     def test_app_get_compiled_doc_part_fail():
         app = App()
-        with pytest.raises(SystemExit):
+        with pytest.raises(RuntimeError):
             app.get_compiled_doc("ab22", part="re")
 
     @staticmethod
