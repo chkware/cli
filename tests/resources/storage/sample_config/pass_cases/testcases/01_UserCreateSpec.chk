@@ -1,7 +1,7 @@
 version: 'default:testcase:0.7.2'
 
 variables:
-  $Code: ~
+  Code: ~
 
 spec:
   execute:
