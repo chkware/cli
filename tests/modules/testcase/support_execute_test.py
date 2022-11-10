@@ -36,7 +36,7 @@ class TestExecuteMixin:
         tc = HavingExecute(ctx)
 
         assert isinstance(tc.execute_as_dict(), dict)
-        assert tc.execute_as_dict() == {"spec": {"execute": None}}
+        assert tc.execute_as_dict() == {"execute": None}
 
         del app.original_doc[ctx.filepath_hash]
 
@@ -62,7 +62,7 @@ class TestExecuteMixin:
 
         assert isinstance(tc.execute_as_dict(), dict)
         assert tc.execute_as_dict() == {
-            "spec": {"execute": {"file": None, "result": "$Response"}}
+            "execute": {"file": None, "result": "$Response"}
         }
 
         del app.original_doc[ctx.filepath_hash]

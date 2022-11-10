@@ -1,7 +1,6 @@
 import abc
 
 from chk.infrastructure.file_loader import FileContext
-from chk.infrastructure.helper import data_set
 from chk.modules.testcase.constants import (
     TestcaseConfigNode as TstConf,
     ExecuteConfigNode as ExConf,
@@ -23,11 +22,5 @@ class ExecuteMixin(DocumentMixin):
     ) -> dict | None:
         """Get execute as dictionary"""
 
-        _data: dict[object, object] = {}
         execute_doc = self.as_dict(f"{TstConf.ROOT}.{ExConf.ROOT}", False, compiled)
-
-        if not with_key:
-            return execute_doc
-
-        data_set(_data, f"{TstConf.ROOT}.{ExConf.ROOT}", execute_doc)
-        return _data
+        return {ExConf.ROOT: execute_doc} if with_key else execute_doc
