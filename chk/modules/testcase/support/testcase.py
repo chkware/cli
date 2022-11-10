@@ -98,7 +98,7 @@ class TestcaseValueHandler:
     ):
         """Convert request block variables"""
 
-        assertion_document = document.get(AtConf.ROOT, {})
+        assertion_document = dict_get(document, f"{TstConf.ROOT}.{TstConf.ASSERTS}")
         assertion_document = copy.deepcopy(assertion_document)
 
         for each_assert in assertion_document:

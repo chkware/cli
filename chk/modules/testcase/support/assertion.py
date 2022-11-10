@@ -2,7 +2,7 @@ import abc
 
 from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
-from chk.infrastructure.helper import dict_get, data_set
+from chk.infrastructure.helper import dict_get
 
 from chk.modules.assertion.support import AssertionHandler
 from chk.modules.testcase.constants import TestcaseConfigNode as TstConf
@@ -35,7 +35,9 @@ class AssertionMixin(DocumentMixin):
             ]
 
             if len(asrt_list) != len(set(asrt_list)):
-                raise TypeError({TstConf.ROOT: [{TstConf.ASSERTS: ["duplicate assertion"]}]})
+                raise TypeError(
+                    {TstConf.ROOT: [{TstConf.ASSERTS: ["duplicate assertion"]}]}
+                )
         except Exception as err:
             raise RuntimeError(err_message("fatal.V0001", extra=err)) from err
 
@@ -46,14 +48,8 @@ class AssertionMixin(DocumentMixin):
     ) -> dict | None:
         """Get assertion as dict"""
 
-        _data: dict[object, object] = {}
-        execute_doc = self.as_dict(f"{TstConf.ROOT}.{TstConf.ASSERTS}", False, compiled)
-
-        if not with_key:
-            return execute_doc
-
-        data_set(_data, f"{TstConf.ROOT}.{TstConf.ASSERTS}", execute_doc)
-        return _data
+        assert_doc = self.as_dict(f"{TstConf.ROOT}.{TstConf.ASSERTS}", False, compiled)
+        return {TstConf.ROOT: {TstConf.ASSERTS: assert_doc}} if with_key else assert_doc
 
     def assertion_process(self) -> list:
         """
@@ -61,5 +57,5 @@ class AssertionMixin(DocumentMixin):
         :return:
         """
 
-        assertions = dict_get(self.assertions_as_dict(), TstConf.ASSERTS)
+        assertions = dict_get(self.assertions_as_dict(), f"{TstConf.ROOT}.{TstConf.ASSERTS}")
         return AssertionHandler.asserts_test_run(assertions)
