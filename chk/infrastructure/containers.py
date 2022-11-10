@@ -81,8 +81,11 @@ class App(NamedTuple):
             allowed_keys = CompiledDocBlockType.allowed_keys()
 
             # Match against all key given and allowed
-            if set(value.keys()) != allowed_keys:
-                raise RuntimeError("Unmatched allowed keys for compiled doc")
+            if not isinstance(value, dict):
+                raise RuntimeError("error: Only dictionary value allowed")
+
+            if len({val for val in value.keys() if val not in allowed_keys}) > 0:
+                raise RuntimeError("error: Unmatched allowed keys for compiled doc")
 
             self.compiled_doc[key] = value
 
