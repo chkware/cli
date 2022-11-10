@@ -1,53 +1,61 @@
 import abc
 
-from chk.infrastructure.contexts import app
 from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
 
 from chk.modules.assertion.support import AssertionHandler
 from chk.modules.testcase.constants import TestcaseConfigNode as TstConf
+from chk.modules.version.support import DocumentMixin
 
 
-class AssertionMixin:
+class AssertionMixin(DocumentMixin):
     """Mixin for Execute sub-spec"""
 
     @abc.abstractmethod
     def get_file_context(self) -> FileContext:
         """Abstract method to get file context"""
 
-    def assertions_as_dict(self) -> dict[str, object]:
-        """Get execute as dict"""
+    def assertions_validated(self) -> dict:
+        """Validate the schema against config"""
 
         try:
-            file_ctx = self.get_file_context()
-            document = app.get_original_doc(file_ctx.filepath_hash)
+            assertions = self.assertions_as_dict()
+            assertions_doc = dict_get(assertions, f"{TstConf.ROOT}.{TstConf.ASSERTS}")
 
-            doc_key = [TstConf.ROOT, TstConf.ASSERTS]
-            if asserts := dict_get(document, ".".join(doc_key)):
-                if type(asserts) != list:
-                    raise TypeError({"spec": [{"asserts": ["expected `list`"]}]})
+            # case: if not list
+            if not isinstance(assertions_doc, list):
+                raise TypeError({TstConf.ROOT: [{TstConf.ASSERTS: ["expected list"]}]})
 
-                asrt_list = [
-                    f"{item.get('type')}.{item.get('actual')}"
-                    for item in asserts
-                    if type(item) == dict
-                ]
-                if len(asrt_list) != len(set(asrt_list)):
-                    raise TypeError(
-                        {"spec": [{"asserts": ["duplicate assertion of same value"]}]}
-                    )
+            # case: if list contains duplicate items
+            asrt_list = [
+                f"{item.get('type')}.{item.get('actual')}"
+                for item in assertions_doc
+                if isinstance(item, dict)
+            ]
 
-                return {TstConf.ASSERTS: asserts}
-            else:
-                raise ValueError({"spec": [{"asserts": ["required field"]}]})
-        except Exception as ex:
-            raise SystemExit(err_message("fatal.V0005", extra=ex))
+            if len(asrt_list) != len(set(asrt_list)):
+                raise TypeError(
+                    {TstConf.ROOT: [{TstConf.ASSERTS: ["duplicate assertion"]}]}
+                )
+        except Exception as err:
+            raise RuntimeError(err_message("fatal.V0001", extra=err)) from err
+
+        return assertions if isinstance(assertions, dict) else {}
+
+    def assertions_as_dict(
+        self, with_key: bool = True, compiled: bool = False
+    ) -> dict | None:
+        """Get assertion as dict"""
+
+        assert_doc = self.as_dict(f"{TstConf.ROOT}.{TstConf.ASSERTS}", False, compiled)
+        return {TstConf.ROOT: {TstConf.ASSERTS: assert_doc}} if with_key else assert_doc
 
     def assertion_process(self) -> list:
         """
         Run assertion of testcase spec
         :return:
         """
-        assertions = dict_get(self.assertions_as_dict(), TstConf.ASSERTS)
+
+        assertions = dict_get(self.assertions_as_dict(), f"{TstConf.ROOT}.{TstConf.ASSERTS}")
         return AssertionHandler.asserts_test_run(assertions)

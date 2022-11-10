@@ -17,21 +17,23 @@ class ChkFileLoader:
     @staticmethod
     def to_dict(file_name: str) -> dict:
         """read yml data"""
-        with open(file_name, 'r', encoding='UTF-8') as yaml_file:
+        with open(file_name, "r", encoding="UTF-8") as yaml_file:
             try:
                 return safe_load(yaml_file)
             except Exception as ex:
                 yaml_file.close()
-                raise SystemExit(exception.err_message('fatal.V0003', {'file_name': file_name})) from ex
+                raise SystemExit(
+                    exception.err_message("fatal.V0003", {"file_name": file_name})
+                ) from ex
 
     @staticmethod
     def is_file_ok(file_name: str) -> bool:
         """Check if chk file exists, extension is okay"""
 
-        if Path(file_name).is_file() and Path(file_name).suffix == '.chk':
+        if Path(file_name).is_file() and Path(file_name).suffix == ".chk":
             return True
 
-        raise SystemExit(exception.err_message('fatal.V0002'))
+        raise SystemExit(exception.err_message("fatal.V0002"))
 
     @staticmethod
     def get_mangled_name(file_name: str) -> tuple[str, str]:
@@ -39,10 +41,22 @@ class ChkFileLoader:
 
 
 class FileContext(NamedTuple):
-    """ File context that holds file information """
+    """File context that holds file information"""
 
-    options: MappingProxyType[str, object] = {}
-    arguments: MappingProxyType[str, object] = {}
+    options: MappingProxyType = MappingProxyType({})
+    arguments: MappingProxyType = MappingProxyType({})
     filepath: str = ""
     filepath_mangled: str = ""
     filepath_hash: str = ""
+
+    @staticmethod
+    def from_file(file: str, options: dict) -> "FileContext":
+        ChkFileLoader.is_file_ok(file)
+        fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file)
+
+        return FileContext(
+            filepath=file,
+            filepath_mangled=fpath_mangled,
+            filepath_hash=fpath_hash,
+            options=MappingProxyType(options),
+        )

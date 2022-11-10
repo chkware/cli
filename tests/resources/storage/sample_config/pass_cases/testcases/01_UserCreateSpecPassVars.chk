@@ -6,10 +6,9 @@ variables:
 spec:
   execute:
     file: './01_UserCreateRequest.chk'
-#    result: $Response
-#    with:
-#      Name: "Neo"
-#      Job: "choosen-one"
-
+    with:
+      Name: Hasan
+      Job: Tester
+    result: $Code
   asserts:
     - {type: AssertEquals, actual: $Code, expected: 201}

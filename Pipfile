@@ -4,22 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-astroid = "*"
-certifi = "*"
-charset-normalizer = "*"
 click = "*"
-idna = "*"
-isort = "*"
-lazy-object-proxy = "*"
-mccabe = "*"
-platformdirs = "*"
 pyyaml = "*"
 requests = "*"
-requests-toolbelt = "*"
-toml = "*"
-typing-extensions = "*"
-urllib3 = "*"
-wrapt = "*"
 cerberus = "*"
 
 [dev-packages]
@@ -30,4 +17,4 @@ flake8 = "*"
 black = {extras = ["d"], version = "*"}
 
 [requires]
-python_version = "3.10"
+python_version = ">=3.10"

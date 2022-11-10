@@ -1,7 +1,9 @@
+# type: ignore
+
 """test loader"""
 import pytest
 import tests
-from chk.infrastructure.file_loader import ChkFileLoader
+from chk.infrastructure.file_loader import ChkFileLoader, FileContext
 
 
 class TestChkFileLoader:
@@ -34,3 +36,11 @@ class TestChkFileLoader:
         filename = tests.RES_DIR + "UserOk.yml"
         with pytest.raises(SystemExit):
             assert ChkFileLoader.is_file_ok(filename) is False
+
+
+class TestFileContext:
+    def test_from_file_pass(self):
+        file = tests.RES_DIR + "bitcoin-usd.chk"
+        ctx = FileContext.from_file(file, {})
+
+        assert isinstance(ctx, FileContext)

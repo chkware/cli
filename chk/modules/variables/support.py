@@ -10,7 +10,7 @@ from cerberus.validator import DocumentError
 from chk.infrastructure.contexts import app, validator
 from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
-from chk.infrastructure.helper import dict_set, data_get, dict_get
+from chk.infrastructure.helper import dict_set
 
 from chk.modules.version.constants import DocumentType
 
@@ -21,15 +21,12 @@ from chk.modules.variables.constants import (
     VariableConfigNode as VarConf,
     LexicalAnalysisType,
 )
-from chk.modules.variables.validation_rules import (
-    variable_schema,
-    expose_schema,
-    allowed_variable_name,
-)
+from chk.modules.variables.validation_rules import variable_schema, expose_schema
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
 
 from chk.modules.testcase.support.testcase import TestcaseValueHandler
 from chk.modules.testcase.constants import TestcaseConfigNode
+from chk.modules.version.support import DocumentMixin
 
 
 def parse_args(argv_s: list[str], delimiter: str = "=") -> dict:
@@ -62,7 +59,7 @@ def replace_values(doc: dict, var_s: dict) -> dict[str, object]:
     return doc
 
 
-class VariableMixin:
+class VariableMixin(DocumentMixin):
     """Mixin for variable spec. for v0.7.2"""
 
     @abc.abstractmethod
@@ -83,35 +80,32 @@ class VariableMixin:
         else:
             self.symbol_table = symbol_tbl
 
-    def variable_validated(self) -> dict[str, dict]:
+    def variable_validated(self) -> dict:
         """Validate the schema against config"""
 
         try:
             variables_doc = self.variable_as_dict()
 
             if not validator.validate(variables_doc, variable_schema):
-                raise SystemExit(err_message("fatal.V0006", extra=validator.errors))
-
-            if variables_doc:
-                for key in variables_doc[VarConf.ROOT].keys():
-                    allowed_variable_name(key)
+                raise RuntimeError(err_message("fatal.V0006", extra=validator.errors))
 
         except DocumentError as doc_err:
-            raise SystemExit(err_message("fatal.V0001", extra=doc_err)) from doc_err
-        except ValueError as val_err:
-            raise SystemExit(err_message("fatal.V0009", extra=val_err)) from val_err
+            raise RuntimeError(err_message("fatal.V0001", extra=doc_err)) from doc_err
 
-        return variables_doc
+        return variables_doc if isinstance(variables_doc, dict) else {}
 
-    def variable_as_dict(self) -> dict[str, dict]:
+    def variable_as_dict(
+        self, with_key: bool = True, compiled: bool = False
+    ) -> dict | None:
         """Get variable dict"""
 
-        document = app.get_original_doc(self.file_ctx.filepath_hash)
-
         try:
-            return {key: document[key] for key in (VarConf.ROOT,) if key in document}
-        except Exception as ex:
-            raise SystemExit(err_message("fatal.V0005", extra=ex)) from ex
+            if not (variable_data := self.as_dict(VarConf.ROOT, False, compiled)):
+                return {VarConf.ROOT: {}} if with_key else {}
+
+            return {VarConf.ROOT: variable_data} if with_key else variable_data
+        except RuntimeError:
+            return {VarConf.ROOT: {}} if with_key else {}
 
     def expose_validated(self) -> dict:
         """Validate the schema against config"""
@@ -120,22 +114,22 @@ class VariableMixin:
             expose_doc = self.expose_as_dict()
 
             if not validator.validate(expose_doc, expose_schema):
-                raise SystemExit(err_message("fatal.V0006", extra=validator.errors))
+                raise RuntimeError(err_message("fatal.V0006", extra=validator.errors))
 
         except DocumentError as doc_err:
-            raise SystemExit(err_message("fatal.V0001", extra=doc_err)) from doc_err
+            raise RuntimeError(err_message("fatal.V0001", extra=doc_err)) from doc_err
 
-        return expose_doc
+        return expose_doc if isinstance(expose_doc, dict) else {}
 
-    def expose_as_dict(self) -> dict:
+    def expose_as_dict(
+        self, with_key: bool = True, compiled: bool = False
+    ) -> dict | None:
         """Get expose dict"""
 
-        document = app.get_original_doc(self.file_ctx.filepath_hash)
-
         try:
-            return {key: document[key] for key in (VarConf.EXPOSE,) if key in document}
-        except Exception as ex:
-            raise SystemExit(err_message("fatal.V0005", extra=ex)) from ex
+            return self.as_dict(VarConf.EXPOSE, with_key, compiled)
+        except RuntimeError:
+            return {VarConf.EXPOSE: None} if with_key else None
 
     def variable_process(self, la_type: LexicalAnalysisType, symbol_table=None) -> dict:
         self.__init___(symbol_table)
@@ -289,6 +283,7 @@ class VariableMixin:
         """Detect only variable with absolute value"""
 
         for key, val in actual.items():
+            # TODO: "{$" parsing don't feel right; need more test
             if isinstance(val, str) and "{$" in val:
                 continue
 

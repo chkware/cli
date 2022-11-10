@@ -1,0 +1,15 @@
+version: 'default:testcase:0.7.2'
+
+variables:
+  Response: ~
+
+request:
+  url: "https://reqres.in/api/v1/users"
+  method: GET
+
+spec:
+  execute:
+    file: ~
+    result: $Response
+  asserts:
+    - {type: AssertEqual, actual: $Response.code, expected: 201}

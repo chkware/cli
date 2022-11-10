@@ -1,0 +1,11 @@
+version: 'default:testcase:0.7.2'
+
+variables:
+  $Code: ~
+
+spec:
+  execute:
+    file: './01_UserCreateRequest.chk'
+    result: $Code
+  asserts:
+    - {type: AssertEquals, actual: $Code, expected: 201}
