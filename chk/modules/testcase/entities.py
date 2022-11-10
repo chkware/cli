@@ -8,7 +8,11 @@ from chk.infrastructure.work import WorkerContract
 
 from chk.modules.version.support import VersionMixin
 
-from chk.modules.variables.entities import ApiResponse
+from chk.modules.variables.entities import (
+    ApiResponse,
+    DefaultVariableDoc,
+    DefaultExposableDoc,
+)
 from chk.modules.variables.support import VariableMixin
 from chk.modules.variables.constants import LexicalAnalysisType
 
@@ -37,17 +41,28 @@ class Testcase(
 
         # save original doc
         app.load_original_doc_from_file_context(self.file_ctx)
-        # print(app)
 
         # validation
-        self.version_validated()
-        self.testcase_validated()
+        version_doc = self.version_validated()
+        testcase_doc = self.testcase_validated()
 
+        request_doc = {}
         if self.is_request_infile():
-            self.request_validated()  # case: validate in-file request
+            request_doc = self.request_validated()  # case: validate in-file request
 
-        self.variable_validated()
-        self.expose_validated()
+        variable_doc = self.variable_validated()
+        expose_doc = self.expose_validated()
+
+        app.set_compiled_doc(
+            self.file_ctx.filepath_hash,
+            (
+                version_doc
+                | DefaultVariableDoc().merged(variable_doc)
+                | DefaultExposableDoc({"expose": ["_response"]}).merged(expose_doc)
+                | request_doc
+                | testcase_doc
+            ),
+        )
 
     def __main__(self) -> None:
         """Process document"""
