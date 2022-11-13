@@ -84,8 +84,10 @@ class HttpSpec(
 
         try:
             request_doc = dict_get(self.request_as_dict(True), RConst.ROOT)
-            self.store_local_vars_for_request(
-                RequestProcessorPyRequests.perform(request_doc)
+            app.set_local(
+                self.file_ctx.filepath_hash,
+                RequestProcessorPyRequests.perform(request_doc),
+                RConst.LOCAL,
             )
 
             Presentation.buffer_msg("- Making request [Success]")

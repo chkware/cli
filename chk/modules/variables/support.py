@@ -232,10 +232,6 @@ class VariableMixin(DocumentMixin):
 
         raise ValueError(f"variable_assemble_values: `{document_type}` not allowed")
 
-    def store_local_vars_for_request(self, data: object) -> bool:
-        """Store value based on return statement"""
-        return app.set_local(self.file_ctx.filepath_hash, data, RequestConfigNode.LOCAL)
-
     def make_exposable(self) -> None:
         """Prepare exposable data"""
 
