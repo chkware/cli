@@ -1,0 +1,25 @@
+---
+version: 'default:http:0.7.2'
+
+variables:
+  Name: "Some Random Name"
+  Number: 900XW3D
+
+request:
+  url: https://httpbin.org/xml
+  method: GET
+
+  url_params:
+      foo: bar
+      two: 2
+
+  headers:
+    User-Agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36'
+    Accept-Encoding: gzip, deflate
+    Accept: application/xml
+
+  body[xml]: |
+    <account>
+      <name>{ $Name }</name>
+      <no>{ $Number }</no>
+    </account>

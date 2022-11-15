@@ -11,7 +11,7 @@ from chk.infrastructure.contexts import validator, app
 from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
 
-from chk.modules.http.constants import RequestConfigNode
+from chk.modules.http.constants import RequestConfigNode as RConf
 from chk.modules.http.validation_rules import request_schema
 
 from chk.modules.version.support import DocumentMixin
@@ -26,7 +26,7 @@ class RequestValueHandler:
     ):
         """Convert request block variables"""
 
-        request_document = document.get(RequestConfigNode.ROOT, {})
+        request_document = document.get(RConf.ROOT, {})
         request_document = deepcopy(request_document)
 
         return replace_method(request_document, symbol_table)
@@ -37,8 +37,8 @@ class RequestValueHandler:
         returnable = response
         returnable["have_all"] = True
 
-        if req := document.get(RequestConfigNode.ROOT, {}):
-            if ret := req.get(RequestConfigNode.RETURN):
+        if req := document.get(RConf.ROOT, {}):
+            if ret := req.get(RConf.RETURN):
                 ret = str(ret)
                 if not ret.startswith("."):
                     raise ValueError("Unsupported key format in request.return")
@@ -80,4 +80,20 @@ class RequestMixin(DocumentMixin):
     ) -> dict | None:
         """Get request as a dictionary"""
 
-        return self.as_dict(RequestConfigNode.ROOT, with_key, compiled)
+        return self.as_dict(RConf.ROOT, with_key, compiled)
+
+    def lexical_analysis_for_request(
+        self, symbol_table: dict, replace_fn: Callable
+    ) -> None:
+        """Lexical analysis for request block"""
+
+        f_hash = self.get_file_context().filepath_hash
+
+        request_document = app.get_compiled_doc(f_hash, RConf.ROOT)
+        request_document_replaced = replace_fn(request_document, symbol_table)
+
+        app.set_compiled_doc(
+            f_hash,
+            part=RConf.ROOT,
+            value=request_document_replaced,
+        )
