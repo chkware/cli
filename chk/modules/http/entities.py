@@ -83,7 +83,7 @@ class HttpSpec(
         self.lexical_analysis_for_request(self.get_symbol_table(), replace_values)
 
         try:
-            request_doc = dict_get(self.request_as_dict(True), RConst.ROOT)
+            request_doc = dict_get(self.request_as_dict(compiled=True), RConst.ROOT)
             if not isinstance(request_doc, dict):
                 raise RuntimeError("error: Wrong request doc format")
 
