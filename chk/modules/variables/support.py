@@ -131,6 +131,12 @@ class VariableMixin(DocumentMixin):
         except RuntimeError:
             return {VarConf.EXPOSE: None} if with_key else None
 
+    def get_symbol_table(self) -> dict:
+        """Get current symbol table"""
+
+        fh = self.get_file_context().filepath_hash
+        return app.get_compiled_doc(fh, VarConf.ROOT)
+
     def variable_process(self, la_type: LexicalAnalysisType, symbol_table=None) -> dict:
         self.__init___(symbol_table)
         return self.lexical_analysis_for(la_type, self.symbol_table)
@@ -171,23 +177,6 @@ class VariableMixin(DocumentMixin):
             )
 
         return document_replaced
-
-    def lexical_analysis_for_request(self) -> None:
-        """Lexical analysis for request block"""
-        file_ctx = self.get_file_context()
-
-        request_document = app.get_compiled_doc(
-            file_ctx.filepath_hash, RequestConfigNode.ROOT
-        )
-        symbol_table = app.get_compiled_doc(file_ctx.filepath_hash, VarConf.ROOT)
-
-        request_document_replaced = replace_values(request_document, symbol_table)
-
-        app.set_compiled_doc(
-            file_ctx.filepath_hash,
-            part=RequestConfigNode.ROOT,
-            value=request_document_replaced,
-        )
 
     @staticmethod
     def variable_update_symbol_table(

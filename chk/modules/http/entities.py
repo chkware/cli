@@ -20,7 +20,7 @@ from chk.modules.variables.entities import (
     DefaultReturnableDoc,
     DefaultExposableDoc,
 )
-from chk.modules.variables.support import VariableMixin
+from chk.modules.variables.support import VariableMixin, replace_values
 
 
 class DefaultRequestDoc(NamedTuple):
@@ -80,10 +80,13 @@ class HttpSpec(
     def __main__(self) -> None:
         """Process http document"""
         self.variable_prepare_value_table()
-        self.lexical_analysis_for_request()
+        self.lexical_analysis_for_request(self.get_symbol_table(), replace_values)
 
         try:
             request_doc = dict_get(self.request_as_dict(True), RConst.ROOT)
+            if not isinstance(request_doc, dict):
+                raise RuntimeError("error: Wrong request doc format")
+
             app.set_local(
                 self.file_ctx.filepath_hash,
                 RequestProcessorPyRequests.perform(request_doc),
