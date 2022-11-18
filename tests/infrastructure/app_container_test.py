@@ -1,3 +1,5 @@
+# type: ignore
+
 """
 test global chk functions
 """
@@ -135,6 +137,15 @@ class TestApp:
             "b": 2,
             "c": 3,
         }
+
+    @staticmethod
+    def test_app_get_compiled_doc_dot_part_pass():
+        app = App()
+        data_set(app.compiled_doc, "ab22.request.body", {"var": "val"})
+        assert app.get_compiled_doc("ab22", part="request.body") == {"var": "val"}
+        assert app.get_compiled_doc("ab22", part="request.body.var") == "val"
+
+        del app.compiled_doc["ab22"]
 
     @staticmethod
     def test_app_load_original_doc_from_file_context_pass():
