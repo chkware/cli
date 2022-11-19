@@ -47,7 +47,7 @@ class ExecuteMixin(DocumentMixin):
                 )
 
         except Exception as ex:
-            raise RuntimeError(err_message("fatal.V0001")) from ex
+            raise RuntimeError(err_message("fatal.V0009", extra=ex)) from ex
 
         return execute_doc if isinstance(execute_doc, dict) else {}
 
