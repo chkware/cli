@@ -63,7 +63,7 @@ class TestExecuteMixin:
 
         assert isinstance(tc.execute_as_dict(), dict)
         assert tc.execute_as_dict() == {
-            "execute": {"file": None, "result": "$Response"}
+            "execute": {"file": "./01_UserCreateRequest.chk", "result": "$Response"}
         }
 
         del app.original_doc[ctx.filepath_hash]
@@ -79,7 +79,7 @@ class TestExecuteMixin:
 
         assert isinstance(tc.execute_validated(), dict)
         assert tc.execute_as_dict() == {
-            "execute": {"file": None, "result": "$Response"}
+            "execute": {"file": "./01_UserCreateRequest.chk", "result": "$Response"}
         }
 
         del app.original_doc[ctx.filepath_hash]
