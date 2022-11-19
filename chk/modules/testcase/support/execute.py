@@ -24,7 +24,11 @@ class ExecuteMixin(DocumentMixin):
 
         try:
             execute_doc = self.execute_as_dict()
-            result_val = dict_get(execute_doc, f"{ExConf.ROOT}.{ExConf.RESULT}")
+
+            if (
+                result_val := dict_get(execute_doc, f"{ExConf.ROOT}.{ExConf.RESULT}")
+            ) is None:
+                return {}
 
             if isinstance(result_val, str):
                 if not result_val.startswith("$"):
@@ -37,7 +41,7 @@ class ExecuteMixin(DocumentMixin):
                         raise TypeError(
                             "{'execute': {'result': 'list variable must be string'}}"
                         )
-                    if not each_var.startswith("$") and each_var != '_':
+                    if not each_var.startswith("$") and each_var != "_":
                         raise TypeError(
                             "{'execute': {'result': 'list variable name start with $'}}"
                         )
