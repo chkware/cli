@@ -49,6 +49,8 @@ class TestcaseMixin(ExecuteMixin, AssertionMixin):
             if not validator.validate(testcase_doc, testcase_schema):
                 raise RuntimeError(err_message("fatal.V0006", extra=validator.errors))
 
+            self.execute_validated()
+
             # case: spec with no or multiple request
             out_file_request = (
                 dict_get(
@@ -71,7 +73,28 @@ class TestcaseMixin(ExecuteMixin, AssertionMixin):
                 raise RuntimeError(
                     err_message(
                         "fatal.V0021",
-                        extra={"spec": {"execute": {"with": "Not allowed"}}},
+                        extra={
+                            TstConf.ROOT: {
+                                TstConf.EXECUTE: {ExConf.WITH: "Not allowed"}
+                            }
+                        },
+                    )
+                )
+
+            # case: spec.execute.result having request is not allowed
+            # TODO: at least for now: may be in future
+
+            if self.is_request_infile() and dict_get(
+                testcase_doc, f"{TstConf.ROOT}.{TstConf.EXECUTE}.{ExConf.RESULT}"
+            ):
+                raise RuntimeError(
+                    err_message(
+                        "fatal.V0021",
+                        extra={
+                            TstConf.ROOT: {
+                                TstConf.EXECUTE: {ExConf.RESULT: "Not allowed"}
+                            }
+                        },
                     )
                 )
         except cer_validator.DocumentError as doc_err:

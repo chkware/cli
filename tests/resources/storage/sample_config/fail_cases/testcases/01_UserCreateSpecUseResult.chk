@@ -1,0 +1,15 @@
+version: 'default:testcase:0.7.2'
+
+variables:
+  $Code: ~
+  $Data: 23
+
+request:
+  method: GET
+  url: https://httpbin.org/get?per-page={$Data}
+
+spec:
+  execute:
+    result: $Code
+  asserts:
+    - {type: AssertEquals, actual: $Code, expected: 201}
