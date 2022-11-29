@@ -1,5 +1,6 @@
 import abc
 
+from chk.infrastructure.contexts import app
 from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
@@ -20,7 +21,11 @@ class AssertionMixin(DocumentMixin):
         """Validate the schema against config"""
 
         try:
-            assertions = self.assertions_as_dict()
+            if not (assertions := self.assertions_as_dict()):
+                raise RuntimeError(
+                    f"assertions_validated: assertions[{str(assertions)}]"
+                )
+
             assertions_doc = dict_get(assertions, f"{TstConf.ROOT}.{TstConf.ASSERTS}")
 
             # case: if not list
@@ -52,10 +57,13 @@ class AssertionMixin(DocumentMixin):
         return {TstConf.ROOT: {TstConf.ASSERTS: assert_doc}} if with_key else assert_doc
 
     def assertion_process(self) -> list:
-        """
-        Run assertion of testcase spec
-        :return:
-        """
+        """Run assertion of testcase spec"""
 
-        assertions = dict_get(self.assertions_as_dict(), f"{TstConf.ROOT}.{TstConf.ASSERTS}")
+        assertions = app.get_compiled_doc(
+            self.get_file_context().filepath_hash, f"{TstConf.ROOT}.{TstConf.ASSERTS}"
+        )
+
+        if not isinstance(assertions, list):
+            raise RuntimeError(f"assertion_process: assertions[{str(assertions)}]")
+
         return AssertionHandler.asserts_test_run(assertions)
