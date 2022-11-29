@@ -2,30 +2,16 @@
 Module for variables management
 """
 import abc
-from copy import deepcopy
-from types import MappingProxyType
 
 from cerberus.validator import DocumentError
 
 from chk.infrastructure.contexts import app, validator
 from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
-from chk.infrastructure.helper import dict_set
-
-from chk.modules.version.constants import DocumentType
-
-from chk.modules.http.constants import RequestConfigNode
-from chk.modules.http.support import RequestValueHandler
-
-from chk.modules.variables.constants import (
-    VariableConfigNode as VarConf,
-    LexicalAnalysisType,
-)
+from chk.modules.variables.constants import VariableConfigNode as VarConf
 from chk.modules.variables.validation_rules import variable_schema, expose_schema
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
 
-from chk.modules.testcase.support.testcase import TestcaseValueHandler
-from chk.modules.testcase.constants import TestcaseConfigNode
 from chk.modules.version.support import DocumentMixin
 
 
@@ -124,17 +110,28 @@ class VariableMixin(DocumentMixin):
     def get_symbol_table(self) -> dict:
         """Get current symbol table"""
 
-        fh = self.get_file_context().filepath_hash
-        return app.get_compiled_doc(fh, VarConf.ROOT)
+        symbols = app.get_compiled_doc(
+            self.get_file_context().filepath_hash, VarConf.ROOT
+        )
+        if not isinstance(symbols, dict):
+            raise RuntimeError
+
+        return symbols
 
     def make_exposable(self) -> None:
         """Prepare exposable data"""
 
         hf_name = self.get_file_context().filepath_hash
 
-        symbol_table = app.get_compiled_doc(
-            hf_name, VarConf.LOCAL
-        ) | app.get_compiled_doc(hf_name, VarConf.ROOT)
+        symbol_table_l = app.get_compiled_doc(hf_name, VarConf.LOCAL)
+        if not isinstance(symbol_table_l, dict):
+            raise ValueError
+
+        symbol_table = app.get_compiled_doc(hf_name, VarConf.ROOT)
+        if not isinstance(symbol_table, dict):
+            raise ValueError
+
+        symbol_table = symbol_table_l | symbol_table
 
         expose_items = app.get_compiled_doc(hf_name, VarConf.EXPOSE)
 
@@ -152,22 +149,28 @@ class VariableMixin(DocumentMixin):
     def get_exposable(self) -> list:
         """Get exposable data"""
 
-        hf_name = self.get_file_context().filepath_hash
-        return app.get_compiled_doc(hf_name, VarConf.EXPOSE)
+        expose_doc = app.get_compiled_doc(
+            self.get_file_context().filepath_hash, VarConf.EXPOSE
+        )
+
+        if not isinstance(expose_doc, list):
+            raise RuntimeError
+
+        return expose_doc
 
     def variable_prepare_value_table(self) -> None:
+        hf = self.get_file_context().filepath_hash
         updated_vars: dict = {}
-        original_vars: dict = app.get_compiled_doc(
-            self.file_ctx.filepath_hash, "variables"
-        )
+
+        original_vars = app.get_compiled_doc(hf, VarConf.ROOT)
+        if not isinstance(original_vars, dict):
+            raise RuntimeError
 
         # TODO: variable_handle_value_table_for_import()
         self.variable_handle_value_table_for_absolute(original_vars, updated_vars)
         self.variable_handle_value_table_for_composite(original_vars, updated_vars)
 
-        app.set_compiled_doc(
-            self.file_ctx.filepath_hash, part="variables", value=updated_vars
-        )
+        app.set_compiled_doc(hf, part=VarConf.ROOT, value=updated_vars)
 
     @staticmethod
     def variable_handle_value_table_for_absolute(actual: dict, updated: dict) -> None:
