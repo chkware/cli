@@ -127,23 +127,12 @@ class VariableMixin(DocumentMixin):
 
         hf_name = self.get_file_context().filepath_hash
 
-        symbol_table_l = app.get_compiled_doc(hf_name, VarConf.LOCAL)
-        if not isinstance(symbol_table_l, dict):
-            raise ValueError
-
-        symbol_table = app.get_compiled_doc(hf_name, VarConf.ROOT)
-        if not isinstance(symbol_table, dict):
-            raise ValueError
-
-        symbol_table = symbol_table_l | symbol_table
-
         expose_items = app.get_compiled_doc(hf_name, VarConf.EXPOSE)
-
         if not isinstance(expose_items, list):
             raise ValueError
 
         exposables = [
-            StringLexicalAnalyzer.replace(item, symbol_table)
+            StringLexicalAnalyzer.replace(item, self.get_symbol_table())
             for item in expose_items
             if isinstance(item, str)
         ]
