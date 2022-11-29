@@ -110,13 +110,17 @@ class VariableMixin(DocumentMixin):
     def get_symbol_table(self) -> dict:
         """Get current symbol table"""
 
-        symbols = app.get_compiled_doc(
-            self.get_file_context().filepath_hash, VarConf.ROOT
-        )
-        if not isinstance(symbols, dict):
+        hf_name = self.get_file_context().filepath_hash
+
+        symbol_table_l = app.get_compiled_doc(hf_name, VarConf.LOCAL) or {}
+        symbol_table = app.get_compiled_doc(hf_name, VarConf.ROOT) or {}
+
+        if not isinstance(symbol_table_l, dict) or not isinstance(symbol_table, dict):
             raise RuntimeError
 
-        return symbols
+        symbol_table |= symbol_table_l
+
+        return symbol_table
 
     def make_exposable(self) -> None:
         """Prepare exposable data"""
