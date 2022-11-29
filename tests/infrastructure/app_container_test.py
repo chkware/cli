@@ -91,28 +91,37 @@ class TestApp:
     @staticmethod
     def test_app_set_compiled_doc_part_pass():
         app = App()
-        app.set_compiled_doc(
-            "ab22",
-            part="request",
-            value={
-                "a": 1,
-                "b": 2,
-                "c": 3,
-            },
-        )
+        val = {
+            "a": 1,
+            "b": 2,
+            "c": 3,
+        }
+        app.set_compiled_doc("ab22", part="request", value=val)
+        assert app.get_compiled_doc("ab22", "request") == val
 
     @staticmethod
     def test_app_set_compiled_doc_local_part_pass():
         app = App()
-        app.set_compiled_doc(
-            "ab22",
-            part="__local",
-            value={
-                "a": 1,
-                "b": 2,
-                "c": 3,
-            },
-        )
+        val = {
+            "a": 1,
+            "b": 2,
+            "c": 3,
+        }
+
+        app.set_compiled_doc("ab22", part="__local", value=val)
+        assert app.get_compiled_doc("ab22", "__local") == val
+
+    @staticmethod
+    def test_app_set_compiled_doc_local_multiple_part_pass():
+        app = App()
+        val = {
+            "a": 1,
+            "b": 2,
+            "c": 3,
+        }
+
+        app.set_compiled_doc("ab22", part="__local.some", value=val)
+        assert app.get_compiled_doc("ab22", "__local.some") == val
 
     @staticmethod
     def test_app_get_compiled_doc_local_part_pass():

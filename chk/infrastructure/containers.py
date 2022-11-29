@@ -73,10 +73,10 @@ class App(NamedTuple):
             self.compiled_doc[key] = CompiledDocBlockType.default()
 
         if part is not None:
-            if part not in allowed_keys:
+            if part.split(".")[:1][0] not in allowed_keys:
                 raise RuntimeError("Unsupported key for compiled doc")
 
-            self.compiled_doc[key][part] = value
+            data_set(self.compiled_doc[key], part, value)
         else:
             allowed_keys = CompiledDocBlockType.allowed_keys()
 
@@ -95,7 +95,7 @@ class App(NamedTuple):
         allowed_keys = CompiledDocBlockType.all_keys()
 
         if part is not None:
-            if part.split('.')[:1][0] not in allowed_keys:
+            if part.split(".")[:1][0] not in allowed_keys:
                 raise RuntimeError("Unsupported key for compiled doc")
 
             return dict_get(self.compiled_doc[key], part)
