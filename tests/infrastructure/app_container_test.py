@@ -124,15 +124,6 @@ class TestApp:
         assert app.get_compiled_doc("ab22", "__local.some") == val
 
     @staticmethod
-    def test_app_get_compiled_doc_local_part_pass():
-        app = App()
-        assert app.get_compiled_doc("ab22", part="__local") == {
-            "a": 1,
-            "b": 2,
-            "c": 3,
-        }
-
-    @staticmethod
     def test_app_get_compiled_doc_part_fail():
         app = App()
         with pytest.raises(RuntimeError):
