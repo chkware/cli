@@ -70,16 +70,6 @@ class VariableMixin(DocumentMixin):
     def request_as_dict(self) -> dict:
         """Abstract method to get request"""
 
-    def __init___(self, symbol_tbl=None):
-        """Initialise mixing props"""
-
-        self.file_ctx = self.get_file_context()
-
-        if symbol_tbl is None:
-            self.symbol_table = self.build_symbol_table()
-        else:
-            self.symbol_table = symbol_tbl
-
     def variable_validated(self) -> dict:
         """Validate the schema against config"""
 
@@ -136,90 +126,6 @@ class VariableMixin(DocumentMixin):
 
         fh = self.get_file_context().filepath_hash
         return app.get_compiled_doc(fh, VarConf.ROOT)
-
-    def variable_process(self, la_type: LexicalAnalysisType, symbol_table=None) -> dict:
-        self.__init___(symbol_table)
-        return self.lexical_analysis_for(la_type, self.symbol_table)
-
-    def build_symbol_table(self) -> dict:
-        """Fill variable space"""
-        doc = self.variable_as_dict().get(VarConf.ROOT, {})
-        if doc:
-            return {key: doc[key] for key in doc.keys() if key in doc.keys()}
-
-        return doc
-
-    def lexical_analysis_for(
-        self, la_type: LexicalAnalysisType, symbol_table: dict
-    ) -> dict:
-        """lexical validation"""
-        document_replaced = app.get_original_doc(self.file_ctx.filepath_hash).copy()
-
-        if la_type is LexicalAnalysisType.REQUEST:
-            document_part = self.request_as_dict()
-
-            document_replaced[
-                RequestConfigNode.ROOT
-            ] = RequestValueHandler.request_fill_val(
-                document_part, symbol_table, replace_values
-            )
-
-        elif la_type is LexicalAnalysisType.TESTCASE:
-            document_part = self.assertions_as_dict()
-
-            keys = [TestcaseConfigNode.ROOT, TestcaseConfigNode.ASSERTS]
-            dict_set(
-                document_replaced,
-                ".".join(keys),
-                TestcaseValueHandler.assertions_fill_val(
-                    document_part, symbol_table, replace_values
-                ),
-            )
-
-        return document_replaced
-
-    @staticmethod
-    def variable_update_symbol_table(
-        ctx_document: dict, updated: MappingProxyType
-    ) -> dict:
-        """
-        Update symbol table and return updated document
-        :param ctx_document:
-        :param updated:
-        :return:
-        """
-        document = deepcopy(ctx_document)
-
-        document[VarConf.ROOT] = document.get(VarConf.ROOT, {}) | updated
-
-        return document
-
-    def variable_assemble_values(self, document: dict, response: dict) -> dict:
-        """
-        Assemble value based on return statement
-        :param document:
-        :param response:
-        :return:
-        """
-        document_type = (
-            DocumentType.HTTP
-            if ":http:" in str(self.version_as_dict())
-            else DocumentType.TESTCASE
-        )
-
-        if document_type is DocumentType.HTTP:
-            return RequestValueHandler.request_get_return(document, response)
-
-        elif document_type is DocumentType.TESTCASE:
-            request_ret = RequestValueHandler.request_get_return(document, response)
-
-            return TestcaseValueHandler.request_set_result(
-                self.execute_as_dict(),
-                MappingProxyType(self.symbol_table),
-                MappingProxyType(request_ret),
-            )
-
-        raise ValueError(f"variable_assemble_values: `{document_type}` not allowed")
 
     def make_exposable(self) -> None:
         """Prepare exposable data"""
