@@ -33,7 +33,7 @@ class StringLexicalAnalyzer:
         """replace values found in string with typed return"""
 
         if not isinstance(container, str):
-            raise TypeError
+            return container
 
         if len(replace_with) == 0:
             return container

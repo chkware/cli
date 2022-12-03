@@ -1,3 +1,8 @@
+# type: ignore
+"""
+Test StringLexicalAnalyzer
+"""
+
 import pytest
 
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
@@ -102,3 +107,13 @@ class TestStringLexicalAnalyzerReplace:
 
         container = "{$var1}:{{$var_3}}"
         assert "2:{my_name}" == StringLexicalAnalyzer.replace(container, replace_with)
+
+    @staticmethod
+    def test_replace_pass_when_coll():
+        st = {"var1": 2, "var_3": {"v3": {"v33": 1}}}
+
+        container = "$var1:{$var_3.v3.v33}"
+        assert "2:1" == StringLexicalAnalyzer.replace(container, st)
+
+        container = "$var1:$var_2.v3.v33"
+        assert "2:{$var_2.v3.v33}" == StringLexicalAnalyzer.replace(container, st)
