@@ -72,7 +72,7 @@ class HttpSpec(
             (
                 version_doc
                 | DefaultVariableDoc().merged(variable_doc)
-                | DefaultExposableDoc({"expose": ["_response"]}).merged(expose_doc)
+                | DefaultExposableDoc({"expose": ["$_response"]}).merged(expose_doc)
                 | request_doc
             ),
         )
