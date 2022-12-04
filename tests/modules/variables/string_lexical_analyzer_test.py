@@ -57,6 +57,13 @@ def test_replace_in_str_when_combined_pass():
 
 class TestStringLexicalAnalyzerReplace:
     @staticmethod
+    def test_replace_pass_when_value_passed():
+        replace_with = {"var1": 1, "var_3": "my name"}
+
+        container = "Hasan"
+        assert "Hasan" == StringLexicalAnalyzer.replace(container, replace_with)
+
+    @staticmethod
     def test_replace_pass_when_single_variable():
         replace_with = {"var1": 1, "var_3": "my name"}
 
