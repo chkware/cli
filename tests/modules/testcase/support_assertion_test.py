@@ -89,3 +89,20 @@ class TestAssertionMixin:
             assert isinstance(tc.assertions_validated(), dict)
 
         del app.original_doc[ctx.filepath_hash]
+
+    def test_assertion_preserve_original_pass(self):
+        spec = {
+            "asserts": [
+                {"type": "AssertEqual", "actual": "$Response.code", "expected": 201}
+            ]
+        }
+
+        app.set_compiled_doc("a1b1", spec, "spec")
+
+        tc = HavingAssertion(file_ctx=FileContext(filepath_hash="a1b1"))
+        tc.assertion_preserve_original()
+
+        assertions = app.get_compiled_doc("a1b1", "spec.asserts")
+
+        assert "actual_original" in assertions[0]
+        assert assertions[0]["actual_original"] == "$Response.code"
