@@ -242,7 +242,7 @@ class AssertionHandler:
         # print('---')
 
         if run_result.wasSuccessful() is False:
-            for run_result_kind in ["failures", "errors"]:
+            for run_result_kind in ("failures", "errors"):
                 for (tc, string) in getattr(run_result, run_result_kind):
                     for item in results:
                         if item.name_run in tc.id():
