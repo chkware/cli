@@ -72,6 +72,3 @@ class AssertionMixin(DocumentMixin):
             assertion[f"{AtConf.ACTUAL}_original"] = assertion[AtConf.ACTUAL]
 
         app.set_compiled_doc(fh, assertions, f"{TstConf.ROOT}.{TstConf.ASSERTS}")
-
-    def assertion_resolve_values(self) -> None:
-        """Prepare asserts actual values before assert"""
