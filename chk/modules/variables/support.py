@@ -39,7 +39,8 @@ def replace_values(doc: dict, var_s: dict) -> dict[str, object]:
     for key in doc.keys():
         if isinstance(doc[key], str):
             item = str(doc[key])
-            doc[key] = StringLexicalAnalyzer.replace_in_str(item, var_s)
+            # doc[key] = StringLexicalAnalyzer.replace_in_str(item, var_s)
+            doc[key] = StringLexicalAnalyzer.replace(item, var_s)
         elif isinstance(doc[key], dict):
             doc[key] = replace_values(doc[key], var_s)
     return doc
@@ -51,10 +52,6 @@ class VariableMixin(DocumentMixin):
     @abc.abstractmethod
     def get_file_context(self) -> FileContext:
         """Abstract method to get file context"""
-
-    @abc.abstractmethod
-    def request_as_dict(self) -> dict:
-        """Abstract method to get request"""
 
     def variable_validated(self) -> dict:
         """Validate the schema against config"""
