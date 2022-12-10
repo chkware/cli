@@ -3,6 +3,7 @@ Assertion related services
 """
 import uuid
 from io import StringIO
+from typing import Any
 from unittest import TestCase, TestSuite, TextTestRunner
 
 from chk.infrastructure.helper import type_converter
@@ -15,7 +16,7 @@ class AssertionCase(TestCase):
     each assertion case
     """
 
-    def __init__(self, name: str, name_run: str, actual, expect):
+    def __init__(self, name: str, name_run: str, actual: Any, expect: Any):
         """Constructor for AssertionCase"""
 
         method_name = f"case_{name}"
