@@ -140,11 +140,11 @@ def type_converter(var: str) -> object:
     except ValueError:
         pass  # not float
 
-    if var == "true":
+    if var in {"true", "True"}:
         return True
-    if var == "false":
+    if var in {"false", "False"}:
         return False
-    if var == "null":
+    if var in {"null", "None"}:
         return None
     if isinstance(var, str):
         try:
