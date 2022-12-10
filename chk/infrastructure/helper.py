@@ -2,9 +2,10 @@
 Helper functions module
 """
 import ast
+from typing import Any
 
 
-def dict_get(var: dict, keymap: str, default=None) -> object:
+def dict_get(var: dict, keymap: str, default: Any = None) -> Any:
     """
     Get a value of a dictionary by dot notation key
     :param var: the dictionary we'll get value for
@@ -13,9 +14,7 @@ def dict_get(var: dict, keymap: str, default=None) -> object:
     :return:
     """
 
-    if len(keymap) == 0:
-        return default
-    elif not var:
+    if len(keymap) == 0 or not var:
         return default
 
     dot_loc = keymap.find(".")
@@ -28,15 +27,15 @@ def dict_get(var: dict, keymap: str, default=None) -> object:
     if dot_loc < 1:
         key_last = None
     else:
-        key_last = keymap[(keymap.find(".") + 1) :]
+        key_last = keymap[(keymap.find(".") + 1):]
 
     if key_last is None:
         return var.get(key, default)
-    else:
-        return dict_get(var.get(key), key_last, default)
+
+    return dict_get(var[key], key_last, default)
 
 
-def dict_set(var: dict, keymap: str, value: object) -> bool:
+def dict_set(var: dict, keymap: str, value: Any) -> bool:
     """
     Set a value of a dictionary by dot notation key and given value
     If the key do not exist, this function returns False, True otherwise
@@ -46,25 +45,22 @@ def dict_set(var: dict, keymap: str, value: object) -> bool:
     :return:
     """
 
-    if len(keymap) == 0:
-        return False
-    elif not var:
+    if len(keymap) == 0 or not var:
         return False
 
     keymap_list = keymap.split(".")
-    km = keymap_list.pop(0)
 
-    if km in var:
+    if (km := keymap_list.pop(0)) in var:
         if len(keymap_list) > 0:
-            if type(var[km]) is dict:
-                return dict_set(var[km], ".".join(keymap_list), value)
-            else:
+            if not isinstance(var[km], dict):
                 return False
-        else:
-            var[km] = value
-            return True
-    else:
-        return False
+
+            return dict_set(var[km], ".".join(keymap_list), value)
+
+        var[km] = value
+        return True
+
+    return False
 
 
 def data_set(var: dict | list, keymap: str, value: object) -> bool:
@@ -105,7 +101,7 @@ def data_set(var: dict | list, keymap: str, value: object) -> bool:
                 return True
 
 
-def data_get(var: dict | list, keymap: str, default: object=None) -> object:
+def data_get(var: dict | list, keymap: str, default: object = None) -> object:
     """
     Get a value of a dictionary|list by dot notation key
     :param var: the dictionary|list we'll get value for
@@ -131,7 +127,7 @@ def data_get(var: dict | list, keymap: str, default: object=None) -> object:
     if dot_loc < 1:
         key_last = None
     else:
-        key_last = keymap[(keymap.find(".") + 1) :]
+        key_last = keymap[(keymap.find(".") + 1):]
 
     try:
         if key_last is None:
