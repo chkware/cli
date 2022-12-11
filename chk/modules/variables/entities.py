@@ -1,9 +1,9 @@
 """
 Variable entities
 """
-from json import loads, decoder
+import json
 from dataclasses import dataclass, asdict
-from typing import NamedTuple
+from typing import NamedTuple, Self, Any
 
 from chk.modules.variables.constants import VariableConfigNode as VConst
 
@@ -60,17 +60,29 @@ class ApiResponse:
     body: dict
 
     @staticmethod
-    def from_dict(response: dict) -> "ApiResponse":
+    def from_dict(response: dict) -> Self:
         """Convert response dict to ApiResponse"""
+
+        def convert_json(string: str) -> Any:
+            try:
+                return json.loads(string)
+            except json.decoder.JSONDecodeError as jde:
+                raise TypeError("Not `json` data") from jde
 
         if code := response.get("code"):
             response["code"] = int(code)
 
         try:
             if body := response.get("body"):
-                response["body"] = loads(body)
-        except decoder.JSONDecodeError:
-            SystemExit("`json` data not found")
+                if (
+                    "Content-Type" in response["headers"]
+                    and "application/json" in response["headers"]["Content-Type"]
+                ):
+                    body = convert_json(body)
+
+            response["body"] = body
+        except TypeError as ex:
+            raise RuntimeError(ex) from ex
 
         return ApiResponse(**response)
 
