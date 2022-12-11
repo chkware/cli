@@ -238,3 +238,6 @@ class TestTypeConverter:
 
         a = "{'g': 23, 'f': 3, 't': [1, 2]}"
         assert type_converter(a) == {"g": 23, "f": 3, "t": [1, 2]}
+
+        a = "{'g': 23, 'f': 3, 't': [1, {'a': 2}]}"
+        assert type_converter(a) == {"g": 23, "f": 3, "t": [1, {"a": 2}]}
