@@ -1,9 +1,17 @@
-"""
-test global helper functions
-"""
+# type: ignore
+
+"""Test global helper functions"""
+
 import pytest
 
-from chk.infrastructure.helper import dict_set, data_set, dict_get, data_get, is_scalar
+from chk.infrastructure.helper import (
+    dict_set,
+    data_set,
+    dict_get,
+    data_get,
+    is_scalar,
+    type_converter,
+)
 
 
 def test_dict_set_pass_when_key_one_dimensional():
@@ -171,8 +179,8 @@ def test_data_get_pass_for_list_stating_index():
 
 def test_is_scalar_pass():
     lst = [{"aa": {"aaa": [1, 2]}}, 2]
-    dct = {'a':1, 'b':2}
-    s = 'jo'
+    dct = {"a": 1, "b": 2}
+    s = "jo"
     i = 2000000000
     f = 2000000000.222222222
 
@@ -181,3 +189,38 @@ def test_is_scalar_pass():
     assert is_scalar(s)
     assert is_scalar(i)
     assert is_scalar(f)
+
+
+class TestTypeConverter:
+    def test_type_converter_int_pass(self):
+        a = "21"
+        assert type_converter(a) == 21
+
+    def test_type_converter_int_return_same(self):
+        a = "ab"
+        assert type_converter(a) == a
+
+    def test_type_converter_float_pass(self):
+        a = "21.40000000009"
+        assert type_converter(a) == 21.40000000009
+
+    def test_type_converter_truth_pass(self):
+        a = "true"
+        assert type_converter(a) is True
+
+        a = "True"
+        assert type_converter(a) is True
+
+    def test_type_converter_false_pass(self):
+        a = "false"
+        assert type_converter(a) is False
+
+        a = "False"
+        assert type_converter(a) is False
+
+    def test_type_converter_null_pass(self):
+        a = "null"
+        assert type_converter(a) is None
+
+        a = "None"
+        assert type_converter(a) is None
