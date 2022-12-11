@@ -1,7 +1,7 @@
-"""
-Assertion related services
-"""
+""" Assertion related services """
+
 import uuid
+from collections.abc import Callable
 from io import StringIO
 from typing import Any
 from unittest import TestCase, TestSuite, TextTestRunner
@@ -204,24 +204,25 @@ class AssertionHandler:
     """
 
     @staticmethod
-    def asserts_test_run(assertions: list) -> AssertResultList:
-        """
-        Process given assertions and run test based on those
-        :param assertions: list of passed assertions
-        :return:
-        """
+    def asserts_test_run(
+        assertions: list, actual_values: dict, replace_values: Callable
+    ) -> AssertResultList:
+        """ Process given assertions and run test based on those """
 
         suite = TestSuite()
         results = []
 
         for each_assertion in assertions:
             name_run = f"{each_assertion[AssertConfigNode.TYPE]}_{uuid.uuid1().hex}"
+            assert_actual_value = replace_values(
+                each_assertion[AssertConfigNode.ACTUAL], actual_values
+            )
 
             suite.addTest(
                 AssertionCase(
                     each_assertion[AssertConfigNode.TYPE],
                     name_run,
-                    each_assertion[AssertConfigNode.ACTUAL],
+                    assert_actual_value,
                     each_assertion.get(AssertConfigNode.EXPECTED),
                 )
             )
@@ -235,12 +236,6 @@ class AssertionHandler:
             )
 
         run_result = TextTestRunner(stream=StringIO(), verbosity=0).run(suite)
-
-        # print('---')
-        # print('run_result.wasSuccessful(): ', run_result.wasSuccessful())
-        # print('run_result.failures: ', run_result.failures)
-        # print('run_result.errors: ', run_result.errors)
-        # print('---')
 
         if run_result.wasSuccessful() is False:
             for run_result_kind in ("failures", "errors"):
