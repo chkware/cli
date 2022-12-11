@@ -96,7 +96,7 @@ class AssertionCase(TestCase):
         """Asserts count of sequence on actual"""
         assert type(self.expect) == int, f"`{self.expect}` is not int"
 
-        actual = type_converter(self.actual)
+        actual = type_converter(self.actual) if type(self.actual) == str else self.actual
         assert hasattr(actual, '__len__'), f"`{self.actual}` is not countable"
 
         self.assertEqual(len(actual), self.expect)
