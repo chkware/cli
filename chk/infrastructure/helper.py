@@ -128,33 +128,76 @@ def data_get(var: dict | list, keymap: str, default: object = None) -> Any:
         return default
 
 
-def type_converter(var: str) -> object:
-    """Convert to appropriate type from string value"""
-    try:
-        return int(var)
-    except ValueError:
-        pass  # not int
-
-    try:
-        return float(var)
-    except ValueError:
-        pass  # not float
-
-    if var in {"true", "True"}:
-        return True
-    if var in {"false", "False"}:
-        return False
-    if var in {"null", "None"}:
-        return None
-    if isinstance(var, str):
-        try:
-            return ast.literal_eval(var)
-        except (ValueError, TypeError, SyntaxError):
-            pass
-
-    return var
-
-
 def is_scalar(val: object) -> bool:
     """Check is a value is scalar"""
     return not (hasattr(val, "__len__") and (not isinstance(val, str)))
+
+
+class Cast:
+    """Cast to type"""
+
+    @staticmethod
+    def to_int(var: str) -> int | str:
+        try:
+            return int(var)
+        except:
+            return var
+
+    @staticmethod
+    def to_float(var: str) -> float | str:
+        try:
+            return float(var)
+        except:
+            return var
+
+    @staticmethod
+    def to_int_or_float(var: str) -> float | int | str:
+        try:
+            return int(var)
+        except:
+            try:
+                return float(var)
+            except:
+                return var
+
+    @staticmethod
+    def to_bool(var: str) -> bool | str:
+        if var in {"true", "True"}:
+            return True
+
+        if var in {"false", "False"}:
+            return False
+
+        return var
+
+    @staticmethod
+    def to_none(var: str) -> None | str:
+        if var in {"null", "None"}:
+            return None
+
+        return var
+
+    @staticmethod
+    def to_hashable(var: str) -> dict | list | str:
+        try:
+            return ast.literal_eval(var)
+        except:
+            return var
+
+    @staticmethod
+    def to_auto(var: str) -> Any:
+        """Convert to appropriate type from string value"""
+
+        if isinstance(var, str):
+            var = Cast.to_int_or_float(var)  # type: ignore
+
+        if isinstance(var, str):
+            var = Cast.to_bool(var)  # type: ignore
+
+        if isinstance(var, str):
+            var = Cast.to_none(var)  # type: ignore
+
+        if isinstance(var, str):
+            var = Cast.to_hashable(var)  # type: ignore
+
+        return var
