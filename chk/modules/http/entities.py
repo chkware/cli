@@ -19,6 +19,7 @@ from chk.modules.variables.entities import (
     DefaultVariableDoc,
     DefaultReturnableDoc,
     DefaultExposableDoc,
+    ApiResponse
 )
 from chk.modules.variables.support import VariableMixin, replace_values
 
@@ -83,13 +84,15 @@ class HttpSpec(
         self.lexical_analysis_for_request(self.get_symbol_table(), replace_values)
 
         try:
-            request_doc = dict_get(self.request_as_dict(compiled=True), RConst.ROOT)
+            request_doc = self.request_as_dict(with_key=False, compiled=True)
             if not isinstance(request_doc, dict):
-                raise RuntimeError("error: Wrong request doc format")
+                raise RuntimeError("error: request doc malformed")
+
+            response = RequestProcessorPyRequests.perform(request_doc)
 
             app.set_local(
                 self.file_ctx.filepath_hash,
-                RequestProcessorPyRequests.perform(request_doc),
+                ApiResponse.from_dict(response).dict(),  # type: ignore
                 RConst.LOCAL,
             )
 
