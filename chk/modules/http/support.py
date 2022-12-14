@@ -3,8 +3,6 @@ Versioned schema repository for http specifications
 """
 import abc
 from collections.abc import Callable
-from copy import deepcopy
-
 from cerberus.validator import DocumentError
 
 from chk.infrastructure.contexts import validator, app
@@ -15,45 +13,6 @@ from chk.modules.http.constants import RequestConfigNode as RConf
 from chk.modules.http.validation_rules import request_schema
 
 from chk.modules.version.support import DocumentMixin
-
-
-class RequestValueHandler:
-    """Handle variables and values regarding request"""
-
-    @staticmethod
-    def request_fill_val(
-        document: dict, symbol_table: dict, replace_method: Callable[[dict, dict], dict]
-    ):
-        """Convert request block variables"""
-
-        request_document = document.get(RConf.ROOT, {})
-        request_document = deepcopy(request_document)
-
-        return replace_method(request_document, symbol_table)
-
-    @staticmethod
-    def request_get_return(document: dict, response: dict) -> dict:
-        """Return request block variables"""
-        returnable = response
-        returnable["have_all"] = True
-
-        if req := document.get(RConf.ROOT, {}):
-            if ret := req.get(RConf.RETURN):
-                ret = str(ret)
-                if not ret.startswith("."):
-                    raise ValueError("Unsupported key format in request.return")
-
-                ret = ret.lstrip(".")
-                if ret not in ("version", "code", "reason", "headers", "body"):
-                    raise ValueError("Unsupported key in request.return")
-
-                def fx(k: object, v: object) -> object:
-                    return None if k != ret else v
-
-                returnable = {key: fx(key, value) for key, value in response.items()}
-                returnable["have_all"] = False
-
-        return returnable
 
 
 class RequestMixin(DocumentMixin):
