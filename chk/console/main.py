@@ -1,5 +1,8 @@
-"""Commands"""
+"""
+Commands
+"""
 from types import MappingProxyType
+from typing import Any
 
 import click
 
@@ -13,7 +16,7 @@ from chk.infrastructure.file_loader import ChkFileLoader, FileContext
 @click.command('http')
 @click.argument('file')
 @click.option('--result', is_flag=True, help="Only shows the returned output")
-def execute_http(file, result) -> None:
+def execute_http(file: str, result: Any) -> None:
     """Command to run Http config file.\r\n
     FILE: Any .chk file, that has 'version: default.http.*' string in it."""
 
@@ -39,7 +42,7 @@ def execute_http(file, result) -> None:
 # run command
 @click.command('testcase')
 @click.argument('file')
-def execute_testcase(file) -> None:
+def execute_testcase(file: str) -> None:
     """Command to run Testcase config file.\r\n
     FILE: Any .chk file, that has 'version: default.testcase.*' string in it."""
 
@@ -57,7 +60,7 @@ def execute_testcase(file) -> None:
 
 # root command
 @click.group('chk')
-def execute_root():
+def execute_root() -> None:
     """v0.4.0 | supported version strings: 0.7.2"""
 
 
