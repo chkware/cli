@@ -77,6 +77,7 @@ class ApiResponse:
                 if (
                     "Content-Type" in response["headers"]
                     and "application/json" in response["headers"]["Content-Type"]
+                    and isinstance(body, str)
                 ):
                     body = convert_json(body)
 
