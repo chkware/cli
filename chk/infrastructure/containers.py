@@ -5,7 +5,7 @@ from enum import Enum
 from typing import NamedTuple
 
 from chk.infrastructure.file_loader import FileContext, ChkFileLoader
-from chk.infrastructure.helper import dict_get, dict_set, data_set
+from chk.infrastructure.helper import dict_get, data_set
 
 
 class CompiledDocBlockType(Enum):
@@ -40,7 +40,7 @@ class App(NamedTuple):
     compiled_doc: dict = {}
 
     environment_ctx: dict = {
-        "config": {"buffer_access_off": True},
+        "config": {},
     }
 
     def __str__(self) -> str:
@@ -111,7 +111,7 @@ class App(NamedTuple):
     def config(self, key: str, val: object = None) -> object:
         """Set and retrieve config"""
         if val is not None:
-            dict_set(self.environment_ctx, f"config.{key}", val)
+            data_set(self.environment_ctx, f"config.{key}", val)
 
         return dict_get(self.environment_ctx, f"config.{key}", None)
 
