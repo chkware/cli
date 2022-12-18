@@ -5,6 +5,8 @@ test global chk functions
 """
 import pytest
 import tests
+import sys
+from io import TextIOWrapper, BytesIO
 
 from chk.infrastructure.containers import App
 from chk.infrastructure.file_loader import FileContext, ChkFileLoader
@@ -167,6 +169,8 @@ class TestApp:
     @staticmethod
     def test_config_pass():
         app = App()
+        app.config("buffer_access_off", True)
+
         assert app.config("buffer_access_off") is True
         assert app.config("buffer_access_off", {"d": 1}) == {"d": 1}
         assert app.config("buffer_access_off") == {"d": 1}
@@ -180,3 +184,45 @@ class TestApp:
     def test_app_get_local_pass():
         app = App()
         assert app.get_local("ab22", "re") == 12
+
+    @staticmethod
+    def test_app_println_pass():
+        # setup the environment
+        old_stdout = sys.stdout
+        sys.stdout = TextIOWrapper(BytesIO(), sys.stdout.encoding)
+
+        app = App()
+        app.config("buffer_access_off", False)
+        app.println("Some")
+
+        # get output
+        sys.stdout.seek(0)  # jump to the start
+        out = sys.stdout.read()  # read output
+
+        # restore stdout
+        sys.stdout.close()
+        sys.stdout = old_stdout
+
+        # assert
+        assert out == "Some\n"
+
+    @staticmethod
+    def test_app_println_pass_no_print():
+        # setup the environment
+        old_stdout = sys.stdout
+        sys.stdout = TextIOWrapper(BytesIO(), sys.stdout.encoding)
+
+        app = App()
+        app.config("buffer_access_off", True)
+        app.println("Some")
+
+        # get output
+        sys.stdout.seek(0)  # jump to the start
+        out = sys.stdout.read()  # read output
+
+        # restore stdout
+        sys.stdout.close()
+        sys.stdout = old_stdout
+
+        # assert
+        assert not out

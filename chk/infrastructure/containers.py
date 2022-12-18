@@ -124,3 +124,9 @@ class App(NamedTuple):
     def get_local(self, key: str, part: str) -> object:
         """Set local variable values in compiled_doc dict"""
         return dict_get(self.compiled_doc[key], f"__local.{part}")
+
+    def println(self, message: object) -> None:
+        """Print message to screen when buffer is off"""
+
+        if self.config("buffer_access_off") is False:
+            print(message)
