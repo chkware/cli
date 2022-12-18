@@ -7,7 +7,6 @@ from chk.infrastructure.contexts import app
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
 from chk.infrastructure.work import WorkerContract
-from chk.modules.http.presentation import Presentation
 
 from chk.modules.version.support import VersionMixin
 
@@ -19,7 +18,7 @@ from chk.modules.variables.entities import (
     DefaultVariableDoc,
     DefaultReturnableDoc,
     DefaultExposableDoc,
-    ApiResponse
+    ApiResponse,
 )
 from chk.modules.variables.support import VariableMixin, replace_values
 
@@ -50,7 +49,10 @@ class HttpSpec(
     def __init__(self, file_ctx: FileContext):
         app.config("buffer_access_off", bool(file_ctx.options["result"]))
         self.file_ctx = file_ctx
-        Presentation.buffer_msg(f"File: {file_ctx.filepath}\r\n")
+        app.print_fmt(
+            f"File: {file_ctx.filepath}\r\n",
+            ret_s=bool(app.config("buffer_access_off")),
+        )
 
     def get_file_context(self) -> FileContext:
         return self.file_ctx
@@ -96,13 +98,20 @@ class HttpSpec(
                 RConst.LOCAL,
             )
 
-            Presentation.buffer_msg("- Making request [Success]")
+            app.print_fmt(
+                "- Making request [Success]",
+                ret_s=bool(app.config("buffer_access_off")),
+            )
         except RuntimeError as err:
-            Presentation.buffer_msg("- Making request [Fail]")
+            app.print_fmt(
+                "- Making request [Fail]", ret_s=bool(app.config("buffer_access_off"))
+            )
             raise err
 
     def __after_main__(self) -> list:
         """Prepare response for http document"""
-        Presentation.buffer_msg("- Prepare exposable [Success]")
+        app.print_fmt(
+            "- Prepare exposable [Success]", ret_s=bool(app.config("buffer_access_off"))
+        )
         self.make_exposable()
         return self.get_exposable()
