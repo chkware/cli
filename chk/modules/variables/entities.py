@@ -69,7 +69,7 @@ class ApiResponse:
             except json.decoder.JSONDecodeError as jde:
                 raise TypeError("Not `json` data") from jde
 
-        if code := response.get("code"):
+        if (code := response["code"]) and not isinstance(code, int):
             response["code"] = int(code)
 
         try:

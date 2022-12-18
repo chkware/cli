@@ -21,6 +21,7 @@ class TestApiResponse:
 
             assert isinstance(s.dict().get("body"), dict)
             assert len(s.dict().get("body")) == 4
+            assert isinstance(s.dict().get("code"), int)
 
     def test_loading_json_pass_when_body_dict(self):
         with urllib.request.urlopen(
