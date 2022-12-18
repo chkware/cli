@@ -1,6 +1,7 @@
 """
 Global application functionality
 """
+from collections.abc import Callable
 from enum import Enum
 from typing import NamedTuple
 
@@ -130,3 +131,9 @@ class App(NamedTuple):
 
         if self.config("buffer_access_off") is False:
             print(message)
+
+    @staticmethod
+    def println_fmt(message: object, callback: Callable) -> None:
+        """Print message to screen when buffer is off"""
+
+        print(callback(message))

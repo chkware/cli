@@ -226,3 +226,49 @@ class TestApp:
 
         # assert
         assert not out
+
+    @staticmethod
+    def test_app_println_fmt_pass():
+        def fmt(val):
+            return f"1:{val}"
+
+        # setup the environment
+        old_stdout = sys.stdout
+        sys.stdout = TextIOWrapper(BytesIO(), sys.stdout.encoding)
+
+        app = App()
+        app.println_fmt("Some", fmt)
+
+        # get output
+        sys.stdout.seek(0)  # jump to the start
+        out = sys.stdout.read()  # read output
+
+        # restore stdout
+        sys.stdout.close()
+        sys.stdout = old_stdout
+
+        # assert
+        assert out == "1:Some\n"
+
+    @staticmethod
+    def test_app_println_fmt_pass_dict():
+        def fmt(val):
+            return f"Hello, I am {val['name']}. I am {val['age']} years old."
+
+        # setup the environment
+        old_stdout = sys.stdout
+        sys.stdout = TextIOWrapper(BytesIO(), sys.stdout.encoding)
+
+        app = App()
+        app.println_fmt({"name": "Some One", "age": 43}, fmt)
+
+        # get output
+        sys.stdout.seek(0)  # jump to the start
+        out = sys.stdout.read()  # read output
+
+        # restore stdout
+        sys.stdout.close()
+        sys.stdout = old_stdout
+
+        # assert
+        assert out == "Hello, I am Some One. I am 43 years old.\n"
