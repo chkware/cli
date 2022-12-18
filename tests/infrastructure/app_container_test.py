@@ -186,14 +186,28 @@ class TestApp:
         assert app.get_local("ab22", "re") == 12
 
     @staticmethod
-    def test_app_println_pass():
+    def test_app_print_fmt_pass_get_string():
+        app = App()
+
+        assert app.print_fmt("Some", ret_s=True) == "Some"
+
+    @staticmethod
+    def test_app_print_fmt_pass_get_string_with_cb():
+        def cb(val):
+            return f"1:{val}"
+
+        app = App()
+
+        assert app.print_fmt("Some", cb, True) == "1:Some"
+
+    @staticmethod
+    def test_app_print_fmt_pass_print():
         # setup the environment
         old_stdout = sys.stdout
         sys.stdout = TextIOWrapper(BytesIO(), sys.stdout.encoding)
 
         app = App()
-        app.config("buffer_access_off", False)
-        app.println("Some")
+        app.print_fmt("Some")
 
         # get output
         sys.stdout.seek(0)  # jump to the start
@@ -207,28 +221,7 @@ class TestApp:
         assert out == "Some\n"
 
     @staticmethod
-    def test_app_println_pass_no_print():
-        # setup the environment
-        old_stdout = sys.stdout
-        sys.stdout = TextIOWrapper(BytesIO(), sys.stdout.encoding)
-
-        app = App()
-        app.config("buffer_access_off", True)
-        app.println("Some")
-
-        # get output
-        sys.stdout.seek(0)  # jump to the start
-        out = sys.stdout.read()  # read output
-
-        # restore stdout
-        sys.stdout.close()
-        sys.stdout = old_stdout
-
-        # assert
-        assert not out
-
-    @staticmethod
-    def test_app_println_fmt_pass():
+    def test_app_print_fmt_pass_print_with_cb():
         def fmt(val):
             return f"1:{val}"
 
@@ -237,7 +230,7 @@ class TestApp:
         sys.stdout = TextIOWrapper(BytesIO(), sys.stdout.encoding)
 
         app = App()
-        app.println_fmt("Some", fmt)
+        app.print_fmt("Some", fmt)
 
         # get output
         sys.stdout.seek(0)  # jump to the start
@@ -251,7 +244,7 @@ class TestApp:
         assert out == "1:Some\n"
 
     @staticmethod
-    def test_app_println_fmt_pass_dict():
+    def test_app_print_fmt_pass_print_with_cb_dict():
         def fmt(val):
             return f"Hello, I am {val['name']}. I am {val['age']} years old."
 
@@ -260,7 +253,7 @@ class TestApp:
         sys.stdout = TextIOWrapper(BytesIO(), sys.stdout.encoding)
 
         app = App()
-        app.println_fmt({"name": "Some One", "age": 43}, fmt)
+        app.print_fmt({"name": "Some One", "age": 43}, fmt)
 
         # get output
         sys.stdout.seek(0)  # jump to the start
