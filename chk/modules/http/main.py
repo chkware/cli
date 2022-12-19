@@ -20,4 +20,5 @@ def execute(file_ctx: FileContext) -> None:
         response = handle_worker(http_spec)
         app.print_fmt(response, present_result)
     except BaseException as error:
+        app.print_fmt("\r\n---", ret_s=bool(app.config("buffer_access_off")))
         app.print_fmt(error)

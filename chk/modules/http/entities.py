@@ -113,5 +113,7 @@ class HttpSpec(
         app.print_fmt(
             "- Prepare exposable [Success]", ret_s=bool(app.config("buffer_access_off"))
         )
+        app.print_fmt("\r\n---", ret_s=bool(app.config("buffer_access_off")))
+
         self.make_exposable()
         return self.get_exposable()
