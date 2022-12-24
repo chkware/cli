@@ -50,5 +50,5 @@ def execute(file_ctx: FileContext) -> None:
     try:
         response = handle_worker(http_spec)
         app.print_fmt(response, present_result)
-    except BaseException:
+    except RuntimeError:
         print_exc(file=sys.stderr)
