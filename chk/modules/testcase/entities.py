@@ -1,26 +1,28 @@
-from types import MappingProxyType
-
+"""
+Entities for testcase document specification
+"""
 from chk.infrastructure.contexts import app
 from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
-from chk.infrastructure.helper import dict_get
 from chk.infrastructure.work import WorkerContract
+from chk.modules.assertion.support import AssertionHandler
+from chk.modules.testcase.presentation import Presentation
+from chk.modules.variables.lexicon import StringLexicalAnalyzer
 
 from chk.modules.version.support import VersionMixin
 
 from chk.modules.variables.entities import (
-    ApiResponse,
     DefaultVariableDoc,
     DefaultExposableDoc,
+    ApiResponse,
 )
-from chk.modules.variables.support import VariableMixin
-from chk.modules.variables.constants import LexicalAnalysisType
+from chk.modules.variables.support import VariableMixin, replace_values
 
+from chk.modules.http.constants import RequestConfigNode as RConst
 from chk.modules.http.request_helper import RequestProcessorPyRequests
 from chk.modules.http.support import RequestMixin
 
 from chk.modules.testcase.support.testcase import TestcaseMixin
-from chk.modules.testcase.presentation import Presentation, AssertResult
 
 
 class Testcase(
@@ -31,7 +33,12 @@ class Testcase(
     WorkerContract,
 ):
     def __init__(self, file_ctx: FileContext):
+        app.config("buffer_access_off", bool(file_ctx.options["result"]))
         self.file_ctx = file_ctx
+        app.print_fmt(
+            f"File: {file_ctx.filepath}\r\n",
+            ret_s=bool(app.config("buffer_access_off")),
+        )
 
     def get_file_context(self) -> FileContext:
         return self.file_ctx
@@ -67,70 +74,79 @@ class Testcase(
     def __main__(self) -> None:
         """Process document"""
 
-        ctx_document = {}
-
+        # execute process
         if self.is_request_infile():
-            ctx_document = self.variable_process(LexicalAnalysisType.REQUEST)
+            self.variable_prepare_value_table()
+            self.lexical_analysis_for_request(self.get_symbol_table(), replace_values)
+
+            try:
+                request_doc = self.request_as_dict(with_key=False, compiled=True)
+                if not isinstance(request_doc, dict):
+                    raise RuntimeError("error: request doc malformed")
+
+                response = RequestProcessorPyRequests.perform(request_doc)
+
+                app.set_local(
+                    self.file_ctx.filepath_hash,
+                    ApiResponse.from_dict(response).dict(),  # type: ignore
+                    RConst.LOCAL,
+                )
+
+                app.print_fmt(
+                    "- Making request [Success]",
+                    ret_s=bool(app.config("buffer_access_off")),
+                )
+            except RuntimeError as err:
+                app.print_fmt(
+                    "- Making request [Fail]",
+                    ret_s=bool(app.config("buffer_access_off")),
+                )
+                raise err
+
         else:
             # this is a temporary situation
             # TODO: support file linking; remove this message
-            raise SystemExit(
+            raise RuntimeError(
                 err_message(
                     "fatal.V0029",
                     extra={"spec": {"execute": {"file": "External file linked"}}},
                 )
             )
 
-        if ctx_document:
-            try:
-                out_response = RequestProcessorPyRequests.perform(
-                    dict_get(ctx_document, "request")
-                )
-                out_response = ApiResponse.from_dict(out_response).dict()
+        try:
+            self.assertion_preserve_original()
+            assertions = self.assertions_as_dict(with_key=False, compiled=True)
 
-                print(Presentation.displayable_string("- Making request [Success]"))
-            except Exception as ex:
-                print(Presentation.displayable_string("- Making request [Fail]"))
-                raise ex
+            if not isinstance(assertions, list):
+                raise RuntimeError
 
-            try:
-                request_mut = self.variable_assemble_values(ctx_document, out_response)
-                document = self.variable_update_symbol_table(
-                    ctx_document, MappingProxyType(request_mut)
-                )
-                self.document = self.variable_process(
-                    LexicalAnalysisType.TESTCASE, dict_get(document, "variables")
-                )
+            assertion_results = AssertionHandler.asserts_test_run(
+                assertions, self.get_symbol_table(), StringLexicalAnalyzer.replace
+            )
 
-                print(
-                    Presentation.displayable_string(
-                        "- Process data for assertion [Success]"
-                    )
-                )
-            except Exception as ex:
-                print(
-                    Presentation.displayable_string(
-                        "- Process data for assertion [Fail]"
-                    )
-                )
-                raise ex
+            app.print_fmt(
+                "- Process data for assertion [Success]",
+                ret_s=bool(app.config("buffer_access_off")),
+            )
 
-            assertion_results = self.assertion_process()
-            for assertion_result in assertion_results:  # type: AssertResult
-                print(
-                    Presentation.displayable_assert_status(
-                        assertion_result.name,
-                        assertion_result.actual_original,
-                        "Success" if assertion_result.is_success else "Fail",
-                    )
-                )
+        except RuntimeError as err:
+            app.print_fmt(
+                "- Process data for assertion [Fail]",
+                ret_s=bool(app.config("buffer_access_off")),
+            )
+            raise err
 
-                if assertion_result.is_success is False:
-                    print(
-                        Presentation.displayable_assert_message(
-                            assertion_result.message
-                        )
-                    )
+        for assertion_result in assertion_results:
+            print(
+                Presentation.displayable_assert_status(
+                    assertion_result.name,
+                    assertion_result.actual_original,
+                    "Success" if assertion_result.is_success else "Fail",
+                )
+            )
+
+            if assertion_result.is_success is False:
+                print(Presentation.displayable_assert_message(assertion_result.message))
 
     def __after_main__(self) -> dict:
         return {}
