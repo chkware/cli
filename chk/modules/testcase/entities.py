@@ -12,6 +12,7 @@ from chk.modules.http.constants import RequestConfigNode as RConst
 from chk.modules.http.request_helper import RequestProcessorPyRequests
 from chk.modules.http.support import RequestMixin
 
+from chk.modules.testcase.constants import AssertConfigNode as AConf
 from chk.modules.testcase.support.testcase import TestcaseMixin
 from chk.modules.testcase.presentation import Presentation
 
@@ -136,6 +137,8 @@ class Testcase(
                 ret_s=bool(app.config("buffer_access_off")),
             )
             raise err
+
+        app.set_local(self.file_ctx.filepath_hash, assertion_results, AConf.LOCAL)
 
         for assertion_result in assertion_results:
             print(

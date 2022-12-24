@@ -26,6 +26,8 @@ class AssertConfigNode:
     """represent asserts config section"""
 
     ROOT = "asserts"
+    LOCAL = "_assertion_results"
+
     TYPE = "type"
     ACTUAL = "actual"
     ACTUAL_ORIG = "actual_original"
