@@ -55,7 +55,7 @@ class TestVariablePrepareValueTable:
             "var_2": 2,
             "var_3": "ajaxbar",
             "var_4": "ajax{$Var_1}",
-            "var_5": "2",
+            "var_5": 2,
         }
 
     def test_variable_handle_value_table_for_absolute_pass(self):
@@ -105,7 +105,7 @@ class TestVariablePrepareValueTable:
             "var_2": 2,
             "var_3": "ajaxbar",
             "var_4": "ajax{$Var_1}",
-            "var_5": "2",
+            "var_5": 2,
         }
 
 
