@@ -8,11 +8,9 @@ from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
 from chk.infrastructure.work import WorkerContract
 
-from chk.modules.version.support import VersionMixin
-
+from chk.modules.http.constants import RequestConfigNode as RConst
 from chk.modules.http.request_helper import RequestProcessorPyRequests
 from chk.modules.http.support import RequestMixin
-from chk.modules.http.constants import RequestConfigNode as RConst
 
 from chk.modules.variables.entities import (
     DefaultVariableDoc,
@@ -21,6 +19,8 @@ from chk.modules.variables.entities import (
     ApiResponse,
 )
 from chk.modules.variables.support import VariableMixin, replace_values
+
+from chk.modules.version.support import VersionMixin
 
 
 class DefaultRequestDoc(NamedTuple):

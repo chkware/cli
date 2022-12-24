@@ -5,12 +5,17 @@ from chk.infrastructure.contexts import app
 from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.work import WorkerContract
+
 from chk.modules.assertion.support import AssertionHandler
+
+from chk.modules.http.constants import RequestConfigNode as RConst
+from chk.modules.http.request_helper import RequestProcessorPyRequests
+from chk.modules.http.support import RequestMixin
+
+from chk.modules.testcase.support.testcase import TestcaseMixin
 from chk.modules.testcase.presentation import Presentation
+
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
-
-from chk.modules.version.support import VersionMixin
-
 from chk.modules.variables.entities import (
     DefaultVariableDoc,
     DefaultExposableDoc,
@@ -18,11 +23,7 @@ from chk.modules.variables.entities import (
 )
 from chk.modules.variables.support import VariableMixin, replace_values
 
-from chk.modules.http.constants import RequestConfigNode as RConst
-from chk.modules.http.request_helper import RequestProcessorPyRequests
-from chk.modules.http.support import RequestMixin
-
-from chk.modules.testcase.support.testcase import TestcaseMixin
+from chk.modules.version.support import VersionMixin
 
 
 class Testcase(
