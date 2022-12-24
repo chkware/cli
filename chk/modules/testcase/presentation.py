@@ -1,7 +1,7 @@
 """
 Presenting assert data
 """
-from typing import List, TypeAlias
+from typing import TypeAlias
 from dataclasses import dataclass
 
 from chk.infrastructure.file_loader import FileContext
@@ -21,7 +21,7 @@ class AssertResult:
     assert_fn: str = ""
 
 
-AssertResultList: TypeAlias = List[AssertResult]
+AssertResultList: TypeAlias = list[AssertResult]
 
 
 class Presentation:
