@@ -110,10 +110,19 @@ class HttpSpec(
 
     def __after_main__(self) -> list:
         """Prepare response for http document"""
-        app.print_fmt(
-            "- Prepare exposable [Success]", ret_s=bool(app.config("buffer_access_off"))
-        )
-        app.print_fmt("\r\n---", ret_s=bool(app.config("buffer_access_off")))
 
-        self.make_exposable()
-        return self.get_exposable()
+        try:
+            self.make_exposable()
+            app.print_fmt(
+                "- Prepare exposable [Success]",
+                ret_s=bool(app.config("buffer_access_off")),
+            )
+            app.print_fmt("\r\n---", ret_s=bool(app.config("buffer_access_off")))
+
+            return self.get_exposable()
+        except RuntimeError as err:
+            app.print_fmt(
+                "- Prepare exposable [Fail]",
+                ret_s=bool(app.config("buffer_access_off")),
+            )
+            raise err
