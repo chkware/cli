@@ -12,9 +12,8 @@ from chk.modules.http.constants import RequestConfigNode as RConst
 from chk.modules.http.request_helper import RequestProcessorPyRequests
 from chk.modules.http.support import RequestMixin
 
-from chk.modules.testcase.constants import AssertConfigNode as AConf
+from chk.modules.testcase.constants import AssertConfigNode as AConst
 from chk.modules.testcase.support.testcase import TestcaseMixin
-from chk.modules.testcase.presentation import Presentation
 
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
 from chk.modules.variables.entities import (
@@ -67,7 +66,9 @@ class Testcase(
             (
                 version_doc
                 | DefaultVariableDoc().merged(variable_doc)
-                | DefaultExposableDoc({"expose": ["_response"]}).merged(expose_doc)
+                | DefaultExposableDoc({"expose": ["$_assertion_results"]}).merged(
+                    expose_doc
+                )
                 | request_doc
                 | testcase_doc
             ),
@@ -138,19 +139,21 @@ class Testcase(
             )
             raise err
 
-        app.set_local(self.file_ctx.filepath_hash, assertion_results, AConf.LOCAL)
+        app.set_local(self.file_ctx.filepath_hash, assertion_results, AConst.LOCAL)
 
-        for assertion_result in assertion_results:
-            print(
-                Presentation.displayable_assert_status(
-                    assertion_result.name,
-                    assertion_result.actual_original,
-                    "Success" if assertion_result.is_success else "Fail",
-                )
+    def __after_main__(self) -> list:
+        try:
+            self.make_exposable()
+            app.print_fmt(
+                "- Prepare exposable [Success]",
+                ret_s=bool(app.config("buffer_access_off")),
             )
+            app.print_fmt("\r\n---", ret_s=bool(app.config("buffer_access_off")))
 
-            if assertion_result.is_success is False:
-                print(Presentation.displayable_assert_message(assertion_result.message))
-
-    def __after_main__(self) -> dict:
-        return {}
+            return self.get_exposable()
+        except RuntimeError as err:
+            app.print_fmt(
+                "- Prepare exposable [Fail]",
+                ret_s=bool(app.config("buffer_access_off")),
+            )
+            raise err
