@@ -32,7 +32,11 @@ def dict_get(var: dict, keymap: str, default: Any = None) -> Any:
     if key_last is None:
         return var.get(key, default)
 
-    return dict_get(var[key], key_last, default)
+    return (
+        dict_get(var[key], key_last, default)
+        if isinstance(var, dict) and key in var
+        else default
+    )
 
 
 def dict_set(var: dict, keymap: str, value: Any) -> bool:
