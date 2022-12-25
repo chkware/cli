@@ -3,60 +3,62 @@ version: default:testcase:0.7.2
 request:
   url: https://api.coinstats.app/public/v1/coins/bitcoin?currency=USD
   method: GET
-#  return: .body
 
 variables:
   Response: ~
 
 spec:
   execute:
-    result: $Response
 
   asserts:
-    - {type: AssertEqual, actual: $Response.code, expected: 200}
-    - {type: AssertEmpty, actual: ~}
-    - {type: AssertFalse, actual: 'false'}
-    - {type: AssertTrue, actual: 'true'}
-    - {type: AssertIsInt, actual: $Response.body.coin.priceBtc}
-    - {type: AssertIsInt, actual: 10}
-    - {type: AssertIsString, actual: $Response.body.coin.websiteUrl}
-    - {type: AssertStrContains, actual: 'https://someurl.com', expected: 'https'}
-    - {type: AssertIsFloat, actual: $Response.body.coin.priceChange1w}
-    - {type: AssertIsFloat, actual: 1.0}
-    - {type: AssertIsBool, actual: "true"}
-    - {type: AssertIsBool, actual: true}
-    - {type: AssertIsMap, actual: $Response.body.coin}
-    - {type: AssertIsMap, actual: {'a': 1, 'b': 2}}
-    - {type: AssertMapHasKey, actual: {'a': 1, 'b': 2}, expected: 'a'}
-    - {type: AssertMapHasKey, actual: '{"a": 1, "b": 2}', expected: 'a'}
-    - {type: AssertMapDoNotHasKey, actual: {'a': 1, 'b': 2}, expected: 'c'}
-    - {type: AssertMapDoNotHasKey, actual: '{"a": 1, "b": 2}', expected: 'c'}
-    - {type: AssertMapHasKeys, actual: {'a': 1, 'b': 2}, expected: ['a']}
-    - {type: AssertMapHasKeys, actual: {'a': 1, 'b': 2, 'c': 3}, expected: ['a', 'b', 'c']}
-    - {type: AssertMapHasKeys, actual: '{"a": 1, "b": 2, "c": 3}', expected: ['a', 'b', 'c']}
-    - {type: AssertMapDoNotHasKeys, actual: {'a': 1, 'b': 2, 'c': 3}, expected: ['d', 'e', 'f']}
-    - {type: AssertMapDoNotHasKeys, actual: '{"a": 1, "b": 2, "c": 3}', expected: ['d', 'e', 'f']}
-    - {type: AssertMapExactKeys, actual: {'a': 1, 'b': 2, 'c': 3}, expected: ['a', 'b', 'c']}
-    - {type: AssertMapExactKeys, actual: '{"a": 1, "b": 2, "c": 3}', expected: ['a', 'b', 'c']}
-    - {type: AssertMapContains, actual: '{"a": 1, "b": 2, "c": 3}', expected: 1}
-    - {type: AssertMapContains, actual: {"a": [1, 2], "b": [1, 3], "c": 3}, expected: [1, 2]}
-    - {type: AssertMapContains, actual: {"a": {"foo": 1}, "b": [1, 3], "c": 3}, expected: {"foo": 1}}
-    - {type: AssertMapKeyCount, actual: {'a': 1, 'b': 2}, expected: 2}
-    - {type: AssertIsList, actual: $Response.body.coin.exp}
-    - {type: AssertIsList, actual: [1, 1, 2]}
-    - {type: AssertListContains, actual: [1, 1, 2], expected: 1}
-    - {type: AssertListContains, actual: '[1, 1, 3]', expected: 1}
-    - {type: AssertListContains, actual: [{"foo": 1}, {"bar": 2}], expected: {"foo": 1}}
-    - {type: AssertListContains, actual: '[{"foo": 1}, {"car": 2}]', expected: {"foo": 1}}
-    - {type: AssertListHasIndex, actual: [1, 1, 3], expected: 2}
-    - {type: AssertListHasIndex, actual: '[1, 5, 3]', expected: 0}
-    - {type: AssertCount, actual: $Response.body.coin.exp, expected: 3}
-    - {type: AssertGreater, actual: 1.2, expected: 0.5}
-    - {type: AssertGreaterOrEqual, actual: 1.4, expected: 0.5}
-    - {type: AssertLess, actual: 0.4, expected: 0.5}
-    - {type: AssertLess, actual: '3', expected: 5}
-    - {type: AssertLessOrEqual, actual: 0.4, expected: 0.5}
-    - {type: AssertLessOrEqual, actual: '3', expected: 5}
-    - {type: AssertLessOrEqual, actual: 0.5, expected: 0.5}
-    - {type: AssertLessOrEqual, actual: 5, expected: 5}
-    - {type: AssertNotEqual, actual: $Response.body.coin.priceBtc, expected: 2}
+    - { type: AssertEqual, actual: $_response.code, expected: 200 }
+    - { type: AssertEqual, actual: "[1, 2, 3]", expected: [ 1, 2, 3 ] }
+    - { type: AssertEqual, actual: "{'a': 1, 'c': 3, 'b': 2}", expected: { 'a': 1, 'c': 3, 'b': 2 } }
+    - { type: AssertEmpty, actual: ~ }
+    - { type: AssertFalse, actual: 'false' }
+    - { type: AssertTrue, actual: 'true' }
+    - { type: AssertIsInt, actual: $_response.body.coin.priceBtc }
+    - { type: AssertIsInt, actual: 10 }
+    - { type: AssertIsString, actual: $_response.body.coin.websiteUrl }
+    - { type: AssertStrContains, actual: 'https://someurl.com', expected: 'https' }
+    - { type: AssertStrContains, actual: '{"a": 1, "b": 2}', expected: '"b":' }
+    - { type: AssertIsFloat, actual: $_response.body.coin.priceChange1w }
+    - { type: AssertIsFloat, actual: 1.0 }
+    - { type: AssertIsBool, actual: "true" }
+    - { type: AssertIsBool, actual: true }
+    - { type: AssertIsMap, actual: $_response.body.coin }
+    - { type: AssertIsMap, actual: { 'a': 1, 'b': 2 } }
+    - { type: AssertMapHasKey, actual: { 'a': 1, 'b': 2 }, expected: 'a' }
+    - { type: AssertMapHasKey, actual: '{"a": 1, "b": 2}', expected: 'a' }
+    - { type: AssertMapDoNotHasKey, actual: { 'a': 1, 'b': 2 }, expected: 'c' }
+    - { type: AssertMapDoNotHasKey, actual: '{"a": 1, "b": 2}', expected: 'c' }
+    - { type: AssertMapHasKeys, actual: { 'a': 1, 'b': 2 }, expected: [ 'a' ] }
+    - { type: AssertMapHasKeys, actual: { 'a': 1, 'b': 2, 'c': 3 }, expected: [ 'a', 'b', 'c' ] }
+    - { type: AssertMapHasKeys, actual: '{"a": 1, "b": 2, "c": 3}', expected: [ 'a', 'b', 'c' ] }
+    - { type: AssertMapDoNotHasKeys, actual: { 'a': 1, 'b': 2, 'c': 3 }, expected: [ 'd', 'e', 'f' ] }
+    - { type: AssertMapDoNotHasKeys, actual: '{"a": 1, "b": 2, "c": 3}', expected: [ 'd', 'e', 'f' ] }
+    - { type: AssertMapExactKeys, actual: { 'a': 1, 'b': 2, 'c': 3 }, expected: [ 'a', 'b', 'c' ] }
+    - { type: AssertMapExactKeys, actual: '{"a": 1, "b": 2, "c": 3}', expected: [ 'a', 'b', 'c' ] }
+    - { type: AssertMapContains, actual: '{"a": 1, "b": 2, "c": 3}', expected: 1 }
+    - { type: AssertMapContains, actual: { "a": [ 1, 2 ], "b": [ 1, 3 ], "c": 3 }, expected: [ 1, 2 ] }
+    - { type: AssertMapContains, actual: { "a": { "foo": 1 }, "b": [ 1, 3 ], "c": 3 }, expected: { "foo": 1 } }
+    - { type: AssertMapKeyCount, actual: { 'a': 1, 'b': 2 }, expected: 2 }
+    - { type: AssertIsList, actual: $_response.body.coin.exp }
+    - { type: AssertIsList, actual: [ 1, 1, 2 ] }
+    - { type: AssertListContains, actual: [ 1, 1, 2 ], expected: 1 }
+    - { type: AssertListContains, actual: '[1, 1, 3]', expected: 1 }
+    - { type: AssertListContains, actual: [ { "foo": 1 }, { "bar": 2 } ], expected: { "foo": 1 } }
+    - { type: AssertListContains, actual: '[{"foo": 1}, {"car": 2}]', expected: { "foo": 1 } }
+    - { type: AssertListHasIndex, actual: [ 1, 1, 3 ], expected: 2 }
+    - { type: AssertListHasIndex, actual: '[1, 5, 3]', expected: 0 }
+    - { type: AssertCount, actual: $_response.body.coin.exp, expected: 3 }
+    - { type: AssertGreater, actual: 1.2, expected: 0.5 }
+    - { type: AssertGreaterOrEqual, actual: 1.4, expected: 0.5 }
+    - { type: AssertLess, actual: 0.4, expected: 0.5 }
+    - { type: AssertLess, actual: '3', expected: 5 }
+    - { type: AssertLessOrEqual, actual: 0.4, expected: 0.5 }
+    - { type: AssertLessOrEqual, actual: 0.4, expected: 1 }
+    - { type: AssertLessOrEqual, actual: '3', expected: 5 }
+    - { type: AssertLessOrEqual, actual: 0.5, expected: 0.5 }
+    - { type: AssertLessOrEqual, actual: 5, expected: 5 }
+    - { type: AssertNotEqual, actual: $_response.body.coin.priceBtc, expected: 2 }

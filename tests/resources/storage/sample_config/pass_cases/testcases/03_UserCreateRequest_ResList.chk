@@ -16,3 +16,4 @@ request:
 
 expose:
   - $_response.code
+  - $_response.headers

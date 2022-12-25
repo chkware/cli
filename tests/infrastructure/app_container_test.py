@@ -1,8 +1,12 @@
+# type: ignore
+
 """
 test global chk functions
 """
 import pytest
 import tests
+import sys
+from io import TextIOWrapper, BytesIO
 
 from chk.infrastructure.containers import App
 from chk.infrastructure.file_loader import FileContext, ChkFileLoader
@@ -89,37 +93,37 @@ class TestApp:
     @staticmethod
     def test_app_set_compiled_doc_part_pass():
         app = App()
-        app.set_compiled_doc(
-            "ab22",
-            part="request",
-            value={
-                "a": 1,
-                "b": 2,
-                "c": 3,
-            },
-        )
-
-    @staticmethod
-    def test_app_set_compiled_doc_local_part_pass():
-        app = App()
-        app.set_compiled_doc(
-            "ab22",
-            part="__local",
-            value={
-                "a": 1,
-                "b": 2,
-                "c": 3,
-            },
-        )
-
-    @staticmethod
-    def test_app_get_compiled_doc_local_part_pass():
-        app = App()
-        assert app.get_compiled_doc("ab22", part="__local") == {
+        val = {
             "a": 1,
             "b": 2,
             "c": 3,
         }
+        app.set_compiled_doc("ab22", part="request", value=val)
+        assert app.get_compiled_doc("ab22", "request") == val
+
+    @staticmethod
+    def test_app_set_compiled_doc_local_part_pass():
+        app = App()
+        val = {
+            "a": 1,
+            "b": 2,
+            "c": 3,
+        }
+
+        app.set_compiled_doc("ab22", part="__local", value=val)
+        assert app.get_compiled_doc("ab22", "__local") == val
+
+    @staticmethod
+    def test_app_set_compiled_doc_local_multiple_part_pass():
+        app = App()
+        val = {
+            "a": 1,
+            "b": 2,
+            "c": 3,
+        }
+
+        app.set_compiled_doc("ab22", part="__local.some", value=val)
+        assert app.get_compiled_doc("ab22", "__local.some") == val
 
     @staticmethod
     def test_app_get_compiled_doc_part_fail():
@@ -135,6 +139,15 @@ class TestApp:
             "b": 2,
             "c": 3,
         }
+
+    @staticmethod
+    def test_app_get_compiled_doc_dot_part_pass():
+        app = App()
+        data_set(app.compiled_doc, "ab22.request.body", {"var": "val"})
+        assert app.get_compiled_doc("ab22", part="request.body") == {"var": "val"}
+        assert app.get_compiled_doc("ab22", part="request.body.var") == "val"
+
+        del app.compiled_doc["ab22"]
 
     @staticmethod
     def test_app_load_original_doc_from_file_context_pass():
@@ -156,6 +169,8 @@ class TestApp:
     @staticmethod
     def test_config_pass():
         app = App()
+        app.config("buffer_access_off", True)
+
         assert app.config("buffer_access_off") is True
         assert app.config("buffer_access_off", {"d": 1}) == {"d": 1}
         assert app.config("buffer_access_off") == {"d": 1}
@@ -169,3 +184,84 @@ class TestApp:
     def test_app_get_local_pass():
         app = App()
         assert app.get_local("ab22", "re") == 12
+
+    @staticmethod
+    def test_app_print_fmt_pass_get_string():
+        app = App()
+
+        assert app.print_fmt("Some", ret_s=True) == "Some"
+
+    @staticmethod
+    def test_app_print_fmt_pass_get_string_with_cb():
+        def cb(val):
+            return f"1:{val}"
+
+        app = App()
+
+        assert app.print_fmt("Some", cb, True) == "1:Some"
+
+    @staticmethod
+    def test_app_print_fmt_pass_print():
+        # setup the environment
+        old_stdout = sys.stdout
+        sys.stdout = TextIOWrapper(BytesIO(), sys.stdout.encoding)
+
+        app = App()
+        app.print_fmt("Some")
+
+        # get output
+        sys.stdout.seek(0)  # jump to the start
+        out = sys.stdout.read()  # read output
+
+        # restore stdout
+        sys.stdout.close()
+        sys.stdout = old_stdout
+
+        # assert
+        assert out == "Some\n"
+
+    @staticmethod
+    def test_app_print_fmt_pass_print_with_cb():
+        def fmt(val):
+            return f"1:{val}"
+
+        # setup the environment
+        old_stdout = sys.stdout
+        sys.stdout = TextIOWrapper(BytesIO(), sys.stdout.encoding)
+
+        app = App()
+        app.print_fmt("Some", fmt)
+
+        # get output
+        sys.stdout.seek(0)  # jump to the start
+        out = sys.stdout.read()  # read output
+
+        # restore stdout
+        sys.stdout.close()
+        sys.stdout = old_stdout
+
+        # assert
+        assert out == "1:Some\n"
+
+    @staticmethod
+    def test_app_print_fmt_pass_print_with_cb_dict():
+        def fmt(val):
+            return f"Hello, I am {val['name']}. I am {val['age']} years old."
+
+        # setup the environment
+        old_stdout = sys.stdout
+        sys.stdout = TextIOWrapper(BytesIO(), sys.stdout.encoding)
+
+        app = App()
+        app.print_fmt({"name": "Some One", "age": 43}, fmt)
+
+        # get output
+        sys.stdout.seek(0)  # jump to the start
+        out = sys.stdout.read()  # read output
+
+        # restore stdout
+        sys.stdout.close()
+        sys.stdout = old_stdout
+
+        # assert
+        assert out == "Hello, I am Some One. I am 43 years old.\n"

@@ -26,7 +26,12 @@ execute_schema = {
                 "required": False,
                 "empty": True,
                 "nullable": True,
-                "type": "string",
+                "schema": {
+                    "anyof": [
+                        {"type": "string"},
+                        {"type": "list"},
+                    ],
+                },
             },
         },
     }

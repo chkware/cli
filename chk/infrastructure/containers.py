@@ -1,11 +1,12 @@
 """
 Global application functionality
 """
+from collections.abc import Callable
 from enum import Enum
 from typing import NamedTuple
 
 from chk.infrastructure.file_loader import FileContext, ChkFileLoader
-from chk.infrastructure.helper import dict_get, dict_set, data_set
+from chk.infrastructure.helper import dict_get, data_set
 
 
 class CompiledDocBlockType(Enum):
@@ -40,7 +41,7 @@ class App(NamedTuple):
     compiled_doc: dict = {}
 
     environment_ctx: dict = {
-        "config": {"buffer_access_off": True},
+        "config": {},
     }
 
     def __str__(self) -> str:
@@ -73,10 +74,10 @@ class App(NamedTuple):
             self.compiled_doc[key] = CompiledDocBlockType.default()
 
         if part is not None:
-            if part not in allowed_keys:
+            if part.split(".")[:1][0] not in allowed_keys:
                 raise RuntimeError("Unsupported key for compiled doc")
 
-            self.compiled_doc[key][part] = value
+            data_set(self.compiled_doc[key], part, value)
         else:
             allowed_keys = CompiledDocBlockType.allowed_keys()
 
@@ -95,10 +96,10 @@ class App(NamedTuple):
         allowed_keys = CompiledDocBlockType.all_keys()
 
         if part is not None:
-            if part not in allowed_keys:
+            if part.split(".")[:1][0] not in allowed_keys:
                 raise RuntimeError("Unsupported key for compiled doc")
 
-            return self.compiled_doc[key][part]
+            return dict_get(self.compiled_doc[key], part)
 
         return self.compiled_doc[key]
 
@@ -111,7 +112,7 @@ class App(NamedTuple):
     def config(self, key: str, val: object = None) -> object:
         """Set and retrieve config"""
         if val is not None:
-            dict_set(self.environment_ctx, f"config.{key}", val)
+            data_set(self.environment_ctx, f"config.{key}", val)
 
         return dict_get(self.environment_ctx, f"config.{key}", None)
 
@@ -119,8 +120,22 @@ class App(NamedTuple):
         """Set local variable values in compiled_doc dict"""
         if key not in self.compiled_doc:
             self.compiled_doc[key] = CompiledDocBlockType.default()
-        return data_set(self.compiled_doc[key], f"__local.{part}", val)
+        return data_set(
+            self.compiled_doc[key], f"{CompiledDocBlockType.LOCAL.value}.{part}", val
+        )
 
     def get_local(self, key: str, part: str) -> object:
         """Set local variable values in compiled_doc dict"""
-        return dict_get(self.compiled_doc[key], f"__local.{part}")
+        return dict_get(
+            self.compiled_doc[key], f"{CompiledDocBlockType.LOCAL.value}.{part}"
+        )
+
+    @staticmethod
+    def print_fmt(
+        message: object, callback: Callable = str, ret_s: bool = False
+    ) -> str | None:
+        """Print message to screen when buffer is off"""
+        if ret_s is True:
+            return str(callback(message))
+
+        return print(str(callback(message)))

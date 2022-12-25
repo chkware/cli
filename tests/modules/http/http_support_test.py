@@ -5,6 +5,7 @@ import tests
 from chk.infrastructure.containers import App
 from chk.infrastructure.file_loader import ChkFileLoader, FileContext
 from chk.modules.http.support import RequestMixin
+from chk.modules.variables.support import replace_values
 
 app = App()
 
@@ -358,3 +359,20 @@ class TestRequestMixin:
             ver.request_validated()
 
         del app.original_doc[file_ctx.filepath_hash]
+
+    def test_lexical_analysis_for_request_pass(self):
+        file_ctx = FileContext(filepath_hash="a1b2")
+        app.compiled_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+            tests.RES_DIR + "pass_cases/GET-WithBodyXMLWithVar.chk"
+        )
+        symbol_tbl = app.compiled_doc[file_ctx.filepath_hash]["variables"]
+
+        ver = HavingRequest(file_ctx)
+        ver.lexical_analysis_for_request(symbol_tbl, replace_values)
+
+        assert (
+            app.compiled_doc[file_ctx.filepath_hash]["request"]["body[xml]"]
+            == "<account><name>Some Random Name</name><no>900XW3D</no></account>"
+        )
+
+        del app.compiled_doc[file_ctx.filepath_hash]

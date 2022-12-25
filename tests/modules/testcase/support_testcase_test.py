@@ -130,6 +130,17 @@ class TestTestcaseMixin:
 
         del app.original_doc[ctx.filepath_hash]
 
+    def test_testcase_validated_fail_for_result_when_request_in_file(self):
+        file = RES_DIR + "fail_cases/testcases/01_UserCreateSpecUseResult.chk"
+        ctx = FileContext.from_file(file, {})
+        app.load_original_doc_from_file_context(ctx)
+
+        tc = HavingTestcase(ctx)
+        with pytest.raises(RuntimeError):
+            tc.testcase_validated()
+
+        del app.original_doc[ctx.filepath_hash]
+
     def test_is_request_infile_pass(self):
         file = RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequest.chk"
         ctx = FileContext.from_file(file, {})

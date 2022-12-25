@@ -7,20 +7,20 @@ from chk.infrastructure.contexts import app
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
 from chk.infrastructure.work import WorkerContract
-from chk.modules.http.presentation import Presentation
 
-from chk.modules.version.support import VersionMixin
-
+from chk.modules.http.constants import RequestConfigNode as RConst
 from chk.modules.http.request_helper import RequestProcessorPyRequests
 from chk.modules.http.support import RequestMixin
-from chk.modules.http.constants import RequestConfigNode as RConst
 
 from chk.modules.variables.entities import (
     DefaultVariableDoc,
     DefaultReturnableDoc,
     DefaultExposableDoc,
+    ApiResponse,
 )
-from chk.modules.variables.support import VariableMixin
+from chk.modules.variables.support import VariableMixin, replace_values
+
+from chk.modules.version.support import VersionMixin
 
 
 class DefaultRequestDoc(NamedTuple):
@@ -49,7 +49,10 @@ class HttpSpec(
     def __init__(self, file_ctx: FileContext):
         app.config("buffer_access_off", bool(file_ctx.options["result"]))
         self.file_ctx = file_ctx
-        Presentation.buffer_msg(f"File: {file_ctx.filepath}\r\n")
+        app.print_fmt(
+            f"File: {file_ctx.filepath}\r\n",
+            ret_s=bool(app.config("buffer_access_off")),
+        )
 
     def get_file_context(self) -> FileContext:
         return self.file_ctx
@@ -72,7 +75,7 @@ class HttpSpec(
             (
                 version_doc
                 | DefaultVariableDoc().merged(variable_doc)
-                | DefaultExposableDoc({"expose": ["_response"]}).merged(expose_doc)
+                | DefaultExposableDoc({"expose": ["$_response"]}).merged(expose_doc)
                 | request_doc
             ),
         )
@@ -80,21 +83,46 @@ class HttpSpec(
     def __main__(self) -> None:
         """Process http document"""
         self.variable_prepare_value_table()
-        self.lexical_analysis_for_request()
+        self.lexical_analysis_for_request(self.get_symbol_table(), replace_values)
 
         try:
-            request_doc = dict_get(self.request_as_dict(True), RConst.ROOT)
-            self.store_local_vars_for_request(
-                RequestProcessorPyRequests.perform(request_doc)
+            request_doc = self.request_as_dict(with_key=False, compiled=True)
+            if not isinstance(request_doc, dict):
+                raise RuntimeError("error: request doc malformed")
+
+            response = RequestProcessorPyRequests.perform(request_doc)
+
+            app.set_local(
+                self.file_ctx.filepath_hash,
+                ApiResponse.from_dict(response).dict(),  # type: ignore
+                RConst.LOCAL,
             )
 
-            Presentation.buffer_msg("- Making request [Success]")
+            app.print_fmt(
+                "- Making request [Success]",
+                ret_s=bool(app.config("buffer_access_off")),
+            )
         except RuntimeError as err:
-            Presentation.buffer_msg("- Making request [Fail]")
+            app.print_fmt(
+                "- Making request [Fail]", ret_s=bool(app.config("buffer_access_off"))
+            )
             raise err
 
     def __after_main__(self) -> list:
         """Prepare response for http document"""
-        Presentation.buffer_msg("- Prepare exposable [Success]")
-        self.make_exposable()
-        return self.get_exposable()
+
+        try:
+            self.make_exposable()
+            app.print_fmt(
+                "- Prepare exposable [Success]",
+                ret_s=bool(app.config("buffer_access_off")),
+            )
+            app.print_fmt("\r\n---", ret_s=bool(app.config("buffer_access_off")))
+
+            return self.get_exposable()
+        except RuntimeError as err:
+            app.print_fmt(
+                "- Prepare exposable [Fail]",
+                ret_s=bool(app.config("buffer_access_off")),
+            )
+            raise err

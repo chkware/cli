@@ -1,11 +1,15 @@
 import abc
 
+from chk.infrastructure.contexts import app
 from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
 
-from chk.modules.assertion.support import AssertionHandler
-from chk.modules.testcase.constants import TestcaseConfigNode as TstConf
+from chk.modules.testcase.constants import (
+    AssertConfigNode as AtConf,
+    TestcaseConfigNode as TstConf,
+)
+
 from chk.modules.version.support import DocumentMixin
 
 
@@ -20,7 +24,11 @@ class AssertionMixin(DocumentMixin):
         """Validate the schema against config"""
 
         try:
-            assertions = self.assertions_as_dict()
+            if not (assertions := self.assertions_as_dict()):
+                raise RuntimeError(
+                    f"assertions_validated: assertions[{str(assertions)}]"
+                )
+
             assertions_doc = dict_get(assertions, f"{TstConf.ROOT}.{TstConf.ASSERTS}")
 
             # case: if not list
@@ -44,18 +52,23 @@ class AssertionMixin(DocumentMixin):
         return assertions if isinstance(assertions, dict) else {}
 
     def assertions_as_dict(
-        self, with_key: bool = True, compiled: bool = False
+            self, with_key: bool = True, compiled: bool = False
     ) -> dict | None:
         """Get assertion as dict"""
 
         assert_doc = self.as_dict(f"{TstConf.ROOT}.{TstConf.ASSERTS}", False, compiled)
         return {TstConf.ROOT: {TstConf.ASSERTS: assert_doc}} if with_key else assert_doc
 
-    def assertion_process(self) -> list:
-        """
-        Run assertion of testcase spec
-        :return:
-        """
+    def assertion_preserve_original(self) -> None:
+        """Preserve original value of asserts.*.actual"""
 
-        assertions = dict_get(self.assertions_as_dict(), f"{TstConf.ROOT}.{TstConf.ASSERTS}")
-        return AssertionHandler.asserts_test_run(assertions)
+        fh = self.get_file_context().filepath_hash
+        assertions = app.get_compiled_doc(fh, f"{TstConf.ROOT}.{TstConf.ASSERTS}")
+
+        if not isinstance(assertions, list):
+            raise RuntimeError(f"assertion_process: assertions[{str(assertions)}]")
+
+        for assertion in assertions:
+            assertion[f"{AtConf.ACTUAL}_original"] = assertion[AtConf.ACTUAL]
+
+        app.set_compiled_doc(fh, assertions, f"{TstConf.ROOT}.{TstConf.ASSERTS}")

@@ -1,77 +1,38 @@
 """
-Presentation related logics
+Http presentation logic
 """
-from chk.infrastructure.contexts import app
 
 
-class Presentation:
-    """Handle presentation of the outputs of chkware commands."""
+def present_dict(sections: dict) -> str:
+    resp = ""
 
-    display_buffer: list[str] = []
+    if "version" in sections and "code" in sections and "reason" in sections:
+        resp += f'{sections["version"]} {sections["code"]} {sections["reason"]}'
 
-    @classmethod
-    def buffer_msg(cls, message: str) -> None:
-        """Buffer display message"""
+        resp += "\r\n\r\n"
 
-        if not app.config("buffer_access_off"):
-            cls.display_buffer.append(message)
+    if "headers" in sections:
+        items = sections["headers"].items()
+        resp += "\r\n".join(f"{k}: {v}" for k, v in items)
 
-    @classmethod
-    def present_result(cls, data: list | BaseException) -> None:
-        """Shows result of execution."""
+        resp += "\r\n\r\n"
 
-        if isinstance(data, dict):
-            if not app.config("buffer_access_off"):
-                print(cls.displayable_summary())
-            print(cls.displayable_result(data))
-        if isinstance(data, list):
-            if not app.config("buffer_access_off"):
-                print(cls.displayable_summary())
-            print(cls.displayable_expose(data))
-        else:
-            if not app.config("buffer_access_off"):
-                print(cls.displayable_summary())
-            print(str(data))
+    if "body" in sections:
+        b = sections["body"]
+        resp += str(b) if not isinstance(b, str) else b
 
-    @classmethod
-    def displayable_expose(cls, exposable: list) -> str:
-        return "\r\n\r\n".join([str(item) for item in exposable])
+    if not resp:
+        resp = str(sections)
 
-    @classmethod
-    def displayable_result(cls, response: dict[str, object]) -> str:
-        """Return result in presentable format."""
+    return resp
 
-        def headers(res: dict) -> str:
-            """Headers"""
-            return "{}".format(
-                "\r\n".join(
-                    "{}: {}".format(k, v) for k, v in res.get("headers").items()
-                ),
-            )
 
-        if response.get("have_all"):
-            summary = "{} {} {}".format(
-                response.get("version"),
-                response.get("code"),
-                response.get("reason"),
-            )
-            return "{}\r\n{}\r\n\r\n{}".format(
-                summary, headers(response), response.get("body")
-            )
+def present_result(exposable: list) -> str:
+    """Present result"""
 
-        response.pop("have_all")
-
-        for _, val in response.items():
-            if val:
-                return str(val)
-
-    @classmethod
-    def displayable_summary(cls) -> str:
-        """Return execution summary in presentable format."""
-
-        info_string = ""
-
-        for item in cls.display_buffer:
-            info_string += item + "\r\n"
-
-        return f"{info_string}\r\n===="
+    return "\r\n\r\n".join(
+        [
+            present_dict(item) if isinstance(item, dict) else str(item)
+            for item in exposable
+        ]
+    )

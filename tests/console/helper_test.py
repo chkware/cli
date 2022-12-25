@@ -1,9 +1,17 @@
-"""
-test global helper functions
-"""
+# type: ignore
+
+"""Test global helper functions"""
+
 import pytest
 
-from chk.infrastructure.helper import dict_set, data_set, dict_get, data_get, is_scalar
+from chk.infrastructure.helper import (
+    dict_set,
+    data_set,
+    dict_get,
+    data_get,
+    is_scalar,
+    Cast,
+)
 
 
 def test_dict_set_pass_when_key_one_dimensional():
@@ -171,8 +179,8 @@ def test_data_get_pass_for_list_stating_index():
 
 def test_is_scalar_pass():
     lst = [{"aa": {"aaa": [1, 2]}}, 2]
-    dct = {'a':1, 'b':2}
-    s = 'jo'
+    dct = {"a": 1, "b": 2}
+    s = "jo"
     i = 2000000000
     f = 2000000000.222222222
 
@@ -181,3 +189,55 @@ def test_is_scalar_pass():
     assert is_scalar(s)
     assert is_scalar(i)
     assert is_scalar(f)
+
+
+class TestCast:
+    def test_to_auto_int_pass(self):
+        a = "21"
+        assert Cast.to_auto(a) == 21
+
+    def test_to_auto_int_return_same(self):
+        a = "ab"
+        assert Cast.to_auto(a) == a
+
+    def test_to_auto_float_pass(self):
+        a = "21.40000000009"
+        assert Cast.to_auto(a) == 21.40000000009
+
+    def test_to_auto_truth_pass(self):
+        a = "true"
+        assert Cast.to_auto(a) is True
+
+        a = "True"
+        assert Cast.to_auto(a) is True
+
+    def test_to_auto_false_pass(self):
+        a = "false"
+        assert Cast.to_auto(a) is False
+
+        a = "False"
+        assert Cast.to_auto(a) is False
+
+    def test_to_auto_null_pass(self):
+        a = "null"
+        assert Cast.to_auto(a) is None
+
+        a = "None"
+        assert Cast.to_auto(a) is None
+
+    def test_to_auto_list_pass(self):
+        a = "['g', 1, 3]"
+        assert Cast.to_auto(a) == ["g", 1, 3]
+
+        a = "['a', 1, 3, [3, 4]]"
+        assert Cast.to_auto(a) == ["a", 1, 3, [3, 4]]
+
+    def test_to_auto_dict_pass(self):
+        a = "{'g': 23, 'f': 3}"
+        assert Cast.to_auto(a) == {"g": 23, "f": 3}
+
+        a = "{'g': 23, 'f': 3, 't': [1, 2]}"
+        assert Cast.to_auto(a) == {"g": 23, "f": 3, "t": [1, 2]}
+
+        a = "{'g': 23, 'f': 3, 't': [1, {'a': 2}]}"
+        assert Cast.to_auto(a) == {"g": 23, "f": 3, "t": [1, {"a": 2}]}

@@ -3,9 +3,6 @@ Support functions and classes for testcase
 """
 
 import abc
-import copy
-from collections.abc import Callable
-from types import MappingProxyType
 
 from cerberus import validator as cer_validator
 
@@ -19,7 +16,6 @@ from chk.modules.testcase.support.execute import ExecuteMixin
 from chk.modules.testcase.support.assertion import AssertionMixin
 
 from chk.modules.testcase.constants import (
-    AssertConfigNode as AtConf,
     TestcaseConfigNode as TstConf,
     ExecuteConfigNode as ExConf,
 )
@@ -45,9 +41,15 @@ class TestcaseMixin(ExecuteMixin, AssertionMixin):
         """Validate the schema against config"""
 
         try:
-            testcase_doc = self.testcase_as_dict()
+            if not (testcase_doc := self.testcase_as_dict()):
+                raise RuntimeError(
+                    f"testcase_validated: testcase_doc[{str(testcase_doc)}]"
+                )
+
             if not validator.validate(testcase_doc, testcase_schema):
                 raise RuntimeError(err_message("fatal.V0006", extra=validator.errors))
+
+            self.execute_validated()
 
             # case: spec with no or multiple request
             out_file_request = (
@@ -71,7 +73,28 @@ class TestcaseMixin(ExecuteMixin, AssertionMixin):
                 raise RuntimeError(
                     err_message(
                         "fatal.V0021",
-                        extra={"spec": {"execute": {"with": "Not allowed"}}},
+                        extra={
+                            TstConf.ROOT: {
+                                TstConf.EXECUTE: {ExConf.WITH: "Not allowed"}
+                            }
+                        },
+                    )
+                )
+
+            # case: spec.execute.result having request is not allowed
+            # TODO: at least for now: may be in future
+
+            if self.is_request_infile() and dict_get(
+                testcase_doc, f"{TstConf.ROOT}.{TstConf.EXECUTE}.{ExConf.RESULT}"
+            ):
+                raise RuntimeError(
+                    err_message(
+                        "fatal.V0021",
+                        extra={
+                            TstConf.ROOT: {
+                                TstConf.EXECUTE: {ExConf.RESULT: "Not allowed"}
+                            }
+                        },
                     )
                 )
         except cer_validator.DocumentError as doc_err:
@@ -85,51 +108,3 @@ class TestcaseMixin(ExecuteMixin, AssertionMixin):
         """Get testcase as a dictionary"""
 
         return self.as_dict(TstConf.ROOT, with_key, compiled)
-
-
-class TestcaseValueHandler:
-    """
-    Handle variables and values regarding testcase
-    """
-
-    @staticmethod
-    def assertions_fill_val(
-        document: dict, symbol_table: dict, replace_method: Callable[[dict, dict], dict]
-    ):
-        """Convert request block variables"""
-
-        assertion_document = dict_get(document, f"{TstConf.ROOT}.{TstConf.ASSERTS}")
-        assertion_document = copy.deepcopy(assertion_document)
-
-        for each_assert in assertion_document:
-            actual_original = each_assert[AtConf.ACTUAL]
-            replace_method(each_assert, symbol_table)
-            each_assert[f"{AtConf.ACTUAL}_original"] = actual_original
-
-        return assertion_document
-
-    @staticmethod
-    def request_set_result(
-        execute_doc: dict, symbol_table: MappingProxyType, request_ret: MappingProxyType
-    ) -> dict:
-        arg = [ExConf.ROOT, ExConf.RESULT]
-        result_replaceable = str(dict_get(execute_doc, ".".join(arg))).strip()
-
-        if result_replaceable.startswith("$"):  # if starts with $ remove it
-            result_replaceable = result_replaceable[1:]
-
-        if symbol_table.get(result_replaceable, "##") == "##":  # if key is non-existant
-            raise SystemExit(f"Variable `${result_replaceable}` was not declared")
-
-        if request_ret.get("have_all"):
-            return {
-                result_replaceable: {
-                    key: val for key, val in request_ret.items() if key != "have_all"
-                }
-            }
-        else:
-            for _, val in request_ret.items():
-                if val:
-                    return {result_replaceable: val}
-
-        return {}
