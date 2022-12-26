@@ -3,7 +3,7 @@
 ![Chkware | Test management for api era](https://raw.githubusercontent.com/chkware/cli/main/docs/github-readme-01.png)
 
 [![PyPI version](https://badge.fury.io/py/chk.svg)](https://badge.fury.io/py/chk)
-[![Python 3.8](https://img.shields.io/badge/python-3.10-red.svg)](https://www.python.org/downloads/release/python-3102/)
+[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3102/)
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/chkware.svg?style=social&label=Follow%20%40chkware)](https://twitter.com/chkware)
 > Test management for API era.
 
@@ -17,7 +17,7 @@ Read [more value propositions](https://chkware.github.io/introduction) here. Fin
 
 ### Setup
 
-With [**Python 3.10**](https://www.python.org/downloads/) and [**Pipx**](https://pypa.github.io/pipx/installation/#install-pipx) preinstalled, run following in your terminal to get ***chkware*** installed.
+With [**Python 3.11.x**](https://www.python.org/downloads/) and [**Pipx**](https://pypa.github.io/pipx/installation/#install-pipx) preinstalled, run following in your terminal to get ***chkware*** installed.
 
 ```bash
 $ pipx install chk

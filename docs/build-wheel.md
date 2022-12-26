@@ -3,7 +3,7 @@
 Follow the steps to do a manual release on PyPi.
 
 
-- Please confirm that Python 3.10.x with [Pipenv](https://pipenv.pypa.io/en/latest/#install-pipenv-today) is installed and setup on this machine
+- Please confirm that Python 3.11.x with [Pipenv](https://pipenv.pypa.io/en/latest/#install-pipenv-today) is installed and setup on this machine
 - Clone the repo 
     ```
     $ git clone https://github.com/chkware/cli.git ./cli-wheel
