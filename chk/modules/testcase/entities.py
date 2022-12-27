@@ -6,7 +6,7 @@ from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.work import WorkerContract
 
-from chk.modules.assertion.support import AssertionHandler
+from chk.modules.testcase.support.assertion.support import AssertionHandler
 
 from chk.modules.http.constants import RequestConfigNode as RConst
 from chk.modules.http.request_helper import RequestProcessorPyRequests

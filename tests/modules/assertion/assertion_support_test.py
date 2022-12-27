@@ -1,6 +1,6 @@
 import pytest
 
-from chk.modules.assertion.support import AssertionCase
+from chk.modules.testcase.support.assertion.support import AssertionCase
 
 
 class TestAssertionCase:
