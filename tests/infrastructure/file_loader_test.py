@@ -1,9 +1,12 @@
 # type: ignore
 
 """test loader"""
+
 import pytest
 import tests
-from chk.infrastructure.file_loader import ChkFileLoader, FileContext
+
+from pathlib import Path
+from chk.infrastructure.file_loader import ChkFileLoader, FileContext, PathFrom
 
 
 class TestChkFileLoader:
@@ -44,3 +47,48 @@ class TestFileContext:
         ctx = FileContext.from_file(file, {})
 
         assert isinstance(ctx, FileContext)
+
+
+class TestPathFrom:
+    """Test PathResolver"""
+
+    @staticmethod
+    def test_absolute_pass():
+        file = tests.RES_DIR + "bitcoin-usd.chk"
+        ctx = FileContext.from_file(file, {})
+
+        p = PathFrom(Path(ctx.filepath))
+        assert (
+            p.absolute("./bitcoin-usd-testcase-data.chk")
+            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/sample_config/bitcoin-usd-testcase-data.chk"
+        )
+
+        assert (
+            p.absolute("./some-folder/bitcoin-usd-testcase-data.chk")
+            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/sample_config/some-folder/bitcoin-usd-testcase-data.chk"
+        )
+
+        assert (
+            p.absolute("./../bitcoin-usd-testcase-data.chk")
+            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/bitcoin-usd-testcase-data.chk"
+        )
+
+        assert (
+            p.absolute("./some-folder/../bitcoin-usd-testcase-data.chk")
+            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/sample_config/bitcoin-usd-testcase-data.chk"
+        )
+
+        assert (
+            p.absolute("../some-folder/../bitcoin-usd-testcase-data.chk")
+            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/bitcoin-usd-testcase-data.chk"
+        )
+
+        assert (
+            p.absolute("../some-folder/./bitcoin-usd-testcase-data.chk")
+            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/some-folder/bitcoin-usd-testcase-data.chk"
+        )
+
+        assert (
+            p.absolute("./some-folder////bitcoin-usd-testcase-data.chk")
+            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/sample_config/some-folder/bitcoin-usd-testcase-data.chk"
+        )

@@ -60,3 +60,28 @@ class FileContext(NamedTuple):
             filepath_hash=fpath_hash,
             options=MappingProxyType(options),
         )
+
+
+class PathFrom:
+    """Utility to expand to full path"""
+
+    def __init__(self, base: Path):
+        self.base = base.absolute().parent
+
+    def absolute(self, target: str) -> str:
+        """Find absolute in comparison to base URL"""
+
+        if target.startswith("./") or target.startswith("../"):
+            if self.base.exists():
+                to_path = self.base
+
+                target_path_sp = target.split("/")
+                for part in target_path_sp:
+                    if part == "..":
+                        to_path = to_path.parent
+                    else:
+                        to_path = Path(str(to_path) + "/" + part)
+
+                return str(to_path)
+            raise ValueError("Invalid base path.")
+        raise ValueError("Invalid target path.")
