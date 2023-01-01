@@ -24,6 +24,8 @@ class ExecuteMixin(DocumentMixin):
 
         try:
             execute_doc = self.execute_as_dict()
+            if not isinstance(execute_doc, dict):
+                raise TypeError("Invalid execute spec")
 
             if (
                 result_val := dict_get(execute_doc, f"{ExConf.ROOT}.{ExConf.RESULT}")
