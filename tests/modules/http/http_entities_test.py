@@ -1,5 +1,3 @@
-from types import MappingProxyType
-
 import tests
 
 from chk.modules.http.entities import HttpSpec
@@ -18,7 +16,7 @@ class TestHttpSpec:
             filepath=file,
             filepath_mangled=f_mangled,
             filepath_hash=f_hash,
-            options={"result": False},
+            options={"result": True},
         )
 
         http = HttpSpec(file_ctx)
