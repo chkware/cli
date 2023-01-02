@@ -1,7 +1,10 @@
 import abc
+from collections.abc import Callable
+from pathlib import Path
+from typing import Any
 
 from chk.infrastructure.exception import err_message
-from chk.infrastructure.file_loader import FileContext
+from chk.infrastructure.file_loader import FileContext, PathFrom
 from chk.infrastructure.helper import dict_get
 from chk.modules.testcase.constants import (
     TestcaseConfigNode as TstConf,
@@ -64,3 +67,22 @@ class ExecuteMixin(DocumentMixin):
 
         execute_doc = self.as_dict(f"{TstConf.ROOT}.{ExConf.ROOT}", False, compiled)
         return {ExConf.ROOT: execute_doc} if with_key else execute_doc
+
+    # def execute_out_file(self, cb: Callable) -> Any:
+    def execute_out_file(self, cb: Callable) -> Any:
+        """Handle out file execution"""
+
+        base_file = self.get_file_context().filepath
+
+        execute_doc = self.execute_as_dict(with_key=False, compiled=True)
+        if not isinstance(execute_doc, dict):
+            raise TypeError("Invalid execute spec")
+
+        file_name = dict_get(execute_doc, f"{ExConf.FILE}")
+
+        return cb(
+            file_ctx=FileContext.from_file(
+                PathFrom(Path(base_file)).absolute(file_name),
+                dict(self.get_file_context().options),
+            )
+        )

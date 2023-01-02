@@ -1,10 +1,12 @@
 # type: ignore
 import pytest
+import functools
 
+from chk.modules.http.main import execute as execute_fn
 from tests import RES_DIR
 
 from chk.infrastructure.containers import App
-from chk.infrastructure.file_loader import FileContext
+from chk.infrastructure.file_loader import FileContext, ChkFileLoader
 from chk.modules.testcase.support.execute import ExecuteMixin
 
 app = App()
@@ -160,3 +162,21 @@ class TestExecuteMixin:
         }
 
         del app.original_doc[ctx.filepath_hash]
+
+    def test_execute_out_file_pass(self):
+        file = (
+            RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequestAndSpecFullVar.chk"
+        )
+        ctx = FileContext.from_file(file, {"result": True})
+
+        document = ChkFileLoader.to_dict(ctx.filepath)
+        app.set_compiled_doc(ctx.filepath_hash, document)
+
+        tc = HavingExecute(ctx)
+        execute = functools.partial(execute_fn, display=False)
+
+        response = tc.execute_out_file(execute)
+
+        assert isinstance(response, list)
+
+        del app.compiled_doc[ctx.filepath_hash]
