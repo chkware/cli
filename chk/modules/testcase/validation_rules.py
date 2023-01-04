@@ -26,12 +26,8 @@ execute_schema = {
                 "required": False,
                 "empty": True,
                 "nullable": True,
-                "schema": {
-                    "anyof": [
-                        {"type": "string"},
-                        {"type": "list"},
-                    ],
-                },
+                "type": "list",
+                "valuesrules": {"type": "string"},
             },
         },
     }

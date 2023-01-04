@@ -65,23 +65,7 @@ class TestExecuteMixin:
 
         assert isinstance(tc.execute_as_dict(), dict)
         assert tc.execute_as_dict() == {
-            "execute": {"file": "./01_UserCreateRequest.chk", "result": "$Response"}
-        }
-
-        del app.original_doc[ctx.filepath_hash]
-
-    def test_execute_validated_pass_when_result_is_str(self):
-        file = (
-            RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequestAndSpecFullVar.chk"
-        )
-        ctx = FileContext.from_file(file, {})
-        app.load_original_doc_from_file_context(ctx)
-
-        tc = HavingExecute(ctx)
-
-        assert isinstance(tc.execute_validated(), dict)
-        assert tc.execute_as_dict() == {
-            "execute": {"file": "./01_UserCreateRequest.chk", "result": "$Response"}
+            "execute": {"file": "./01_UserCreateRequest.chk", "result": ["$Response"]}
         }
 
         del app.original_doc[ctx.filepath_hash]
