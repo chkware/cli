@@ -122,11 +122,7 @@ class VariableMixin(DocumentMixin):
     def make_exposable(self) -> None:
         """Prepare exposable data"""
 
-        hf_name = self.get_file_context().filepath_hash
-
-        expose_items = app.get_compiled_doc(hf_name, VarConf.EXPOSE)
-        if not isinstance(expose_items, list):
-            raise ValueError
+        expose_items = self.get_exposable()
 
         exposables = [
             StringLexicalAnalyzer.replace(item, self.get_symbol_table())
@@ -134,7 +130,11 @@ class VariableMixin(DocumentMixin):
             if isinstance(item, str)
         ]
 
-        app.set_compiled_doc(hf_name, part=VarConf.EXPOSE, value=exposables)
+        app.set_compiled_doc(
+            self.get_file_context().filepath_hash,
+            part=VarConf.EXPOSE,
+            value=exposables,
+        )
 
     def get_exposable(self) -> list:
         """Get exposable data"""
