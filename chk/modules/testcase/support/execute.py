@@ -68,7 +68,6 @@ class ExecuteMixin(DocumentMixin):
         execute_doc = self.as_dict(f"{TstConf.ROOT}.{ExConf.ROOT}", False, compiled)
         return {ExConf.ROOT: execute_doc} if with_key else execute_doc
 
-    # def execute_out_file(self, cb: Callable) -> Any:
     def execute_out_file(self, cb: Callable) -> Any:
         """Handle out file execution"""
 
