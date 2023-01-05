@@ -2,6 +2,7 @@
 Module for variables management
 """
 import abc
+import re
 
 from cerberus.validator import DocumentError
 
@@ -166,8 +167,7 @@ class VariableMixin(DocumentMixin):
         """Detect only variable with absolute value"""
 
         for key, val in actual.items():
-            # TODO: "{$" parsing don't feel right; need more test
-            if isinstance(val, str) and "{$" in val:
+            if isinstance(val, str) and re.search(r"{\s*(\$[a-zA-Z0-9_]+)\s*}", val):
                 continue
 
             updated[key] = val
