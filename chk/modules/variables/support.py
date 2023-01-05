@@ -39,7 +39,6 @@ def replace_values(doc: dict, var_s: dict) -> dict[str, object]:
     for key in doc.keys():
         if isinstance(doc[key], str):
             item = str(doc[key])
-            # doc[key] = StringLexicalAnalyzer.replace_in_str(item, var_s)
             doc[key] = StringLexicalAnalyzer.replace(item, var_s)
         elif isinstance(doc[key], dict):
             doc[key] = replace_values(doc[key], var_s)
