@@ -1,8 +1,6 @@
 """
 testcase module's driver
 """
-import sys
-from traceback import print_exc
 
 from chk.infrastructure.contexts import app
 from chk.infrastructure.file_loader import FileContext
@@ -19,5 +17,5 @@ def execute(file_ctx: FileContext) -> None:
     try:
         response = handle_worker(testcase)
         app.print_fmt(response, present_result)
-    except RuntimeError:
-        print_exc(file=sys.stderr)
+    except RuntimeError as err:
+        print("\r\n---\r\n", str(err))
