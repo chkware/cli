@@ -35,12 +35,7 @@ class ExecuteMixin(DocumentMixin):
             ) is None:
                 return {}
 
-            if isinstance(result_val, str):
-                if not result_val.startswith("$"):
-                    raise TypeError(
-                        "{'execute': {'result': 'use variable name with $'}}"
-                    )
-            elif isinstance(result_val, list):
+            if isinstance(result_val, list):
                 for each_var in result_val:
                     if not isinstance(each_var, str):
                         raise TypeError(
@@ -51,9 +46,7 @@ class ExecuteMixin(DocumentMixin):
                             "{'execute': {'result': 'list variable name start with $'}}"
                         )
             else:
-                raise TypeError(
-                    "{'execute': {'result': 'must be string or list type'}}"
-                )
+                raise TypeError("{'execute': {'result': 'must be list type'}}")
 
         except Exception as ex:
             raise RuntimeError(err_message("fatal.V0009", extra=ex)) from ex
