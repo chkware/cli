@@ -329,3 +329,29 @@ class TestVariableMixin:
         var = HavingVariables(file_ctx)
         assert var.variable_as_dict(compiled=True) == original_doc
         assert var.variable_as_dict(False, True) == original_doc["variables"]
+
+    def test_variable_replace_value_table_pass(self):
+        app = App()
+        original_doc = {"variables": {"var1": 1, "var2": 2}}
+        replace_doc = {"var1": [1, "a"]}
+
+        file_ctx = FileContext(filepath_hash="ab31")
+        data_set(app.compiled_doc, file_ctx.filepath_hash, original_doc)
+
+        var = HavingVariables(file_ctx)
+        var.variable_replace_value_table(replace_doc)
+
+        assert var.get_symbol_table() == {"var1": [1, "a"], "var2": 2}
+
+    def test_variable_replace_value_table_fail_when_var_not_found(self):
+        app = App()
+        original_doc = {"variables": {"var1": 1, "var2": 2}}
+        replace_doc = {"var3": [1, "a"]}
+
+        file_ctx = FileContext(filepath_hash="ab31")
+        data_set(app.compiled_doc, file_ctx.filepath_hash, original_doc)
+
+        var = HavingVariables(file_ctx)
+
+        with pytest.raises(ValueError):
+            var.variable_replace_value_table(replace_doc)
