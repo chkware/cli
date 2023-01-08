@@ -190,3 +190,29 @@ class TestExecuteMixin:
         assert set(result_list) == set(result_local_val.keys())
 
         del app.compiled_doc[ctx.filepath_hash]
+
+    def test_execute_prepare_results_pass_with_underscore(self):
+        file = RES_DIR + "pass_cases/testcases/03_UserCreateSpec_ResultListIgnore.chk"
+        ctx = FileContext.from_file(file, {"result": True})
+
+        document = ChkFileLoader.to_dict(ctx.filepath)
+        app.set_compiled_doc(ctx.filepath_hash, document)
+
+        tc = HavingExecute(ctx)
+        execute = functools.partial(execute_fn, display=False)
+
+        response = tc.execute_out_file(execute)
+        tc.execute_prepare_results(response)
+
+        result_list = dict_get(
+            tc.execute_as_dict(with_key=False, compiled=True),
+            f"{ExecuteConfigNode.RESULT}",
+        )
+        result_list = [itm for itm in result_list if itm != "_"]
+
+        result_local_val = app.get_local(ctx.filepath_hash, ExecuteConfigNode.LOCAL)
+
+        assert len(result_list) == len(result_local_val)
+        assert set(result_list) == set(result_local_val.keys())
+
+        del app.compiled_doc[ctx.filepath_hash]

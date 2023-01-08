@@ -5,7 +5,7 @@ variables:
 
 spec:
   execute:
-    file: './01_UserCreateRequest.chk'
+    file: './03_UserCreateRequest_ResList.chk'
     result: [$Code, _]
   asserts:
     - {type: AssertEquals, actual: $Code, expected: 201}
