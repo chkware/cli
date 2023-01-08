@@ -3,6 +3,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from chk.infrastructure.contexts import app
 from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext, PathFrom
 from chk.infrastructure.helper import dict_get
@@ -28,7 +29,7 @@ class ExecuteMixin(DocumentMixin):
         try:
             execute_doc = self.execute_as_dict()
             if not isinstance(execute_doc, dict):
-                raise TypeError("Invalid execute spec")
+                raise TypeError("execute_validated: invalid execute spec")
 
             if (
                 result_val := dict_get(execute_doc, f"{ExConf.ROOT}.{ExConf.RESULT}")
@@ -68,7 +69,7 @@ class ExecuteMixin(DocumentMixin):
 
         execute_doc = self.execute_as_dict(with_key=False, compiled=True)
         if not isinstance(execute_doc, dict):
-            raise TypeError("Invalid execute spec")
+            raise TypeError("execute_out_file: invalid execute spec")
 
         file_name = dict_get(execute_doc, f"{ExConf.FILE}")
 
@@ -78,3 +79,24 @@ class ExecuteMixin(DocumentMixin):
                 dict(self.get_file_context().options),
             )
         )
+
+    def execute_prepare_results(self, value_l: list[object]) -> None:
+        """Make results out of values"""
+
+        execute_doc = self.execute_as_dict(with_key=False, compiled=True)
+
+        if not isinstance(execute_doc, dict):
+            raise TypeError("execute_prepare_results: invalid execute spec")
+
+        result_l = dict_get(execute_doc, f"{ExConf.RESULT}")
+
+        if len(result_l) != len(value_l):
+            raise ValueError("{'execute': {'result': 'value length do not match'}}")
+
+        result_dict = {
+            variable_name: value_l[index]
+            for index, variable_name in enumerate(result_l)
+            if variable_name != "_"
+        }
+
+        app.set_local(self.get_file_context().filepath_hash, result_dict, ExConf.LOCAL)
