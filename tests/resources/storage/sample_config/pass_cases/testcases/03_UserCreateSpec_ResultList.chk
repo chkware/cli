@@ -9,4 +9,4 @@ spec:
     file: './03_UserCreateRequest_ResList.chk'
     result: [$Code, $Headers]
   asserts:
-    - {type: AssertEqual, actual: $Code, expected: 201}
+    - {type: AssertEqual, actual: $Code, expected: 200}
