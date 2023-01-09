@@ -188,6 +188,8 @@ class VariableMixin(DocumentMixin):
         symbol_tbl = self.get_symbol_table()
 
         for key, val in value_table.items():
+            key = key.lstrip("$")
+
             if key not in symbol_tbl:
                 raise ValueError(f"variable is not defined in `{VarConf.ROOT}:` block")
 

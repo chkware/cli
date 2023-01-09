@@ -144,7 +144,10 @@ class TestExecuteMixin:
 
         tc = HavingExecute(ctx)
         assert tc.execute_validated() == {
-            "execute": {"file": "./03_UserCreateRequest_ResList.chk", "result": ["$Code", "_"]}
+            "execute": {
+                "file": "./03_UserCreateRequest_ResList.chk",
+                "result": ["$Code", "_"],
+            }
         }
 
         del app.original_doc[ctx.filepath_hash]
