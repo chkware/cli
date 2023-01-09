@@ -82,7 +82,7 @@ class TestExecuteMixin:
         assert isinstance(tc.execute_validated(), dict)
         assert tc.execute_as_dict() == {
             "execute": {
-                "file": "./01_UserCreateRequest.chk",
+                "file": "./03_UserCreateRequest_ResList.chk",
                 "result": ["$Code", "$Headers"],
             }
         }
@@ -144,7 +144,7 @@ class TestExecuteMixin:
 
         tc = HavingExecute(ctx)
         assert tc.execute_validated() == {
-            "execute": {"file": "./01_UserCreateRequest.chk", "result": ["$Code", "_"]}
+            "execute": {"file": "./03_UserCreateRequest_ResList.chk", "result": ["$Code", "_"]}
         }
 
         del app.original_doc[ctx.filepath_hash]
@@ -214,5 +214,32 @@ class TestExecuteMixin:
 
         assert len(result_list) == len(result_local_val)
         assert set(result_list) == set(result_local_val.keys())
+
+        del app.compiled_doc[ctx.filepath_hash]
+
+    def test_execute_prepare_results_pass_no_result(self):
+        file = RES_DIR + "pass_cases/testcases/04_UserCreateSpec_NoResult.chk"
+        ctx = FileContext.from_file(file, {"result": True})
+
+        document = ChkFileLoader.to_dict(ctx.filepath)
+        app.set_compiled_doc(ctx.filepath_hash, document)
+
+        tc = HavingExecute(ctx)
+        execute = functools.partial(execute_fn, display=False)
+
+        response = tc.execute_out_file(execute)
+        tc.execute_prepare_results(response)
+
+        result_list = dict_get(
+            tc.execute_as_dict(with_key=False, compiled=True),
+            f"{ExecuteConfigNode.RESULT}",
+        )
+
+        assert result_list is None
+
+        result_local_val = app.get_local(ctx.filepath_hash, ExecuteConfigNode.LOCAL)
+
+        assert "$_response" in result_local_val
+        assert len(result_local_val["$_response"]) == 2
 
         del app.compiled_doc[ctx.filepath_hash]

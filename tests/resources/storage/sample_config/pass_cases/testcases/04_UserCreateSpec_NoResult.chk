@@ -1,0 +1,7 @@
+version: 'default:testcase:0.7.2'
+
+spec:
+  execute:
+    file: './03_UserCreateRequest_ResList.chk'
+  asserts:
+    - {type: AssertEquals, actual: $_response.1, expected: 201}

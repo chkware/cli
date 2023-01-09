@@ -90,13 +90,19 @@ class ExecuteMixin(DocumentMixin):
 
         result_l = dict_get(execute_doc, f"{ExConf.RESULT}")
 
-        if len(result_l) != len(value_l):
-            raise ValueError("{'execute': {'result': 'value length do not match'}}")
+        if result_l is not None:
+            if len(result_l) != len(value_l):
+                raise ValueError("{'execute': {'result': 'value length do not match'}}")
 
-        result_dict = {
-            variable_name: value_l[index]
-            for index, variable_name in enumerate(result_l)
-            if variable_name != "_"
-        }
+            result_dict = {
+                variable_name: value_l[index]
+                for index, variable_name in enumerate(result_l)
+                if variable_name != "_"
+            }
+
+        else:
+            result_dict = {
+                "$_response": value_l,
+            }
 
         app.set_local(self.get_file_context().filepath_hash, result_dict, ExConf.LOCAL)
