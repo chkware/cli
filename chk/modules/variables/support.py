@@ -110,12 +110,24 @@ class VariableMixin(DocumentMixin):
         hf_name = self.get_file_context().filepath_hash
 
         symbol_table_l = app.get_compiled_doc(hf_name, VarConf.LOCAL) or {}
-        symbol_table = app.get_compiled_doc(hf_name, VarConf.ROOT) or {}
-
-        if not isinstance(symbol_table_l, dict) or not isinstance(symbol_table, dict):
+        if not isinstance(symbol_table_l, dict):
             raise RuntimeError
 
-        symbol_table |= symbol_table_l
+        _t_symbol_tbl: dict[str, object] = {}
+
+        for symbol in symbol_table_l:
+            if symbol in VarConf.ALLOWED_LOCAL:
+                _t_symbol_tbl |= {
+                    f"{symbol}.{key}": 1 for key in symbol_table_l[symbol].keys()
+                }
+
+        del symbol_table_l
+        symbol_table = app.get_compiled_doc(hf_name, VarConf.ROOT) or {}
+
+        if not isinstance(symbol_table, dict):
+            raise RuntimeError
+
+        symbol_table |= _t_symbol_tbl
 
         return symbol_table
 

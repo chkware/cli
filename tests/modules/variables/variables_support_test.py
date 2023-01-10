@@ -212,6 +212,26 @@ class TestVariableMixin:
             "1:2",
         ]
 
+    def test_get_symbol_table_pass(self):
+        app = App()
+        native_vars = {"var1": 1, "var2": 2}
+        local_vars = {"var1": 1, "var2": 2}
+
+        file_ctx = FileContext(filepath_hash="ab31")
+        # data_set(app.compiled_doc, file_ctx.filepath_hash, native_vars)
+        app.set_compiled_doc(file_ctx.filepath_hash, native_vars, "variables")
+        app.set_local(file_ctx.filepath_hash, local_vars, "_response")
+        app.set_local(file_ctx.filepath_hash, local_vars, "_assertion_results")
+        app.set_local(file_ctx.filepath_hash, local_vars, "_execution_results")
+
+        var = HavingVariables(file_ctx)
+        assert len(var.get_symbol_table()) == 8
+
+        symbol_keys = var.get_symbol_table().keys()
+        assert "_response.var1" in symbol_keys
+        assert "_assertion_results.var2" in symbol_keys
+        assert "_execution_results.var1" in symbol_keys
+
     def test_variable_validated_pass_from_original(self):
         app = App()
         original_doc = {"variables": {"var1": 1, "var2": 2}}
