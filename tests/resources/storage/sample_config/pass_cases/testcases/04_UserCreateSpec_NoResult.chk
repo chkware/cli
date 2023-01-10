@@ -1,11 +1,7 @@
 version: 'default:testcase:0.7.2'
 
-variables:
-  Code: ~
-
 spec:
   execute:
     file: './03_UserCreateRequest_ResList.chk'
-    result: [$Code, _]
   asserts:
-    - {type: AssertEqual, actual: $Code, expected: 200}
+    - {type: AssertEqual, actual: $_response.1, expected: 200}

@@ -1,7 +1,11 @@
 import abc
+from collections.abc import Callable
+from pathlib import Path
+from typing import Any
 
+from chk.infrastructure.contexts import app
 from chk.infrastructure.exception import err_message
-from chk.infrastructure.file_loader import FileContext
+from chk.infrastructure.file_loader import FileContext, PathFrom
 from chk.infrastructure.helper import dict_get
 from chk.modules.testcase.constants import (
     TestcaseConfigNode as TstConf,
@@ -24,18 +28,15 @@ class ExecuteMixin(DocumentMixin):
 
         try:
             execute_doc = self.execute_as_dict()
+            if not isinstance(execute_doc, dict):
+                raise TypeError("execute_validated: invalid execute spec")
 
             if (
                 result_val := dict_get(execute_doc, f"{ExConf.ROOT}.{ExConf.RESULT}")
             ) is None:
                 return {}
 
-            if isinstance(result_val, str):
-                if not result_val.startswith("$"):
-                    raise TypeError(
-                        "{'execute': {'result': 'use variable name with $'}}"
-                    )
-            elif isinstance(result_val, list):
+            if isinstance(result_val, list):
                 for each_var in result_val:
                     if not isinstance(each_var, str):
                         raise TypeError(
@@ -46,9 +47,7 @@ class ExecuteMixin(DocumentMixin):
                             "{'execute': {'result': 'list variable name start with $'}}"
                         )
             else:
-                raise TypeError(
-                    "{'execute': {'result': 'must be string or list type'}}"
-                )
+                raise TypeError("{'execute': {'result': 'must be list type'}}")
 
         except Exception as ex:
             raise RuntimeError(err_message("fatal.V0009", extra=ex)) from ex
@@ -62,3 +61,48 @@ class ExecuteMixin(DocumentMixin):
 
         execute_doc = self.as_dict(f"{TstConf.ROOT}.{ExConf.ROOT}", False, compiled)
         return {ExConf.ROOT: execute_doc} if with_key else execute_doc
+
+    def execute_out_file(self, cb: Callable) -> Any:
+        """Handle out file execution"""
+
+        base_file = self.get_file_context().filepath
+
+        execute_doc = self.execute_as_dict(with_key=False, compiled=True)
+        if not isinstance(execute_doc, dict):
+            raise TypeError("execute_out_file: invalid execute spec")
+
+        file_name = dict_get(execute_doc, f"{ExConf.FILE}")
+
+        return cb(
+            file_ctx=FileContext.from_file(
+                PathFrom(Path(base_file)).absolute(file_name),
+                dict(self.get_file_context().options),
+            )
+        )
+
+    def execute_prepare_results(self, value_l: list[object]) -> None:
+        """Make results out of values"""
+
+        execute_doc = self.execute_as_dict(with_key=False, compiled=True)
+
+        if not isinstance(execute_doc, dict):
+            raise TypeError("execute_prepare_results: invalid execute spec")
+
+        result_l = dict_get(execute_doc, f"{ExConf.RESULT}")
+
+        if result_l is not None:
+            if len(result_l) != len(value_l):
+                raise ValueError("{'execute': {'result': 'value length do not match'}}")
+
+            result_dict = {
+                variable_name: value_l[index]
+                for index, variable_name in enumerate(result_l)
+                if variable_name != "_"
+            }
+
+        else:
+            result_dict = {
+                "$_response": value_l,
+            }
+
+        app.set_local(self.get_file_context().filepath_hash, result_dict, ExConf.LOCAL)

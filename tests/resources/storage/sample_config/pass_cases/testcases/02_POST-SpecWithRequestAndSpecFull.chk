@@ -1,11 +1,11 @@
 version: 'default:testcase:0.7.2'
 
 request:
-  url: "https://reqres.in/api/v1/users"
+  url: "https://httpbin.org/get"
   method: GET
 
 spec:
   execute:
     file: ~
   asserts:
-    - {type: AssertEqual, actual: $_response.code, expected: 201}
+    - {type: AssertEqual, actual: $_response.code, expected: 200}

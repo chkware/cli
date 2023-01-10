@@ -20,21 +20,7 @@ def execute_http(file: str, result: bool) -> None:
     """Command to run Http config file.\r\n
     FILE: Any .chk file, that has 'version: default.http.*' string in it."""
 
-    options = MappingProxyType(
-        dict(
-            result=result,
-        ),
-    )
-
-    ChkFileLoader.is_file_ok(file)
-    fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file)
-
-    ctx = FileContext(
-        filepath=file,
-        filepath_mangled=fpath_mangled,
-        filepath_hash=fpath_hash,
-        options=options,
-    )
+    ctx = FileContext.from_file(file, dict(result=result))
 
     http_executor.execute(ctx)
 
@@ -47,21 +33,7 @@ def execute_testcase(file: str, result: bool) -> None:
     """Command to run Testcase config file.\r\n
     FILE: Any .chk file, that has 'version: default.testcase.*' string in it."""
 
-    options = MappingProxyType(
-        dict(
-            result=result,
-        ),
-    )
-
-    ChkFileLoader.is_file_ok(file)
-    fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file)
-
-    ctx = FileContext(
-        filepath=file,
-        filepath_mangled=fpath_mangled,
-        filepath_hash=fpath_hash,
-        options=options,
-    )
+    ctx = FileContext.from_file(file, dict(result=result))
 
     testcase_executor.execute(ctx)
 

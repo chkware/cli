@@ -47,6 +47,8 @@ class TestFileContext:
         ctx = FileContext.from_file(file, {})
 
         assert isinstance(ctx, FileContext)
+        assert file.lstrip(".") in ctx.filepath
+        assert ctx.filepath > file
 
 
 class TestPathFrom:

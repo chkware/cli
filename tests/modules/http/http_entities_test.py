@@ -1,3 +1,4 @@
+# type: ignore
 import tests
 
 from chk.modules.http.entities import HttpSpec
@@ -20,7 +21,5 @@ class TestHttpSpec:
         )
 
         http = HttpSpec(file_ctx)
-        handle_worker(http)
-
         response = handle_worker(http)
         assert isinstance(response, list)

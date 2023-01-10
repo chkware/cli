@@ -4,10 +4,10 @@ variables:
   Name: 'Morpheus'
   Job: 'leader'
   Response:
-  Server: https://reqres.io/api/v1
+  Server: https://httpbin.org
 
 request:
-  url: "{$Server}/users"
+  url: "{$Server}/post"
   method: POST
   body[json]: {
     'name': $Name,

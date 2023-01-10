@@ -2,6 +2,7 @@
 Module for variables management
 """
 import abc
+import re
 
 from cerberus.validator import DocumentError
 
@@ -39,7 +40,6 @@ def replace_values(doc: dict, var_s: dict) -> dict[str, object]:
     for key in doc.keys():
         if isinstance(doc[key], str):
             item = str(doc[key])
-            # doc[key] = StringLexicalAnalyzer.replace_in_str(item, var_s)
             doc[key] = StringLexicalAnalyzer.replace(item, var_s)
         elif isinstance(doc[key], dict):
             doc[key] = replace_values(doc[key], var_s)
@@ -122,11 +122,7 @@ class VariableMixin(DocumentMixin):
     def make_exposable(self) -> None:
         """Prepare exposable data"""
 
-        hf_name = self.get_file_context().filepath_hash
-
-        expose_items = app.get_compiled_doc(hf_name, VarConf.EXPOSE)
-        if not isinstance(expose_items, list):
-            raise ValueError
+        expose_items = self.get_exposable()
 
         exposables = [
             StringLexicalAnalyzer.replace(item, self.get_symbol_table())
@@ -134,7 +130,11 @@ class VariableMixin(DocumentMixin):
             if isinstance(item, str)
         ]
 
-        app.set_compiled_doc(hf_name, part=VarConf.EXPOSE, value=exposables)
+        app.set_compiled_doc(
+            self.get_file_context().filepath_hash,
+            part=VarConf.EXPOSE,
+            value=exposables,
+        )
 
     def get_exposable(self) -> list:
         """Get exposable data"""
@@ -167,8 +167,7 @@ class VariableMixin(DocumentMixin):
         """Detect only variable with absolute value"""
 
         for key, val in actual.items():
-            # TODO: "{$" parsing don't feel right; need more test
-            if isinstance(val, str) and "{$" in val:
+            if isinstance(val, str) and re.search(r"{\s*(\$[a-zA-Z0-9_]+)\s*}", val):
                 continue
 
             updated[key] = val
@@ -182,3 +181,18 @@ class VariableMixin(DocumentMixin):
         replace_values(temp, updated)
 
         updated |= temp
+
+    def variable_replace_value_table(self, value_table: dict) -> None:
+        """Replace symbol table based on the value passed"""
+
+        symbol_tbl = self.get_symbol_table()
+
+        for key, val in value_table.items():
+            key = key.lstrip("$")
+
+            if key not in symbol_tbl:
+                raise ValueError(f"variable is not defined in `{VarConf.ROOT}:` block")
+
+            app.set_compiled_doc(
+                self.get_file_context().filepath_hash, val, f"{VarConf.ROOT}.{key}"
+            )

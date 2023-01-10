@@ -9,6 +9,6 @@ spec:
     with:
       Name: Hasan
       Job: Tester
-    result: $Code
+    result: [$Code]
   asserts:
     - {type: AssertEquals, actual: $Code, expected: 201}

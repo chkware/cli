@@ -1,6 +1,8 @@
 """
 Entities for testcase document specification
 """
+import functools
+
 from chk.infrastructure.contexts import app
 from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
@@ -9,10 +11,14 @@ from chk.infrastructure.work import WorkerContract
 from chk.modules.testcase.support.assertion.support import AssertionHandler
 
 from chk.modules.http.constants import RequestConfigNode as RConst
+from chk.modules.http.main import execute as execute_fn
 from chk.modules.http.request_helper import RequestProcessorPyRequests
 from chk.modules.http.support import RequestMixin
 
-from chk.modules.testcase.constants import AssertConfigNode as AConst
+from chk.modules.testcase.constants import (
+    AssertConfigNode as AConst,
+    ExecuteConfigNode as ExConst,
+)
 from chk.modules.testcase.support.testcase import TestcaseMixin
 
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
@@ -107,14 +113,16 @@ class Testcase(
                 raise err
 
         else:
-            # this is a temporary situation
-            # TODO: support file linking; remove this message
-            raise RuntimeError(
-                err_message(
-                    "fatal.V0029",
-                    extra={"spec": {"execute": {"file": "External file linked"}}},
-                )
-            )
+            execute = functools.partial(execute_fn, display=False)
+
+            response = self.execute_out_file(execute)
+            if not isinstance(response, list):
+                raise RuntimeError("Malformed response")
+
+            self.execute_prepare_results(response)
+            result_val = app.get_local(self.file_ctx.filepath_hash, ExConst.LOCAL)
+
+            self.variable_replace_value_table(result_val)
 
         try:
             self.assertion_preserve_original()

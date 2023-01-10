@@ -20,6 +20,7 @@ class ExecuteConfigNode:
     FILE = "file"
     WITH = "with"
     RESULT = "result"
+    LOCAL = "_execution_results"
 
 
 class AssertConfigNode:

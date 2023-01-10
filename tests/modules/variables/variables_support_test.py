@@ -80,6 +80,28 @@ class TestVariablePrepareValueTable:
         assert len(variables) == 2
         assert variables == {"var_1": "bar", "var_2": 2}
 
+    def test_variable_handle_value_table_for_absolute_pass_when_spaces(self):
+        app = App()
+
+        config = {
+            "var_1": "bar",
+            "var_2": 2,
+            "var_3": "ajax{  $var_1}",
+            "var_4": "ajax{ $Var_1     }",
+            "var_5": "{$var_2}",
+        }
+
+        file_ctx = FileContext(filepath_hash="ab12")
+        app.set_compiled_doc(file_ctx.filepath_hash, part="variables", value=config)
+        ver = HavingVariables(file_ctx)
+
+        variables: dict = {}
+        variables_orig = app.get_compiled_doc(file_ctx.filepath_hash, part="variables")
+        ver.variable_handle_value_table_for_absolute(variables_orig, variables)
+
+        assert len(variables) == 2
+        assert variables == {"var_1": "bar", "var_2": 2}
+
     def test_variable_handle_value_table_for_composite_pass(self):
         app = App()
 
@@ -307,3 +329,29 @@ class TestVariableMixin:
         var = HavingVariables(file_ctx)
         assert var.variable_as_dict(compiled=True) == original_doc
         assert var.variable_as_dict(False, True) == original_doc["variables"]
+
+    def test_variable_replace_value_table_pass(self):
+        app = App()
+        original_doc = {"variables": {"var1": 1, "var2": 2}}
+        replace_doc = {"var1": [1, "a"]}
+
+        file_ctx = FileContext(filepath_hash="ab31")
+        data_set(app.compiled_doc, file_ctx.filepath_hash, original_doc)
+
+        var = HavingVariables(file_ctx)
+        var.variable_replace_value_table(replace_doc)
+
+        assert var.get_symbol_table() == {"var1": [1, "a"], "var2": 2}
+
+    def test_variable_replace_value_table_fail_when_var_not_found(self):
+        app = App()
+        original_doc = {"variables": {"var1": 1, "var2": 2}}
+        replace_doc = {"var3": [1, "a"]}
+
+        file_ctx = FileContext(filepath_hash="ab31")
+        data_set(app.compiled_doc, file_ctx.filepath_hash, original_doc)
+
+        var = HavingVariables(file_ctx)
+
+        with pytest.raises(ValueError):
+            var.variable_replace_value_table(replace_doc)

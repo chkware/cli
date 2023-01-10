@@ -52,10 +52,11 @@ class FileContext(NamedTuple):
     @staticmethod
     def from_file(file: str, options: dict) -> "FileContext":
         ChkFileLoader.is_file_ok(file)
-        fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file)
+        absolute_path = str(Path(file).absolute())
+        fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(absolute_path)
 
         return FileContext(
-            filepath=file,
+            filepath=absolute_path,
             filepath_mangled=fpath_mangled,
             filepath_hash=fpath_hash,
             options=MappingProxyType(options),
