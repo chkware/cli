@@ -17,6 +17,12 @@ class VariableConfigNode:
     EXPOSE = "expose"
     LOCAL = "__local"
 
+    ALLOWED_LOCAL = [
+        "_response",
+        "_execution_results",
+        "_assertion_results",
+    ]
+
 
 class LexicalAnalysisType(Enum):
     REQUEST = 1
