@@ -15,6 +15,7 @@ mypy = "*"
 pylint = "*"
 flake8 = "*"
 black = {extras = ["d"], version = "*"}
+var-dump = "*"
 
 [requires]
 python_version = "3.11"
