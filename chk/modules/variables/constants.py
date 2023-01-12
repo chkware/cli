@@ -19,6 +19,7 @@ class VariableConfigNode:
 
     ALLOWED_LOCAL = [
         "_response",
+        "_assertion_results",
     ]
 
 
