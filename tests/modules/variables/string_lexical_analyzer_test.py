@@ -12,17 +12,17 @@ class TestStringLexicalAnalyzerReplace:
         replace_with = {"var1": 1, "var_3": "my name"}
 
         container = "Hasan"
-        assert "Hasan" == StringLexicalAnalyzer.replace(container, replace_with)
+        assert StringLexicalAnalyzer.replace(container, replace_with) == "Hasan"
 
     @staticmethod
     def test_replace_pass_when_single_variable():
         replace_with = {"var1": 1, "var_3": "my name"}
 
         container = "$var1"
-        assert 1 == StringLexicalAnalyzer.replace(container, replace_with)
+        assert StringLexicalAnalyzer.replace(container, replace_with) == 1
 
         container = "$var2"
-        assert "{ $var2 }" == StringLexicalAnalyzer.replace(container, replace_with)
+        assert StringLexicalAnalyzer.replace(container, replace_with) == "{ $var2 }"
 
         replace_with = {"var1": [1, 2], "var_3": "my name"}
 
@@ -33,24 +33,25 @@ class TestStringLexicalAnalyzerReplace:
         assert [1, 2] == StringLexicalAnalyzer.replace(container, replace_with)
 
         container = "{$var2}"
-        assert "{ $var2 }" == StringLexicalAnalyzer.replace(container, replace_with)
+        assert StringLexicalAnalyzer.replace(container, replace_with) == "{ $var2 }"
 
     @staticmethod
     def test_replace_pass_when_multiple_variable():
         container = "$var1:$var_3"
 
         replace_with = {"var1": 2, "var_3": "my_name"}
-        assert "2:my_name" == StringLexicalAnalyzer.replace(container, replace_with)
+        assert StringLexicalAnalyzer.replace(container, replace_with) == "2:my_name"
 
         replace_with = {"var1": [1, 2], "var_3": "my_name"}
-        assert "[1, 2]:my_name" == StringLexicalAnalyzer.replace(
-            container, replace_with
+        assert (
+            StringLexicalAnalyzer.replace(container, replace_with) == "[1, 2]:my_name"
         )
 
         container = "$var1:$var_3:$var4"
         replace_with = {"var1": [1, 2], "var_3": "my_name", "var4": {"a": 1}}
-        assert "[1, 2]:my_name:{'a': 1}" == StringLexicalAnalyzer.replace(
-            container, replace_with
+        assert (
+            StringLexicalAnalyzer.replace(container, replace_with)
+            == "[1, 2]:my_name:{'a': 1}"
         )
 
     @staticmethod
@@ -58,20 +59,20 @@ class TestStringLexicalAnalyzerReplace:
         replace_with = {"var1": 2, "var_3": "my_name"}
 
         container = "$var1:{$var_3}"
-        assert "2:my_name" == StringLexicalAnalyzer.replace(container, replace_with)
+        assert StringLexicalAnalyzer.replace(container, replace_with) == "2:my_name"
 
         container = "{$var1}:{$var_3}"
-        assert "2:my_name" == StringLexicalAnalyzer.replace(container, replace_with)
+        assert StringLexicalAnalyzer.replace(container, replace_with) == "2:my_name"
 
         container = "{$var1}:{{$var_3}}"
-        assert "2:{my_name}" == StringLexicalAnalyzer.replace(container, replace_with)
+        assert StringLexicalAnalyzer.replace(container, replace_with) == "2:{my_name}"
 
     @staticmethod
     def test_replace_pass_when_coll():
         st = {"var1": 2, "var_3": {"v3": {"v33": 1}}}
 
         container = "$var1:{$var_3.v3.v33}"
-        assert "2:1" == StringLexicalAnalyzer.replace(container, st)
+        assert StringLexicalAnalyzer.replace(container, st) == "2:1"
 
         container = "$var1:$var_2.v3.v33"
-        assert "2:{$var_2.v3.v33}" == StringLexicalAnalyzer.replace(container, st)
+        assert StringLexicalAnalyzer.replace(container, st) == "2:{$var_2.v3.v33}"
