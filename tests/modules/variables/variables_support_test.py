@@ -4,7 +4,7 @@ import pytest
 from chk.infrastructure.containers import App
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import data_set
-from chk.modules.variables.support import parse_args, VariableMixin
+from chk.modules.variables.support import parse_args, VariableMixin, replace_values
 
 
 class TestParseArgs:
@@ -375,3 +375,26 @@ class TestVariableMixin:
 
         with pytest.raises(ValueError):
             var.variable_replace_value_table(replace_doc)
+
+
+class TestReplaceValues:
+    def test_pass_wth_plain_vars_replace(self):
+        variables = {
+            "some": 1,
+            "goes": "Some {$var1}",
+            "here": "{  $var2}",
+        }
+
+        values = {
+            "var1": "goes here",
+            "var2": "HERE",
+        }
+
+        repl_variables = {
+            "some": 1,
+            "goes": "Some goes here",
+            "here": "HERE",
+        }
+
+        return_doc = replace_values(variables, values)
+        assert return_doc == repl_variables
