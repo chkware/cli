@@ -115,11 +115,11 @@ class VariableMixin(DocumentMixin):
 
         _t_symbol_tbl: dict[str, object] = {}
 
-        for symbol in symbol_table_l:
-            if symbol in VarConf.ALLOWED_LOCAL:
-                _t_symbol_tbl |= {
-                    f"{symbol}.{key}": 1 for key in symbol_table_l[symbol].keys()
-                }
+        _t_symbol_tbl |= {
+            symbol: symbol_table_l[symbol]
+            for symbol in symbol_table_l
+            if symbol in VarConf.ALLOWED_LOCAL
+        }
 
         del symbol_table_l
         symbol_table = app.get_compiled_doc(hf_name, VarConf.ROOT) or {}
