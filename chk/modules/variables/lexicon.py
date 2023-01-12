@@ -22,7 +22,11 @@ class StringLexicalAnalyzer:
         line_split = re.split(
             r"({\s*\$[a-zA-Z0-9_.]+\s*})|(\s*\$[a-zA-Z0-9_.]+)", container
         )
-        line_strip = ["".join(item.split()) for item in line_split if item]
+        line_strip = [
+            "".join(item.split() if "$" in item else item)
+            for item in line_split
+            if item
+        ]
 
         if len(line_strip) == 1:
             item = line_strip.pop()

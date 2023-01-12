@@ -14,6 +14,9 @@ class TestStringLexicalAnalyzerReplace:
         container = "Hasan"
         assert StringLexicalAnalyzer.replace(container, replace_with) == "Hasan"
 
+        container = "Hasan "
+        assert StringLexicalAnalyzer.replace(container, replace_with) == "Hasan "
+
     @staticmethod
     def test_replace_pass_when_single_variable():
         replace_with = {"var1": 1, "var_3": "my name"}
@@ -28,6 +31,9 @@ class TestStringLexicalAnalyzerReplace:
 
         container = "{$var1}"
         assert [1, 2] == StringLexicalAnalyzer.replace(container, replace_with)
+
+        container = "{   $var1} Here"
+        assert StringLexicalAnalyzer.replace(container, replace_with) == "[1, 2] Here"
 
         container = "{ $var1    }"
         assert [1, 2] == StringLexicalAnalyzer.replace(container, replace_with)
