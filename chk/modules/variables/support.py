@@ -194,17 +194,12 @@ class VariableMixin(DocumentMixin):
 
         updated |= temp
 
-    def variable_replace_value_table(self, value_table: dict) -> None:
+    @staticmethod
+    def variable_replace_value_table(symbol_tbl: dict, value_tbl: dict) -> None:
         """Replace symbol table based on the value passed"""
 
-        symbol_tbl = self.get_symbol_table()
-
-        for key, val in value_table.items():
-            key = key.lstrip("$")
-
-            if key not in symbol_tbl:
+        for key, val in value_tbl.items():
+            if (key := key.lstrip("$")) not in symbol_tbl:
                 raise ValueError(f"variable is not defined in `{VarConf.ROOT}:` block")
 
-            app.set_compiled_doc(
-                self.get_file_context().filepath_hash, val, f"{VarConf.ROOT}.{key}"
-            )
+            symbol_tbl[key] = val

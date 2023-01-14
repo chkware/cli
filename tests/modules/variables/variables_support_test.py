@@ -350,7 +350,7 @@ class TestVariableMixin:
         assert var.variable_as_dict(compiled=True) == original_doc
         assert var.variable_as_dict(False, True) == original_doc["variables"]
 
-    def test_variable_replace_value_table_pass(self):
+    def test_variable_replace_value_table_pass_for_root_vars(self):
         app = App()
         original_doc = {"variables": {"var1": 1, "var2": 2}}
         replace_doc = {"var1": [1, "a"]}
@@ -359,9 +359,29 @@ class TestVariableMixin:
         data_set(app.compiled_doc, file_ctx.filepath_hash, original_doc)
 
         var = HavingVariables(file_ctx)
-        var.variable_replace_value_table(replace_doc)
+        var.variable_replace_value_table(
+            app.compiled_doc[file_ctx.filepath_hash]["variables"], replace_doc
+        )
 
         assert var.get_symbol_table() == {"var1": [1, "a"], "var2": 2}
+
+    def test_variable_replace_value_table_pass_for_local_vars(self):
+        app = App()
+        original_doc = {"var1": 1, "var2": 2}
+        replace_doc = {"var1": [1, "a"]}
+
+        file_ctx = FileContext(filepath_hash="ab31")
+        app.set_local(file_ctx.filepath_hash, original_doc, "_some")
+
+        var = HavingVariables(file_ctx)
+        var.variable_replace_value_table(
+            app.compiled_doc[file_ctx.filepath_hash]["__local"]["_some"], replace_doc
+        )
+
+        assert app.get_local(file_ctx.filepath_hash, "_some") == {
+            "var1": [1, "a"],
+            "var2": 2,
+        }
 
     def test_variable_replace_value_table_fail_when_var_not_found(self):
         app = App()
@@ -374,7 +394,9 @@ class TestVariableMixin:
         var = HavingVariables(file_ctx)
 
         with pytest.raises(ValueError):
-            var.variable_replace_value_table(replace_doc)
+            var.variable_replace_value_table(
+                app.compiled_doc[file_ctx.filepath_hash]["variables"], replace_doc
+            )
 
 
 class TestReplaceValues:
