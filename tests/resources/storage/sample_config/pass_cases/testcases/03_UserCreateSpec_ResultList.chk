@@ -10,3 +10,4 @@ spec:
     result: [$Code, $Headers]
   asserts:
     - {type: AssertEqual, actual: $Code, expected: 200}
+    - {type: AssertIsMap, actual: $Headers}

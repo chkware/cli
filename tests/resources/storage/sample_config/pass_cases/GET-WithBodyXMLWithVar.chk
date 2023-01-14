@@ -18,8 +18,4 @@ request:
     Accept-Encoding: gzip, deflate
     Accept: application/xml
 
-  body[xml]: |
-    <account>
-      <name>{ $Name }</name>
-      <no>{ $Number }</no>
-    </account>
+  body[xml]: "<account><name>{ $Name }</name><no>{ $Number }</no></account>"

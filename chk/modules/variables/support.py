@@ -110,12 +110,24 @@ class VariableMixin(DocumentMixin):
         hf_name = self.get_file_context().filepath_hash
 
         symbol_table_l = app.get_compiled_doc(hf_name, VarConf.LOCAL) or {}
-        symbol_table = app.get_compiled_doc(hf_name, VarConf.ROOT) or {}
-
-        if not isinstance(symbol_table_l, dict) or not isinstance(symbol_table, dict):
+        if not isinstance(symbol_table_l, dict):
             raise RuntimeError
 
-        symbol_table |= symbol_table_l
+        _t_symbol_tbl: dict[str, object] = {}
+
+        _t_symbol_tbl |= {
+            symbol: symbol_table_l[symbol]
+            for symbol in symbol_table_l
+            if symbol in VarConf.ALLOWED_LOCAL
+        }
+
+        del symbol_table_l
+        symbol_table = app.get_compiled_doc(hf_name, VarConf.ROOT) or {}
+
+        if not isinstance(symbol_table, dict):
+            raise RuntimeError
+
+        symbol_table |= _t_symbol_tbl
 
         return symbol_table
 
@@ -182,17 +194,12 @@ class VariableMixin(DocumentMixin):
 
         updated |= temp
 
-    def variable_replace_value_table(self, value_table: dict) -> None:
+    @staticmethod
+    def variable_replace_value_table(symbol_tbl: dict, value_tbl: dict) -> None:
         """Replace symbol table based on the value passed"""
 
-        symbol_tbl = self.get_symbol_table()
-
-        for key, val in value_table.items():
-            key = key.lstrip("$")
-
-            if key not in symbol_tbl:
+        for key, val in value_tbl.items():
+            if (key := key.lstrip("$")) not in symbol_tbl:
                 raise ValueError(f"variable is not defined in `{VarConf.ROOT}:` block")
 
-            app.set_compiled_doc(
-                self.get_file_context().filepath_hash, val, f"{VarConf.ROOT}.{key}"
-            )
+            symbol_tbl[key] = val

@@ -4,7 +4,6 @@ Entities for testcase document specification
 import functools
 
 from chk.infrastructure.contexts import app
-from chk.infrastructure.exception import err_message
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.work import WorkerContract
 
@@ -122,7 +121,23 @@ class Testcase(
             self.execute_prepare_results(response)
             result_val = app.get_local(self.file_ctx.filepath_hash, ExConst.LOCAL)
 
-            self.variable_replace_value_table(result_val)
+            execute_doc = self.execute_as_dict(with_key=False, compiled=True)
+
+            if not isinstance(execute_doc, dict):
+                raise TypeError("execute_validated: invalid execute spec")
+
+            if ExConst.RESULT not in execute_doc:
+                app.set_local(self.file_ctx.filepath_hash, None, RConst.LOCAL)
+
+                self.variable_replace_value_table(
+                    app.compiled_doc[self.file_ctx.filepath_hash]["__local"],
+                    result_val,
+                )
+            else:
+                self.variable_replace_value_table(
+                    app.compiled_doc[self.file_ctx.filepath_hash]["variables"],
+                    result_val,
+                )
 
         try:
             self.assertion_preserve_original()
