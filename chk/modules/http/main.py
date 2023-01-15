@@ -22,4 +22,4 @@ def execute(file_ctx: FileContext, display: bool = True) -> Any:
 
         return response
     except RuntimeError as err:
-        print("\r\n---\r\n", str(err)) if display else err
+        return print("\r\n---\r\n", str(err)) if display else err
