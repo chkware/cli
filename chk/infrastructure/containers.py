@@ -139,6 +139,12 @@ class App(NamedTuple):
             self.compiled_doc[key], f"{CompiledDocBlockType.OUTER.value}.{part}", val
         )
 
+    def get_outer(self, key: str, part: str) -> object:
+        """Set local variable values in compiled_doc dict"""
+        return dict_get(
+            self.compiled_doc[key], f"{CompiledDocBlockType.OUTER.value}.{part}"
+        )
+
     @staticmethod
     def print_fmt(
         message: object, callback: Callable = str, ret_s: bool = False
