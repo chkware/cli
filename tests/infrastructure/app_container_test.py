@@ -178,11 +178,17 @@ class TestApp:
     @staticmethod
     def test_app_set_local_pass():
         app = App()
-        assert app.set_local("ab22", part="re", val=12) is True
+        app.set_local("ab22", part="re", val=12)
+
+        assert app.compiled_doc["ab22"]["__local"]["re"] == 12
+        del app.compiled_doc["ab22"]
 
     @staticmethod
     def test_app_get_local_pass():
         app = App()
+        app.set_local("ab22", part="re", val=12)
+
+        assert app.compiled_doc["ab22"]["__local"]["re"] == app.get_local("ab22", "re")
         assert app.get_local("ab22", "re") == 12
 
     @staticmethod
