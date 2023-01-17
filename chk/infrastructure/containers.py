@@ -18,6 +18,7 @@ class CompiledDocBlockType(Enum):
     VARIABLES = "variables"
     EXPOSE = "expose"
     LOCAL = "__local"
+    OUTER = "__outer"
 
     @staticmethod
     def allowed_keys() -> set:
@@ -128,6 +129,14 @@ class App(NamedTuple):
         """Set local variable values in compiled_doc dict"""
         return dict_get(
             self.compiled_doc[key], f"{CompiledDocBlockType.LOCAL.value}.{part}"
+        )
+
+    def set_outer(self, key: str, val: object, part: str) -> bool:
+        """Set local variable values in compiled_doc dict"""
+        if key not in self.compiled_doc:
+            self.compiled_doc[key] = CompiledDocBlockType.default()
+        return data_set(
+            self.compiled_doc[key], f"{CompiledDocBlockType.OUTER.value}.{part}", val
         )
 
     @staticmethod

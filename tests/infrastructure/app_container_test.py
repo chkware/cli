@@ -192,6 +192,14 @@ class TestApp:
         assert app.get_local("ab22", "re") == 12
 
     @staticmethod
+    def test_app_set_outer_pass():
+        app = App()
+        app.set_outer("ab22", part="re", val=12)
+
+        assert app.compiled_doc["ab22"]["__outer"]["re"] == 12
+        del app.compiled_doc["ab22"]
+
+    @staticmethod
     def test_app_print_fmt_pass_get_string():
         app = App()
 
