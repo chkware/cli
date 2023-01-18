@@ -220,8 +220,8 @@ class TestApp:
         app = App()
         app.set_outer("ab22", part="re", val=12)
 
-        assert app.compiled_doc["ab22"]["__outer"]["re"] == 12
-        del app.compiled_doc["ab22"]
+        assert app.original_doc["ab22"]["__outer"]["re"] == 12
+        del app.original_doc["ab22"]
 
     @staticmethod
     def test_app_get_outer_pass():

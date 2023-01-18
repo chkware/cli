@@ -142,11 +142,11 @@ class App(NamedTuple):
         )
 
     def set_outer(self, key: str, val: object, part: str) -> bool:
-        """Set local variable values in compiled_doc dict"""
-        if key not in self.compiled_doc:
-            self.compiled_doc[key] = CompiledDocBlockType.default()
+        """Set local variable values in original_doc dict"""
+        if key not in self.original_doc:
+            self.original_doc[key] = CompiledDocBlockType.default()
         return data_set(
-            self.compiled_doc[key], f"{CompiledDocBlockType.OUTER.value}.{part}", val
+            self.original_doc[key], f"{CompiledDocBlockType.OUTER.value}.{part}", val
         )
 
     def get_outer(self, key: str, part: str) -> object:
