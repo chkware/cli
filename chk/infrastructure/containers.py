@@ -150,9 +150,9 @@ class App(NamedTuple):
         )
 
     def get_outer(self, key: str, part: str) -> object:
-        """Set local variable values in compiled_doc dict"""
+        """Set local variable values in original_doc dict"""
         return dict_get(
-            self.compiled_doc[key], f"{CompiledDocBlockType.OUTER.value}.{part}"
+            self.original_doc[key], f"{CompiledDocBlockType.OUTER.value}.{part}"
         )
 
     @staticmethod

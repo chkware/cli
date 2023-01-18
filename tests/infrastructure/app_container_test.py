@@ -228,7 +228,7 @@ class TestApp:
         app = App()
         app.set_outer("ab22", part="re", val=12)
 
-        assert app.compiled_doc["ab22"]["__outer"]["re"] == app.get_outer("ab22", "re")
+        assert app.original_doc["ab22"]["__outer"]["re"] == app.get_outer("ab22", "re")
         assert app.get_outer("ab22", "re") == 12
 
     @staticmethod
