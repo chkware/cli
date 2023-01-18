@@ -225,11 +225,11 @@ class TestVariableMixin:
         app.set_local(file_ctx.filepath_hash, local_vars, "_execution_results")
 
         var = HavingVariables(file_ctx)
-        assert len(var.get_symbol_table()) == 3
+        assert len(var.get_symbol_table()) == 4
 
         symbol_keys = var.get_symbol_table().keys()
         assert "_response" in symbol_keys
-        assert "_assertion_results" not in symbol_keys
+        assert "_assertion_results" in symbol_keys
         assert "_execution_results" not in symbol_keys
 
     def test_variable_validated_pass_from_original(self):
