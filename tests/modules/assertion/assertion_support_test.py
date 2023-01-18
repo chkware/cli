@@ -1,3 +1,4 @@
+# type: ignore
 import pytest
 
 from chk.modules.testcase.support.assertion.support import AssertionCase

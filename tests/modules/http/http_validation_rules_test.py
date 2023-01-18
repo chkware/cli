@@ -1,3 +1,4 @@
+# type: ignore
 import pytest
 
 from chk.modules.http.validation_rules import allowed_method, allowed_url
