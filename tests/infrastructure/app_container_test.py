@@ -3,6 +3,8 @@
 """
 test global chk functions
 """
+from types import MappingProxyType
+
 import pytest
 import tests
 import sys
@@ -159,6 +161,28 @@ class TestApp:
             filepath=file,
             filepath_mangled=fpath_mangled,
             filepath_hash=fpath_hash,
+        )
+
+        app.load_original_doc_from_file_context(ctx)
+        assert app.original_doc[ctx.filepath_hash] == ChkFileLoader.to_dict(
+            ctx.filepath
+        )
+
+    @staticmethod
+    def test_app_load_original_doc_from_file_with_arguments_vars_defined():
+        app = App()
+        file = tests.RES_DIR + "UserOk.chk"
+        fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file)
+
+        ctx = FileContext(
+            filepath=file,
+            filepath_mangled=fpath_mangled,
+            filepath_hash=fpath_hash,
+            arguments=MappingProxyType({
+                "variables": {
+                    "Method": "GET",
+                }
+            })
         )
 
         app.load_original_doc_from_file_context(ctx)

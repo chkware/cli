@@ -110,6 +110,16 @@ class App(NamedTuple):
         document = ChkFileLoader.to_dict(file_ctx.filepath)
         self.set_original_doc(file_ctx.filepath_hash, document)
 
+        # add outer replaceable variables
+        outer_vars = file_ctx.arguments.get(CompiledDocBlockType.VARIABLES.value)
+
+        if isinstance(outer_vars, dict):
+            self.set_outer(
+                file_ctx.filepath_hash,
+                outer_vars,
+                CompiledDocBlockType.VARIABLES.value,
+            )
+
     def config(self, key: str, val: object = None) -> object:
         """Set and retrieve config"""
         if val is not None:
