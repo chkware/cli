@@ -6,7 +6,7 @@ from enum import Enum
 from typing import NamedTuple
 
 from chk.infrastructure.file_loader import FileContext, ChkFileLoader
-from chk.infrastructure.helper import dict_get, data_set
+from chk.infrastructure.helper import dict_get, data_set, data_get
 
 
 class CompiledDocBlockType(Enum):
@@ -151,7 +151,7 @@ class App(NamedTuple):
 
     def get_outer(self, key: str, part: str) -> object:
         """Set local variable values in original_doc dict"""
-        return dict_get(
+        return data_get(
             self.original_doc[key], f"{CompiledDocBlockType.OUTER.value}.{part}"
         )
 
