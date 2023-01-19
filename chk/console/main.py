@@ -20,7 +20,7 @@ def execute_http(file: str, result: bool) -> None:
     """Command to run Http config file.\r\n
     FILE: Any .chk file, that has 'version: default.http.*' string in it."""
 
-    ctx = FileContext.from_file(file, dict(result=result))
+    ctx = FileContext.from_file(file, options={"result": result})
 
     http_executor.execute(ctx)
 
@@ -33,7 +33,7 @@ def execute_testcase(file: str, result: bool) -> None:
     """Command to run Testcase config file.\r\n
     FILE: Any .chk file, that has 'version: default.testcase.*' string in it."""
 
-    ctx = FileContext.from_file(file, dict(result=result))
+    ctx = FileContext.from_file(file, options={"result": result})
 
     testcase_executor.execute(ctx)
 
