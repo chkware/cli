@@ -115,6 +115,9 @@ class Testcase(
             execute = functools.partial(execute_fn, display=False)
 
             response = self.execute_out_file(execute)
+            if isinstance(response, RuntimeError):
+                raise response
+
             if not isinstance(response, list):
                 raise RuntimeError("Malformed response")
 

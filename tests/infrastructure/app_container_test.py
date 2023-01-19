@@ -3,6 +3,8 @@
 """
 test global chk functions
 """
+from types import MappingProxyType
+
 import pytest
 import tests
 import sys
@@ -167,6 +169,37 @@ class TestApp:
         )
 
     @staticmethod
+    def test_app_load_original_doc_from_file_with_arguments():
+        app = App()
+        file = tests.RES_DIR + "UserOk.chk"
+        fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file)
+
+        ctx = FileContext(
+            filepath=file,
+            filepath_mangled=fpath_mangled,
+            filepath_hash=fpath_hash,
+            arguments=MappingProxyType(
+                {
+                    "variables": {
+                        "Method": "GET",
+                    }
+                }
+            ),
+        )
+
+        app.load_original_doc_from_file_context(ctx)
+
+        assert app.original_doc[ctx.filepath_hash] == ChkFileLoader.to_dict(
+            ctx.filepath
+        ) | {
+            "__outer": {
+                "variables": {
+                    "Method": "GET",
+                }
+            }
+        }
+
+    @staticmethod
     def test_config_pass():
         app = App()
         app.config("buffer_access_off", True)
@@ -178,12 +211,34 @@ class TestApp:
     @staticmethod
     def test_app_set_local_pass():
         app = App()
-        assert app.set_local("ab22", part="re", val=12) is True
+        app.set_local("ab22", part="re", val=12)
+
+        assert app.compiled_doc["ab22"]["__local"]["re"] == 12
+        del app.compiled_doc["ab22"]
 
     @staticmethod
     def test_app_get_local_pass():
         app = App()
+        app.set_local("ab22", part="re", val=12)
+
+        assert app.compiled_doc["ab22"]["__local"]["re"] == app.get_local("ab22", "re")
         assert app.get_local("ab22", "re") == 12
+
+    @staticmethod
+    def test_app_set_outer_pass():
+        app = App()
+        app.set_outer("ab22", part="re", val=12)
+
+        assert app.original_doc["ab22"]["__outer"]["re"] == 12
+        del app.original_doc["ab22"]
+
+    @staticmethod
+    def test_app_get_outer_pass():
+        app = App()
+        app.set_outer("ab22", part="re", val=12)
+
+        assert app.original_doc["ab22"]["__outer"]["re"] == app.get_outer("ab22", "re")
+        assert app.get_outer("ab22", "re") == 12
 
     @staticmethod
     def test_app_print_fmt_pass_get_string():

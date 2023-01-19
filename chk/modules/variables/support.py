@@ -168,6 +168,13 @@ class VariableMixin(DocumentMixin):
         if not isinstance(original_vars, dict):
             raise RuntimeError
 
+        outer_vars = app.get_outer(hf, VarConf.ROOT)
+        if isinstance(outer_vars, dict):
+            if not all(k in original_vars for k in outer_vars):
+                raise RuntimeError("One or more outer variable is undeclared")
+
+            original_vars |= outer_vars
+
         # TODO: variable_handle_value_table_for_import()
         self.variable_handle_value_table_for_absolute(original_vars, updated_vars)
         self.variable_handle_value_table_for_composite(original_vars, updated_vars)

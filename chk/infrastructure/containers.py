@@ -6,7 +6,7 @@ from enum import Enum
 from typing import NamedTuple
 
 from chk.infrastructure.file_loader import FileContext, ChkFileLoader
-from chk.infrastructure.helper import dict_get, data_set
+from chk.infrastructure.helper import dict_get, data_set, data_get
 
 
 class CompiledDocBlockType(Enum):
@@ -18,6 +18,7 @@ class CompiledDocBlockType(Enum):
     VARIABLES = "variables"
     EXPOSE = "expose"
     LOCAL = "__local"
+    OUTER = "__outer"
 
     @staticmethod
     def allowed_keys() -> set:
@@ -109,6 +110,16 @@ class App(NamedTuple):
         document = ChkFileLoader.to_dict(file_ctx.filepath)
         self.set_original_doc(file_ctx.filepath_hash, document)
 
+        # add outer replaceable variables
+        outer_vars = file_ctx.arguments.get(CompiledDocBlockType.VARIABLES.value)
+
+        if isinstance(outer_vars, dict):
+            self.set_outer(
+                file_ctx.filepath_hash,
+                outer_vars,
+                CompiledDocBlockType.VARIABLES.value,
+            )
+
     def config(self, key: str, val: object = None) -> object:
         """Set and retrieve config"""
         if val is not None:
@@ -128,6 +139,20 @@ class App(NamedTuple):
         """Set local variable values in compiled_doc dict"""
         return dict_get(
             self.compiled_doc[key], f"{CompiledDocBlockType.LOCAL.value}.{part}"
+        )
+
+    def set_outer(self, key: str, val: object, part: str) -> bool:
+        """Set local variable values in original_doc dict"""
+        if key not in self.original_doc:
+            self.original_doc[key] = CompiledDocBlockType.default()
+        return data_set(
+            self.original_doc[key], f"{CompiledDocBlockType.OUTER.value}.{part}", val
+        )
+
+    def get_outer(self, key: str, part: str) -> object:
+        """Set local variable values in original_doc dict"""
+        return data_get(
+            self.original_doc[key], f"{CompiledDocBlockType.OUTER.value}.{part}"
         )
 
     @staticmethod

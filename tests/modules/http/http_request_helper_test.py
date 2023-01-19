@@ -1,3 +1,4 @@
+# type: ignore
 from types import MappingProxyType
 
 import pytest

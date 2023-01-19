@@ -4,7 +4,7 @@ File loader utility
 
 from pathlib import Path
 from types import MappingProxyType
-from typing import NamedTuple
+from typing import NamedTuple, Self
 
 from yaml import safe_load
 
@@ -50,7 +50,7 @@ class FileContext(NamedTuple):
     filepath_hash: str = ""
 
     @staticmethod
-    def from_file(file: str, options: dict) -> "FileContext":
+    def from_file(file: str, **kwarg: dict) -> Self:
         ChkFileLoader.is_file_ok(file)
         absolute_path = str(Path(file).absolute())
         fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(absolute_path)
@@ -59,7 +59,10 @@ class FileContext(NamedTuple):
             filepath=absolute_path,
             filepath_mangled=fpath_mangled,
             filepath_hash=fpath_hash,
-            options=MappingProxyType(options),
+            options=MappingProxyType(kwarg["options"] if "options" in kwarg else {}),
+            arguments=MappingProxyType(
+                kwarg["arguments"] if "arguments" in kwarg else {}
+            ),
         )
 
 
