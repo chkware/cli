@@ -1,0 +1,13 @@
+version: 'default:testcase:0.7.2'
+
+spec:
+  execute:
+    file: '../testcases/03_UserCreateRequest_ResListWithBody.chk'
+    with:
+      Name: 'Tank'
+      Job: 'engineer'
+
+  asserts:
+    - {type: AssertEqual, actual: $_response.0, expected: 200}
+    - {type: AssertIsMap, actual: $_response.1.json}
+    - {type: AssertEqual, actual: $_response.1.json.job, expected: "engineer"}

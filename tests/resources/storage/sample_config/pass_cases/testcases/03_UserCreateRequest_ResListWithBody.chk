@@ -1,0 +1,19 @@
+version: 'default:http:0.7.2'
+
+variables:
+  Name: 'Morpheus'
+  Job: 'leader'
+  Response:
+  Server: https://httpbin.org
+
+request:
+  url: "{$Server}/post"
+  method: POST
+  body[json]: {
+    'name': $Name,
+    'job': $Job,
+  }
+
+expose:
+  - $_response.code
+  - $_response.body
