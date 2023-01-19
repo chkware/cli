@@ -16,19 +16,6 @@ from chk.modules.variables.lexicon import StringLexicalAnalyzer
 from chk.modules.version.support import DocumentMixin
 
 
-def parse_args(argv_s: list[str], delimiter: str = "=") -> dict:
-    """
-    parse and return args to dict
-    :return: dict
-    """
-
-    if argv_s:
-        argv = [item for item in argv_s if delimiter in item]
-        return {item[0]: item[1] for item in [item.split(delimiter) for item in argv]}
-
-    return {}
-
-
 def replace_values(doc: dict, var_s: dict) -> dict[str, object]:
     """
     replace variables with values
