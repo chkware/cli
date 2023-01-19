@@ -33,9 +33,9 @@ def execute_http(file: str, variables: tuple, result: bool) -> None:
 
 
 # run command
-@click.command('testcase')
-@click.argument('file')
-@click.option('--result', is_flag=True, help="Only shows the returned output")
+@click.command("testcase")
+@click.argument("file")
+@click.option("--result", is_flag=True, help="Only shows the returned output")
 def execute_testcase(file: str, result: bool) -> None:
     """Command to run Testcase config file.\r\n
     FILE: Any .chk file, that has 'version: default.testcase.*' string in it."""
@@ -46,7 +46,7 @@ def execute_testcase(file: str, result: bool) -> None:
 
 
 # root command
-@click.group('chk')
+@click.group("chk")
 def execute_root() -> None:
     """v0.4.0 | supported version strings: 0.7.2"""
 
