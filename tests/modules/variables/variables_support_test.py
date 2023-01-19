@@ -58,6 +58,61 @@ class TestVariablePrepareValueTable:
             "var_5": 2,
         }
 
+    def test_variable_prepare_value_table_pass_with_outer(self):
+        app = App()
+        config = {
+            "var_1": "bar",
+            "var_2": 2,
+            "var_3": "ajax{$var_1}",
+            "var_4": "ajax{$Var_1}",
+            "var_5": "{$var_2}",
+        }
+
+        outer = {
+            "var_1": 1,
+            "var_5": 1,
+        }
+
+        file_ctx = FileContext(filepath_hash="ab12")
+        app.set_outer(file_ctx.filepath_hash, part="variables", val=outer)
+        app.set_compiled_doc(file_ctx.filepath_hash, part="variables", value=config)
+
+        ver = HavingVariables(file_ctx)
+        ver.variable_prepare_value_table()
+
+        variables = app.get_compiled_doc(file_ctx.filepath_hash, part="variables")
+
+        assert variables == {
+            "var_1": 1,
+            "var_2": 2,
+            "var_3": "ajax1",
+            "var_4": "ajax{$Var_1}",
+            "var_5": 1,
+        }
+
+    def test_variable_prepare_value_table_fails_with_extra_outer(self):
+        app = App()
+        config = {
+            "var_1": "bar",
+            "var_2": 2,
+            "var_3": "ajax{$var_1}",
+            "var_4": "ajax{$Var_1}",
+            "var_5": "{$var_2}",
+        }
+
+        outer = {
+            "var_1": 1,
+            "var_6": 1,
+        }
+
+        file_ctx = FileContext(filepath_hash="ab12")
+        app.set_outer(file_ctx.filepath_hash, part="variables", val=outer)
+        app.set_compiled_doc(file_ctx.filepath_hash, part="variables", value=config)
+
+        ver = HavingVariables(file_ctx)
+        with pytest.raises(RuntimeError):
+            ver.variable_prepare_value_table()
+
     def test_variable_handle_value_table_for_absolute_pass(self):
         app = App()
 
