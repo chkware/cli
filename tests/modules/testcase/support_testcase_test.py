@@ -24,7 +24,7 @@ class HavingTestcase(RequestMixin, TCMixin):
 class TestTestcaseMixin:
     def test_testcase_as_dict_pass(self):
         file = RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequest.chk"
-        ctx = FileContext.from_file(file, {})
+        ctx = FileContext.from_file(file)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingTestcase(ctx)
@@ -34,7 +34,7 @@ class TestTestcaseMixin:
 
     def test_testcase_as_dict_pass_when_spec_not_found(self):
         file = RES_DIR + "fail_cases/testcases/GET-Plain.chk"
-        ctx = FileContext.from_file(file, {})
+        ctx = FileContext.from_file(file)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingTestcase(ctx)
@@ -46,7 +46,7 @@ class TestTestcaseMixin:
 
     def test_testcase_validated_pass_when_spec_found(self):
         file = RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequest.chk"
-        ctx = FileContext.from_file(file, {})
+        ctx = FileContext.from_file(file)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingTestcase(ctx)
@@ -56,7 +56,7 @@ class TestTestcaseMixin:
 
     def test_testcase_validated_fails_when_no_spec(self):
         file = RES_DIR + "fail_cases/testcases/GET-Plain.chk"
-        ctx = FileContext.from_file(file, {})
+        ctx = FileContext.from_file(file)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingTestcase(ctx)
@@ -67,7 +67,7 @@ class TestTestcaseMixin:
 
     def test_testcase_validated_fails_when_no_in_file_request_spec(self):
         file = RES_DIR + "fail_cases/testcases/GET-NoRequest.chk"
-        ctx = FileContext.from_file(file, {})
+        ctx = FileContext.from_file(file)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingTestcase(ctx)
@@ -78,7 +78,7 @@ class TestTestcaseMixin:
 
     def test_testcase_validated_pass_with_out_file_req(self):
         file = RES_DIR + "pass_cases/testcases/01_UserCreateSpecPassVars.chk"
-        ctx = FileContext.from_file(file, {})
+        ctx = FileContext.from_file(file)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingTestcase(ctx)
@@ -88,7 +88,7 @@ class TestTestcaseMixin:
 
     def test_testcase_validated_fail_with_in_file_req(self):
         file = RES_DIR + "fail_cases/testcases/01_UserCreateSpecPassVars.chk"
-        ctx = FileContext.from_file(file, {})
+        ctx = FileContext.from_file(file)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingTestcase(ctx)
@@ -99,7 +99,7 @@ class TestTestcaseMixin:
 
     def test_testcase_validated_pass_with_declarative_execute(self):
         file = RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequestAndSpecFull.chk"
-        ctx = FileContext.from_file(file, {})
+        ctx = FileContext.from_file(file)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingTestcase(ctx)
@@ -111,7 +111,7 @@ class TestTestcaseMixin:
         file = (
             RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequestAndSpecFullVar.chk"
         )
-        ctx = FileContext.from_file(file, {})
+        ctx = FileContext.from_file(file)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingTestcase(ctx)
@@ -121,7 +121,7 @@ class TestTestcaseMixin:
 
     def test_testcase_validated_fail_for_multiple_request(self):
         file = RES_DIR + "fail_cases/testcases/GET-MultipleRequest.chk"
-        ctx = FileContext.from_file(file, {})
+        ctx = FileContext.from_file(file)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingTestcase(ctx)
@@ -132,7 +132,7 @@ class TestTestcaseMixin:
 
     def test_testcase_validated_fail_for_result_when_request_in_file(self):
         file = RES_DIR + "fail_cases/testcases/01_UserCreateSpecUseResult.chk"
-        ctx = FileContext.from_file(file, {})
+        ctx = FileContext.from_file(file)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingTestcase(ctx)
@@ -143,7 +143,7 @@ class TestTestcaseMixin:
 
     def test_is_request_infile_pass(self):
         file = RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequest.chk"
-        ctx = FileContext.from_file(file, {})
+        ctx = FileContext.from_file(file)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingTestcase(ctx)
@@ -153,7 +153,7 @@ class TestTestcaseMixin:
 
     def test_is_request_infile_fails(self):
         file = RES_DIR + "pass_cases/testcases/01_UserCreateSpec.chk"
-        ctx = FileContext.from_file(file, {})
+        ctx = FileContext.from_file(file)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingTestcase(ctx)

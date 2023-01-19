@@ -1,6 +1,7 @@
 import abc
 from collections.abc import Callable
 from pathlib import Path
+from types import MappingProxyType
 from typing import Any
 
 from chk.infrastructure.contexts import app
@@ -72,13 +73,15 @@ class ExecuteMixin(DocumentMixin):
             raise TypeError("execute_out_file: invalid execute spec")
 
         file_name = dict_get(execute_doc, f"{ExConf.FILE}")
+        file_name = PathFrom(Path(base_file)).absolute(file_name)
 
-        return cb(
-            file_ctx=FileContext.from_file(
-                PathFrom(Path(base_file)).absolute(file_name),
-                dict(self.get_file_context().options),
-            )
+        file_ctx = FileContext.from_file(
+            file_name,
+            options=dict(self.get_file_context().options),
+            # arguments={"variables": {"Method": "GET"}},
         )
+
+        return cb(file_ctx)
 
     def execute_prepare_results(self, value_l: list[object]) -> None:
         """Make results out of values"""

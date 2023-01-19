@@ -92,7 +92,7 @@ class TestPathFrom:
     @staticmethod
     def test_absolute_pass():
         file = tests.RES_DIR + "bitcoin-usd.chk"
-        ctx = FileContext.from_file(file, {})
+        ctx = FileContext.from_file(file)
 
         p = PathFrom(Path(ctx.filepath))
         assert (
