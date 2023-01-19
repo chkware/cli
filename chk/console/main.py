@@ -1,26 +1,33 @@
 """
 Commands
 """
-from types import MappingProxyType
-from typing import Any
-
 import click
 
 import chk.modules.http.main as http_executor
 import chk.modules.testcase.main as testcase_executor
 
-from chk.infrastructure.file_loader import ChkFileLoader, FileContext
+from chk.infrastructure.file_loader import FileContext
+from chk.infrastructure.helper import parse_args
 
 
 # run command
-@click.command('http')
-@click.argument('file')
-@click.option('--result', is_flag=True, help="Only shows the returned output")
-def execute_http(file: str, result: bool) -> None:
+@click.command("http")
+@click.argument("file", type=click.Path(exists=True))
+@click.argument("variables", nargs=-1)
+@click.option("--result", is_flag=True, help="Only shows the returned output")
+def execute_http(file: str, variables: tuple, result: bool) -> None:
     """Command to run Http config file.\r\n
-    FILE: Any .chk file, that has 'version: default.http.*' string in it."""
+    FILE: Any .chk file, that has 'version: default.http.*' string in it.
+    VARIABLES: Space separated Name=Value. eg: Name='User Name' Age=17"""
 
-    ctx = FileContext.from_file(file, options={"result": result})
+    if not all("=" in k for k in variables):
+        raise click.UsageError("One or more variable/s is not `=` separated")
+
+    ctx = FileContext.from_file(
+        file,
+        options={"result": result},
+        arguments={"variables": parse_args(list(variables))},
+    )
 
     http_executor.execute(ctx)
 
