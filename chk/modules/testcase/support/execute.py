@@ -75,10 +75,14 @@ class ExecuteMixin(DocumentMixin):
         file_name = dict_get(execute_doc, f"{ExConf.FILE}")
         file_name = PathFrom(Path(base_file)).absolute(file_name)
 
+        execute_with_doc = (
+            execute_doc[ExConf.WITH] if ExConf.WITH in execute_doc else {}
+        )
+
         file_ctx = FileContext.from_file(
             file_name,
             options=dict(self.get_file_context().options),
-            # arguments={"variables": {"Method": "GET"}},
+            arguments=dict(variables=execute_with_doc),
         )
 
         return cb(file_ctx)
