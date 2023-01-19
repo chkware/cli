@@ -1,6 +1,7 @@
 # type: ignore
 
 """test loader"""
+from types import MappingProxyType
 
 import pytest
 import tests
@@ -44,11 +45,45 @@ class TestChkFileLoader:
 class TestFileContext:
     def test_from_file_pass(self):
         file = tests.RES_DIR + "bitcoin-usd.chk"
-        ctx = FileContext.from_file(file, {})
+        ctx = FileContext.from_file(file)
 
         assert isinstance(ctx, FileContext)
         assert file.lstrip(".") in ctx.filepath
-        assert ctx.filepath > file
+
+        assert len(ctx.options) == 0
+        assert isinstance(ctx.options, MappingProxyType)
+
+        assert len(ctx.arguments) == 0
+        assert isinstance(ctx.arguments, MappingProxyType)
+
+    def test_from_file_pass_with_opt_set(self):
+        file = tests.RES_DIR + "bitcoin-usd.chk"
+        ctx = FileContext.from_file(file, options={"result": False})
+
+        assert isinstance(ctx, FileContext)
+        assert file.lstrip(".") in ctx.filepath
+
+        assert len(ctx.options) == 1
+        assert not ctx.options["result"]
+
+        assert len(ctx.arguments) == 0
+        assert isinstance(ctx.arguments, MappingProxyType)
+
+    def test_from_file_pass_with_opt_arg_set(self):
+        file = tests.RES_DIR + "bitcoin-usd.chk"
+        ctx = FileContext.from_file(
+            file, options={"result": False}, arguments={"variables": {"var": 1}}
+        )
+
+        assert isinstance(ctx, FileContext)
+        assert file.lstrip(".") in ctx.filepath
+
+        assert len(ctx.options) == 1
+        assert not ctx.options["result"]
+
+        assert len(ctx.arguments) == 1
+        assert isinstance(ctx.arguments["variables"], dict)
+        assert ctx.arguments["variables"]["var"] == 1
 
 
 class TestPathFrom:
