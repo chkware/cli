@@ -1,7 +1,7 @@
 # type: ignore
-
-"""Test global helper functions"""
-
+"""
+test global chk functions
+"""
 import pytest
 
 from chk.infrastructure.helper import (
@@ -11,7 +11,24 @@ from chk.infrastructure.helper import (
     data_get,
     is_scalar,
     Cast,
+    parse_args,
 )
+
+
+class TestParseArgs:
+    def test_parse_args_pass_for_unique(self):
+        argv_s = ["Var1=Val1", "Var2=Val2", "Var3=Val3", "Var=Val"]
+        response = parse_args(argv_s)
+
+        assert isinstance(response, dict)
+        assert len(response) == 4
+
+    def test_parse_args_pass_for_override(self):
+        argv_s = ["Var1=Val1", "Var2=Val2", "Var3=Val3", "Var1=Val4"]
+        response = parse_args(argv_s)
+
+        assert isinstance(response, dict)
+        assert len(response) == 3
 
 
 def test_dict_set_pass_when_key_one_dimensional():

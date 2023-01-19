@@ -205,3 +205,16 @@ class Cast:
             var = Cast.to_hashable(var)  # type: ignore
 
         return var
+
+
+def parse_args(argv_s: list[str], delimiter: str = "=") -> dict:
+    """
+    parse and return args to dict
+    :return: dict
+    """
+
+    if argv_s:
+        argv = [item for item in argv_s if delimiter in item]
+        return {item[0]: item[1] for item in [item.split(delimiter) for item in argv]}
+
+    return {}
