@@ -171,7 +171,7 @@ class VariableMixin(DocumentMixin):
         outer_vars = app.get_outer(hf, VarConf.ROOT)
         if isinstance(outer_vars, dict):
             if not all(k in original_vars for k in outer_vars):
-                raise RuntimeError("Variable do not match.")
+                raise RuntimeError("One or more outer variable is undeclared")
 
             original_vars |= outer_vars
 
