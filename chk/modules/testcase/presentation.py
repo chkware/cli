@@ -24,24 +24,6 @@ class AssertResult:
 AssertResultList: TypeAlias = list[AssertResult]
 
 
-# assertion_results = app.get_local(self.file_ctx.filepath_hash, AConst.LOCAL)
-#
-# if not isinstance(assertion_results, list):
-#     raise RuntimeError
-#
-# for assertion_result in assertion_results:
-#     print(
-#         Presentation.displayable_assert_status(
-#             assertion_result.name,
-#             assertion_result.actual_original,
-#             "Success" if assertion_result.is_success else "Fail",
-#         )
-#     )
-#
-#     if assertion_result.is_success is False:
-#         print(Presentation.displayable_assert_message(assertion_result.message))
-#
-# return {}
 def present_assertion_result(ar: AssertResult) -> str:
     status = "Success" if ar.is_success else "Fail"
     resp = f"- Running `{ar.name}` on `{ar.actual_original}` [{status}]"
@@ -68,9 +50,7 @@ def present_result(exposable: list) -> str:
 
     for item in exposable:
         if isinstance(item, AssertResult):
-            printables.append(
-                present_assertion_result(item)
-            )
+            printables.append(present_assertion_result(item))
 
         elif isinstance(item, dict):
             printables.append(present_dict(item))
