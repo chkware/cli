@@ -2,6 +2,7 @@
 Http presentation logic
 """
 from json import dumps as js_dump
+from xml.dom.minidom import parseString
 
 
 def present_dict(sections: dict) -> str:
@@ -19,7 +20,13 @@ def present_dict(sections: dict) -> str:
         resp += "\r\n\r\n"
 
     if "body" in sections:
-        resp += js_dump(sections["body"])
+        try:
+            parseString(sections["body"])
+            resp += sections["body"]
+        except TypeError:
+            resp += js_dump(sections["body"])
+        except Exception:  # just dump to console for now
+            resp += sections["body"]
 
     if not resp:
         resp = js_dump(sections)
