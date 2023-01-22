@@ -14,7 +14,7 @@ from chk.infrastructure.helper import parse_args
 @click.command("http")
 @click.argument("file", type=click.Path(exists=True))
 @click.argument("variables", nargs=-1)
-@click.option("--result", is_flag=True, help="Only shows the returned output")
+@click.option("-r", "--result", is_flag=True, help="Only shows the returned output")
 def execute_http(file: str, variables: tuple, result: bool) -> None:
     """Command to run Http config file.\r\n
     FILE: Any .chk file, that has 'version: default.http.*' string in it.
@@ -35,7 +35,7 @@ def execute_http(file: str, variables: tuple, result: bool) -> None:
 # run command
 @click.command("testcase")
 @click.argument("file")
-@click.option("--result", is_flag=True, help="Only shows the returned output")
+@click.option("-r", "--result", is_flag=True, help="Only shows the returned output")
 def execute_testcase(file: str, result: bool) -> None:
     """Command to run Testcase config file.\r\n
     FILE: Any .chk file, that has 'version: default.testcase.*' string in it."""
