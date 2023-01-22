@@ -24,6 +24,7 @@ class CompiledOptions:
 
     dict = asdict
 
+
 class CompiledDocBlockType(Enum):
     """Support compiled doc blocks"""
 
@@ -134,6 +135,9 @@ class App(NamedTuple):
                 outer_vars,
                 CompiledDocBlockType.VARIABLES.value,
             )
+
+        co = CompiledOptions.from_file_context(file_ctx)
+        data_set(self.environment_ctx, "config", co.dict())
 
     def config(self, key: str, val: object = None) -> object:
         """Set and retrieve config"""
