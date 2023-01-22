@@ -47,11 +47,7 @@ class HttpSpec(
     """
 
     def __init__(self, file_ctx: FileContext):
-        app.config("result", bool(file_ctx.options["result"]))
         self.file_ctx = file_ctx
-        app.print_fmt(
-            f"File: {file_ctx.filepath}\r\n", ret_s=bool(app.config("result"))
-        )
 
     def get_file_context(self) -> FileContext:
         return self.file_ctx
@@ -61,6 +57,9 @@ class HttpSpec(
 
         # save original doc
         app.load_original_doc_from_file_context(self.file_ctx)
+        app.print_fmt(
+            f"File: {self.file_ctx.filepath}\r\n", ret_s=bool(app.config("result"))
+        )
 
         # validation
         version_doc = self.version_validated()
