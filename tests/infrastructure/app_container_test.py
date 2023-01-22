@@ -10,7 +10,7 @@ import tests
 import sys
 from io import TextIOWrapper, BytesIO
 
-from chk.infrastructure.containers import App
+from chk.infrastructure.containers import App, CompiledOptions
 from chk.infrastructure.file_loader import FileContext, ChkFileLoader
 from chk.infrastructure.helper import data_set, data_get
 
@@ -320,3 +320,22 @@ class TestApp:
 
         # assert
         assert out == "Hello, I am Some One. I am 43 years old.\n"
+
+
+class TestCompiledOptions:
+    @staticmethod
+    def test_from_file_context():
+        ctx = FileContext(
+            options=MappingProxyType(
+                {
+                    "result": False,
+                    "dump": False,
+                }
+            )
+        )
+
+        obj = CompiledOptions.from_file_context(ctx).dict()
+
+        assert "result" in obj
+        assert "dump" in obj
+        assert obj["dump"] is False

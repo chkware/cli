@@ -1,13 +1,28 @@
 """
 Global application functionality
 """
+from dataclasses import dataclass, asdict
 from collections.abc import Callable
 from enum import Enum
-from typing import NamedTuple
+from typing import NamedTuple, Self
 
 from chk.infrastructure.file_loader import FileContext, ChkFileLoader
 from chk.infrastructure.helper import dict_get, data_set, data_get
 
+
+@dataclass
+class CompiledOptions:
+    result: bool = True
+    dump: bool = True
+
+    @staticmethod
+    def from_file_context(file_context: FileContext) -> Self:
+        return CompiledOptions(
+            file_context.options.get("result", True),
+            file_context.options.get("dump", True),
+        )
+
+    dict = asdict
 
 class CompiledDocBlockType(Enum):
     """Support compiled doc blocks"""
