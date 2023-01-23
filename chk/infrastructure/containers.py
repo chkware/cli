@@ -137,7 +137,7 @@ class App(NamedTuple):
             )
 
         co = CompiledOptions.from_file_context(file_ctx)
-        data_set(self.environment_ctx, "config", co.dict())
+        data_set(self.environment_ctx, f"{file_ctx.filepath_hash}.config", co.dict())
 
     def config(self, key: str, part: str, val: object = None) -> object:
         """Set and retrieve config"""

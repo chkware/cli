@@ -219,8 +219,8 @@ class TestApp:
 
         app.load_original_doc_from_file_context(ctx)
 
-        assert app.config("result") is False
-        assert app.config("dump") is False
+        assert app.config(ctx.filepath_hash, "result") is False
+        assert app.config(ctx.filepath_hash, "dump") is False
 
     @staticmethod
     def test_config_pass():
