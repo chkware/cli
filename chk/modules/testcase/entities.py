@@ -1,8 +1,6 @@
 """
 Entities for testcase document specification
 """
-import functools
-
 from chk.infrastructure.contexts import app
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.work import WorkerContract
@@ -10,7 +8,7 @@ from chk.infrastructure.work import WorkerContract
 from chk.modules.testcase.support.assertion.support import AssertionHandler
 
 from chk.modules.http.constants import RequestConfigNode as RConst
-from chk.modules.http.main import execute as execute_fn
+from chk.modules.http.main import execute
 from chk.modules.http.request_helper import RequestProcessorPyRequests
 from chk.modules.http.support import RequestMixin
 
@@ -51,7 +49,7 @@ class Testcase(
         app.load_original_doc_from_file_context(self.file_ctx)
         app.print_fmt(
             f"File: {self.file_ctx.filepath}\r\n",
-            ret_s=bool(app.config("result")),
+            ret_s=bool(app.config(self.file_ctx.filepath_hash, "result")),
         )
 
         # validation
@@ -101,18 +99,16 @@ class Testcase(
 
                 app.print_fmt(
                     "- Making request [Success]",
-                    ret_s=bool(app.config("result")),
+                    ret_s=bool(app.config(self.file_ctx.filepath_hash, "result")),
                 )
             except RuntimeError as err:
                 app.print_fmt(
                     "- Making request [Fail]",
-                    ret_s=bool(app.config("result")),
+                    ret_s=bool(app.config(self.file_ctx.filepath_hash, "result")),
                 )
                 raise err
 
         else:
-            execute = functools.partial(execute_fn, display=False)
-
             response = self.execute_out_file(execute)
             if isinstance(response, RuntimeError):
                 raise response
@@ -154,13 +150,13 @@ class Testcase(
 
             app.print_fmt(
                 "- Process data for assertion [Success]",
-                ret_s=bool(app.config("result")),
+                ret_s=bool(app.config(self.file_ctx.filepath_hash, "result")),
             )
 
         except RuntimeError as err:
             app.print_fmt(
                 "- Process data for assertion [Fail]",
-                ret_s=bool(app.config("result")),
+                ret_s=bool(app.config(self.file_ctx.filepath_hash, "result")),
             )
             raise err
 
@@ -171,14 +167,16 @@ class Testcase(
             self.make_exposable()
             app.print_fmt(
                 "- Prepare exposable [Success]",
-                ret_s=bool(app.config("result")),
+                ret_s=bool(app.config(self.file_ctx.filepath_hash, "result")),
             )
-            app.print_fmt("\r\n---", ret_s=bool(app.config("result")))
+            app.print_fmt(
+                "\r\n---", ret_s=bool(app.config(self.file_ctx.filepath_hash, "result"))
+            )
 
             return self.get_exposable()
         except RuntimeError as err:
             app.print_fmt(
                 "- Prepare exposable [Fail]",
-                ret_s=bool(app.config("result")),
+                ret_s=bool(app.config(self.file_ctx.filepath_hash, "result")),
             )
             raise err
