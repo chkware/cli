@@ -1,6 +1,8 @@
 """
 Global application functionality
 """
+import click
+
 from dataclasses import dataclass, asdict
 from collections.abc import Callable
 from enum import Enum
@@ -188,4 +190,5 @@ class App(NamedTuple):
         if ret_s is True:
             return str(callback(message))
 
-        return print(str(callback(message)))
+        click.echo(str(callback(message)))
+        return None

@@ -1,6 +1,7 @@
 """
 Main driver
 """
+import click
 from typing import Any
 
 from chk.infrastructure.contexts import app
@@ -23,7 +24,7 @@ def execute(file_ctx: FileContext) -> Any:
         return response
     except RuntimeError as err:
         return (
-            print("\r\n---\r\n", str(err))
+            click.echo(f"\r\n---\r\n{str(err)}")
             if app.config(file_ctx.filepath_hash, "dump")
             else err
         )
