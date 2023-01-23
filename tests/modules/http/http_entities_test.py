@@ -1,5 +1,6 @@
 # type: ignore
 import tests
+from types import MappingProxyType
 
 from chk.modules.http.entities import HttpSpec
 from chk.infrastructure.file_loader import ChkFileLoader, FileContext
@@ -17,7 +18,7 @@ class TestHttpSpec:
             filepath=file,
             filepath_mangled=f_mangled,
             filepath_hash=f_hash,
-            options={"result": True},
+            options=MappingProxyType({"result": True, "dump": False}),
         )
 
         http = HttpSpec(file_ctx)
