@@ -58,7 +58,8 @@ class HttpSpec(
         # save original doc
         app.load_original_doc_from_file_context(self.file_ctx)
         app.print_fmt(
-            f"File: {self.file_ctx.filepath}\r\n", ret_s=bool(app.config("result"))
+            f"File: {self.file_ctx.filepath}\r\n",
+            ret_s=bool(app.config(self.file_ctx.filepath_hash, "result")),
         )
 
         # validation
@@ -97,10 +98,10 @@ class HttpSpec(
             )
 
             app.print_fmt(
-                "- Making request [Success]", ret_s=bool(app.config("result"))
+                "- Making request [Success]", ret_s=bool(app.config(self.file_ctx.filepath_hash, "result"))
             )
         except RuntimeError as err:
-            app.print_fmt("- Making request [Fail]", ret_s=bool(app.config("result")))
+            app.print_fmt("- Making request [Fail]", ret_s=bool(app.config(self.file_ctx.filepath_hash, "result")))
             raise err
 
     def __after_main__(self) -> list:
@@ -109,13 +110,13 @@ class HttpSpec(
         try:
             self.make_exposable()
             app.print_fmt(
-                "- Prepare exposable [Success]", ret_s=bool(app.config("result"))
+                "- Prepare exposable [Success]", ret_s=bool(app.config(self.file_ctx.filepath_hash, "result"))
             )
-            app.print_fmt("\r\n---", ret_s=bool(app.config("result")))
+            app.print_fmt("\r\n---", ret_s=bool(app.config(self.file_ctx.filepath_hash, "result")))
 
             return self.get_exposable()
         except RuntimeError as err:
             app.print_fmt(
-                "- Prepare exposable [Fail]", ret_s=bool(app.config("result"))
+                "- Prepare exposable [Fail]", ret_s=bool(app.config(self.file_ctx.filepath_hash, "result"))
             )
             raise err

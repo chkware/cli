@@ -25,7 +25,10 @@ def execute_http(file: str, variables: tuple, result: bool) -> None:
 
     ctx = FileContext.from_file(
         file,
-        options={"result": result},
+        options={
+            "dump": True,
+            "result": result,
+        },
         arguments={"variables": parse_args(list(variables))},
     )
 
@@ -40,7 +43,13 @@ def execute_testcase(file: str, result: bool) -> None:
     """Command to run Testcase config file.\r\n
     FILE: Any .chk file, that has 'version: default.testcase.*' string in it."""
 
-    ctx = FileContext.from_file(file, options={"result": result})
+    ctx = FileContext.from_file(
+        file,
+        options={
+            "dump": True,
+            "result": result,
+        },
+    )
 
     testcase_executor.execute(ctx)
 
