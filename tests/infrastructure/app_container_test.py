@@ -225,11 +225,11 @@ class TestApp:
     @staticmethod
     def test_config_pass():
         app = App()
-        app.config("buffer_access_off", True)
+        app.config("a1b2", True, "buffer_access_off")
 
-        assert app.config("buffer_access_off") is True
-        assert app.config("buffer_access_off", {"d": 1}) == {"d": 1}
-        assert app.config("buffer_access_off") == {"d": 1}
+        assert app.config("a1b2", part="buffer_access_off") is True
+        assert app.config("a1b2", {"d": 1}, "buffer_access_off") == {"d": 1}
+        assert app.config("a1b2", part="buffer_access_off") == {"d": 1}
 
     @staticmethod
     def test_app_set_local_pass():
