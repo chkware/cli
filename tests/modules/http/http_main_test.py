@@ -11,7 +11,7 @@ class TestExecute:
     @staticmethod
     def test_execute_pass_with_display():
         file = RES_DIR + "pass_cases/GET-Plain.chk"
-        ctx = FileContext.from_file(file, options={"result": False})
+        ctx = FileContext.from_file(file, options={"result": False, "dump": True})
 
         old_stdout = sys.stdout
         sys.stdout = TextIOWrapper(BytesIO(), sys.stdout.encoding)
@@ -33,12 +33,12 @@ class TestExecute:
     @staticmethod
     def test_execute_pass_without_display():
         file = RES_DIR + "pass_cases/GET-Plain.chk"
-        ctx = FileContext.from_file(file, options={"result": True})
+        ctx = FileContext.from_file(file, options={"result": True, "dump": False})
 
         old_stdout = sys.stdout
         sys.stdout = TextIOWrapper(BytesIO(), sys.stdout.encoding)
 
-        resp = execute(ctx, False)
+        resp = execute(ctx)
 
         # get output
         sys.stdout.seek(0)  # jump to the start
@@ -55,12 +55,12 @@ class TestExecute:
     @staticmethod
     def test_execute_fails_with_wrong_url():
         file = RES_DIR + "fail_cases/GET-Plain-WrongURL.chk"
-        ctx = FileContext.from_file(file, options={"result": False})
+        ctx = FileContext.from_file(file, options={"result": False, "dump": True})
 
         old_stdout = sys.stdout
         sys.stdout = TextIOWrapper(BytesIO(), sys.stdout.encoding)
 
-        execute(ctx, True)
+        execute(ctx)
 
         # get output
         sys.stdout.seek(0)  # jump to the start

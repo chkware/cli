@@ -10,7 +10,7 @@ import tests
 import sys
 from io import TextIOWrapper, BytesIO
 
-from chk.infrastructure.containers import App
+from chk.infrastructure.containers import App, CompiledOptions
 from chk.infrastructure.file_loader import FileContext, ChkFileLoader
 from chk.infrastructure.helper import data_set, data_get
 
@@ -200,13 +200,51 @@ class TestApp:
         }
 
     @staticmethod
+    def test_app_load_original_doc_from_file_with_options():
+        app = App()
+        file = tests.RES_DIR + "UserOk.chk"
+        fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file)
+
+        ctx = FileContext(
+            filepath=file,
+            filepath_mangled=fpath_mangled,
+            filepath_hash=fpath_hash,
+            options=MappingProxyType(
+                {
+                    "result": False,
+                    "dump": False,
+                }
+            ),
+        )
+
+        app.load_original_doc_from_file_context(ctx)
+
+        assert app.config(ctx.filepath_hash, "result") is False
+        assert app.config(ctx.filepath_hash, "dump") is False
+
+    @staticmethod
     def test_config_pass():
         app = App()
-        app.config("buffer_access_off", True)
+        app.config("a1b2", "buffer_access_off", True)
 
-        assert app.config("buffer_access_off") is True
-        assert app.config("buffer_access_off", {"d": 1}) == {"d": 1}
-        assert app.config("buffer_access_off") == {"d": 1}
+        assert app.config("a1b2", "buffer_access_off") is True
+        assert app.config("a1b2", "buffer_access_off", {"d": 1}) == {"d": 1}
+        assert app.config("a1b2", "buffer_access_off") == {"d": 1}
+
+    @staticmethod
+    def test_config_fail_when_part_zero_length():
+        app = App()
+        with pytest.raises(ValueError):
+            app.config("a1b2", "", True)
+
+    @staticmethod
+    def test_config_pass_with_part():
+        app = App()
+        app.config("a1b2", "some", ["a", 1])
+
+        assert app.config("a1b2", "some") == ["a", 1]
+        assert app.config("a1b2", "buffer_access_off", {"d": 1}) == {"d": 1}
+        assert app.config("a1b2", "buffer_access_off") == {"d": 1}
 
     @staticmethod
     def test_app_set_local_pass():
@@ -320,3 +358,22 @@ class TestApp:
 
         # assert
         assert out == "Hello, I am Some One. I am 43 years old.\n"
+
+
+class TestCompiledOptions:
+    @staticmethod
+    def test_from_file_context():
+        ctx = FileContext(
+            options=MappingProxyType(
+                {
+                    "result": False,
+                    "dump": False,
+                }
+            )
+        )
+
+        obj = CompiledOptions.from_file_context(ctx).dict()
+
+        assert "result" in obj
+        assert "dump" in obj
+        assert obj["dump"] is False

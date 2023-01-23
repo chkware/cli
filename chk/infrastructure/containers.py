@@ -1,12 +1,30 @@
 """
 Global application functionality
 """
+import click
+
+from dataclasses import dataclass, asdict
 from collections.abc import Callable
 from enum import Enum
-from typing import NamedTuple
+from typing import NamedTuple, Self
 
 from chk.infrastructure.file_loader import FileContext, ChkFileLoader
 from chk.infrastructure.helper import dict_get, data_set, data_get
+
+
+@dataclass
+class CompiledOptions:
+    result: bool = True
+    dump: bool = True
+
+    @staticmethod
+    def from_file_context(file_context: FileContext) -> Self:
+        return CompiledOptions(
+            file_context.options.get("result", True),
+            file_context.options.get("dump", True),
+        )
+
+    dict = asdict
 
 
 class CompiledDocBlockType(Enum):
@@ -120,12 +138,21 @@ class App(NamedTuple):
                 CompiledDocBlockType.VARIABLES.value,
             )
 
-    def config(self, key: str, val: object = None) -> object:
-        """Set and retrieve config"""
-        if val is not None:
-            data_set(self.environment_ctx, f"config.{key}", val)
+        co = CompiledOptions.from_file_context(file_ctx)
+        data_set(self.environment_ctx, f"{file_ctx.filepath_hash}.config", co.dict())
 
-        return dict_get(self.environment_ctx, f"config.{key}", None)
+    def config(self, key: str, part: str, val: object = None) -> object:
+        """Set and retrieve config"""
+
+        if len(part) == 0:
+            raise ValueError("part can't be zero-length")
+
+        loc = f"{key}.config.{part}"
+
+        if val is not None:
+            data_set(self.environment_ctx, loc, val)
+
+        return dict_get(self.environment_ctx, loc, None)
 
     def set_local(self, key: str, val: object, part: str) -> bool:
         """Set local variable values in compiled_doc dict"""
@@ -163,4 +190,5 @@ class App(NamedTuple):
         if ret_s is True:
             return str(callback(message))
 
-        return print(str(callback(message)))
+        click.echo(str(callback(message)))
+        return None

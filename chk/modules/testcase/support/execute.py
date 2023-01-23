@@ -1,7 +1,6 @@
 import abc
 from collections.abc import Callable
 from pathlib import Path
-from types import MappingProxyType
 from typing import Any
 
 from chk.infrastructure.contexts import app
@@ -81,7 +80,7 @@ class ExecuteMixin(DocumentMixin):
 
         file_ctx = FileContext.from_file(
             file_name,
-            options=dict(self.get_file_context().options),
+            options=dict(self.get_file_context().options) | {"dump": False},
             arguments=dict(variables=execute_with_doc),
         )
 
