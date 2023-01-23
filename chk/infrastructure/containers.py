@@ -139,12 +139,18 @@ class App(NamedTuple):
         co = CompiledOptions.from_file_context(file_ctx)
         data_set(self.environment_ctx, "config", co.dict())
 
-    def config(self, key: str, val: object = None, part: str = "") -> object:
+    def config(self, key: str, part: str, val: object = None) -> object:
         """Set and retrieve config"""
-        if val is not None:
-            data_set(self.environment_ctx, f"{key}.config.{part}", val)
 
-        return dict_get(self.environment_ctx, f"{key}.config.{part}", None)
+        if len(part) == 0:
+            raise ValueError("part can't be zero-length")
+
+        loc = f"{key}.config.{part}"
+
+        if val is not None:
+            data_set(self.environment_ctx, loc, val)
+
+        return dict_get(self.environment_ctx, loc, None)
 
     def set_local(self, key: str, val: object, part: str) -> bool:
         """Set local variable values in compiled_doc dict"""

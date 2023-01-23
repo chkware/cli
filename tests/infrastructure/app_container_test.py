@@ -225,11 +225,26 @@ class TestApp:
     @staticmethod
     def test_config_pass():
         app = App()
-        app.config("a1b2", True, "buffer_access_off")
+        app.config("a1b2", "buffer_access_off", True)
 
-        assert app.config("a1b2", part="buffer_access_off") is True
-        assert app.config("a1b2", {"d": 1}, "buffer_access_off") == {"d": 1}
-        assert app.config("a1b2", part="buffer_access_off") == {"d": 1}
+        assert app.config("a1b2", "buffer_access_off") is True
+        assert app.config("a1b2", "buffer_access_off", {"d": 1}) == {"d": 1}
+        assert app.config("a1b2", "buffer_access_off") == {"d": 1}
+
+    @staticmethod
+    def test_config_fail_when_part_zero_length():
+        app = App()
+        with pytest.raises(ValueError):
+            app.config("a1b2", "", True)
+
+    @staticmethod
+    def test_config_pass_with_part():
+        app = App()
+        app.config("a1b2", "some", ["a", 1])
+
+        assert app.config("a1b2", "some") == ["a", 1]
+        assert app.config("a1b2", "buffer_access_off", {"d": 1}) == {"d": 1}
+        assert app.config("a1b2", "buffer_access_off") == {"d": 1}
 
     @staticmethod
     def test_app_set_local_pass():
