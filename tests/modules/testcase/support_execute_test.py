@@ -156,15 +156,13 @@ class TestExecuteMixin:
         file = (
             RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequestAndSpecFullVar.chk"
         )
-        ctx = FileContext.from_file(file, options={"result": True})
+        ctx = FileContext.from_file(file, options={"result": True, "dump": False})
 
         document = ChkFileLoader.to_dict(ctx.filepath)
         app.set_compiled_doc(ctx.filepath_hash, document)
 
         tc = HavingExecute(ctx)
-        execute = functools.partial(execute_fn, display=False)
-
-        response = tc.execute_out_file(execute)
+        response = tc.execute_out_file(execute_fn)
 
         assert isinstance(response, list)
 
@@ -172,15 +170,13 @@ class TestExecuteMixin:
 
     def test_execute_prepare_results_pass(self):
         file = RES_DIR + "pass_cases/testcases/03_UserCreateSpec_ResultList.chk"
-        ctx = FileContext.from_file(file, options={"result": True})
+        ctx = FileContext.from_file(file, options={"result": True, "dump": False})
 
         document = ChkFileLoader.to_dict(ctx.filepath)
         app.set_compiled_doc(ctx.filepath_hash, document)
 
         tc = HavingExecute(ctx)
-        execute = functools.partial(execute_fn, display=False)
-
-        response = tc.execute_out_file(execute)
+        response = tc.execute_out_file(execute_fn)
         tc.execute_prepare_results(response)
 
         result_list = dict_get(
@@ -196,15 +192,13 @@ class TestExecuteMixin:
 
     def test_execute_prepare_results_pass_with_underscore(self):
         file = RES_DIR + "pass_cases/testcases/03_UserCreateSpec_ResultListIgnore.chk"
-        ctx = FileContext.from_file(file, options={"result": True})
+        ctx = FileContext.from_file(file, options={"result": True, "dump": False})
 
         document = ChkFileLoader.to_dict(ctx.filepath)
         app.set_compiled_doc(ctx.filepath_hash, document)
 
         tc = HavingExecute(ctx)
-        execute = functools.partial(execute_fn, display=False)
-
-        response = tc.execute_out_file(execute)
+        response = tc.execute_out_file(execute_fn)
         tc.execute_prepare_results(response)
 
         result_list = dict_get(
@@ -222,15 +216,13 @@ class TestExecuteMixin:
 
     def test_execute_prepare_results_pass_no_result(self):
         file = RES_DIR + "pass_cases/testcases/04_UserCreateSpec_NoResult.chk"
-        ctx = FileContext.from_file(file, options={"result": True})
+        ctx = FileContext.from_file(file, options={"result": True, "dump": False})
 
         document = ChkFileLoader.to_dict(ctx.filepath)
         app.set_compiled_doc(ctx.filepath_hash, document)
 
         tc = HavingExecute(ctx)
-        execute = functools.partial(execute_fn, display=False)
-
-        response = tc.execute_out_file(execute)
+        response = tc.execute_out_file(execute_fn)
         tc.execute_prepare_results(response)
 
         result_list = dict_get(
