@@ -16,12 +16,14 @@ from chk.infrastructure.helper import dict_get, data_set, data_get
 class CompiledOptions:
     result: bool = True
     dump: bool = True
+    format: bool = True
 
     @staticmethod
     def from_file_context(file_context: FileContext) -> Self:
         return CompiledOptions(
             file_context.options.get("result", True),
             file_context.options.get("dump", True),
+            file_context.options.get("format", True),
         )
 
     dict = asdict

@@ -2,6 +2,7 @@
 Main driver
 """
 import click
+from json import dumps
 from typing import Any
 
 from chk.infrastructure.contexts import app
@@ -19,7 +20,12 @@ def execute(file_ctx: FileContext) -> Any:
     try:
         response = handle_worker(http_spec)
         if app.config(file_ctx.filepath_hash, "dump"):
-            app.print_fmt(response, present_result)
+            output_formatter = (
+                present_result
+                if app.config(file_ctx.filepath_hash, "format")
+                else dumps
+            )
+            app.print_fmt(response, output_formatter)  # type: ignore
 
         return response
     except RuntimeError as err:

@@ -15,7 +15,10 @@ from chk.infrastructure.helper import parse_args
 @click.argument("file", type=click.Path(exists=True))
 @click.argument("variables", nargs=-1)
 @click.option("-r", "--result", is_flag=True, help="Only shows the returned output")
-def execute_http(file: str, variables: tuple, result: bool) -> None:
+@click.option(
+    "-nf", "--no-format", is_flag=True, help="No formatting to show the output"
+)
+def execute_http(file: str, variables: tuple, result: bool, no_format: bool) -> None:
     """Command to run Http config file.\r\n
     FILE: Any .chk file, that has 'version: default.http.*' string in it.
     VARIABLES: Space separated Name=Value. eg: Name='User Name' Age=17"""
@@ -28,6 +31,7 @@ def execute_http(file: str, variables: tuple, result: bool) -> None:
         options={
             "dump": True,
             "result": result,
+            "format": not no_format,
         },
         arguments={"variables": parse_args(list(variables))},
     )
