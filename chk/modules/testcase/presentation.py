@@ -1,7 +1,6 @@
 """
 Presenting assert data
 """
-from typing import TypeAlias
 from dataclasses import dataclass
 
 from chk.modules.http.presentation import present_dict
@@ -21,9 +20,6 @@ class AssertResult:
     assert_fn: str = ""
 
 
-AssertResultList: TypeAlias = list[AssertResult]
-
-
 def present_assertion_result(ar: AssertResult) -> str:
     status = "Success" if ar.is_success else "Fail"
     resp = f"- Running `{ar.name}` on `{ar.actual_original}` [{status}]"
@@ -35,7 +31,7 @@ def present_assertion_result(ar: AssertResult) -> str:
     return resp
 
 
-def present_assertion_result_list(assertion_results: AssertResultList) -> str:
+def present_assertion_result_list(assertion_results: list[AssertResult]) -> str:
     resp = ""
 
     for item in assertion_results:

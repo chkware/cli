@@ -8,7 +8,7 @@ from unittest import TestCase, TestSuite, TextTestRunner
 
 from chk.infrastructure.helper import Cast
 from chk.modules.testcase.constants import AssertConfigNode
-from chk.modules.testcase.presentation import AssertResult, AssertResultList
+from chk.modules.testcase.presentation import AssertResult
 
 
 class AssertionCase(TestCase):
@@ -250,7 +250,7 @@ class AssertionHandler:
     @staticmethod
     def asserts_test_run(
         assertions: list, actual_values: dict, replace_values: Callable
-    ) -> AssertResultList:
+    ) -> list[AssertResult]:
         """Process given assertions and run test based on those"""
 
         suite = TestSuite()
