@@ -1,6 +1,8 @@
 """
 testcase module's driver
 """
+import functools
+
 import click
 from typing import Any
 
@@ -20,7 +22,13 @@ def execute(file_ctx: FileContext) -> Any:
         response = handle_worker(testcase)
 
         if app.config(file_ctx.filepath_hash, "dump"):
-            app.print_fmt(response, present_result)
+            present_result_t = (
+                present_result
+                if app.config(file_ctx.filepath_hash, "format")
+                else functools.partial(present_result, as_json=True)
+            )
+
+            app.print_fmt(response, present_result_t)  # type: ignore
 
         return response
     except RuntimeError as err:
