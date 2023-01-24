@@ -1,9 +1,10 @@
 """
 Main driver
 """
-import click
-from json import dumps
 from typing import Any
+from json import dumps
+
+import click
 
 from chk.infrastructure.contexts import app
 from chk.infrastructure.work import handle_worker
