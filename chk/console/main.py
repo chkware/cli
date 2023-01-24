@@ -43,7 +43,10 @@ def execute_http(file: str, variables: tuple, result: bool, no_format: bool) -> 
 @click.command("testcase")
 @click.argument("file")
 @click.option("-r", "--result", is_flag=True, help="Only shows the returned output")
-def execute_testcase(file: str, result: bool) -> None:
+@click.option(
+    "-nf", "--no-format", is_flag=True, help="No formatting to show the output"
+)
+def execute_testcase(file: str, result: bool, no_format: bool) -> None:
     """Command to run Testcase config file.\r\n
     FILE: Any .chk file, that has 'version: default.testcase.*' string in it."""
 
@@ -52,6 +55,7 @@ def execute_testcase(file: str, result: bool) -> None:
         options={
             "dump": True,
             "result": result,
+            "format": not no_format,
         },
     )
 
