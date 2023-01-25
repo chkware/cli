@@ -9,4 +9,4 @@ spec:
     file: './01_UserCreateRequest.chk'
     result: 21
   asserts:
-    - {type: AssertEquals, actual: $Code, expected: 201}
+    - {type: AssertEqual, actual: $Code, expected: 201}

@@ -14,4 +14,4 @@ spec:
       Data: 22
     result: $Code
   asserts:
-    - {type: AssertEquals, actual: $Code, expected: 201}
+    - {type: AssertEqual, actual: $Code, expected: 201}

@@ -8,4 +8,4 @@ spec:
     file: './01_UserCreateRequest.chk'
     result: [$Code, ...]
   asserts:
-    - {type: AssertEquals, actual: $Code, expected: 201}
+    - {type: AssertEqual, actual: $Code, expected: 201}

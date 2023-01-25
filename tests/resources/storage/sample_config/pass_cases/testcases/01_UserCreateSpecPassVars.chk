@@ -1,7 +1,7 @@
 version: 'default:testcase:0.7.2'
 
 variables:
-  $Code: ~
+  Code: ~
 
 spec:
   execute:
@@ -11,4 +11,4 @@ spec:
       Job: Tester
     result: [$Code]
   asserts:
-    - {type: AssertEquals, actual: $Code, expected: 201}
+    - {type: AssertEqual, actual: $Code, expected: 201}
