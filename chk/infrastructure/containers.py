@@ -1,12 +1,13 @@
 """
 Global application functionality
 """
-import click
 
 from dataclasses import dataclass, asdict
 from collections.abc import Callable
 from enum import Enum
 from typing import NamedTuple, Self
+
+import click
 
 from chk.infrastructure.file_loader import FileContext, ChkFileLoader
 from chk.infrastructure.helper import dict_get, data_set, data_get

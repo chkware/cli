@@ -2,9 +2,9 @@
 testcase module's driver
 """
 import functools
+from typing import Any
 
 import click
-from typing import Any
 
 from chk.infrastructure.contexts import app
 from chk.infrastructure.file_loader import FileContext
