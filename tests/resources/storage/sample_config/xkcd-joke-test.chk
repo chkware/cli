@@ -1,0 +1,11 @@
+---
+version: default:testcase:0.7.2
+request:
+  url: https://xkcd.com/614/info.0.json
+  method: GET
+
+spec:
+  asserts:
+    - {type: AssertEqual, actual: $_response.code, expected: 200}
+    - {type: AssertIsInt, actual: $_response.body.num}
+    - {type: AssertEqual, actual: $_response.body.year, expected: 2009}
