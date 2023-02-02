@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Date: not-available <br>
 
 ---
+## [0.4.2 `alpha`]
+Date: 2023-02-03 <br>
+
+### Added
+- Add `--no-format`, `-nf` to get data as prepared by expose [#180](https://github.com/chkware/cli/issues/180)
+- Improved cross-patform cross-terminal output print [#177](https://github.com/chkware/cli/issues/177)
+- Output valid json encodable output for results [#175](https://github.com/chkware/cli/issues/175)
+- Support for short tag `-r` instead of `--result` [#174](https://github.com/chkware/cli/issues/174)
+- Parse-able expose for testcase and http [#173](https://github.com/chkware/cli/issues/173)
+- Pass values from callee using CLI args [#170](https://github.com/chkware/cli/issues/170)
+- Pass values from callee using with statement [#168](https://github.com/chkware/cli/issues/168)
+- Path resolution implementation for out-file testcase scenario [#164](https://github.com/chkware/cli/issues/164)
+- Path resolution for out-file testcase scenario [#161](https://github.com/chkware/cli/issues/161)
+- Path, and URL resolution for execute [#160](https://github.com/chkware/cli/issues/160)
+- Out-file execution for testcase [#159](https://github.com/chkware/cli/issues/159)
+- Add verbosibility to http sub command [#152](https://github.com/chkware/cli/issues/152)
+- Specific http error handling for http spec [#150](https://github.com/chkware/cli/issues/150)
+- Support for versioned functionality [#148](https://github.com/chkware/cli/issues/148)
+
+### Changed
+- Update get_symbol_table so that it returns mangled var namespace [#166](https://github.com/chkware/cli/issues/166)
+- Virtual document based system process - architectural upgrade [#131](https://github.com/chkware/cli/issues/131)
+
+### Removed
+- Remove support for `request.return` [#173](https://github.com/chkware/cli/issues/173)
+
+---
 ## [0.4.0 `alpha`]
 Date: 2022-09-07 <br>
 
