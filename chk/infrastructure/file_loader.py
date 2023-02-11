@@ -4,9 +4,9 @@ File loader utility
 
 from pathlib import Path
 from types import MappingProxyType
-from typing import NamedTuple, Self
+from typing import NamedTuple
 
-from yaml import safe_load
+from yaml import safe_load  # type: ignore
 
 from chk.infrastructure import exception, mangle
 
@@ -50,7 +50,7 @@ class FileContext(NamedTuple):
     filepath_hash: str = ""
 
     @staticmethod
-    def from_file(file: str, **kwarg: dict) -> Self:
+    def from_file(file: str, **kwarg: dict) -> "FileContext":
         ChkFileLoader.is_file_ok(file)
         absolute_path = str(Path(file).absolute())
         fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(absolute_path)
