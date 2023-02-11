@@ -31,7 +31,18 @@ class AssertionCase(TestCase):
 
     def case_AssertEqual(self) -> None:
         """Asserts equality for actual value on expected value"""
-        actual = Cast.to_auto(self.actual)
+
+        actual = self.actual
+
+        if not isinstance(self.actual, type(self.expect)):
+            if isinstance(self.expect, int):
+                actual = Cast.to_int(self.actual)
+            elif isinstance(self.expect, float):
+                actual = Cast.to_float(self.actual)
+            elif isinstance(self.expect, bool):
+                actual = Cast.to_bool(self.actual)
+            else:
+                actual = Cast.to_auto(self.actual)
 
         self.assertEqual(actual, self.expect)
 
@@ -283,7 +294,7 @@ class AssertionHandler:
 
         if run_result.wasSuccessful() is False:
             for run_result_kind in ("failures", "errors"):
-                for (tc, string) in getattr(run_result, run_result_kind):
+                for tc, string in getattr(run_result, run_result_kind):
                     for item in results:
                         if item.name_run in tc.id():
                             item.is_success = False
