@@ -1,6 +1,5 @@
-"""
-Commands
-"""
+"""Commands"""
+
 import click
 
 import chk.modules.http.main as http_executor
@@ -10,7 +9,7 @@ from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import parse_args
 
 
-# run command
+# run http sub-command
 @click.command("http")
 @click.argument("file", type=click.Path(exists=True))
 @click.argument("variables", nargs=-1)
@@ -39,16 +38,22 @@ def execute_http(file: str, variables: tuple, result: bool, no_format: bool) -> 
     http_executor.execute(ctx)
 
 
-# run command
+# run testcase sub-command
 @click.command("testcase")
 @click.argument("file")
+@click.argument("variables", nargs=-1)
 @click.option("-r", "--result", is_flag=True, help="Only shows the returned output")
 @click.option(
     "-nf", "--no-format", is_flag=True, help="No formatting to show the output"
 )
-def execute_testcase(file: str, result: bool, no_format: bool) -> None:
+def execute_testcase(
+    file: str, variables: tuple, result: bool, no_format: bool
+) -> None:
     """Command to run Testcase config file.\r\n
     FILE: Any .chk file, that has 'version: default.testcase.*' string in it."""
+
+    if not all("=" in k for k in variables):
+        raise click.UsageError("One or more variable/s is not `=` separated")
 
     ctx = FileContext.from_file(
         file,
@@ -57,6 +62,7 @@ def execute_testcase(file: str, result: bool, no_format: bool) -> None:
             "result": result,
             "format": not no_format,
         },
+        arguments={"variables": parse_args(list(variables))},
     )
 
     testcase_executor.execute(ctx)

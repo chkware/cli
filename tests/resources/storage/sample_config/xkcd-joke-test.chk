@@ -1,7 +1,11 @@
 ---
 version: default:testcase:0.7.2
+
+variables:
+  JokeId: 614
+
 request:
-  url: https://xkcd.com/614/info.0.json
+  url: https://xkcd.com/{$JokeId}/info.0.json
   method: GET
 
 spec:
