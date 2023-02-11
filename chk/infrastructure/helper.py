@@ -108,28 +108,25 @@ def data_set(var: dict | list, keymap: str, value: Any) -> bool:
 
 def data_get(var: dict | list, keymap: str, default: object = None) -> Any:
     """
-    Get a value of a dictionary|list by dot notation key
-    :param var: the dictionary|list we'll get value for
+    Get a value of a dict|list by dot notation key
+    :param var: the dict|list we'll get value for
     :param keymap: dot separated keys
     :param default: None
     :return:
     """
-    if len(keymap) == 0 or not var:
-        return default
 
-    dot_loc = keymap.find(".")
+    data = var.copy()
+    indexes = keymap.split(".")
 
-    key = keymap if dot_loc < 1 else keymap[: keymap.find(".")]
+    for index in indexes:
+        if isinstance(data, dict) and index in data:
+            data = data[index]
+        elif isinstance(data, list) and index.isnumeric():
+            data = data[int(index)]
+        else:
+            return default
 
-    if isinstance(key, str) and key.isnumeric():
-        key = int(key)
-
-    key_last = None if dot_loc < 1 else keymap[(keymap.find(".") + 1) :]
-
-    try:
-        return var[key] if key_last is None else data_get(var[key], key_last, default)
-    except (LookupError, TypeError):
-        return default
+    return data
 
 
 def is_scalar(val: object) -> bool:
