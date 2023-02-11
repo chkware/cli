@@ -144,24 +144,24 @@ class Cast:
     def to_int(var: str) -> int | str:
         try:
             return int(var)
-        except:
+        except ValueError:
             return var
 
     @staticmethod
     def to_float(var: str) -> float | str:
         try:
             return float(var)
-        except:
+        except ValueError:
             return var
 
     @staticmethod
     def to_int_or_float(var: str) -> float | int | str:
         try:
             return int(var)
-        except:
+        except ValueError:
             try:
                 return float(var)
-            except:
+            except ValueError:
                 return var
 
     @staticmethod
@@ -185,7 +185,7 @@ class Cast:
     def to_hashable(var: str) -> dict | list | str:
         try:
             return ast.literal_eval(var)
-        except:
+        except Exception:
             return var
 
     @staticmethod
