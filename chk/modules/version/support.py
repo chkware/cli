@@ -41,6 +41,9 @@ class DocumentMixin:
         if not document:
             raise RuntimeError(err_message("fatal.V0009", extra="Document missing"))
 
+        if not isinstance(document, dict):
+            raise RuntimeError(err_message("fatal.V0009", extra="Document type mismatch"))
+
         value = dict_get(document, key)
         return value if with_key is False else {key: value}
 
