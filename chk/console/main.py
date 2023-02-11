@@ -25,7 +25,7 @@ def execute_http(file: str, variables: tuple, result: bool, no_format: bool) -> 
     if not all("=" in k for k in variables):
         raise click.UsageError("One or more variable/s is not `=` separated")
 
-    ctx = FileContext.from_file(
+    ctx: FileContext = FileContext.from_file(
         file,
         options={
             "dump": True,
@@ -55,7 +55,7 @@ def execute_testcase(
     if not all("=" in k for k in variables):
         raise click.UsageError("One or more variable/s is not `=` separated")
 
-    ctx = FileContext.from_file(
+    ctx: FileContext = FileContext.from_file(
         file,
         options={
             "dump": True,
