@@ -78,7 +78,7 @@ class ExecuteMixin(DocumentMixin):
             execute_doc[ExConf.WITH] if ExConf.WITH in execute_doc else {}
         )
 
-        file_ctx = FileContext.from_file(
+        file_ctx: FileContext = FileContext.from_file(
             file_name,
             options=dict(self.get_file_context().options) | {"dump": False},
             arguments=dict(variables=execute_with_doc),
