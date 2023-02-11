@@ -5,7 +5,7 @@ Global application functionality
 from dataclasses import dataclass, asdict
 from collections.abc import Callable
 from enum import Enum
-from typing import NamedTuple, Self
+from typing import NamedTuple
 
 import click
 
@@ -20,7 +20,7 @@ class CompiledOptions:
     format: bool = True
 
     @staticmethod
-    def from_file_context(file_context: FileContext) -> Self:
+    def from_file_context(file_context: FileContext) -> "CompiledOptions":
         return CompiledOptions(
             file_context.options.get("result", True),
             file_context.options.get("dump", True),
