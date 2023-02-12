@@ -114,8 +114,8 @@ class TestVersionMixin:
 
         ver = HavingVersion(file_ctx)
 
-        assert isinstance(ver.get_document_type(), str)
-        assert not isinstance(ver.get_document_type(), DocumentType)
+        with pytest.raises(ValueError):
+            ver.get_document_type()
 
         del app.original_doc[file_ctx.filepath_hash]
 
@@ -137,7 +137,7 @@ class TestVersionMixin:
         app.original_doc[file_ctx.filepath_hash] = config
 
         ver = HavingVersion(file_ctx)
-        with pytest.raises(RuntimeError):
+        with pytest.raises(ValueError):
             ver.get_validation_schema()
 
         del app.original_doc[file_ctx.filepath_hash]

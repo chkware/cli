@@ -3,7 +3,7 @@ Variable entities
 """
 import json
 from dataclasses import dataclass, asdict
-from typing import NamedTuple, Self, Any
+from typing import NamedTuple, Any
 
 from chk.modules.variables.constants import VariableConfigNode as VConst
 
@@ -60,7 +60,7 @@ class ApiResponse:
     body: dict
 
     @staticmethod
-    def from_dict(response: dict) -> Self:
+    def from_dict(response: dict) -> "ApiResponse":
         """Convert response dict to ApiResponse"""
 
         def convert_json(string: str) -> Any:

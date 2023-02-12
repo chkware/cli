@@ -26,7 +26,7 @@ class TestHttpRequestArgCompiler:
             'url': 'https://httpbin.org/post',
         }
         request_arg = dict()
-        with pytest.raises(ValueError):
+        with pytest.raises(KeyError):
             assert HttpRequestArgCompiler.add_url_and_method(MappingProxyType(request_data), request_arg) is False
 
     def test_add_method_invalid(self):

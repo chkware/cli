@@ -7,11 +7,12 @@ from urllib.parse import unquote, urlparse
 from requests import (
     request,
     TooManyRedirects,
-    ConnectionError,
+    ConnectionError as ConnError,
     ConnectTimeout,
     ReadTimeout,
     RequestException,
 )
+
 from requests.auth import HTTPBasicAuth
 
 from chk.modules.http.constants import RequestConfigNode as ConfElem
@@ -33,10 +34,10 @@ class RequestProcessorPyRequests:
         )
 
         try:
-            response = request(**request_args)
+            response = request(**request_args, timeout=30)
         except ConnectTimeout as err:
             raise RuntimeError("Connection time out") from err
-        except ConnectionError as err:
+        except ConnError as err:
             raise RuntimeError("Connection error") from err
         except ReadTimeout as err:
             raise RuntimeError("Read time out") from err
@@ -64,10 +65,16 @@ class HttpRequestArgCompiler:
     @staticmethod
     def add_url_and_method(request_data: MappingProxyType, request_arg: dict) -> None:
         """add default request url and request method"""
-        if allowed_method(request_data.get(ConfElem.METHOD)):
+        if ConfElem.METHOD not in request_data:
+            raise KeyError("required key `method:` not found")
+
+        if allowed_method(request_data[ConfElem.METHOD]):
             request_arg["method"] = request_data.get(ConfElem.METHOD)
 
-        if allowed_url(request_data.get(ConfElem.URL)):
+        if ConfElem.URL not in request_data:
+            raise KeyError("required key `url:` not found")
+
+        if allowed_url(request_data[ConfElem.URL]):
             request_arg["url"] = request_data.get(ConfElem.URL)
 
     @staticmethod
