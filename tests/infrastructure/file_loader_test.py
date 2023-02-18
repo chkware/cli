@@ -96,36 +96,29 @@ class TestPathFrom:
 
         p = PathFrom(Path(ctx.filepath))
         assert (
-            p.absolute("./bitcoin-usd-testcase-data.chk")
-            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/sample_config/bitcoin-usd-testcase-data.chk"
+            "tests/resources/storage/sample_config/bitcoin-usd-testcase-data.chk" in p.absolute("./bitcoin-usd-testcase-data.chk")
         )
 
         assert (
-            p.absolute("./some-folder/bitcoin-usd-testcase-data.chk")
-            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/sample_config/some-folder/bitcoin-usd-testcase-data.chk"
+            "tests/resources/storage/sample_config/some-folder/bitcoin-usd-testcase-data.chk" in p.absolute("./some-folder/bitcoin-usd-testcase-data.chk")
         )
 
         assert (
-            p.absolute("./../bitcoin-usd-testcase-data.chk")
-            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/bitcoin-usd-testcase-data.chk"
+            "tests/resources/storage/bitcoin-usd-testcase-data.chk" in p.absolute("./../bitcoin-usd-testcase-data.chk")
         )
 
         assert (
-            p.absolute("./some-folder/../bitcoin-usd-testcase-data.chk")
-            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/sample_config/bitcoin-usd-testcase-data.chk"
+            "tests/resources/storage/sample_config/bitcoin-usd-testcase-data.chk" in p.absolute("./some-folder/../bitcoin-usd-testcase-data.chk")
         )
 
         assert (
-            p.absolute("../some-folder/../bitcoin-usd-testcase-data.chk")
-            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/bitcoin-usd-testcase-data.chk"
+            "tests/resources/storage/bitcoin-usd-testcase-data.chk" in p.absolute("../some-folder/../bitcoin-usd-testcase-data.chk")
         )
 
         assert (
-            p.absolute("../some-folder/./bitcoin-usd-testcase-data.chk")
-            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/some-folder/bitcoin-usd-testcase-data.chk"
+            "tests/resources/storage/some-folder/bitcoin-usd-testcase-data.chk" in p.absolute("../some-folder/./bitcoin-usd-testcase-data.chk")
         )
 
         assert (
-            p.absolute("./some-folder////bitcoin-usd-testcase-data.chk")
-            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/sample_config/some-folder/bitcoin-usd-testcase-data.chk"
+            "tests/resources/storage/sample_config/some-folder/bitcoin-usd-testcase-data.chk" in p.absolute("./some-folder////bitcoin-usd-testcase-data.chk")
         )
