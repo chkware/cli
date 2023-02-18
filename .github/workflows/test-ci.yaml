@@ -1,0 +1,37 @@
+name: Run tests on all supported platforms
+
+on:
+  pull_request:
+    types: [ready_for_review]
+
+jobs:
+  test:
+    name: Run test on ${{ matrix.os }} with ${{ matrix.py_ver }}
+    strategy:
+      matrix:
+        os: 
+          - macOS-latest
+          - macos-11
+          - ubuntu-latest
+          - ubuntu-20.04
+          - windows-latest
+          - windows-2019
+        py_ver: [3.11.0]
+    
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.py_ver }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: '${{ matrix.py_ver }}'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run tests
+        run: python -m pytest
