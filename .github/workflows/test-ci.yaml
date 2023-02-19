@@ -19,6 +19,7 @@ jobs:
         py_ver: [3.11.0]
     
     runs-on: ${{ matrix.os }}
+    if: ${{ !github.event.pull_request.draft }}
 
     steps:
       - name: Checkout code
