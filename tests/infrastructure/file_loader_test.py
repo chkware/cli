@@ -1,12 +1,13 @@
 # type: ignore
 
 """test loader"""
+import sys
 from types import MappingProxyType
+from pathlib import Path
 
 import pytest
 import tests
 
-from pathlib import Path
 from chk.infrastructure.file_loader import ChkFileLoader, FileContext, PathFrom
 
 
@@ -47,6 +48,9 @@ class TestFileContext:
         file = tests.RES_DIR + "bitcoin-usd.chk"
         ctx = FileContext.from_file(file)
 
+        if sys.platform.startswith("win"):
+            file = file.replace("/", "\\")
+
         assert isinstance(ctx, FileContext)
         assert file.lstrip(".") in ctx.filepath
 
@@ -59,6 +63,9 @@ class TestFileContext:
     def test_from_file_pass_with_opt_set(self):
         file = tests.RES_DIR + "bitcoin-usd.chk"
         ctx = FileContext.from_file(file, options={"result": False})
+
+        if sys.platform.startswith("win"):
+            file = file.replace("/", "\\")
 
         assert isinstance(ctx, FileContext)
         assert file.lstrip(".") in ctx.filepath
@@ -74,6 +81,9 @@ class TestFileContext:
         ctx = FileContext.from_file(
             file, options={"result": False}, arguments={"variables": {"var": 1}}
         )
+
+        if sys.platform.startswith("win"):
+            file = file.replace("/", "\\")
 
         assert isinstance(ctx, FileContext)
         assert file.lstrip(".") in ctx.filepath
@@ -91,41 +101,24 @@ class TestPathFrom:
 
     @staticmethod
     def test_absolute_pass():
-        file = tests.RES_DIR + "bitcoin-usd.chk"
-        ctx = FileContext.from_file(file)
-
+        ctx = FileContext.from_file(tests.RES_DIR + "bitcoin-usd.chk")
         p = PathFrom(Path(ctx.filepath))
-        assert (
-            p.absolute("./bitcoin-usd-testcase-data.chk")
-            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/sample_config/bitcoin-usd-testcase-data.chk"
-        )
 
-        assert (
-            p.absolute("./some-folder/bitcoin-usd-testcase-data.chk")
-            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/sample_config/some-folder/bitcoin-usd-testcase-data.chk"
-        )
+        path_1 = "tests/resources/storage/sample_config/bitcoin-usd-testcase-data.chk"
+        path_2 = "tests/resources/storage/sample_config/some-folder/bitcoin-usd-testcase-data.chk"
+        path_3 = "tests/resources/storage/bitcoin-usd-testcase-data.chk"
+        path_4 = "tests/resources/storage/some-folder/bitcoin-usd-testcase-data.chk"
 
-        assert (
-            p.absolute("./../bitcoin-usd-testcase-data.chk")
-            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/bitcoin-usd-testcase-data.chk"
-        )
+        if sys.platform.startswith("win"):
+            path_1 = path_1.replace("/", "\\")
+            path_2 = path_2.replace("/", "\\")
+            path_3 = path_3.replace("/", "\\")
+            path_4 = path_4.replace("/", "\\")
 
-        assert (
-            p.absolute("./some-folder/../bitcoin-usd-testcase-data.chk")
-            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/sample_config/bitcoin-usd-testcase-data.chk"
-        )
-
-        assert (
-            p.absolute("../some-folder/../bitcoin-usd-testcase-data.chk")
-            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/bitcoin-usd-testcase-data.chk"
-        )
-
-        assert (
-            p.absolute("../some-folder/./bitcoin-usd-testcase-data.chk")
-            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/some-folder/bitcoin-usd-testcase-data.chk"
-        )
-
-        assert (
-            p.absolute("./some-folder////bitcoin-usd-testcase-data.chk")
-            == "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/sample_config/some-folder/bitcoin-usd-testcase-data.chk"
-        )
+        assert path_1 in p.absolute("./bitcoin-usd-testcase-data.chk")
+        assert path_2 in p.absolute("./some-folder/bitcoin-usd-testcase-data.chk")
+        assert path_3 in p.absolute("./../bitcoin-usd-testcase-data.chk")
+        assert path_1 in p.absolute("./some-folder/../bitcoin-usd-testcase-data.chk")
+        assert path_3 in p.absolute("../some-folder/../bitcoin-usd-testcase-data.chk")
+        assert path_4 in p.absolute("../some-folder/./bitcoin-usd-testcase-data.chk")
+        assert path_2 in p.absolute("./some-folder////bitcoin-usd-testcase-data.chk")
