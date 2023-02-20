@@ -20,7 +20,8 @@ class StringLexicalAnalyzer:
             return container
 
         line_split = re.split(
-            r"({\s*\$[a-zA-Z0-9_.]+\s*})|(\s*\$[a-zA-Z0-9_.]+)", container
+            r"({\s*\$[a-zA-Z0-9_.]+\s*})|(\s*\$[a-zA-Z0-9_.]+)",
+            container,
         )
         line_strip = [
             "".join(item.split() if "$" in item else item)
