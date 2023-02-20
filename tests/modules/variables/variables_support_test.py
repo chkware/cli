@@ -34,6 +34,10 @@ class TestVariablePrepareValueTable:
 
         variables = app.get_compiled_doc(file_ctx.filepath_hash, part="variables")
 
+        assert "_ENV" in variables
+
+        variables.pop("_ENV")
+
         assert variables == {
             "var_1": "bar",
             "var_2": 2,
@@ -65,6 +69,10 @@ class TestVariablePrepareValueTable:
         ver.variable_prepare_value_table()
 
         variables = app.get_compiled_doc(file_ctx.filepath_hash, part="variables")
+
+        assert "_ENV" in variables
+
+        variables.pop("_ENV")
 
         assert variables == {
             "var_1": 1,
