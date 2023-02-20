@@ -12,6 +12,7 @@ from chk.infrastructure.file_loader import FileContext
 from chk.modules.variables.constants import VariableConfigNode as VarConf
 from chk.modules.variables.validation_rules import variable_schema, expose_schema
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
+from chk.modules.variables_environment.support import get_os_env_vars
 
 from chk.modules.version.support import DocumentMixin
 
@@ -155,6 +156,8 @@ class VariableMixin(DocumentMixin):
         if not isinstance(original_vars, dict):
             raise RuntimeError
 
+        original_vars = dict(_ENV=get_os_env_vars()) | original_vars
+
         outer_vars = app.get_outer(hf, VarConf.ROOT)
         if isinstance(outer_vars, dict):
             if not all(k in original_vars for k in outer_vars):
@@ -173,7 +176,7 @@ class VariableMixin(DocumentMixin):
         """Detect only variable with absolute value"""
 
         for key, val in actual.items():
-            if isinstance(val, str) and re.search(r"{\s*(\$[a-zA-Z0-9_]+)\s*}", val):
+            if isinstance(val, str) and re.search(r"{\s*(\$[a-zA-Z0-9_.]+)\s*}", val):
                 continue
 
             updated[key] = val

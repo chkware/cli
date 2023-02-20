@@ -9,7 +9,7 @@ from chk.modules.variables.constants import VariableConfigNode as VarConf
 
 def allowed_variable_name(field: object, value: str, error: Callable) -> None:
     """Check if the name start or ends with __"""
-    if not re.findall(r"(^[a-zA-Z0-9]+)\w$", value):
+    if not re.findall(r"(^[a-zA-Z0-9_.]+)\w$", value):
         error(field, f"Unsupported variable naming: `{value}`")
 
 
@@ -20,10 +20,7 @@ variable_schema = {
         "type": "dict",
         "empty": True,
         "nullable": True,
-        "keysrules": {
-            "type": "string",
-            "check_with": allowed_variable_name
-        },
+        "keysrules": {"type": "string", "check_with": allowed_variable_name},
     }
 }
 
