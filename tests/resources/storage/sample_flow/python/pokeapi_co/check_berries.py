@@ -11,9 +11,6 @@ import time
 
 from pathlib import Path
 
-# import var_dump
-
-
 # set specification file path
 berries_f = f"{str(Path(__file__).parent.resolve())}/Berries.chk"
 berry_f = f"{str(Path(__file__).parent.resolve())}/Berry.chk"
@@ -58,5 +55,5 @@ for berry_item in berries:
     response = json.loads(result.rstrip())
     berry = response[0]["body"]
 
-    # print berry
+    # print berry information
     print(f"Found {berry['name']} with max_harvest={berry['max_harvest']}")
