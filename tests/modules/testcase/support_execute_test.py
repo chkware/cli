@@ -1,6 +1,5 @@
 # type: ignore
 import pytest
-import functools
 
 from chk.infrastructure.helper import dict_get
 from chk.modules.http.main import execute as execute_fn
@@ -24,8 +23,8 @@ class HavingExecute(ExecuteMixin):
 
 class TestExecuteMixin:
     def test_execute_as_dict_pass(self):
-        file = RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequest.chk"
-        ctx = FileContext.from_file(file)
+        file_path = RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequest.chk"
+        ctx = FileContext.from_file(file_path)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingExecute(ctx)
@@ -34,8 +33,8 @@ class TestExecuteMixin:
         del app.original_doc[ctx.filepath_hash]
 
     def test_execute_as_dict_pass_when_spec_not_found(self):
-        file = RES_DIR + "fail_cases/testcases/GET-Plain.chk"
-        ctx = FileContext.from_file(file)
+        file_path = RES_DIR + "fail_cases/testcases/GET-Plain.chk"
+        ctx = FileContext.from_file(file_path)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingExecute(ctx)
@@ -46,8 +45,8 @@ class TestExecuteMixin:
         del app.original_doc[ctx.filepath_hash]
 
     def test_execute_as_dict_pass_with_none(self):
-        file = RES_DIR + "fail_cases/testcases/GET-Plain.chk"
-        ctx = FileContext.from_file(file)
+        file_path = RES_DIR + "fail_cases/testcases/GET-Plain.chk"
+        ctx = FileContext.from_file(file_path)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingExecute(ctx)
@@ -57,10 +56,10 @@ class TestExecuteMixin:
         del app.original_doc[ctx.filepath_hash]
 
     def test_execute_as_dict_pass_with_full_execute(self):
-        file = (
+        file_path = (
             RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequestAndSpecFullVar.chk"
         )
-        ctx = FileContext.from_file(file)
+        ctx = FileContext.from_file(file_path)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingExecute(ctx)
@@ -73,8 +72,8 @@ class TestExecuteMixin:
         del app.original_doc[ctx.filepath_hash]
 
     def test_execute_validated_pass_when_result_is_list(self):
-        file = RES_DIR + "pass_cases/testcases/03_UserCreateSpec_ResultList.chk"
-        ctx = FileContext.from_file(file)
+        file_path = RES_DIR + "pass_cases/testcases/03_UserCreateSpec_ResultList.chk"
+        ctx = FileContext.from_file(file_path)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingExecute(ctx)
@@ -90,8 +89,8 @@ class TestExecuteMixin:
         del app.original_doc[ctx.filepath_hash]
 
     def test_execute_validated_fails_with_num(self):
-        file = RES_DIR + "fail_cases/testcases/03_UserCreateSpec_ResultNum.chk"
-        ctx = FileContext.from_file(file)
+        file_path = RES_DIR + "fail_cases/testcases/03_UserCreateSpec_ResultNum.chk"
+        ctx = FileContext.from_file(file_path)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingExecute(ctx)
@@ -102,8 +101,8 @@ class TestExecuteMixin:
         del app.original_doc[ctx.filepath_hash]
 
     def test_execute_validated_fails_with_variable_name(self):
-        file = RES_DIR + "fail_cases/testcases/03_UserCreateSpec_ResultVar.chk"
-        ctx = FileContext.from_file(file)
+        file_path = RES_DIR + "fail_cases/testcases/03_UserCreateSpec_ResultVar.chk"
+        ctx = FileContext.from_file(file_path)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingExecute(ctx)
@@ -114,8 +113,8 @@ class TestExecuteMixin:
         del app.original_doc[ctx.filepath_hash]
 
     def test_execute_validated_fails_with_list_num(self):
-        file = RES_DIR + "fail_cases/testcases/03_UserCreateSpec_ResultListHaveNum.chk"
-        ctx = FileContext.from_file(file)
+        file_path = RES_DIR + "fail_cases/testcases/03_UserCreateSpec_ResultListHaveNum.chk"
+        ctx = FileContext.from_file(file_path)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingExecute(ctx)
@@ -126,8 +125,8 @@ class TestExecuteMixin:
         del app.original_doc[ctx.filepath_hash]
 
     def test_execute_validated_fails_with_list_sp_chars(self):
-        file = RES_DIR + "fail_cases/testcases/03_UserCreateSpec_ResultListHaveSp.chk"
-        ctx = FileContext.from_file(file)
+        file_path = RES_DIR + "fail_cases/testcases/03_UserCreateSpec_ResultListHaveSp.chk"
+        ctx = FileContext.from_file(file_path)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingExecute(ctx)
@@ -138,8 +137,8 @@ class TestExecuteMixin:
         del app.original_doc[ctx.filepath_hash]
 
     def test_execute_validated_pass_with_underscore(self):
-        file = RES_DIR + "pass_cases/testcases/03_UserCreateSpec_ResultListIgnore.chk"
-        ctx = FileContext.from_file(file)
+        file_path = RES_DIR + "pass_cases/testcases/03_UserCreateSpec_ResultListIgnore.chk"
+        ctx = FileContext.from_file(file_path)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingExecute(ctx)
@@ -153,10 +152,10 @@ class TestExecuteMixin:
         del app.original_doc[ctx.filepath_hash]
 
     def test_execute_out_file_pass(self):
-        file = (
+        file_path = (
             RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequestAndSpecFullVar.chk"
         )
-        ctx = FileContext.from_file(file, options={"result": True, "dump": False})
+        ctx = FileContext.from_file(file_path, options={"result": True, "dump": False})
 
         document = ChkFileLoader.to_dict(ctx.filepath)
         app.set_compiled_doc(ctx.filepath_hash, document)
@@ -169,8 +168,8 @@ class TestExecuteMixin:
         del app.compiled_doc[ctx.filepath_hash]
 
     def test_execute_prepare_results_pass(self):
-        file = RES_DIR + "pass_cases/testcases/03_UserCreateSpec_ResultList.chk"
-        ctx = FileContext.from_file(file, options={"result": True, "dump": False})
+        file_path = RES_DIR + "pass_cases/testcases/03_UserCreateSpec_ResultList.chk"
+        ctx = FileContext.from_file(file_path, options={"result": True, "dump": False})
 
         document = ChkFileLoader.to_dict(ctx.filepath)
         app.set_compiled_doc(ctx.filepath_hash, document)
@@ -191,8 +190,8 @@ class TestExecuteMixin:
         del app.compiled_doc[ctx.filepath_hash]
 
     def test_execute_prepare_results_pass_with_underscore(self):
-        file = RES_DIR + "pass_cases/testcases/03_UserCreateSpec_ResultListIgnore.chk"
-        ctx = FileContext.from_file(file, options={"result": True, "dump": False})
+        file_path = RES_DIR + "pass_cases/testcases/03_UserCreateSpec_ResultListIgnore.chk"
+        ctx = FileContext.from_file(file_path, options={"result": True, "dump": False})
 
         document = ChkFileLoader.to_dict(ctx.filepath)
         app.set_compiled_doc(ctx.filepath_hash, document)
@@ -215,8 +214,8 @@ class TestExecuteMixin:
         del app.compiled_doc[ctx.filepath_hash]
 
     def test_execute_prepare_results_pass_no_result(self):
-        file = RES_DIR + "pass_cases/testcases/04_UserCreateSpec_NoResult.chk"
-        ctx = FileContext.from_file(file, options={"result": True, "dump": False})
+        file_path = RES_DIR + "pass_cases/testcases/04_UserCreateSpec_NoResult.chk"
+        ctx = FileContext.from_file(file_path, options={"result": True, "dump": False})
 
         document = ChkFileLoader.to_dict(ctx.filepath)
         app.set_compiled_doc(ctx.filepath_hash, document)

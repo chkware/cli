@@ -45,14 +45,14 @@ class TestChkFileLoader:
 
 class TestFileContext:
     def test_from_file_pass(self):
-        file = tests.RES_DIR + "bitcoin-usd.chk"
-        ctx = FileContext.from_file(file)
+        file_path = tests.RES_DIR + "bitcoin-usd.chk"
+        ctx = FileContext.from_file(file_path)
 
         if sys.platform.startswith("win"):
-            file = file.replace("/", "\\")
+            file_path = file_path.replace("/", "\\")
 
         assert isinstance(ctx, FileContext)
-        assert file.lstrip(".") in ctx.filepath
+        assert file_path.lstrip(".") in ctx.filepath
 
         assert len(ctx.options) == 0
         assert isinstance(ctx.options, MappingProxyType)
@@ -61,14 +61,14 @@ class TestFileContext:
         assert isinstance(ctx.arguments, MappingProxyType)
 
     def test_from_file_pass_with_opt_set(self):
-        file = tests.RES_DIR + "bitcoin-usd.chk"
-        ctx = FileContext.from_file(file, options={"result": False})
+        file_path = tests.RES_DIR + "bitcoin-usd.chk"
+        ctx = FileContext.from_file(file_path, options={"result": False})
 
         if sys.platform.startswith("win"):
-            file = file.replace("/", "\\")
+            file_path = file_path.replace("/", "\\")
 
         assert isinstance(ctx, FileContext)
-        assert file.lstrip(".") in ctx.filepath
+        assert file_path.lstrip(".") in ctx.filepath
 
         assert len(ctx.options) == 1
         assert not ctx.options["result"]
@@ -77,16 +77,16 @@ class TestFileContext:
         assert isinstance(ctx.arguments, MappingProxyType)
 
     def test_from_file_pass_with_opt_arg_set(self):
-        file = tests.RES_DIR + "bitcoin-usd.chk"
+        file_path = tests.RES_DIR + "bitcoin-usd.chk"
         ctx = FileContext.from_file(
-            file, options={"result": False}, arguments={"variables": {"var": 1}}
+            file_path, options={"result": False}, arguments={"variables": {"var": 1}}
         )
 
         if sys.platform.startswith("win"):
-            file = file.replace("/", "\\")
+            file_path = file_path.replace("/", "\\")
 
         assert isinstance(ctx, FileContext)
-        assert file.lstrip(".") in ctx.filepath
+        assert file_path.lstrip(".") in ctx.filepath
 
         assert len(ctx.options) == 1
         assert not ctx.options["result"]

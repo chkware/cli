@@ -154,11 +154,11 @@ class TestApp:
     @staticmethod
     def test_app_load_original_doc_from_file_context_pass():
         app = App()
-        file = tests.RES_DIR + "UserOk.chk"
-        fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file)
+        file_path = tests.RES_DIR + "UserOk.chk"
+        fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file_path)
 
         ctx = FileContext(
-            filepath=file,
+            filepath=file_path,
             filepath_mangled=fpath_mangled,
             filepath_hash=fpath_hash,
         )
@@ -171,11 +171,11 @@ class TestApp:
     @staticmethod
     def test_app_load_original_doc_from_file_with_arguments():
         app = App()
-        file = tests.RES_DIR + "UserOk.chk"
-        fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file)
+        file_path = tests.RES_DIR + "UserOk.chk"
+        fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file_path)
 
         ctx = FileContext(
-            filepath=file,
+            filepath=file_path,
             filepath_mangled=fpath_mangled,
             filepath_hash=fpath_hash,
             arguments=MappingProxyType(
@@ -202,11 +202,11 @@ class TestApp:
     @staticmethod
     def test_app_load_original_doc_from_file_with_options():
         app = App()
-        file = tests.RES_DIR + "UserOk.chk"
-        fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file)
+        file_path = tests.RES_DIR + "UserOk.chk"
+        fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file_path)
 
         ctx = FileContext(
-            filepath=file,
+            filepath=file_path,
             filepath_mangled=fpath_mangled,
             filepath_hash=fpath_hash,
             options=MappingProxyType(
