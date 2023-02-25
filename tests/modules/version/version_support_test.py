@@ -145,20 +145,20 @@ class TestVersionMixin:
 
 class TestRawFileVersionParser:
     def test_find_version_str_success(self):
-        file = tests.RES_DIR + "UserOk.chk"
-        assert RawFileVersionParser.find_version_str(file) == "default:http:0.7.2"
+        file_path = tests.RES_DIR + "UserOk.chk"
+        assert RawFileVersionParser.find_version_str(file_path) == "default:http:0.7.2"
 
     def test_find_version_str_fails_when_no_version_found(self):
-        file = tests.RES_DIR + "UserNoVersion.chk"
-        assert not RawFileVersionParser.find_version_str(file)
+        file_path = tests.RES_DIR + "UserNoVersion.chk"
+        assert not RawFileVersionParser.find_version_str(file_path)
 
     def test_find_version_str_fails_when_commented_version_found(self):
-        file = tests.RES_DIR + "UserCommentedVersion.chk"
-        assert not RawFileVersionParser.find_version_str(file)
+        file_path = tests.RES_DIR + "UserCommentedVersion.chk"
+        assert not RawFileVersionParser.find_version_str(file_path)
 
     def test_find_version_str_fails_when_file_not_found(self):
-        file = tests.RES_DIR + "UserCommentedVersions.chk"
-        assert not RawFileVersionParser.find_version_str(file)
+        file_path = tests.RES_DIR + "UserCommentedVersions.chk"
+        assert not RawFileVersionParser.find_version_str(file_path)
 
     def test_convert_version_str_to_num_success_with_full_version_doc(self):
         v1 = "version: 'default:http:0.7.2'"

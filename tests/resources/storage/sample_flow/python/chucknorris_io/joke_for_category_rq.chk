@@ -1,0 +1,9 @@
+---
+version: default:http:0.7.2
+
+variables:
+  category: "food"
+
+request:
+  url: https://api.chucknorris.io/jokes/random?category={$category}
+  method: GET

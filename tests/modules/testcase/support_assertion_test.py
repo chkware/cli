@@ -20,8 +20,8 @@ class HavingAssertion(AssertionMixin):
 
 class TestAssertionMixin:
     def test_assertions_as_dict_pass(self):
-        file = RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequest.chk"
-        ctx = FileContext.from_file(file)
+        file_path = RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequest.chk"
+        ctx = FileContext.from_file(file_path)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingAssertion(ctx)
@@ -30,8 +30,8 @@ class TestAssertionMixin:
         del app.original_doc[ctx.filepath_hash]
 
     def test_assertions_as_dict_pass_when_spec_not_found(self):
-        file = RES_DIR + "fail_cases/testcases/GET-Plain.chk"
-        ctx = FileContext.from_file(file)
+        file_path = RES_DIR + "fail_cases/testcases/GET-Plain.chk"
+        ctx = FileContext.from_file(file_path)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingAssertion(ctx)
@@ -42,8 +42,8 @@ class TestAssertionMixin:
         del app.original_doc[ctx.filepath_hash]
 
     def test_assertions_as_dict_pass_with_none(self):
-        file = RES_DIR + "fail_cases/testcases/GET-Plain.chk"
-        ctx = FileContext.from_file(file)
+        file_path = RES_DIR + "fail_cases/testcases/GET-Plain.chk"
+        ctx = FileContext.from_file(file_path)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingAssertion(ctx)
@@ -53,10 +53,10 @@ class TestAssertionMixin:
         del app.original_doc[ctx.filepath_hash]
 
     def test_assertions_as_dict_pass_with_full_execute(self):
-        file = (
+        file_path = (
             RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequestAndSpecFullVar.chk"
         )
-        ctx = FileContext.from_file(file)
+        ctx = FileContext.from_file(file_path)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingAssertion(ctx)
@@ -67,10 +67,10 @@ class TestAssertionMixin:
         del app.original_doc[ctx.filepath_hash]
 
     def test_assertions_validated_pass_with_full_execute(self):
-        file = (
+        file_path = (
             RES_DIR + "pass_cases/testcases/02_POST-SpecWithRequestAndSpecFullVar.chk"
         )
-        ctx = FileContext.from_file(file)
+        ctx = FileContext.from_file(file_path)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingAssertion(ctx)
@@ -79,8 +79,8 @@ class TestAssertionMixin:
         del app.original_doc[ctx.filepath_hash]
 
     def test_assertions_validated_fails_when_assertions_not_found(self):
-        file = RES_DIR + "fail_cases/testcases/GET-Plain.chk"
-        ctx = FileContext.from_file(file)
+        file_path = RES_DIR + "fail_cases/testcases/GET-Plain.chk"
+        ctx = FileContext.from_file(file_path)
         app.load_original_doc_from_file_context(ctx)
 
         tc = HavingAssertion(ctx)

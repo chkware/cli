@@ -9,13 +9,13 @@ from chk.infrastructure.work import handle_worker
 
 class TestHttpSpec:
     def test_get_plain_pass(self):
-        file = tests.RES_DIR + 'pass_cases/GET-Plain.chk'
+        file_path = tests.RES_DIR + 'pass_cases/GET-Plain.chk'
 
-        ChkFileLoader.is_file_ok(file)
-        f_mangled, f_hash = ChkFileLoader.get_mangled_name(file)
+        ChkFileLoader.is_file_ok(file_path)
+        f_mangled, f_hash = ChkFileLoader.get_mangled_name(file_path)
 
         file_ctx = FileContext(
-            filepath=file,
+            filepath=file_path,
             filepath_mangled=f_mangled,
             filepath_hash=f_hash,
             options=MappingProxyType({"result": True, "dump": False}),
