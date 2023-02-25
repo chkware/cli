@@ -101,13 +101,13 @@ def test_data_set_pass_when_keymap_deep_dict_or_list_mixed():
     assert dct["a"][0]["aa"][0]["aaa"] == to_set
 
 
-def test_data_set_pass_when_keymap_starts_as_list_mixed():
+def test_data_set_fail_when_keymap_starts_as_list_mixed():
     dct = {}
     to_set = [1, 2]
     keymap = "0.aa.0.aaa"
 
-    assert data_set(dct, keymap, to_set)
-    assert dct[0]["aa"][0]["aaa"] == to_set
+    with pytest.raises(IndexError):
+        data_set(dct, keymap, to_set)
 
 
 def test_data_set_pass_when_keymap_starts_as_list_mixed_var_is_list():

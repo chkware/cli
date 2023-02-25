@@ -35,12 +35,12 @@ class AssertionCase(TestCase):
         actual = self.actual
 
         if not isinstance(self.actual, type(self.expect)):
-            if isinstance(self.expect, int):
+            if isinstance(self.expect, bool):
+                actual = Cast.to_bool(self.actual)
+            elif isinstance(self.expect, int):
                 actual = Cast.to_int(self.actual)
             elif isinstance(self.expect, float):
                 actual = Cast.to_float(self.actual)
-            elif isinstance(self.expect, bool):
-                actual = Cast.to_bool(self.actual)
             else:
                 actual = Cast.to_auto(self.actual)
 

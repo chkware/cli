@@ -67,43 +67,56 @@ def dict_set(var: dict, keymap: str, value: Any) -> bool:
     return False
 
 
-def data_set(var: dict | list, keymap: str, value: Any) -> bool:
+def data_set(data: dict | list, keymap: str, value: Any) -> Any:
     """
     Set a value of a dictionary by dot notation key and given value
     If the key do not exist, this function create the key by keymap
     Returns False if keymap is empty
-    :param var: the dictionary we'll get value for
+    :param data: the dictionary we'll get value for
     :param keymap: dot separated keys
     :param value:
     :return:
     """
 
-    km_l = keymap.split(".")
+    keymap_list = keymap.split(".")
+    current_item = keymap_list.pop(0)
+    next_item = keymap_list[0] if len(keymap_list) > 0 else ""
 
-    while km_i := km_l.pop(0) if km_l else False:
-        if isinstance(km_i, str) and km_i.isnumeric():
-            km_i = int(km_i)
+    if isinstance(data, dict):
+        if current_item.isnumeric():
+            raise IndexError(
+                f"Trying to set numeric key `{current_item}` on dict `{data}`"
+            )
 
-        if km_i in var:
-            if km_l:
-                return data_set(var[km_i], ".".join(km_l), value)
-
-            var[km_i] = value
+        if len(keymap_list) == 0:
+            data[current_item] = value
             return True
 
-        else:
-            if km_l:
-                _tmp: list | dict = [] if km_l[0].isnumeric() else {}
+        if current_item not in data:
+            data[current_item] = [] if next_item.isnumeric() else {}
 
-                if isinstance(var, list):
-                    var.append(_tmp)
-                elif isinstance(var, dict):
-                    var[km_i] = _tmp
+        return data_set(data[current_item], ".".join(keymap_list), value)
 
-                return data_set(var[km_i], ".".join(km_l), value)
-            else:
-                var[km_i] = value
-                return True
+    if isinstance(data, list):
+        if not current_item.isnumeric():
+            raise IndexError(
+                f"Trying to set non-numeric index `{current_item}` on list `{data}`"
+            )
+        current_item_i = int(current_item)
+
+        if len(data) < current_item_i:
+            raise IndexError(f"Out of bound index `{current_item}` on list `{data}`")
+
+        if len(keymap_list) == 0:
+            data[current_item_i] = value
+            return True
+
+        if len(data) == 0 and current_item_i == 0:
+            data.append([] if next_item.isnumeric() else {})
+
+        return data_set(data[current_item_i], ".".join(keymap_list), value)
+
+    return False
 
 
 def data_get(var: dict | list, keymap: str, default: object = None) -> Any:
