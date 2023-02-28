@@ -6,6 +6,7 @@
 [![PyPI version](https://badge.fury.io/py/chk.svg)](https://badge.fury.io/py/chk)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-red.svg)](https://www.python.org/downloads/)
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/chkware.svg?style=social&label=Follow%20%40chkware)](https://twitter.com/chkware)
+[![Known Vulnerabilities](https://snyk.io/test/github/chkware/cli/main/badge.svg)](https://snyk.io/test/github/chkware/cli)
 
 ### Introduction
 
@@ -23,4 +24,4 @@
 Please go to the website https://chkware.github.io/ for documentation.
 
 ---
-Licensed under [MPL v2.0](/LICENSE) | Follow [@chkware](https://twitter.com/chkware) on Twitter | [`chk` project](https://pypi.org/project/chk/) on PyPi
+Licensed under [MPL v2.0](/LICENSE) | Follow [@chkware](https://twitter.com/chkware) on Twitter | [`chk` project](https://pypi.org/project/chk/) on PyPi | [snyk Advisor](https://snyk.io/advisor/python/chk) for `chk`
