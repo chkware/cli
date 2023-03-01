@@ -1,0 +1,37 @@
+name: Run coverage test and generate report
+
+on:
+  pull_request: ~
+  workflow_dispatch: ~
+
+jobs:
+  coverage:
+    name: Runs on ubuntu-latest with 3.11.0
+    runs-on: ubuntu-latest
+    if: ${{ ! github.event.pull_request.draft }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.11.0
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11.0'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements-dev.txt
+          pip install -U pytest-cov coverage-lcov
+
+      - name: Run tests
+        run: |
+          python -m pytest --cov=./chk --cov-report xml
+          coverage-lcov
+
+      - name: Coveralls github action
+        uses: coverallsapp/github-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: lcov.info

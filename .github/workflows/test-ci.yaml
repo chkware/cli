@@ -1,9 +1,7 @@
 name: Run tests on all supported platforms
 
 on:
-  pull_request:
-    types:
-      - review_requested
+  pull_request: ~
   workflow_dispatch: ~
 
 jobs:
@@ -21,6 +19,7 @@ jobs:
         py_ver: [3.11.0]
     
     runs-on: ${{ matrix.os }}
+    if: ${{ ! github.event.pull_request.draft }}
 
     steps:
       - name: Checkout code
