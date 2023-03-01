@@ -1,4 +1,5 @@
 # CHKware
+
 > Low-code API quality testing, and automation toolbox
 
 ![CHKware | Low-code API quality testing, and automation toolbox](https://raw.githubusercontent.com/chkware/cli/main/docs/github-readme-01.png)
@@ -14,12 +15,12 @@
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=chkware_cli&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=chkware_cli)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=chkware_cli&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=chkware_cli)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=chkware_cli&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=chkware_cli)
-
+[![Coverage Status](https://coveralls.io/repos/github/chkware/cli/badge.svg?branch=main)](https://coveralls.io/github/chkware/cli?branch=main)
 
 ### Introduction
 
 [***CHKware***](https://chkware.github.io/) (pronounced as */tʃek-wer/*, i.e. *check-ware*) is a low-code API quality testing, and automation toolbox. It helps you write accurate, robust, and expressive feature tests for your API in less time than usual.
- 
+
 [Get started](https://chkware.github.io/quick-start) here.
 
 ### Install and setup
