@@ -33,4 +33,4 @@
 Please go to the website https://chkware.github.io/ for documentation.
 
 ---
-Licensed under [MPL v2.0](/LICENSE) | Follow [@chkware](https://twitter.com/chkware) on Twitter | [`chk` project](https://pypi.org/project/chk/) on PyPi | [snyk Advisor](https://snyk.io/advisor/python/chk) for `chk` | [sonarcloud](https://sonarcloud.io/summary/new_code?id=chkware_cli) project page
+Licensed under [MPL v2.0](/LICENSE) | Follow [@chkware](https://twitter.com/chkware) on Twitter | [`chk` project](https://pypi.org/project/chk/) on PyPi | [snyk Advisor](https://snyk.io/advisor/python/chk) for `chk` | [sonarcloud](https://sonarcloud.io/summary/new_code?id=chkware_cli) project page | [Coveralls](https://coveralls.io/github/chkware/cli) report
