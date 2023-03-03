@@ -37,3 +37,16 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: lcov.info
+
+      - name: SonarCloud github action
+        uses: SonarSource/sonarcloud-github-action@v1.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.organization=chkware
+            -Dsonar.projectKey=chkware_cli
+            -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.sources=chk/
+            -Dsonar.tests=tests/
