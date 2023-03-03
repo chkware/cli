@@ -8,7 +8,6 @@
 [![Python 3.11](https://img.shields.io/badge/python-3.11-red.svg)](https://www.python.org/downloads/)
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/chkware.svg?style=social&label=Follow%20%40chkware)](https://twitter.com/chkware)
 [![Known Vulnerabilities](https://snyk.io/test/github/chkware/cli/main/badge.svg)](https://snyk.io/test/github/chkware/cli)
-![Run tests on all supported platform](https://github.com/chkware/cli/actions/workflows/test-ci.yaml/badge.svg)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=chkware_cli&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=chkware_cli)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=chkware_cli&metric=bugs)](https://sonarcloud.io/summary/new_code?id=chkware_cli)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=chkware_cli&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=chkware_cli)
