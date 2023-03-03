@@ -12,7 +12,7 @@ from chk.infrastructure.file_loader import FileContext
 from chk.modules.variables.constants import VariableConfigNode as VarConf
 from chk.modules.variables.validation_rules import variable_schema, expose_schema
 from chk.modules.variables.lexicon import StringLexicalAnalyzer
-from chk.modules.variables_environment.support import get_os_env_vars
+from chk.modules.variables.environment import get_os_env_vars
 
 from chk.modules.version.support import DocumentMixin
 
