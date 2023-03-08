@@ -6,6 +6,6 @@ variables:
 spec:
   execute:
     file: "./01_UserCreateRequest.chk"
-    result: [$Response]
+    result: ["{@Response}"]
   asserts:
-    - {type: AssertEqual, actual: $Response.code, expected: 201}
+    - {type: AssertEqual, actual: "{$Response.code}", expected: 201}

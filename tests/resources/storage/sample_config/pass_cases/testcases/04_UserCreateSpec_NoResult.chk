@@ -4,4 +4,4 @@ spec:
   execute:
     file: './03_UserCreateRequest_ResList.chk'
   asserts:
-    - {type: AssertEqual, actual: $_response.0, expected: 200}
+    - {type: AssertEqual, actual: '{$_response.0}', expected: 200}

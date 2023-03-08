@@ -10,10 +10,10 @@ request:
   url: "{$Server}/post"
   method: POST
   body[json]: {
-    'name': $Name,
-    'job': $Job,
+    'name': '{$Name}',
+    'job': '{$Job}',
   }
 
 expose:
-  - $_response.code
-  - $_response.body
+  - '{$_response.code}'
+  - '{$_response.body}'
