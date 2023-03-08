@@ -7,13 +7,13 @@ request:
 
 spec:
   asserts:
-    - {type: AssertEqual, actual: $_response.code, expected: 200}
-    - { type: AssertMapHasKeys, actual: $_response.body, expected: ['count', 'next', 'previous', 'results'] }
-    - {type: AssertIsList, actual: $_response.body.results}
+    - {type: AssertEqual, actual: "{$_response.code}", expected: 200}
+    - { type: AssertMapHasKeys, actual: "{$_response.body}", expected: ['count', 'next', 'previous', 'results'] }
+    - {type: AssertIsList, actual: "{$_response.body.results}"}
     - type: AssertCount
-      actual: $_response.body.results
+      actual: "{$_response.body.results}"
       expected: 20
 
 expose:
-  - $_assertion_results
-  - $_response
+  - "{$_assertion_results}"
+  - "{$_response}"
