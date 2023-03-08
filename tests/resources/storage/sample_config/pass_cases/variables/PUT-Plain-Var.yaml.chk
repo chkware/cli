@@ -12,7 +12,7 @@ request:
 
   url: https://httpbin.org/put
   url_params:
-    foo: $var_1
+    foo: '{$var_1}'
     two: '{$var_2}'
 
   headers:
@@ -25,7 +25,7 @@ request:
     name: 'Some',
     product: {
       id: 2,
-      type: $var_3,
-      type2: $some-file.var_3
+      type: '{$var_3}',
+      type2: '{$some}-file.var_3'
     }
   }

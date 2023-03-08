@@ -17,11 +17,12 @@ request:
 
   body[json]: {
     id: 32,
-    name: $var_1,
+    name: '{$var_1}',
     product: {
-      id: $var_2,
-      type: $var_3,
+      id: '{$var_2}',
+      type: '{$var_3}',
     }
   }
 
-  return: ~  # writing this or not is same
+expose:
+  - "{$_response}"
