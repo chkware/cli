@@ -244,7 +244,7 @@ class TestVariableMixin:
                     "headers": ["Header 1: Head val 1", "Header 2: Head val 2"],
                 }
             },
-            "expose": ["$_response.code", "$_response.headers", "$var1:$var2"],
+            "expose": ["{$_response.code}", "{$_response.headers}", "{$var1}:{$var2}"],
         }
 
         file_ctx = FileContext(filepath_hash="ab31")
@@ -451,7 +451,7 @@ class TestReplaceValues:
         variables = {
             "some": 1,
             "goes": "Some {$var1}",
-            "here": "{  $var2}",
+            "here": "{$var2}",
         }
 
         values = {
