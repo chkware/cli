@@ -7,10 +7,10 @@ variables:
   server: 'https://httpbin.org'
 
 request:
-  method: $method
+  method: "{$method}"
   url: https://httpbin.org/post
   url_params:
-    foo: $foo
+    foo: "{$foo}"
     two: '{$id}'
 
   headers:
@@ -23,10 +23,10 @@ request:
     name: 'Some',
     product: {
       tag: {
-        id: $id,
-        foo: $foo,
+        id: "{$id}",
+        foo: "{$foo}",
       },
-      method: $method,
-      server: $server
+      method: "{$method}",
+      server: "{$server}"
     }
   }
