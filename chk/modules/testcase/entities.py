@@ -68,7 +68,7 @@ class Testcase(
             (
                 version_doc
                 | DefaultVariableDoc().merged(variable_doc)
-                | DefaultExposableDoc({"expose": ["$_assertion_results"]}).merged(
+                | DefaultExposableDoc({"expose": ["{$_assertion_results}"]}).merged(
                     expose_doc
                 )
                 | request_doc
@@ -93,7 +93,7 @@ class Testcase(
 
                 app.set_local(
                     self.file_ctx.filepath_hash,
-                    ApiResponse.from_dict(response).dict(),  # type: ignore
+                    ApiResponse.from_dict(response).dict(),
                     RConst.LOCAL,
                 )
 
