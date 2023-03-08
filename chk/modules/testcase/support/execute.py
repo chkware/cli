@@ -44,7 +44,7 @@ class ExecuteMixin(DocumentMixin):
                         raise TypeError(
                             "{'execute': {'result': 'list variable must be string'}}"
                         )
-                    if not re.search(r"^({@[a-zA-Z]\w*})|(_)$", each_var):
+                    if not re.search(r"^({@[a-zA-Z]\w*}|_)$", each_var):
                         raise TypeError(
                             "{'execute': {'result': 'list variable name start with $'}}"
                         )
