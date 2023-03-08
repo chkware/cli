@@ -196,7 +196,7 @@ class VariableMixin(DocumentMixin):
         """Replace symbol table based on the value passed"""
 
         for key, val in value_tbl.items():
-            if (key := key.lstrip("$")) not in symbol_tbl:
+            if (key := key.strip("{@}")) not in symbol_tbl:
                 raise ValueError(f"variable is not defined in `{VarConf.ROOT}:` block")
 
             symbol_tbl[key] = val

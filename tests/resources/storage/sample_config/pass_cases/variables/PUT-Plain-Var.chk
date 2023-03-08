@@ -12,8 +12,8 @@ request:
 
   url: https://httpbin.org/put
   url_params:
-    foo: $var_1
-    two: '{$var_2}'
+    foo: "{$var_1}"
+    two: "{$var_2}"
 
   headers:
     User-Agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36'
@@ -22,10 +22,10 @@ request:
 
   body[json]: {
     id: 32,
-    name: 'Some',
+    name: "Some",
     product: {
       id: 2,
-      type: $var_3,
-      type2: $some-file.var_3
+      type: "{$var_3}",
+      type2: "{$some}-file.var_3"
     }
   }

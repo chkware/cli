@@ -7,7 +7,7 @@ variables:
 spec:
   execute:
     file: './03_UserCreateRequest_ResList.chk'
-    result: [$Code, $Headers]
+    result: ["{@Code}", "{@Headers}"]
   asserts:
-    - {type: AssertEqual, actual: $Code, expected: 200}
-    - {type: AssertIsMap, actual: $Headers}
+    - {type: AssertEqual, actual: '{$Code}', expected: 200}
+    - {type: AssertIsMap, actual: '{$Headers}'}

@@ -74,7 +74,7 @@ class HttpSpec(
             (
                 version_doc
                 | DefaultVariableDoc().merged(variable_doc)
-                | DefaultExposableDoc({"expose": ["$_response"]}).merged(expose_doc)
+                | DefaultExposableDoc({"expose": ["{$_response}"]}).merged(expose_doc)
                 | request_doc
             ),
         )
@@ -93,15 +93,19 @@ class HttpSpec(
 
             app.set_local(
                 self.file_ctx.filepath_hash,
-                ApiResponse.from_dict(response).dict(),  # type: ignore
+                ApiResponse.from_dict(response).dict(),
                 RConst.LOCAL,
             )
 
             app.print_fmt(
-                "- Making request [Success]", ret_s=bool(app.config(self.file_ctx.filepath_hash, "result"))
+                "- Making request [Success]",
+                ret_s=bool(app.config(self.file_ctx.filepath_hash, "result")),
             )
         except RuntimeError as err:
-            app.print_fmt("- Making request [Fail]", ret_s=bool(app.config(self.file_ctx.filepath_hash, "result")))
+            app.print_fmt(
+                "- Making request [Fail]",
+                ret_s=bool(app.config(self.file_ctx.filepath_hash, "result")),
+            )
             raise err
 
     def __after_main__(self) -> list:
@@ -110,13 +114,17 @@ class HttpSpec(
         try:
             self.make_exposable()
             app.print_fmt(
-                "- Prepare exposable [Success]", ret_s=bool(app.config(self.file_ctx.filepath_hash, "result"))
+                "- Prepare exposable [Success]",
+                ret_s=bool(app.config(self.file_ctx.filepath_hash, "result")),
             )
-            app.print_fmt("\r\n---", ret_s=bool(app.config(self.file_ctx.filepath_hash, "result")))
+            app.print_fmt(
+                "\r\n---", ret_s=bool(app.config(self.file_ctx.filepath_hash, "result"))
+            )
 
             return self.get_exposable()
         except RuntimeError as err:
             app.print_fmt(
-                "- Prepare exposable [Fail]", ret_s=bool(app.config(self.file_ctx.filepath_hash, "result"))
+                "- Prepare exposable [Fail]",
+                ret_s=bool(app.config(self.file_ctx.filepath_hash, "result")),
             )
             raise err

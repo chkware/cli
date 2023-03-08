@@ -10,9 +10,9 @@ request:
 
 spec:
   asserts:
-    - {type: AssertEqual, actual: $_response.code, expected: 200}
+    - {type: AssertEqual, actual: "{$_response.code}", expected: 200}
     - type: AssertMapExactKeys
-      actual: $_response.body
+      actual: "{$_response.body}"
       expected:
         - firmness
         - flavors

@@ -8,4 +8,4 @@ spec:
   execute:
     file: ~
   asserts:
-    - {type: AssertEqual, actual: $_response.code, expected: 200}
+    - {type: AssertEqual, actual: "{$_response.code}", expected: 200}

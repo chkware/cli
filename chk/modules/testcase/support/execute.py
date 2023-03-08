@@ -1,7 +1,9 @@
 import abc
+import re
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
+
 
 from chk.infrastructure.contexts import app
 from chk.infrastructure.exception import err_message
@@ -42,7 +44,7 @@ class ExecuteMixin(DocumentMixin):
                         raise TypeError(
                             "{'execute': {'result': 'list variable must be string'}}"
                         )
-                    if not each_var.startswith("$") and each_var != "_":
+                    if not re.search(r"^({@[a-zA-Z]\w*}|_)$", each_var):
                         raise TypeError(
                             "{'execute': {'result': 'list variable name start with $'}}"
                         )

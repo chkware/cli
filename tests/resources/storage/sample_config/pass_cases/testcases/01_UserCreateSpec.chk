@@ -7,6 +7,6 @@ spec:
   execute:
     file: './01_UserCreateRequest.chk'
     result:
-      - $Code
+      - "{@Code}"
   asserts:
-    - {type: AssertEqual, actual: $Code, expected: 201}
+    - {type: AssertEqual, actual: '{$Code}', expected: 200}
