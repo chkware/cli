@@ -9,11 +9,11 @@ spec:
     file: ~
 
   asserts:
-    - {type: AssertEqual, actual: $_response.code, expected: 200}
-    - {type: AssertIsInt, actual: $_response.body.coin.priceBtc}
-    - {type: AssertIsString, actual: $_response.body.coin.websiteUrl}
-    - {type: AssertIsFloat, actual: $_response.body.coin.priceChange1w}
-    - {type: AssertIsMap, actual: $_response.body.coin}
-    - {type: AssertIsList, actual: $_response.body.coin.exp}
-    - {type: AssertCount, actual: $_response.body.coin.exp, expected: 3}
-    - {type: AssertNotEqual, actual: $_response.body.coin.priceBtc, expected: 2}
+    - {type: AssertEqual, actual: "{$_response.code}", expected: 200}
+    - {type: AssertIsInt, actual: "{$_response.body.coin.priceBtc}"}
+    - {type: AssertIsString, actual: "{$_response.body.coin.websiteUrl}"}
+    - {type: AssertIsFloat, actual: "{$_response.body.coin.priceChange1w}"}
+    - {type: AssertIsMap, actual: "{$_response.body.coin}"}
+    - {type: AssertIsList, actual: "{$_response.body.coin.exp}"}
+    - {type: AssertCount, actual: "{$_response.body.coin.exp}", expected: 3}
+    - {type: AssertNotEqual, actual: "{$_response.body.coin.priceBtc}", expected: 2}

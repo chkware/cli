@@ -4,4 +4,4 @@ request:
   url: https://api.coinstats.app/public/v1/coins/bitcoin?currency=USD
   method: GET
 expose:
-  - $_response.body
+  - "{$_response.body}"
