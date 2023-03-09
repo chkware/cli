@@ -71,7 +71,7 @@ def execute_testcase(
 # root command
 @click.group("chk")
 def execute_root() -> None:
-    """v0.4.2 | supported version strings: 0.7.2"""
+    """v0.4.3 | supported version strings: 0.7.2"""
 
 
 execute_root.add_command(execute_http)  # add `http` as sub-command
