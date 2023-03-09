@@ -7,10 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Date: not-available <br>
 
 ---
-## [0.4.2 `alpha`]
-Date: 2023-02-03 <br>
+
+## [0.4.3 `alpha`]
+
+Date: 2023-03-09
 
 ### Added
+
+- Add sample workflow scripts written in python [#196](https://github.com/chkware/cli/issues/196)
+- Read from OS Env for variables [#192](https://github.com/chkware/cli/issues/192)
+- Add support for variable pass from CLI context for testcase [#184](https://github.com/chkware/cli/issues/184)
+
+### Changed
+
+- Align variable useage [#270](https://github.com/chkware/cli/issues/270)
+- Type gets changed on response JSON [#187](https://github.com/chkware/cli/issues/187)
+
+---
+
+## [0.4.2 `alpha`]
+
+Date: 2023-02-03
+
+### Added
+
 - Add `--no-format`, `-nf` to get data as prepared by expose [#180](https://github.com/chkware/cli/issues/180)
 - Improved cross-patform cross-terminal output print [#177](https://github.com/chkware/cli/issues/177)
 - Output valid json encodable output for results [#175](https://github.com/chkware/cli/issues/175)
@@ -27,10 +47,12 @@ Date: 2023-02-03 <br>
 - Support for versioned functionality [#148](https://github.com/chkware/cli/issues/148)
 
 ### Changed
+
 - Update get_symbol_table so that it returns mangled var namespace [#166](https://github.com/chkware/cli/issues/166)
 - Virtual document based system process - architectural upgrade [#131](https://github.com/chkware/cli/issues/131)
 
 ### Removed
+
 - Remove support for `request.return` [#173](https://github.com/chkware/cli/issues/173)
 
 ---
