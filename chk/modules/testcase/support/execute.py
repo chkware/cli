@@ -110,7 +110,7 @@ class ExecuteMixin(DocumentMixin):
 
         else:
             result_dict = {
-                "$_response": value_l,
+                "_response": value_l,
             }
 
         app.set_local(self.get_file_context().filepath_hash, result_dict, ExConf.LOCAL)

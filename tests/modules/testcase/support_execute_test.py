@@ -66,7 +66,7 @@ class TestExecuteMixin:
 
         assert isinstance(tc.execute_as_dict(), dict)
         assert tc.execute_as_dict() == {
-            "execute": {"file": "./01_UserCreateRequest.chk", "result": ["$Response"]}
+            "execute": {"file": "./01_UserCreateRequest.chk", "result": ["{@Response}"]}
         }
 
         del app.original_doc[ctx.filepath_hash]
@@ -82,7 +82,7 @@ class TestExecuteMixin:
         assert tc.execute_as_dict() == {
             "execute": {
                 "file": "./03_UserCreateRequest_ResList.chk",
-                "result": ["$Code", "$Headers"],
+                "result": ["{@Code}", "{@Headers}"],
             }
         }
 
@@ -145,7 +145,7 @@ class TestExecuteMixin:
         assert tc.execute_validated() == {
             "execute": {
                 "file": "./03_UserCreateRequest_ResList.chk",
-                "result": ["$Code", "_"],
+                "result": ["{@Code}", "_"],
             }
         }
 
@@ -233,7 +233,7 @@ class TestExecuteMixin:
 
         result_local_val = app.get_local(ctx.filepath_hash, ExecuteConfigNode.LOCAL)
 
-        assert "$_response" in result_local_val
-        assert len(result_local_val["$_response"]) == 2
+        assert "_response" in result_local_val
+        assert len(result_local_val["_response"]) == 2
 
         del app.compiled_doc[ctx.filepath_hash]
