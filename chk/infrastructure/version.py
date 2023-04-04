@@ -4,11 +4,12 @@ Version management
 import dataclasses
 import re
 
+VERSION_FORMAT_REGEX = r"^([\w-]+:[\w-]+){2}$"
+
 
 @dataclasses.dataclass
 class DocumentVersion:
     _version: str
-    _version_format_regex = r"^([\w-]+:[\w-]+){2}$"
 
     def __post_init__(self) -> None:
         """
@@ -35,7 +36,7 @@ class DocumentVersion:
             ValueError If throw is set to True
         """
 
-        if re.search(self._version_format_regex, self._version):
+        if re.search(VERSION_FORMAT_REGEX, self._version):
             return True
 
         if throw:
