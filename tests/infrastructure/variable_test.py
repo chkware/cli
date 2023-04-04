@@ -3,8 +3,9 @@
 Test module for infrastructure.variable module
 """
 import types
+import pytest
 
-from chk.infrastructure.variable import LocalVariable
+from chk.infrastructure.variable import Variable, LocalVariable
 
 
 class TestLocalVariableCreation:
@@ -19,3 +20,20 @@ class TestLocalVariableCreation:
         a = LocalVariable("A", "")
         assert a.value == ""
         assert a.value_type == str
+
+    def test_create_with_malformed_str_1_fails(self):
+        with pytest.raises(ValueError):
+            LocalVariable("__Abc", None)
+
+    def test_create_with_malformed_str_2_fails(self):
+        with pytest.raises(ValueError):
+            LocalVariable("1Abc", None)
+
+    def test_create_pass(self):
+        a = LocalVariable("A_", 1)
+        assert a.value == 1
+        assert a.value_type == int
+
+    def test_create_is_variable_pass(self):
+        a = LocalVariable("A_", 1)
+        assert isinstance(a, Variable)

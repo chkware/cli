@@ -1,12 +1,15 @@
 """
 Variable manipulation utils module
 """
-import json
-import typing
 import dataclasses
+import json
+import re
+import typing
+
+LOCAL_VARIABLE_NAME_FORMAT_REGEX = r"^([a-zA-Z]\w*)$"
 
 
-@dataclasses.dataclass
+@typing.runtime_checkable
 class Variable(typing.Protocol):
     """Variable protocol"""
 
@@ -21,6 +24,9 @@ class Variable(typing.Protocol):
 class LocalVariable:
     name: str
     value: typing.Any
+
+    def __post_init__(self) -> None:
+        self._validate_name(True)
 
     @property
     def as_dict(self) -> dict:
@@ -44,3 +50,20 @@ class LocalVariable:
         """
 
         return type(self.value)
+
+    def _validate_name(self, throw: bool = False) -> bool:
+        """
+        Validate local variable name
+
+        params:
+            throw: bool Should raise exception, defaults to False
+        throws:
+            ValueError If throw is set to True
+        """
+        if re.search(LOCAL_VARIABLE_NAME_FORMAT_REGEX, self.name):
+            return True
+
+        if throw:
+            raise ValueError(f"Invalid local variable name: `{self.name}`")
+
+        return False
