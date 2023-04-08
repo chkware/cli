@@ -22,6 +22,16 @@ class JsonSerializable(typing.Protocol):
     def as_json(self) -> str:
         """Signature to converts document to json string"""
 
+
+@typing.runtime_checkable
+class DictionarySerializable(typing.Protocol):
+    """
+    Document protocol
+    """
+
+    def from_dict(self, dict_obj: dict) -> None:
+        """Signature to converts dictionary to document"""
+
     def as_dict(self) -> dict:
         """Signature to converts document to dictionary"""
 
