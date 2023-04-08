@@ -1,6 +1,7 @@
 """Commands"""
 
 import click
+from click import Context
 
 import chk.modules.http.main as http_executor
 import chk.modules.testcase.main as testcase_executor
@@ -9,16 +10,35 @@ from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import parse_args
 
 
+# root command
+@click.group()
+@click.pass_context
+def chk(ctx: Context) -> None:
+    """v0.4.3 | supported version strings: 0.7.2"""
+    ctx.ensure_object(dict)
+
+
 # run http sub-command
-@click.command("http")
+@chk.command()
 @click.argument("file", type=click.Path(exists=True))
 @click.argument("variables", nargs=-1)
-@click.option("-r", "--result", is_flag=True, help="Only shows the returned output")
 @click.option(
-    "-nf", "--no-format", is_flag=True, help="No formatting to show the output"
+    "-r",
+    "--result",
+    is_flag=True,
+    help="Only shows the returned output",
 )
-def execute_http(file: str, variables: tuple, result: bool, no_format: bool) -> None:
-    """Command to run Http config file.\r\n
+@click.option(
+    "-nf",
+    "--no-format",
+    is_flag=True,
+    help="No formatting to show the output",
+)
+def http(file: str, variables: tuple, result: bool, no_format: bool) -> None:
+    """
+    \b
+    Command to run Http config file.
+
     FILE: Any .chk file, that has 'version: default.http.*' string in it.
     VARIABLES: Space separated Name=Value. eg: Name='User Name' Age=17"""
 
@@ -39,16 +59,22 @@ def execute_http(file: str, variables: tuple, result: bool, no_format: bool) -> 
 
 
 # run testcase sub-command
-@click.command("testcase")
+@chk.command()
 @click.argument("file")
 @click.argument("variables", nargs=-1)
-@click.option("-r", "--result", is_flag=True, help="Only shows the returned output")
 @click.option(
-    "-nf", "--no-format", is_flag=True, help="No formatting to show the output"
+    "-r",
+    "--result",
+    is_flag=True,
+    help="Only shows the returned output",
 )
-def execute_testcase(
-    file: str, variables: tuple, result: bool, no_format: bool
-) -> None:
+@click.option(
+    "-nf",
+    "--no-format",
+    is_flag=True,
+    help="No formatting to show the output",
+)
+def testcase(file: str, variables: tuple, result: bool, no_format: bool) -> None:
     """Command to run Testcase config file.\r\n
     FILE: Any .chk file, that has 'version: default.testcase.*' string in it."""
 
@@ -66,13 +92,3 @@ def execute_testcase(
     )
 
     testcase_executor.execute(ctx)
-
-
-# root command
-@click.group("chk")
-def execute_root() -> None:
-    """v0.4.3 | supported version strings: 0.7.2"""
-
-
-execute_root.add_command(execute_http)  # add `http` as sub-command
-execute_root.add_command(execute_testcase)  # add `testcase` as sub-command
