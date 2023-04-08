@@ -2,6 +2,7 @@
 Helper functions module
 """
 import ast
+import json
 from typing import Any
 
 
@@ -228,3 +229,15 @@ def parse_args(argv_s: list[str], delimiter: str = "=") -> dict:
         return {item[0]: item[1] for item in [item.split(delimiter) for item in argv]}
 
     return {}
+
+
+def is_json(expected_json: str) -> bool:
+    """Check is the given string is a json
+    """
+
+    try:
+        json.loads(expected_json)
+    except ValueError:
+        return False
+
+    return True
