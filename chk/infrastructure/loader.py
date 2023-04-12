@@ -3,6 +3,8 @@ Loader module
 """
 from pathlib import Path
 
+import yaml
+
 
 class FileLoader:
     """File loader utility"""
@@ -26,3 +28,16 @@ class FileLoader:
             raise LookupError("File not allowed")
 
         return True
+
+    @staticmethod
+    def load_yaml(file_name: str) -> dict:
+        """Try to load yaml file and return content as dictionary
+        :param file_name: str File name to be loaded
+        :return: File content as dictionary
+        """
+
+        with open(file_name, "r", encoding="UTF-8") as yaml_file:
+            try:
+                return yaml.safe_load(yaml_file)
+            except Exception as ex:
+                raise RuntimeError("YAML loading error.") from ex

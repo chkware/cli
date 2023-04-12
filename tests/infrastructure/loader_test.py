@@ -31,3 +31,20 @@ class TestFileLoaderIsFileOk:
     def test_pass_with_given_allowed_list(self):
         file_name = FILE_PATH + "UserOk.yaml"
         assert FileLoader.is_file_ok(file_name, [".chk", ".yaml", ".yml"]) is True
+
+
+class TestFileLoaderLoadYaml:
+    """Create tests"""
+
+    def test_pass_valid_file(self):
+        file_name = FILE_PATH + "bitcoin-usd.chk"
+        loaded_content = FileLoader.load_yaml(file_name)
+
+        assert isinstance(loaded_content, dict)
+        assert isinstance(loaded_content.get("version"), str)
+
+    def test_fail_invalid_file(self):
+        file_name = FILE_PATH + "UserNotOk.chk"
+
+        with pytest.raises(RuntimeError):
+            FileLoader.load_yaml(file_name)
