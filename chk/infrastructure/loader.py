@@ -1,6 +1,7 @@
 """
 Loader module
 """
+import json
 from pathlib import Path
 
 import yaml
@@ -41,3 +42,16 @@ class FileLoader:
                 return yaml.safe_load(yaml_file)
             except Exception as ex:
                 raise RuntimeError("YAML loading error.") from ex
+
+    @staticmethod
+    def load_json(file_name: str) -> dict:
+        """Try to load json file and return content as dictionary
+        :param file_name: str File name to be loaded
+        :return: File content as dictionary
+        """
+
+        with open(file_name, "r", encoding="UTF-8") as json_file_content:
+            try:
+                return json.loads(json_file_content.read())
+            except ValueError as ex:
+                raise RuntimeError("JSON loading error.") from ex

@@ -48,3 +48,20 @@ class TestFileLoaderLoadYaml:
 
         with pytest.raises(RuntimeError):
             FileLoader.load_yaml(file_name)
+
+
+class TestFileLoaderLoadJson:
+    """Create tests"""
+
+    def test_pass_valid_file(self):
+        file_name = FILE_PATH + "UserOk.json"
+        loaded_content = FileLoader.load_json(file_name)
+
+        assert isinstance(loaded_content, dict)
+        assert isinstance(loaded_content.get("version"), str)
+
+    def test_fail_invalid_file(self):
+        file_name = FILE_PATH + "UserNotOk.json"
+
+        with pytest.raises(RuntimeError):
+            FileLoader.load_yaml(file_name)
