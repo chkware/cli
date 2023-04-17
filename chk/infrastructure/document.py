@@ -52,3 +52,12 @@ class BaseDocument(abc.ABC):
     def as_json(self) -> str:
         """Default overloaded implementation"""
         return json.dumps(self.as_dict)
+
+
+@dataclasses.dataclass(slots=True)
+class CallingContextData:
+    """Representation of context object"""
+
+    document: BaseDocument
+    behaviour: dict = dataclasses.field(default_factory=dict)
+    attribute: dict = dataclasses.field(default_factory=dict)
