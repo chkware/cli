@@ -55,3 +55,15 @@ class FileLoader:
                 return json.loads(json_file_content.read())
             except ValueError as ex:
                 raise RuntimeError("JSON loading error.") from ex
+
+    @staticmethod
+    def load_json_from_str(expected_json: str) -> dict:
+        """Try to load json file and return content as dictionary
+        :param expected_json: str JSON document to be loaded
+        :return: JSON document as dictionary
+        """
+
+        try:
+            return json.loads(expected_json)
+        except ValueError as ex:
+            raise RuntimeError("JSON loading error.") from ex

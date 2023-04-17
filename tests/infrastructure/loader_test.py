@@ -64,4 +64,23 @@ class TestFileLoaderLoadJson:
         file_name = FILE_PATH + "UserNotOk.json"
 
         with pytest.raises(RuntimeError):
-            FileLoader.load_yaml(file_name)
+            FileLoader.load_json(file_name)
+
+
+class TestFileLoaderLoadJsonFromStr:
+    """Create tests"""
+
+    def test_pass_valid_file(self):
+        file_name = FILE_PATH + "UserOk.json"
+        with open(file_name, "r", encoding="UTF-8") as json_file_content:
+            loaded_content = FileLoader.load_json_from_str(json_file_content.read())
+
+            assert isinstance(loaded_content, dict)
+            assert isinstance(loaded_content.get("version"), str)
+
+    def test_fail_invalid_file(self):
+        file_name = FILE_PATH + "UserNotOk.json"
+
+        with open(file_name, "r", encoding="UTF-8") as json_file_content:
+            with pytest.raises(RuntimeError):
+                FileLoader.load_json_from_str(json_file_content.read())
