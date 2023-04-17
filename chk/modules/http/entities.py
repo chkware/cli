@@ -1,9 +1,11 @@
 """
 Entities for http document specification
 """
+import dataclasses
 from typing import NamedTuple
 
 from chk.infrastructure.contexts import app
+from chk.infrastructure.document import BaseDocument
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import dict_get
 from chk.infrastructure.work import WorkerContract
@@ -128,3 +130,19 @@ class HttpSpec(
                 ret_s=bool(app.config(self.file_ctx.filepath_hash, "result")),
             )
             raise err
+
+
+@dataclasses.dataclass(slots=True)
+class HttpDocumentV072(BaseDocument):
+    """Request class"""
+
+    request: dict = dataclasses.field(default_factory=dict)
+
+    # validate document
+    # create version from document
+    # create expose from document
+    # create variables from document
+    # set to parent constructor
+
+    # create request
+    # create response
