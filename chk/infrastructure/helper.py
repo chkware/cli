@@ -218,22 +218,8 @@ class Cast:
         return var
 
 
-def parse_args(argv_s: list[str], delimiter: str = "=") -> dict:
-    """
-    parse and return args to dict
-    :return: dict
-    """
-
-    if argv_s:
-        argv = [item for item in argv_s if delimiter in item]
-        return {item[0]: item[1] for item in [item.split(delimiter) for item in argv]}
-
-    return {}
-
-
 def is_json(expected_json: str) -> bool:
-    """Check is the given string is a json
-    """
+    """Check is the given string is a json"""
 
     try:
         json.loads(expected_json)
