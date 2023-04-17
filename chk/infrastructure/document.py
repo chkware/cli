@@ -42,9 +42,9 @@ class BaseDocument(abc.ABC):
     Base of all specification document
     """
 
-    version: DocumentVersion
-    exposables: list[Variable]
-    variables: list[Variable]
+    version: DocumentVersion | str = dataclasses.field(default_factory=str)
+    exposables: list[Variable] = dataclasses.field(default_factory=list)
+    variables: list[Variable] = dataclasses.field(default_factory=list)
 
     def as_dict(self) -> dict:
         return dataclasses.asdict(self)
