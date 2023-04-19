@@ -3,8 +3,17 @@ Version management
 """
 import dataclasses
 import re
+from enum import Enum
 
-VERSION_FORMAT_REGEX = r"^([\w-]+:[\w-]+){2}$"
+from chk.infrastructure.helper import data_get
+
+VERSION_FORMAT_REGEX = r"^([A-Za-z0-9-\.:]+){3}$"
+
+
+class VersionConfigNode(Enum):
+    """represent the base of all kind of documents"""
+
+    VERSION = "version"
 
 
 @dataclasses.dataclass
@@ -43,3 +52,14 @@ class DocumentVersion:
             raise ValueError("Invalid version string format")
 
         return False
+
+
+class DocumentVersionMaker:
+    """Create document version object"""
+
+    @staticmethod
+    def from_dict(document: dict) -> DocumentVersion:
+        """Create a DocumentVersion from given dict"""
+
+        version_str = data_get(document, VersionConfigNode.VERSION.value, None)
+        return DocumentVersion(version_str)

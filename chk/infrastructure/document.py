@@ -58,6 +58,6 @@ class BaseDocument(abc.ABC):
 class CallingContextData:
     """Representation of context object"""
 
-    document: BaseDocument
+    document: dict = dataclasses.field(default_factory=dict)
     behaviour: dict = dataclasses.field(default_factory=dict)
     attribute: dict = dataclasses.field(default_factory=dict)

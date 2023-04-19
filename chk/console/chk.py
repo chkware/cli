@@ -5,9 +5,10 @@ from click import Context
 
 import chk.modules.http.main as http_executor
 import chk.modules.testcase.main as testcase_executor
+from chk.infrastructure.document import CallingContextData
 
 from chk.infrastructure.file_loader import FileContext
-from chk.infrastructure.helper import parse_args
+from chk.infrastructure.loader import FileLoader
 
 
 # root command
@@ -31,7 +32,6 @@ def chk(ctx: Context) -> None:
 # run http sub-command
 @chk.command()
 @click.argument("file", type=click.Path(exists=True))
-@click.argument("variables", nargs=-1)
 @click.option(
     "-r",
     "--result",
@@ -44,7 +44,13 @@ def chk(ctx: Context) -> None:
     is_flag=True,
     help="No formatting to show the output",
 )
-def http(file: str, variables: tuple, result: bool, no_format: bool) -> None:
+@click.option(
+    "-V",
+    "--variables",
+    type=str,
+    help="Pass variable(s) as JSON object",
+)
+def http(file: str, result: bool, no_format: bool, variables: str) -> None:
     """
     \b
     Command to run Http config file.
@@ -52,20 +58,31 @@ def http(file: str, variables: tuple, result: bool, no_format: bool) -> None:
     FILE: Any .chk file, that has 'version: default.http.*' string in it.
     VARIABLES: Space separated Name=Value. eg: Name='User Name' Age=17"""
 
-    if not all("=" in k for k in variables):
-        raise click.UsageError("One or more variable/s is not `=` separated")
+    variables_j = {}
 
-    ctx: FileContext = FileContext.from_file(
-        file,
-        options={
+    if variables:
+        try:
+            variables_j = FileLoader.load_json(variables)
+        except Exception as ex:
+            raise click.UsageError(
+                "-V, --variables accept values as JSON object"
+            ) from ex
+
+    ctx_obj = CallingContextData(
+        FileLoader.load_yaml(file),
+        {
             "dump": True,
             "result": result,
             "format": not no_format,
         },
-        arguments={"variables": parse_args(list(variables))},
+        {"__variables": variables_j},
     )
 
-    http_executor.execute(ctx)
+    http_executor.execute(ctx_obj)
+
+    # load passed variables
+    # set global click values
+    # create document
 
 
 # run testcase sub-command
@@ -88,17 +105,17 @@ def testcase(file: str, variables: tuple, result: bool, no_format: bool) -> None
     """Command to run Testcase config file.\r\n
     FILE: Any .chk file, that has 'version: default.testcase.*' string in it."""
 
-    if not all("=" in k for k in variables):
-        raise click.UsageError("One or more variable/s is not `=` separated")
-
-    ctx: FileContext = FileContext.from_file(
-        file,
-        options={
-            "dump": True,
-            "result": result,
-            "format": not no_format,
-        },
-        arguments={"variables": parse_args(list(variables))},
-    )
-
-    testcase_executor.execute(ctx)
+    # if not all("=" in k for k in variables):
+    #     raise click.UsageError("One or more variable/s is not `=` separated")
+    #
+    # ctx: FileContext = FileContext.from_file(
+    #     file,
+    #     options={
+    #         "dump": True,
+    #         "result": result,
+    #         "format": not no_format,
+    #     },
+    #     arguments={"variables": parse_args(list(variables))},
+    # )
+    #
+    # testcase_executor.execute(ctx)
