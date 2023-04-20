@@ -3,15 +3,13 @@
 """
 test global chk functions
 """
-from types import MappingProxyType
-
 import pytest
 import tests
 import sys
 from io import TextIOWrapper, BytesIO
 
 from chk.infrastructure.containers import App, CompiledOptions
-from chk.infrastructure.file_loader import FileContext, ChkFileLoader
+from chk.infrastructure.file_loader import FileContext, ChkFileLoader, FileLoader
 from chk.infrastructure.helper import data_set, data_get
 
 
@@ -155,41 +153,37 @@ class TestApp:
     def test_app_load_original_doc_from_file_context_pass():
         app = App()
         file_path = tests.RES_DIR + "UserOk.chk"
-        fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file_path)
+        _, fpath_hash = ChkFileLoader.get_mangled_name(file_path)
 
         ctx = FileContext(
             filepath=file_path,
-            filepath_mangled=fpath_mangled,
             filepath_hash=fpath_hash,
+            document=FileLoader.load_yaml(file_path)
         )
 
         app.load_original_doc_from_file_context(ctx)
-        assert app.original_doc[ctx.filepath_hash] == ChkFileLoader.to_dict(
-            ctx.filepath
-        )
+        assert app.original_doc[ctx.filepath_hash] == FileLoader.load_yaml(ctx.filepath)
 
     @staticmethod
     def test_app_load_original_doc_from_file_with_arguments():
         app = App()
         file_path = tests.RES_DIR + "UserOk.chk"
-        fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file_path)
+        _, fpath_hash = ChkFileLoader.get_mangled_name(file_path)
 
         ctx = FileContext(
             filepath=file_path,
-            filepath_mangled=fpath_mangled,
             filepath_hash=fpath_hash,
-            arguments=MappingProxyType(
-                {
-                    "variables": {
-                        "Method": "GET",
-                    }
+            document=FileLoader.load_yaml(file_path),
+            arguments={
+                "variables": {
+                    "Method": "GET",
                 }
-            ),
+            },
         )
 
         app.load_original_doc_from_file_context(ctx)
 
-        assert app.original_doc[ctx.filepath_hash] == ChkFileLoader.to_dict(
+        assert app.original_doc[ctx.filepath_hash] == FileLoader.load_yaml(
             ctx.filepath
         ) | {
             "__outer": {
@@ -203,18 +197,15 @@ class TestApp:
     def test_app_load_original_doc_from_file_with_options():
         app = App()
         file_path = tests.RES_DIR + "UserOk.chk"
-        fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(file_path)
+        _, fpath_hash = ChkFileLoader.get_mangled_name(file_path)
 
         ctx = FileContext(
             filepath=file_path,
-            filepath_mangled=fpath_mangled,
             filepath_hash=fpath_hash,
-            options=MappingProxyType(
-                {
-                    "result": False,
-                    "dump": False,
-                }
-            ),
+            options={
+                "result": False,
+                "dump": False,
+            },
         )
 
         app.load_original_doc_from_file_context(ctx)
@@ -364,12 +355,10 @@ class TestCompiledOptions:
     @staticmethod
     def test_from_file_context():
         ctx = FileContext(
-            options=MappingProxyType(
-                {
-                    "result": False,
-                    "dump": False,
-                }
-            )
+            options={
+                "result": False,
+                "dump": False,
+            }
         )
 
         obj = CompiledOptions.from_file_context(ctx).dict()

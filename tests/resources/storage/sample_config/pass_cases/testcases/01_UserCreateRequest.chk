@@ -1,16 +1,16 @@
 version: 'default:http:0.7.2'
 
 variables:
-  Name: 'Morpheus'
-  Job: 'leader'
-  Server: https://reqres.io/api/v1
+  FirstName: 'Muhammad'
+  LastName: 'Ovi'
+  Server: https://dummyjson.com
 
 request:
-  url: "{$Server}/users"
+  url: "{$Server}/users/add"
   method: POST
   body[json]: {
-    'name': '{$Name}',
-    'job': '{$Job}',
+    'firstName': '{$FirstName}',
+    'lastName': '{$LastName}',
   }
 
 expose:

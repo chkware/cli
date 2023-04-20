@@ -126,10 +126,11 @@ class App(NamedTuple):
         return self.compiled_doc[key]
 
     def load_original_doc_from_file_context(self, file_ctx: FileContext) -> None:
-        """Load original doc from a given file context"""
+        """Load original doc from a given file context
+        :param file_ctx: FileContext to use
+        """
 
-        document = ChkFileLoader.to_dict(file_ctx.filepath)
-        self.set_original_doc(file_ctx.filepath_hash, document)
+        self.set_original_doc(file_ctx.filepath_hash, file_ctx.document)
 
         # add outer replaceable variables
         outer_vars = file_ctx.arguments.get(CompiledDocBlockType.VARIABLES.value)

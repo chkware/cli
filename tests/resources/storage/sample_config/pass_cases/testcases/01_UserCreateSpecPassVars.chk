@@ -7,8 +7,8 @@ spec:
   execute:
     file: './01_UserCreateRequest.chk'
     with:
-      Name: Hasan
-      Job: Tester
+      FirstName: 'Muhammad'
+      LastName: 'Hassan'
     result: ["{@Code}"]
   asserts:
     - {type: AssertEqual, actual: $Code, expected: 201}
