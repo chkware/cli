@@ -2,7 +2,6 @@
 
 """test loader"""
 import sys
-from types import MappingProxyType
 from pathlib import Path
 
 import pytest
@@ -22,13 +21,13 @@ class TestChkFileLoader:
     def test_to_dict_valid_file(self):
         """test to_dict with valid file"""
         filename = tests.RES_DIR + "UserOk.chk"
-        assert type(ChkFileLoader.to_dict(filename)) == dict
+        assert isinstance(FileLoader.load_yaml(filename), dict)
 
     def test_to_dict_invalid_file(self):
         """test with invalid file"""
         filename = tests.RES_DIR + "UserNotOk.chk"
-        with pytest.raises(SystemExit):
-            assert type(ChkFileLoader.to_dict(filename)) == dict
+        with pytest.raises(RuntimeError):
+            assert isinstance(FileLoader.load_yaml(filename), dict)
 
     def test_is_file_ok_valid_file(self):
         """test is_file_ok with valid existing file"""

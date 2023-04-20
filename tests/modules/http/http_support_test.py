@@ -3,7 +3,7 @@ import pytest
 
 import tests
 from chk.infrastructure.containers import App
-from chk.infrastructure.file_loader import ChkFileLoader, FileContext
+from chk.infrastructure.file_loader import FileContext, FileLoader
 from chk.modules.http.support import RequestMixin
 from chk.modules.variables.support import replace_values
 
@@ -44,7 +44,7 @@ class TestRequestMixin:
 
     def test_validate_get_expect_pass(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "pass_cases/GET-Plain.chk"
         )
 
@@ -55,7 +55,7 @@ class TestRequestMixin:
 
     def test_validate_get_with_query_expect_pass(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "pass_cases/GET-WithQuery.chk"
         )
 
@@ -66,7 +66,7 @@ class TestRequestMixin:
 
     def test_validate_get_with_query_empty_expect_fail(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "fail_cases/GET-WithQuery-Empty.chk"
         )
 
@@ -79,7 +79,7 @@ class TestRequestMixin:
 
     def test_validate_get_with_query_as_list_expect_fail(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "fail_cases/GET-WithQuery-AsList.chk"
         )
 
@@ -92,7 +92,7 @@ class TestRequestMixin:
 
     def test_validate_get_with_headers_expect_pass(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "pass_cases/GET-WithHeaders.chk"
         )
 
@@ -103,7 +103,7 @@ class TestRequestMixin:
 
     def test_validate_get_with_headers_empty_expect_fail(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "fail_cases/GET-WithHeaders-Empty.chk"
         )
 
@@ -116,7 +116,7 @@ class TestRequestMixin:
 
     def test_validate_get_with_headers_as_list_expect_fail(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "fail_cases/GET-WithHeaders-AsList.chk"
         )
 
@@ -129,7 +129,7 @@ class TestRequestMixin:
 
     def test_validate_get_with_ba_expect_pass(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "pass_cases/GET-WithBasicAuth.chk"
         )
 
@@ -140,7 +140,7 @@ class TestRequestMixin:
 
     def test_validate_get_with_ba_empty_expect_fail(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "fail_cases/GET-WithBasicAuth-Empty.chk"
         )
 
@@ -153,7 +153,7 @@ class TestRequestMixin:
 
     def test_validate_get_with_ba_as_list_expect_fail(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "fail_cases/GET-WithBasicAuth-AsList.chk"
         )
 
@@ -166,7 +166,7 @@ class TestRequestMixin:
 
     def test_validate_get_with_ba_and_be_sametime_expect_fail(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "fail_cases/GET-WithBasicAuth-AndBearer.chk"
         )
 
@@ -179,7 +179,7 @@ class TestRequestMixin:
 
     def test_validate_get_with_be_expect_pass(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "pass_cases/GET-WithBearerAuth.chk"
         )
 
@@ -190,7 +190,7 @@ class TestRequestMixin:
 
     def test_validate_get_with_be_empty_expect_fail(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "fail_cases/GET-WithBearerAuth-Empty.chk"
         )
 
@@ -203,7 +203,7 @@ class TestRequestMixin:
 
     def test_validate_get_with_be_as_list_expect_fail(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "fail_cases/GET-WithBearerAuth-AsList.chk"
         )
 
@@ -216,7 +216,7 @@ class TestRequestMixin:
 
     def test_validate_post_plain_expect_pass(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "pass_cases/POST-Plain.chk"
         )
 
@@ -227,7 +227,7 @@ class TestRequestMixin:
 
     def test_validate_post_with_form_body_expect_pass(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "pass_cases/POST-WithBodyForm.chk"
         )
 
@@ -238,7 +238,7 @@ class TestRequestMixin:
 
     def test_validate_post_with_form_body_as_list_expect_fail(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "fail_cases/POST-WithBodyForm-AsList.chk"
         )
 
@@ -251,7 +251,7 @@ class TestRequestMixin:
 
     def test_validate_post_with_form_body_as_empty_expect_fail(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "fail_cases/POST-WithBodyForm-Empty.chk"
         )
 
@@ -264,7 +264,7 @@ class TestRequestMixin:
 
     def test_validate_post_with_form_data_body_expect_pass(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "pass_cases/POST-WithBodyFormData.chk"
         )
 
@@ -275,7 +275,7 @@ class TestRequestMixin:
 
     def test_validate_post_with_form_data_body_as_list_expect_fail(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "fail_cases/POST-WithBodyFormData-AsList.chk"
         )
 
@@ -288,7 +288,7 @@ class TestRequestMixin:
 
     def test_validate_post_with_form_data_body_as_empty_expect_fail(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "fail_cases/POST-WithBodyFormData-Empty.chk"
         )
 
@@ -301,7 +301,7 @@ class TestRequestMixin:
 
     def test_validate_post_with_json_body_expect_pass(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "pass_cases/POST-WithBodyJson.chk"
         )
 
@@ -312,7 +312,7 @@ class TestRequestMixin:
 
     def test_validate_post_with_json_body_as_empty_expect_fail(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "fail_cases/POST-WithBodyJson-Empty.chk"
         )
 
@@ -325,7 +325,7 @@ class TestRequestMixin:
 
     def test_validate_post_with_xml_body_expect_pass(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "pass_cases/GET-WithBodyXML.chk"
         )
 
@@ -336,7 +336,7 @@ class TestRequestMixin:
 
     def test_validate_post_with_xml_body_as_empty_expect_fail(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "fail_cases/POST-WithBodyXML-Empty.chk"
         )
 
@@ -349,7 +349,7 @@ class TestRequestMixin:
 
     def test_validate_post_with_many_body_expect_fail(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.original_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.original_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "fail_cases/POST-WithManyBody.chk"
         )
 
@@ -362,7 +362,7 @@ class TestRequestMixin:
 
     def test_lexical_analysis_for_request_pass(self):
         file_ctx = FileContext(filepath_hash="a1b2")
-        app.compiled_doc[file_ctx.filepath_hash] = ChkFileLoader.to_dict(
+        app.compiled_doc[file_ctx.filepath_hash] = FileLoader.load_yaml(
             tests.RES_DIR + "pass_cases/GET-WithBodyXMLWithVar.chk"
         )
         symbol_tbl = app.compiled_doc[file_ctx.filepath_hash]["variables"]

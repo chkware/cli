@@ -2,7 +2,6 @@
 File loader utility
 """
 
-from types import MappingProxyType
 from typing import NamedTuple
 from pathlib import Path
 
