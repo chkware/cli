@@ -100,6 +100,19 @@ class TestFileContext:
         assert isinstance(ctx.arguments["variables"], dict)
         assert ctx.arguments["variables"]["var"] == 1
 
+    def test_from_file_pass_with_doc(self):
+        file_path = tests.RES_DIR + "bitcoin-usd.chk"
+        ctx = FileContext.from_file(
+            file_path, options={"result": False}, arguments={"variables": {"var": 1}}
+        )
+
+        if sys.platform.startswith("win"):
+            file_path = file_path.replace("/", "\\")
+
+        assert isinstance(ctx, FileContext)
+
+        assert ctx.document == FileLoader.load_yaml(file_path)
+
 
 class TestPathFrom:
     """Test PathResolver"""

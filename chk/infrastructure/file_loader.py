@@ -108,6 +108,7 @@ class FileContext(NamedTuple):
 
     options: dict = {}
     arguments: dict = {}
+    document: dict = {}
     filepath: str = ""
     filepath_hash: str = ""
 
@@ -116,10 +117,12 @@ class FileContext(NamedTuple):
         FileLoader.is_file_ok(file)
         absolute_path = str(Path(file).absolute())
         fpath_hash = mangle.uniq_sha255(absolute_path)
+        document = FileLoader.load_yaml(absolute_path)
 
         return FileContext(
             filepath=absolute_path,
             filepath_hash=fpath_hash,
+            document=document,
             options=kwarg["options"] if "options" in kwarg else {},
             arguments=kwarg["arguments"] if "arguments" in kwarg else {},
         )
