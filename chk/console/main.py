@@ -13,10 +13,10 @@ from chk.infrastructure.helper import parse_args
 @click.command("http")
 @click.argument("file", type=click.Path(exists=True))
 @click.option("-r", "--result", is_flag=True, help="Only shows the returned output")
-@click.option("-V", "--variables", type=str, help="Pass variable(s) as JSON object")
 @click.option(
     "-nf", "--no-format", is_flag=True, help="No formatting to show the output"
 )
+@click.option("-V", "--variables", type=str, help="Pass variable(s) as JSON object")
 def execute_http(file: str, result: bool, no_format: bool, variables: str) -> None:
     """Command to run Http config file.\r\n
     FILE: Any .chk file, that has 'version: default.http.*' string in it"""
@@ -26,10 +26,8 @@ def execute_http(file: str, result: bool, no_format: bool, variables: str) -> No
     if variables:
         try:
             variables_j = FileLoader.load_json_from_str(variables)
-        except Exception as ex:
-            raise click.UsageError(
-                "-V, --variables accept values as JSON object"
-            ) from ex
+        except Exception:
+            raise click.UsageError("-V, --variables accept values as JSON object")
 
     ctx: FileContext = FileContext.from_file(
         file,
@@ -47,20 +45,23 @@ def execute_http(file: str, result: bool, no_format: bool, variables: str) -> No
 # run testcase sub-command
 @click.command("testcase")
 @click.argument("file")
-@click.argument("variables", nargs=-1)
 @click.option("-r", "--result", is_flag=True, help="Only shows the returned output")
 @click.option(
     "-nf", "--no-format", is_flag=True, help="No formatting to show the output"
 )
-def execute_testcase(
-    file: str, variables: tuple, result: bool, no_format: bool
-) -> None:
+@click.option("-V", "--variables", type=str, help="Pass variable(s) as JSON object")
+def execute_testcase(file: str, result: bool, no_format: bool, variables: str) -> None:
     """Command to run Testcase config file.\r\n
     FILE: Any .chk file, that has 'version: default.testcase.*' string in it."""
 
-    if not all("=" in k for k in variables):
-        raise click.UsageError("One or more variable/s is not `=` separated")
+    variables_j = {}
 
+    if variables:
+        try:
+            variables_j = FileLoader.load_json_from_str(variables)
+        except Exception:
+            raise click.UsageError("-V, --variables accept values as JSON object")
+    
     ctx: FileContext = FileContext.from_file(
         file,
         options={
@@ -68,7 +69,7 @@ def execute_testcase(
             "result": result,
             "format": not no_format,
         },
-        arguments={"variables": parse_args(list(variables))},
+        arguments={"variables": variables_j},
     )
 
     testcase_executor.execute(ctx)
