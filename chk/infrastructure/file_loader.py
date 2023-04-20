@@ -84,10 +84,7 @@ class FileLoader:
         """
 
         with open(file_name, "r", encoding="UTF-8") as json_file_content:
-            try:
-                return json.loads(json_file_content.read())
-            except ValueError as ex:
-                raise RuntimeError("JSON loading error.") from ex
+            return FileLoader.load_json_from_str(json_file_content.read())
 
     @staticmethod
     def load_json_from_str(expected_json: str) -> dict:
