@@ -1,6 +1,8 @@
 """
 chk cli
 """
-from chk.console.main import execute_root
+from chk.console.main import chk
 
-if __name__ == '__main__': execute_root()  # execute the root command
+if __name__ == "__main__":
+    # execute the root command
+    chk()
