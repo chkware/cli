@@ -5,25 +5,31 @@ import click
 import chk.modules.http.main as http_executor
 import chk.modules.testcase.main as testcase_executor
 
-from chk.infrastructure.file_loader import FileContext
+from chk.infrastructure.file_loader import FileContext, FileLoader
 from chk.infrastructure.helper import parse_args
 
 
 # run http sub-command
 @click.command("http")
 @click.argument("file", type=click.Path(exists=True))
-@click.argument("variables", nargs=-1)
 @click.option("-r", "--result", is_flag=True, help="Only shows the returned output")
+@click.option("-V", "--variables", type=str, help="Pass variable(s) as JSON object")
 @click.option(
     "-nf", "--no-format", is_flag=True, help="No formatting to show the output"
 )
-def execute_http(file: str, variables: tuple, result: bool, no_format: bool) -> None:
+def execute_http(file: str, result: bool, no_format: bool, variables: str) -> None:
     """Command to run Http config file.\r\n
-    FILE: Any .chk file, that has 'version: default.http.*' string in it.
-    VARIABLES: Space separated Name=Value. eg: Name='User Name' Age=17"""
+    FILE: Any .chk file, that has 'version: default.http.*' string in it"""
 
-    if not all("=" in k for k in variables):
-        raise click.UsageError("One or more variable/s is not `=` separated")
+    variables_j = {}
+
+    if variables:
+        try:
+            variables_j = FileLoader.load_json_from_str(variables)
+        except Exception as ex:
+            raise click.UsageError(
+                "-V, --variables accept values as JSON object"
+            ) from ex
 
     ctx: FileContext = FileContext.from_file(
         file,
@@ -32,7 +38,7 @@ def execute_http(file: str, variables: tuple, result: bool, no_format: bool) -> 
             "result": result,
             "format": not no_format,
         },
-        arguments={"variables": parse_args(list(variables))},
+        arguments={"variables": variables_j},
     )
 
     http_executor.execute(ctx)
