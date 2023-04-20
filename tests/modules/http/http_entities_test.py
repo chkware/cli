@@ -16,7 +16,6 @@ class TestHttpSpec:
 
         file_ctx = FileContext(
             filepath=file_path,
-            filepath_mangled=f_mangled,
             filepath_hash=f_hash,
             options=MappingProxyType({"result": True, "dump": False}),
         )

@@ -109,18 +109,16 @@ class FileContext(NamedTuple):
     options: MappingProxyType = MappingProxyType({})
     arguments: MappingProxyType = MappingProxyType({})
     filepath: str = ""
-    filepath_mangled: str = ""
     filepath_hash: str = ""
 
     @staticmethod
     def from_file(file: str, **kwarg: dict) -> "FileContext":
         FileLoader.is_file_ok(file)
         absolute_path = str(Path(file).absolute())
-        fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(absolute_path)
+        fpath_hash = mangle.uniq_sha255(absolute_path)
 
         return FileContext(
             filepath=absolute_path,
-            filepath_mangled=fpath_mangled,
             filepath_hash=fpath_hash,
             options=MappingProxyType(kwarg["options"] if "options" in kwarg else {}),
             arguments=MappingProxyType(

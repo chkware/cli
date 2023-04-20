@@ -159,7 +159,6 @@ class TestApp:
 
         ctx = FileContext(
             filepath=file_path,
-            filepath_mangled=fpath_mangled,
             filepath_hash=fpath_hash,
         )
 
@@ -176,7 +175,6 @@ class TestApp:
 
         ctx = FileContext(
             filepath=file_path,
-            filepath_mangled=fpath_mangled,
             filepath_hash=fpath_hash,
             arguments=MappingProxyType(
                 {
@@ -207,7 +205,6 @@ class TestApp:
 
         ctx = FileContext(
             filepath=file_path,
-            filepath_mangled=fpath_mangled,
             filepath_hash=fpath_hash,
             options=MappingProxyType(
                 {
