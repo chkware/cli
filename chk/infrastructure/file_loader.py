@@ -114,7 +114,7 @@ class FileContext(NamedTuple):
 
     @staticmethod
     def from_file(file: str, **kwarg: dict) -> "FileContext":
-        ChkFileLoader.is_file_ok(file)
+        FileLoader.is_file_ok(file)
         absolute_path = str(Path(file).absolute())
         fpath_mangled, fpath_hash = ChkFileLoader.get_mangled_name(absolute_path)
 
