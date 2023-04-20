@@ -106,8 +106,8 @@ class FileLoader:
 class FileContext(NamedTuple):
     """File context that holds file information"""
 
-    options: MappingProxyType = MappingProxyType({})
-    arguments: MappingProxyType = MappingProxyType({})
+    options: dict = {}
+    arguments: dict = {}
     filepath: str = ""
     filepath_hash: str = ""
 
@@ -120,10 +120,8 @@ class FileContext(NamedTuple):
         return FileContext(
             filepath=absolute_path,
             filepath_hash=fpath_hash,
-            options=MappingProxyType(kwarg["options"] if "options" in kwarg else {}),
-            arguments=MappingProxyType(
-                kwarg["arguments"] if "arguments" in kwarg else {}
-            ),
+            options=kwarg["options"] if "options" in kwarg else {},
+            arguments=kwarg["arguments"] if "arguments" in kwarg else {},
         )
 
 

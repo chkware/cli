@@ -60,10 +60,10 @@ class TestFileContext:
         assert file_path.lstrip(".") in ctx.filepath
 
         assert len(ctx.options) == 0
-        assert isinstance(ctx.options, MappingProxyType)
+        assert isinstance(ctx.options, dict)
 
         assert len(ctx.arguments) == 0
-        assert isinstance(ctx.arguments, MappingProxyType)
+        assert isinstance(ctx.arguments, dict)
 
     def test_from_file_pass_with_opt_set(self):
         file_path = tests.RES_DIR + "bitcoin-usd.chk"
@@ -79,7 +79,7 @@ class TestFileContext:
         assert not ctx.options["result"]
 
         assert len(ctx.arguments) == 0
-        assert isinstance(ctx.arguments, MappingProxyType)
+        assert isinstance(ctx.arguments, dict)
 
     def test_from_file_pass_with_opt_arg_set(self):
         file_path = tests.RES_DIR + "bitcoin-usd.chk"
