@@ -4,8 +4,26 @@ import click
 
 import chk.modules.http.main as http_executor
 import chk.modules.testcase.main as testcase_executor
+import chk.modules.fetch as fetch_executor
 
 from chk.infrastructure.file_loader import FileContext, FileLoader
+
+
+def load_variables_as_dict(variables: str) -> dict:
+    """Reads a json string and converts to dict while doing validation
+
+    Args:
+        variables: str
+    Returns:
+        dict containing variables
+    """
+    if variables:
+        try:
+            return FileLoader.load_json_from_str(variables)
+        except Exception:
+            raise click.UsageError("-V, --variables accept values as JSON object")
+
+    return {}
 
 
 # root command
@@ -40,13 +58,7 @@ def http(file: str, result: bool, no_format: bool, variables: str) -> None:
     Command to run Http config file.
     FILE: Any .chk file, that has 'version: default.http.*' string in it"""
 
-    variables_j = {}
-
-    if variables:
-        try:
-            variables_j = FileLoader.load_json_from_str(variables)
-        except Exception:
-            raise click.UsageError("-V, --variables accept values as JSON object")
+    variables_j = load_variables_as_dict(variables)
 
     ctx: FileContext = FileContext.from_file(
         file,
@@ -74,13 +86,7 @@ def testcase(file: str, result: bool, no_format: bool, variables: str) -> None:
     Command to run Testcase config file.
     FILE: Any .chk file, that has 'version: default.testcase.*' string in it."""
 
-    variables_j = {}
-
-    if variables:
-        try:
-            variables_j = FileLoader.load_json_from_str(variables)
-        except Exception:
-            raise click.UsageError("-V, --variables accept values as JSON object")
+    variables_j = load_variables_as_dict(variables)
 
     ctx: FileContext = FileContext.from_file(
         file,
