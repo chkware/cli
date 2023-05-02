@@ -5,7 +5,7 @@ import dataclasses
 import requests
 from requests.structures import CaseInsensitiveDict
 
-from chk.infrastructure.third_party.fetcher import ApiResponse, fetch
+from chk.infrastructure.third_party.http_fetcher import ApiResponse, fetch
 
 
 class TestApiResponse:

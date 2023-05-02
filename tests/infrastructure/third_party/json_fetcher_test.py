@@ -1,7 +1,7 @@
 # type: ignore
 import pytest
 
-from chk.infrastructure.third_party.fetcher import ApiResponse
+from chk.infrastructure.third_party.http_fetcher import ApiResponse
 from chk.infrastructure.third_party.json_fetcher import JsonApiResponse, fetch_json
 
 

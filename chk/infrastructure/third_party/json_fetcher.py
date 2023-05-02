@@ -4,7 +4,7 @@ JSON data fetcher
 import json
 from collections import UserDict
 
-from chk.infrastructure.third_party.fetcher import ApiResponse, fetch
+from chk.infrastructure.third_party.http_fetcher import ApiResponse, fetch
 
 
 class JsonApiResponse(UserDict):
