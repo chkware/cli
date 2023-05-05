@@ -33,6 +33,11 @@ class JsonApiResponse(UserDict):
         except Exception as ex:
             raise RuntimeError("response not json") from ex
 
+    def __str__(self) -> str:
+        """Converts to JSON string
 
-def fetch_json(params: dict) -> JsonApiResponse:
-    return JsonApiResponse.from_api_response(fetch(params))
+        Returns:
+            str: JSON object as string representation
+        """
+
+        return json.dumps(dict(self))
