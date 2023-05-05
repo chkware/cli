@@ -59,8 +59,7 @@ def fetch(file: str, result: bool, no_format: bool, variables: str) -> None:
     FILE: Any .chk file, that has any of the following versions:
 
     \b
-    - default.http.json.*
-    - default.http.xml.*"""
+    - default.http.*"""
 
     variables_j = load_variables_as_dict(variables)
 
