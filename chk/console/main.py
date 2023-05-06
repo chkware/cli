@@ -61,8 +61,6 @@ def fetch(file: str, result: bool, no_format: bool, variables: str) -> None:
     \b
     - default.http.*"""
 
-    variables_j = load_variables_as_dict(variables)
-
     ctx: FileContext = FileContext.from_file(file)
 
     execution_ctx = ExecuteContext(
@@ -71,7 +69,7 @@ def fetch(file: str, result: bool, no_format: bool, variables: str) -> None:
             "result": result,
             "format": not no_format,
         },
-        {"variables": variables_j},
+        {"variables": load_variables_as_dict(variables)},
     )
 
     fetch_executor.execute_context(ctx, execution_ctx)
