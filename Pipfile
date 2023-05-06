@@ -9,6 +9,7 @@ pyyaml = "*"
 requests = "*"
 cerberus = "*"
 defusedxml = "*"
+xmltodict = "*"
 
 [dev-packages]
 pytest = "*"
