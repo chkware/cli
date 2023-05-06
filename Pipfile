@@ -8,6 +8,7 @@ click = "*"
 pyyaml = "*"
 requests = "*"
 cerberus = "*"
+defusedxml = "*"
 
 [dev-packages]
 pytest = "*"
