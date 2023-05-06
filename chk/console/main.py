@@ -6,7 +6,7 @@ import chk.modules.http.main as http_executor
 import chk.modules.testcase.main as testcase_executor
 import chk.modules.fetch as fetch_executor
 
-from chk.infrastructure.file_loader import FileContext, FileLoader
+from chk.infrastructure.file_loader import ExecuteContext, FileContext, FileLoader
 
 
 def load_variables_as_dict(variables: str) -> dict:
@@ -63,17 +63,18 @@ def fetch(file: str, result: bool, no_format: bool, variables: str) -> None:
 
     variables_j = load_variables_as_dict(variables)
 
-    ctx: FileContext = FileContext.from_file(
-        file,
-        options={
+    ctx: FileContext = FileContext.from_file(file)
+
+    execution_ctx = ExecuteContext(
+        {
             "dump": True,
             "result": result,
             "format": not no_format,
         },
-        arguments={"variables": variables_j},
+        {"variables": variables_j},
     )
 
-    fetch_executor.execute_context(ctx)
+    fetch_executor.execute_context(ctx, execution_ctx)
 
 
 # run http sub-command

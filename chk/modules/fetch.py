@@ -13,7 +13,7 @@ from defusedxml.minidom import parseString
 import xmltodict
 
 from chk.infrastructure.document import VersionedDocument
-from chk.infrastructure.file_loader import FileContext
+from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import data_get
 
 from chk.infrastructure.third_party.http_fetcher import ApiResponse, fetch
@@ -263,7 +263,7 @@ def execute_request(http_doc: HttpDocument) -> ApiResponse:
     return fetch(request_args)
 
 
-def execute_context(ctx: FileContext) -> None:
+def execute_context(ctx: FileContext, _: ExecuteContext) -> None:
     """Run a http document
     :param ctx: FileContext object to handle
     """
