@@ -235,7 +235,8 @@ class ApiResponseDict(UserDict):
         except Exception as ex:
             raise RuntimeError("Unsupported response format.")
 
-    def __str__(self) -> str:
+    @property
+    def as_json(self) -> str:
         """Converts to JSON string
 
         Returns:
@@ -271,4 +272,4 @@ def execute_context(ctx: FileContext) -> None:
     response_ = execute_request(http_doc)
     response = ApiResponseDict.from_api_response(response_)
 
-    print(response, response_)
+    print(response.as_json, response_)
