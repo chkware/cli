@@ -263,7 +263,7 @@ def execute_request(http_doc: HttpDocument) -> ApiResponse:
     return fetch(request_args)
 
 
-def execute_context(ctx: FileContext, _: ExecuteContext) -> None:
+def execute(ctx: FileContext, _: ExecuteContext) -> None:
     """Run a http document
     :param ctx: FileContext object to handle
     """

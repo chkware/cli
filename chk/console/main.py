@@ -72,7 +72,7 @@ def fetch(file: str, result: bool, no_format: bool, variables: str) -> None:
         {"variables": load_variables_as_dict(variables)},
     )
 
-    fetch_executor.execute_context(ctx, execution_ctx)
+    fetch_executor.execute(ctx, execution_ctx)
 
 
 # run http sub-command
