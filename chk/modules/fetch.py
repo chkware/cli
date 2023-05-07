@@ -17,6 +17,7 @@ from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import data_get
 
 from chk.infrastructure.third_party.http_fetcher import ApiResponse, fetch
+from chk.infrastructure.version import DocumentVersionMaker
 
 
 class HttpMethod(enum.StrEnum):
@@ -195,6 +196,12 @@ class HttpDocument(VersionedDocument):
             request=request_dct,
         )
 
+    @property
+    def as_dict(self) -> dict:
+        """Return a dict of the data"""
+
+        return dataclasses.asdict(self)
+
 
 class ApiResponseDict(UserDict):
     """Represents a API response with body in dict representation"""
@@ -265,10 +272,15 @@ def execute_request(http_doc: HttpDocument) -> ApiResponse:
 
 def execute(ctx: FileContext, _: ExecuteContext) -> None:
     """Run a http document
-    :param ctx: FileContext object to handle
+
+    Args:
+        ctx: FileContext object to handle
+        _: ExecuteContext
     """
 
     http_doc = HttpDocument.from_file_context(ctx)
+    DocumentVersionMaker.from_dict(http_doc.as_dict)
+
     response_ = execute_request(http_doc)
     response = ApiResponseDict.from_api_response(response_)
 
