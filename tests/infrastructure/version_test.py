@@ -23,23 +23,10 @@ class TestDocumentVersionCreation:
         with pytest.raises(ValueError):
             DocumentVersion(":bb:cc")
 
-    def test_create_pass(self):
-        a = DocumentVersion("aa:bb:cc")
-        assert a.original_version_str == "aa:bb:cc"
-        assert a.provider == "aa"
-        assert a.doc_type == "bb"
-        assert a.doc_type_ver == "cc"
-
     def test_one_doc_type_pass(self):
         a = DocumentVersion("default:http:0.7.2")
         assert a.provider == "default"
         assert a.doc_type == "http"
-        assert a.doc_type_ver == "0.7.2"
-
-    def test_multiple_doc_type_pass(self):
-        a = DocumentVersion("default:http:json:0.7.2")
-        assert a.provider == "default"
-        assert a.doc_type == "http:json"
         assert a.doc_type_ver == "0.7.2"
 
 

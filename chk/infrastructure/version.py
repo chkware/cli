@@ -10,6 +10,18 @@ from chk.infrastructure.helper import data_get
 
 VERSION_FORMAT_REGEX = r"^([A-Za-z0-9-\.:]+){3}$"
 
+# VERSION_STORE lists all version strings.
+VERSION_STORE = {
+    "http": [
+        "0.7.2",
+        "0.8.0",
+    ],
+    "testcase": [
+        "0.7.2",
+        "0.8.0",
+    ],
+}
+
 
 class VersionConfigNode(StrEnum):
     """represent the base of all kind of documents"""
@@ -29,13 +41,12 @@ class DocumentVersion:
     def __post_init__(self) -> None:
         """Validate after class initiated"""
 
-        self.validate(True)
+        self.validate()
         self.parse()
+        self.verify_doc_type_ver()
 
     def parse(self) -> None:
-        """
-        Parse provider, doc_type, doc_type_ver from original_version_str
-        """
+        """Parse provider, doc_type, doc_type_ver from original_version_str"""
 
         ver_l = self.original_version_str.split(":")
         if len(ver_l) < 3:
@@ -54,25 +65,38 @@ class DocumentVersion:
         ):
             raise ValueError("Invalid version string")
 
-    def validate(self, throw: bool = False) -> bool:
-        """
-        Validate version string
-        params:
-            throw: bool Should raise exception, defaults to False
-        throws:
-            ValueError If throw is set to True
+    def validate(self) -> bool:
+        """Validate version string
+
+        Raises:
+            ValueError: If throw is set to True
         """
 
         if not self.original_version_str:
             raise ValueError("version is empty")
 
-        if re.search(VERSION_FORMAT_REGEX, self.original_version_str):
-            return True
-
-        if throw:
+        if not re.search(VERSION_FORMAT_REGEX, self.original_version_str):
             raise ValueError("Invalid version string format")
 
-        return False
+        return True
+
+    def verify_doc_type_ver(self) -> bool:
+        """Verify that doc_type_ver is supported
+
+        Raises:
+            ValueError: When doc_type is not supported
+
+        Returns:
+            bool: True if verification complete
+        """
+
+        if self.doc_type not in VERSION_STORE:
+            raise ValueError("Invalid doc_type in version string")
+
+        if self.doc_type_ver not in VERSION_STORE[self.doc_type]:
+            raise ValueError("Invalid doc_type_ver in version string")
+
+        return True
 
 
 class DocumentVersionMaker:
