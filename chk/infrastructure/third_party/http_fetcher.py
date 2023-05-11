@@ -17,7 +17,8 @@ class ApiResponse(UserDict):
     headers: dict
     body: str
 
-    def __str__(self) -> str:
+    @property
+    def as_fmt_str(self) -> str:
         """String representation of ApiResponse
 
         Returns:

@@ -30,7 +30,7 @@ class TestApiResponse:
 
         api_response = ApiResponse.from_response(resp)
         assert (
-            str(api_response)
+            str(api_response.as_fmt_str)
             == """HTTP/1.0 200 Ok\r\n\r\nAccept: application/json\r\nContent-Type: application/json\r\nApplication: internal\r\n\r\n{"success": "ok"}"""
         )
 
