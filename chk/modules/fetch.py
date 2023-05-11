@@ -233,19 +233,19 @@ class ApiResponseDict(UserDict):
 
         try:
             if "headers" in resp and "Content-Type" in resp["headers"]:
-                CONTENT_TYPE = resp["headers"]["Content-Type"]
+                content_type = resp["headers"]["Content-Type"]
 
-                if "application/json" in CONTENT_TYPE:
+                if "application/json" in content_type:
                     body = json.loads(resp["body"])
-                elif "application/xml" in CONTENT_TYPE:
+                elif "application/xml" in content_type:
                     body = xmltodict.parse(parseString(resp["body"]).toxml())
 
             if not body:
-                body = resp["body"]
+                body = dict(resp["body"])
 
             return ApiResponseDict(api_resp=resp, body_as_dict=body)
 
-        except Exception as ex:
+        except Exception:
             raise RuntimeError("Unsupported response format.")
 
     @property
@@ -256,7 +256,7 @@ class ApiResponseDict(UserDict):
             str: JSON object as string representation
         """
 
-        return json.dumps({**dict(self["api_resp"]), **dict(body=self["body_as_dict"])})
+        return json.dumps({**dict(self["api_resp"]), **{"body": self["body_as_dict"]}})
 
 
 def execute_request(http_doc: HttpDocument) -> ApiResponse:
