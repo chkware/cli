@@ -23,13 +23,13 @@ from chk.infrastructure.version import DocumentVersionMaker
 class HttpMethod(enum.StrEnum):
     """Constants of wellknown http methods"""
 
-    GET = enum.auto()
-    POST = enum.auto()
-    PUT = enum.auto()
-    PATCH = enum.auto()
-    DELETE = enum.auto()
-    HEAD = enum.auto()
-    OPTIONS = enum.auto()
+    GET = "GET"
+    POST = "POST"
+    PUT = "PUT"
+    PATCH = "PATCH"
+    DELETE = "DELETE"
+    HEAD = "HEAD"
+    OPTIONS = "OPTIONS"
 
 
 class RequestConfigNode(enum.StrEnum):
@@ -63,18 +63,24 @@ class RequestConfigNode(enum.StrEnum):
 
 
 def allowed_method(value: str) -> bool:
-    """Validate if given method is allowed"""
+    """Validate if given method is allowed
 
-    return value not in set(method for method in HttpMethod)
+    Raises:
+        ValueError: When unsupported method found
+    """
+
+    if value not in set(method for method in HttpMethod):
+        raise ValueError("Unsupported method")
+
+    return True
 
 
 def allowed_url(value: str) -> bool:
     """Validate if given URL is allowed"""
 
     parsed_url = urlparse(value)
-    ret = all([parsed_url.scheme, parsed_url.netloc])
 
-    if ret is False:
+    if all([parsed_url.scheme, parsed_url.netloc]) is False:
         raise ValueError("Invalid `url`")
 
     if parsed_url.scheme not in ["http", "https"]:
