@@ -2,6 +2,7 @@
 Symbol and variable management
 """
 import enum
+import os
 import re
 from collections import UserDict
 
@@ -17,6 +18,7 @@ class VariableConfigNode(enum.StrEnum):
 
     VARIABLES = enum.auto()
     EXPOSE = enum.auto()
+    ENV = "_ENV"
 
 
 class Variables(UserDict):
@@ -38,8 +40,9 @@ class VariableTableManager:
         # make file contexts out od tuple
         file_ctx = FileContext(*document.context)
 
+        VariableTableManager.handle_environment(variable_doc)
+
         if variables := data_get(file_ctx.document, VariableConfigNode.VARIABLES):
-            # pass the document from file context
             VariableTableManager.handle_absolute(variable_doc, variables)
 
     @staticmethod
@@ -56,3 +59,13 @@ class VariableTableManager:
                 continue
 
             variable_doc[key] = val
+
+    @staticmethod
+    def handle_environment(variable_doc: Variables) -> None:
+        """Handles environment variables and values
+
+        Args:
+            variable_doc: VariableDocument to add values to
+        """
+
+        variable_doc[VariableConfigNode.ENV] = dict(os.environ)
