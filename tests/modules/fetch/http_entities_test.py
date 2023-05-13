@@ -3,8 +3,9 @@ import json
 
 import pytest
 
+from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.third_party.http_fetcher import ApiResponse
-from chk.modules.fetch import ApiResponseDict
+from chk.modules.fetch import ApiResponseDict, HttpDocument
 
 
 class TestApiResponseDict:
@@ -61,3 +62,48 @@ class TestApiResponseDict:
         assert "info" in ad_dict
         assert "headers" in ad_dict
         assert "body" in ad_dict
+
+
+class TestHttpDocument:
+    @staticmethod
+    def test_from_file_context_pass():
+        ctx = FileContext(
+            document={
+                "version": "default:http:0.7.2",
+                "request": {
+                    "url": "https://jsonplaceholder.typicode.com/albums/1",
+                    "method": "GET",
+                },
+            }
+        )
+
+        doc = HttpDocument.from_file_context(ctx)
+
+        assert isinstance(doc.context, tuple)
+        assert isinstance(doc.version, str)
+        assert isinstance(doc.request, dict)
+
+    @staticmethod
+    def test_from_file_context_fail_no_request():
+        ctx = FileContext(
+            document={
+                "version": "default:http:0.7.2",
+            }
+        )
+
+        with pytest.raises(RuntimeError):
+            HttpDocument.from_file_context(ctx)
+
+    @staticmethod
+    def test_from_file_context_fail_no_version():
+        ctx = FileContext(
+            document={
+                "request": {
+                    "url": "https://jsonplaceholder.typicode.com/albums/1",
+                    "method": "GET",
+                },
+            }
+        )
+
+        with pytest.raises(RuntimeError):
+            HttpDocument.from_file_context(ctx)
