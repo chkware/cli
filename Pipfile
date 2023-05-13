@@ -10,6 +10,7 @@ requests = "*"
 cerberus = "*"
 defusedxml = "*"
 xmltodict = "*"
+jinja2 = "*"
 
 [dev-packages]
 pytest = "*"
