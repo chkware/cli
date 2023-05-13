@@ -2,9 +2,11 @@
 Symbol and variable management
 """
 import enum
+import json
 import os
 import re
 from collections import UserDict
+from typing import Callable
 
 from chk.infrastructure.document import VersionedDocument
 from chk.infrastructure.file_loader import FileContext
@@ -24,6 +26,24 @@ class VariableConfigNode(enum.StrEnum):
 
 class Variables(UserDict):
     """Holds data for a variable"""
+
+
+def replace_value(obj: dict, vals: dict) -> dict:
+    """Replaces all values on a given dict
+
+    Args:
+        obj: dict, target dict
+        vals: dict, value dict
+    Returns:
+        dict: replaced dict
+    """
+
+    obj_s = json.dumps(obj)
+
+    tpl = get_template_from_str(obj_s)
+    repl = tpl.render(**vals)
+
+    return json.loads(repl)
 
 
 class VariableTableManager:
@@ -73,17 +93,27 @@ class VariableTableManager:
         variable_doc[VariableConfigNode.ENV] = dict(os.environ)
 
     @staticmethod
-    def handle_composite(variable_doc: Variables, document: dict) -> None:
+    def handle_composite(
+        variable_doc: Variables,
+        document: dict,
+        replace_callback: Callable = replace_value,
+    ) -> None:
         """Handles absolute variables and values from document
 
         Args:
             variable_doc: VariableDocument to add values to
             document: dict of document data
+            replace_callback: Callback for replace strategy, default is replace_value
         """
 
+        composite_values = {}
         for key, val in document.items():
             if isinstance(val, str) and re.search(r"{{.*}}|{%.*%}", val):
-                template = get_template_from_str(val)
-                data = template.render(**variable_doc.data)
+                composite_values[key] = val
 
-                variable_doc[key] = data
+        if composite_values:
+            replaced_values: dict = replace_callback(
+                composite_values, variable_doc.data
+            )
+            for key, val in replaced_values.items():
+                variable_doc[key] = val

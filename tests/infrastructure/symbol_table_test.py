@@ -7,6 +7,7 @@ from chk.infrastructure.symbol_table import (
     VariableConfigNode,
     Variables,
     VariableTableManager,
+    replace_value,
 )
 from chk.modules.fetch import HttpDocument
 
@@ -105,4 +106,28 @@ class TestVariableTableManager:
             "var_3": "ajax_bar",
             "var_4": "ajax_xaja",
             "var_5": "  2",
+        }
+
+
+class TestReplaceValue:
+    @staticmethod
+    def test_replace_value_pass():
+        document = {
+            "version": "default:http:0.7.2",
+            "request": {
+                "url": "https://httpbin.org/{{ method|lower }}",
+                "method": "GET",
+                "auth[bearer]": {"token": "{{ token }}"},
+            },
+        }
+
+        variables = {
+            "method": "GET",
+            "token": "asdf123",
+        }
+
+        assert replace_value(document["request"], variables) == {
+            "url": "https://httpbin.org/get",
+            "method": "GET",
+            "auth[bearer]": {"token": "asdf123"},
         }
