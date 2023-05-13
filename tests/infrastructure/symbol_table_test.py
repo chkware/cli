@@ -69,3 +69,40 @@ class TestVariableTableManager:
 
         assert len(variable_doc.data) == 1
         assert VariableConfigNode.ENV in variable_doc.data
+
+    @staticmethod
+    def test_handle_composite_pass():
+        document = {
+            "version": "default:http:0.7.2",
+            "request": {
+                "url": "https://httpbin.org/get",
+                "method": "GET",
+            },
+            VariableConfigNode.VARIABLES: {
+                "var_1": "bar",
+                "var_2": 2,
+                "var_3": "ajax_{{var_1}}",
+                "var_4": "ajax{{ Var_1|default('_xaja') }}",
+                "var_5": "  {{ var_2 }}",
+            },
+        }
+
+        file_ctx = FileContext(filepath_hash="ab12", document=document)
+
+        variable_doc = Variables()
+        VariableTableManager.handle_absolute(
+            variable_doc, file_ctx.document[VariableConfigNode.VARIABLES]
+        )
+
+        VariableTableManager.handle_composite(
+            variable_doc, file_ctx.document[VariableConfigNode.VARIABLES]
+        )
+
+        assert len(variable_doc.data) == 5
+        assert variable_doc.data == {
+            "var_1": "bar",
+            "var_2": 2,
+            "var_3": "ajax_bar",
+            "var_4": "ajax_xaja",
+            "var_5": "  2",
+        }

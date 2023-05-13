@@ -9,6 +9,7 @@ from collections import UserDict
 from chk.infrastructure.document import VersionedDocument
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import data_get
+from chk.infrastructure.third_party.symbol_template import get_template_from_str
 
 
 class VariableConfigNode(enum.StrEnum):
@@ -44,6 +45,7 @@ class VariableTableManager:
 
         if variables := data_get(file_ctx.document, VariableConfigNode.VARIABLES):
             VariableTableManager.handle_absolute(variable_doc, variables)
+            VariableTableManager.handle_composite(variable_doc, variables)
 
     @staticmethod
     def handle_absolute(variable_doc: Variables, document: dict) -> None:
@@ -69,3 +71,19 @@ class VariableTableManager:
         """
 
         variable_doc[VariableConfigNode.ENV] = dict(os.environ)
+
+    @staticmethod
+    def handle_composite(variable_doc: Variables, document: dict) -> None:
+        """Handles absolute variables and values from document
+
+        Args:
+            variable_doc: VariableDocument to add values to
+            document: dict of document data
+        """
+
+        for key, val in document.items():
+            if isinstance(val, str) and re.search(r"{{.*}}|{%.*%}", val):
+                template = get_template_from_str(val)
+                data = template.render(**variable_doc.data)
+
+                variable_doc[key] = data
