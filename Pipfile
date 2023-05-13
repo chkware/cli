@@ -19,6 +19,7 @@ pylint = "*"
 flake8 = "*"
 black = {extras = ["d"], version = "*"}
 var-dump = "*"
+types-pyyaml = "*"
 
 [requires]
 python_version = "3.11"
