@@ -6,7 +6,7 @@ import json
 import os
 import re
 from collections import UserDict
-from typing import Callable
+from collections.abc import Callable
 
 from chk.infrastructure.document import VersionedDocument
 from chk.infrastructure.file_loader import FileContext
