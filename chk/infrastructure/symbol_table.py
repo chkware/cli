@@ -9,7 +9,7 @@ from collections import UserDict
 from collections.abc import Callable
 
 from chk.infrastructure.document import VersionedDocument
-from chk.infrastructure.file_loader import FileContext
+from chk.infrastructure.file_loader import FileContext, ExecuteContext
 from chk.infrastructure.helper import data_get
 from chk.infrastructure.third_party.symbol_template import get_template_from_str
 
@@ -50,12 +50,15 @@ class VariableTableManager:
     """VariableTableManager"""
 
     @staticmethod
-    def handle(variable_doc: Variables, document: VersionedDocument) -> None:
+    def handle(
+        variable_doc: Variables, document: VersionedDocument, exec_ctx: ExecuteContext
+    ) -> None:
         """Handles variable handling
 
         Args:
             variable_doc: VariableDocument to add values to
             document: VersionedDocument of document data
+            exec_ctx: ExecuteContext; passed ExecuteContext
         """
 
         # make file contexts out od tuple
@@ -65,6 +68,10 @@ class VariableTableManager:
 
         if variables := data_get(file_ctx.document, VariableConfigNode.VARIABLES):
             VariableTableManager.handle_absolute(variable_doc, variables)
+
+        VariableTableManager.handle_execute_context(variable_doc, exec_ctx)
+
+        if variables:
             VariableTableManager.handle_composite(variable_doc, variables)
 
     @staticmethod
@@ -117,3 +124,19 @@ class VariableTableManager:
             )
             for key, val in replaced_values.items():
                 variable_doc[key] = val
+
+    @staticmethod
+    def handle_execute_context(
+        variable_doc: Variables, exec_ctx: ExecuteContext
+    ) -> None:
+        """Handle variables passed from external context
+
+        Args:
+            variable_doc: Variables; Variable store
+            exec_ctx: ExecuteContext; passed external context
+        """
+
+        ext_vars = data_get(exec_ctx.arguments, VariableConfigNode.VARIABLES)
+
+        for key, val in ext_vars.items():
+            variable_doc[key] = val

@@ -2,7 +2,7 @@
 """
 Tests for symbol table
 """
-from chk.infrastructure.file_loader import FileContext
+from chk.infrastructure.file_loader import FileContext, ExecuteContext
 from chk.infrastructure.symbol_table import (
     VariableConfigNode,
     Variables,
@@ -18,23 +18,27 @@ class TestVariableTableManager:
         document = {
             "version": "default:http:0.7.2",
             "request": {
-                "url": "https://httpbin.org/get",
-                "method": "GET",
+                "url": "https://httpbin{{ extension }}/{{ method | lower }}",
+                "method": "{{ method }}",
             },
             VariableConfigNode.VARIABLES: {
-                "var_1": "bar",
-                "var_2": 2,
+                "method": "GET",
             },
         }
 
         file_ctx = FileContext(filepath_hash="ab12", document=document)
+        exc = ExecuteContext(
+            arguments={VariableConfigNode.VARIABLES: {"extension": ".org"}}
+        )
+
         http_doc = HttpDocument.from_file_context(file_ctx)
 
         variable_doc = Variables()
-        VariableTableManager.handle(variable_doc, http_doc)
+        VariableTableManager.handle(variable_doc, http_doc, exc)
 
         assert len(variable_doc.data) == 3
         assert VariableConfigNode.ENV in variable_doc.data
+        assert "extension" in variable_doc.data
 
     @staticmethod
     def test_handle_absolute_pass():
@@ -106,6 +110,51 @@ class TestVariableTableManager:
             "var_3": "ajax_bar",
             "var_4": "ajax_xaja",
             "var_5": "  2",
+        }
+
+    @staticmethod
+    def test_handle_execute_context_pass():
+        document = {
+            "version": "default:http:0.7.2",
+            "request": {
+                "url": "https://httpbin.org/get",
+                "method": "GET",
+            },
+            VariableConfigNode.VARIABLES: {
+                "var_1": "bar",
+                "var_2": 2,
+                "var_3": "ajax_{{var_1}}",
+                "var_4": "ajax{{ Var_1|default('_xaja') }}",
+                "var_5": "  {{ var_2 }}",
+            },
+        }
+
+        exc = ExecuteContext(
+            arguments={VariableConfigNode.VARIABLES: {"Var_1": "_ccc"}}
+        )
+
+        file_ctx = FileContext(filepath_hash="ab12", document=document)
+
+        variable_doc = Variables()
+
+        VariableTableManager.handle_absolute(
+            variable_doc, file_ctx.document[VariableConfigNode.VARIABLES]
+        )
+
+        VariableTableManager.handle_execute_context(variable_doc, exc)
+
+        VariableTableManager.handle_composite(
+            variable_doc, file_ctx.document[VariableConfigNode.VARIABLES]
+        )
+
+        assert len(variable_doc.data) == 6
+        assert variable_doc.data == {
+            "var_1": "bar",
+            "var_2": 2,
+            "var_3": "ajax_bar",
+            "var_4": "ajax_ccc",
+            "var_5": "  2",
+            "Var_1": "_ccc",
         }
 
 

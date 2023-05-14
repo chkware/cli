@@ -298,19 +298,19 @@ class HttpDocumentSupport:
         http_doc.request = replace_value(http_doc.request, variables.data)
 
 
-def execute(ctx: FileContext, _: ExecuteContext) -> None:
+def execute(ctx: FileContext, exec_ctx: ExecuteContext) -> None:
     """Run a http document
 
     Args:
         ctx: FileContext object to handle
-        _: ExecuteContext
+        exec_ctx: ExecuteContext
     """
 
     http_doc = HttpDocument.from_file_context(ctx)
     DocumentVersionMaker.from_dict(http_doc.as_dict)
 
     variable_doc = Variables()
-    VariableTableManager.handle(variable_doc, http_doc)
+    VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
     HttpDocumentSupport.process_request_template(http_doc, variable_doc)
 
     # process out-file variable
