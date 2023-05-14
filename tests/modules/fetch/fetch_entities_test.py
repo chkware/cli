@@ -4,8 +4,9 @@ import json
 import pytest
 
 from chk.infrastructure.file_loader import FileContext
+from chk.infrastructure.symbol_table import Variables
 from chk.infrastructure.third_party.http_fetcher import ApiResponse
-from chk.modules.fetch import ApiResponseDict, HttpDocument
+from chk.modules.fetch import ApiResponseDict, HttpDocument, HttpDocumentSupport
 
 
 class TestApiResponseDict:
@@ -107,3 +108,42 @@ class TestHttpDocument:
 
         with pytest.raises(RuntimeError):
             HttpDocument.from_file_context(ctx)
+
+
+class TestHttpDocumentSupport:
+    @staticmethod
+    def test_execute_request_pass():
+        ctx = FileContext(
+            document={
+                "version": "default:http:0.7.2",
+                "request": {
+                    "url": "https://jsonplaceholder.typicode.com/albums/1",
+                    "method": "GET",
+                },
+            }
+        )
+
+        http_doc = HttpDocument.from_file_context(ctx)
+        resp = ApiResponseDict.from_api_response(
+            HttpDocumentSupport.execute_request(http_doc)
+        )
+
+        assert "userId" in resp["body_as_dict"]
+
+    @staticmethod
+    def test_process_request_template_pass():
+        ctx = FileContext(
+            document={
+                "version": "default:http:0.7.2",
+                "request": {
+                    "url": "https://jsonplaceholder.typicode.com/albums/1",
+                    "method": "{{ method }}",
+                },
+            }
+        )
+
+        http_doc = HttpDocument.from_file_context(ctx)
+        variable_doc = Variables({"method": "GET"})
+
+        HttpDocumentSupport.process_request_template(http_doc, variable_doc)
+        assert http_doc.request["method"] == "GET"

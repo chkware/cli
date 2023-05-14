@@ -15,7 +15,11 @@ import xmltodict
 from chk.infrastructure.document import VersionedDocument
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import data_get
-from chk.infrastructure.symbol_table import VariableTableManager, Variables
+from chk.infrastructure.symbol_table import (
+    VariableTableManager,
+    Variables,
+    replace_value,
+)
 
 from chk.infrastructure.third_party.http_fetcher import ApiResponse, fetch
 from chk.infrastructure.version import DocumentVersionMaker
@@ -282,6 +286,17 @@ class HttpDocumentSupport:
 
         return fetch(request_args)
 
+    @staticmethod
+    def process_request_template(http_doc: HttpDocument, variables: Variables) -> None:
+        """Replace variables in request body
+
+        Args:
+            http_doc: HttpDocument, for the request body
+            variables: Variables, variable base
+        """
+
+        http_doc.request = replace_value(http_doc.request, variables.data)
+
 
 def execute(ctx: FileContext, _: ExecuteContext) -> None:
     """Run a http document
@@ -294,18 +309,15 @@ def execute(ctx: FileContext, _: ExecuteContext) -> None:
     http_doc = HttpDocument.from_file_context(ctx)
     DocumentVersionMaker.from_dict(http_doc.as_dict)
 
-    # response_ = execute_request(http_doc)
-
-    # process in-file variable
     variable_doc = Variables()
     VariableTableManager.handle(variable_doc, http_doc)
-
-    import var_dump
+    HttpDocumentSupport.process_request_template(http_doc, variable_doc)
 
     # process out-file variable
     # process context-passed variable
 
-    # response = ApiResponseDict.from_api_response(response_)
+    response_ = HttpDocumentSupport.execute_request(http_doc)
+    response = ApiResponseDict.from_api_response(response_)
 
-    # print(response.as_json, response_)
+    print(response.as_json, response_)
     print(variable_doc.data)
