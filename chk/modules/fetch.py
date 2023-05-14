@@ -15,6 +15,7 @@ import xmltodict
 from chk.infrastructure.document import VersionedDocument
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import data_get
+from chk.infrastructure.symbol_table import VariableTableManager, Variables
 
 from chk.infrastructure.third_party.http_fetcher import ApiResponse, fetch
 from chk.infrastructure.version import DocumentVersionMaker
@@ -148,6 +149,8 @@ class HttpRequestArgCompiler:
                 (key, val) = body_i
                 if val.startswith("file://"):
                     val = unquote(urlparse(val).path)
+
+                    # @TODO update; this is going to leaking memory
                     files[key] = open(val, "rb")
                 else:
                     non_files[key] = val
@@ -259,21 +262,25 @@ class ApiResponseDict(UserDict):
         return json.dumps({**dict(self["api_resp"]), **{"body": self["body_as_dict"]}})
 
 
-def execute_request(http_doc: HttpDocument) -> ApiResponse:
-    """Execute http request from given HttpDocument
+class HttpDocumentSupport:
+    """Service class for HttpDocument"""
 
-    Args:
-        http_doc (HttpDocument): Http request document object
+    @staticmethod
+    def execute_request(http_doc: HttpDocument) -> ApiResponse:
+        """Execute http request from given HttpDocument
 
-    Returns:
-        dict: Returns response for http request
-    """
+        Args:
+            http_doc (HttpDocument): Http request document object
 
-    request_args: dict = {}
+        Returns:
+            dict: Returns response for http request
+        """
 
-    HttpRequestArgCompiler.add_generic_args(http_doc.request, request_args)
+        request_args: dict = {}
 
-    return fetch(request_args)
+        HttpRequestArgCompiler.add_generic_args(http_doc.request, request_args)
+
+        return fetch(request_args)
 
 
 def execute(ctx: FileContext, _: ExecuteContext) -> None:
@@ -287,7 +294,18 @@ def execute(ctx: FileContext, _: ExecuteContext) -> None:
     http_doc = HttpDocument.from_file_context(ctx)
     DocumentVersionMaker.from_dict(http_doc.as_dict)
 
-    response_ = execute_request(http_doc)
-    response = ApiResponseDict.from_api_response(response_)
+    # response_ = execute_request(http_doc)
 
-    print(response.as_json, response_)
+    # process in-file variable
+    variable_doc = Variables()
+    VariableTableManager.handle(variable_doc, http_doc)
+
+    import var_dump
+
+    # process out-file variable
+    # process context-passed variable
+
+    # response = ApiResponseDict.from_api_response(response_)
+
+    # print(response.as_json, response_)
+    print(variable_doc.data)
