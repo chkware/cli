@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://chkware.com/schemas/http-spec.json",
+  "type": "object",
+  "properties": {
+    "variables": { "$ref": "/schemas/variable-spec.json" },
+    "expose": { "$ref": "/schemas/expose-spec.json" },
+    "version": {
+      "type": "string"
+    },
+    "request": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string",
+          "pattern": "^(https?://)[^\\s/$.?#].[^\\s]*$"
+        },
+        "url_params": {
+          "type": "object",
+          "minProperties": 1
+        },
+        "headers": {
+          "type": "object"
+        },
+        "auth[basic]": {
+          "type": "object",
+          "properties": {
+            "username": {
+              "type": "string",
+              "minLength": 1
+            },
+            "password": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "username",
+            "password"
+          ],
+          "additionalProperties": false
+        },
+        "auth[bearer]": {
+          "type": "object",
+          "properties": {
+            "token": {
+              "type": "string",
+              "pattern": "^[^\\s\r\n\t]+$"
+            }
+          },
+          "required": [
+            "token"
+          ],
+          "additionalProperties": false
+        },
+        "body[form]": {
+          "type": "object",
+          "minProperties": 1
+        },
+        "body[form-data]": {
+          "type": "object",
+          "minProperties": 1
+        },
+        "body[json]": {
+          "type": "object",
+          "minProperties": 1
+        },
+        "body[xml]": {
+          "type": "string",
+          "minLength": 2
+        },
+        "body[text]": {
+          "type": "string",
+          "minLength": 2
+        }
+      },
+      "required": [
+        "method",
+        "url"
+      ],
+      "oneOf": [
+        {
+          "required": [
+            "auth[basic]"
+          ],
+          "not": {
+            "required": [
+              "auth[bearer]"
+            ]
+          }
+        },
+        {
+          "required": [
+            "auth[bearer]"
+          ],
+          "not": {
+            "required": [
+              "auth[basic]"
+            ]
+          }
+        },
+        {
+          "required": [
+            "body[form]"
+          ],
+          "not": {
+            "required": [
+              "body[form-data]",
+              "body[json]",
+              "body[xml]",
+              "body[text]"
+            ]
+          }
+        },
+        {
+          "required": [
+            "body[form-data]"
+          ],
+          "not": {
+            "required": [
+              "body[form]",
+              "body[json]",
+              "body[xml]",
+              "body[text]"
+            ]
+          }
+        },
+        {
+          "required": [
+            "body[json]"
+          ],
+          "not": {
+            "required": [
+              "body[form]",
+              "body[form-data]",
+              "body[xml]",
+              "body[text]"
+            ]
+          }
+        },
+        {
+          "required": [
+            "body[xml]"
+          ],
+          "not": {
+            "required": [
+              "body[form]",
+              "body[form-data]",
+              "body[json]",
+              "body[text]"
+            ]
+          }
+        },
+        {
+          "required": [
+            "body[text]"
+          ],
+          "not": {
+            "required": [
+              "body[form]",
+              "body[form-data]",
+              "body[json]",
+              "body[xml]"
+            ]
+          }
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "version",
+    "request"
+  ],
+  "additionalProperties": false
+}
