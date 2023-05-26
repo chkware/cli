@@ -22,6 +22,15 @@ VERSION_STORE = {
     ],
 }
 
+# validation schema
+SCHEMA = {
+    "version": {
+        "required": True,
+        "type": "string",
+        "empty": False,
+    }
+}
+
 
 class VersionConfigNode(StrEnum):
     """represent the base of all kind of documents"""
