@@ -21,7 +21,37 @@ class VariableConfigNode(enum.StrEnum):
 
     VARIABLES = enum.auto()
     EXPOSE = enum.auto()
+    RETURN = enum.auto()
+    RESULT = enum.auto()
+
+    LOCAL = "__local"
     ENV = "_ENV"
+
+
+VARIABLE_CONFIG_ALLOWED_LOCAL = [
+    "_response",
+    "_assertion_results",
+]
+
+# cerberus validation rules for variables
+VARIABLE_SCHEMA = {
+    VariableConfigNode.VARIABLES: {
+        "required": False,
+        "type": "dict",
+        "empty": True,
+        "nullable": True,
+    }
+}
+
+# cerberus validation rules for variables
+EXPOSE_SCHEMA = {
+    VariableConfigNode.EXPOSE: {
+        "required": False,
+        "type": "list",
+        "empty": True,
+        "nullable": True,
+    }
+}
 
 
 class Variables(UserDict):
