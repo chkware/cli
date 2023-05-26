@@ -38,3 +38,18 @@ class TestFromDictOfDocumentVersionMaker:
         assert a.provider == "default"
         assert a.doc_type == "http"
         assert a.doc_type_ver == "0.7.2"
+
+
+class TestVerifyIfAllowedOfDocumentVersionMaker:
+    def test_pass(self):
+        dd = {"version": "default:http:0.7.2"}
+        a = DocumentVersionMaker.from_dict(dd)
+
+        assert DocumentVersionMaker.verify_if_allowed(a, ["http"])
+
+    def test_fail(self):
+        dd = {"version": "default:http:0.7.2"}
+        a = DocumentVersionMaker.from_dict(dd)
+
+        with pytest.raises(RuntimeError, match="Unsupported document exception"):
+            DocumentVersionMaker.verify_if_allowed(a, ["testcase"])

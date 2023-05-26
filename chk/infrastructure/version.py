@@ -108,3 +108,20 @@ class DocumentVersionMaker:
 
         version_str = data_get(document, VersionConfigNode.VERSION, None)
         return DocumentVersion(version_str)
+
+    @staticmethod
+    def verify_if_allowed(version: DocumentVersion, scopes: list[str]) -> bool:
+        """Verify if a version is allowed with given scopes
+
+        Args:
+            version: DocumentVersion under test
+            scopes: list[str] of string containing supported DocumentVersion.doc_type
+
+        Raises:
+            RuntimeError: Unsupported document exception
+        """
+
+        if version.doc_type not in scopes:
+            raise RuntimeError("Unsupported document exception")
+
+        return True
