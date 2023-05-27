@@ -2,6 +2,9 @@
 """
 test global chk functions
 """
+import sys
+from io import TextIOWrapper, BytesIO
+
 import pytest
 
 from chk.infrastructure.helper import (
@@ -12,6 +15,7 @@ from chk.infrastructure.helper import (
     is_scalar,
     Cast,
     parse_args,
+    formatter,
 )
 
 
@@ -258,3 +262,77 @@ class TestCast:
 
         a = "{'g': 23, 'f': 3, 't': [1, {'a': 2}]}"
         assert Cast.to_auto(a) == {"g": 23, "f": 3, "t": [1, {"a": 2}]}
+
+
+def test_formatter_pass_get_string():
+    assert formatter("Some", dump=False) == "Some"
+
+
+def test_formatter_pass_get_string_with_cb():
+    def cb(val):
+        return f"1:{val}"
+
+    assert formatter("Some", cb, False) == "1:Some"
+
+
+def test_formatter_pass_print():
+    # setup the environment
+    old_stdout = sys.stdout
+    sys.stdout = TextIOWrapper(BytesIO(), sys.stdout.encoding)
+
+    formatter("Some")
+
+    # get output
+    sys.stdout.seek(0)  # jump to the start
+    out = sys.stdout.read()  # read output
+
+    # restore stdout
+    sys.stdout.close()
+    sys.stdout = old_stdout
+
+    # assert
+    assert out == "Some\n"
+
+
+def test_formatter_pass_print_with_cb():
+    def fmt(val):
+        return f"1:{val}"
+
+    # setup the environment
+    old_stdout = sys.stdout
+    sys.stdout = TextIOWrapper(BytesIO(), sys.stdout.encoding)
+
+    formatter("Some", fmt)
+
+    # get output
+    sys.stdout.seek(0)  # jump to the start
+    out = sys.stdout.read()  # read output
+
+    # restore stdout
+    sys.stdout.close()
+    sys.stdout = old_stdout
+
+    # assert
+    assert out == "1:Some\n"
+
+
+def test_formatter_pass_print_with_cb_dict():
+    def fmt(val):
+        return f"Hello, I am {val['name']}. I am {val['age']} years old."
+
+    # setup the environment
+    old_stdout = sys.stdout
+    sys.stdout = TextIOWrapper(BytesIO(), sys.stdout.encoding)
+
+    formatter({"name": "Some One", "age": 43}, fmt)
+
+    # get output
+    sys.stdout.seek(0)  # jump to the start
+    out = sys.stdout.read()  # read output
+
+    # restore stdout
+    sys.stdout.close()
+    sys.stdout = old_stdout
+
+    # assert
+    assert out == "Hello, I am Some One. I am 43 years old.\n"

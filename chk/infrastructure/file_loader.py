@@ -147,3 +147,10 @@ class PathFrom:
                 return str(to_path)
             raise ValueError("Invalid base path.")
         raise ValueError("Invalid target path.")
+
+
+class ExecuteContext(NamedTuple):
+    """Information storage for execution context"""
+
+    options: dict = {}
+    arguments: dict = {}
