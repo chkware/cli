@@ -2,7 +2,10 @@
 Helper functions module
 """
 import ast
+from collections.abc import Callable
 from typing import Any
+
+import click
 
 
 def dict_get(var: dict, keymap: str, default: Any = None) -> Any:
@@ -228,3 +231,22 @@ def parse_args(argv_s: list[str], delimiter: str = "=") -> dict:
         return {item[0]: item[1] for item in [item.split(delimiter) for item in argv]}
 
     return {}
+
+
+def formatter(message: object, cb: Callable = str, dump: bool = True) -> str | None:
+    """Format message with given callback
+
+    Args:
+        message: object
+        cb: Callable
+        dump: bool
+    Returns:
+        str
+    """
+
+    printable = str(cb(message))
+
+    if dump:
+        click.echo(printable)
+
+    return printable
