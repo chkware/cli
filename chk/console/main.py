@@ -27,8 +27,9 @@ def load_variables_as_dict(variables: str) -> dict:
 
 
 # root command
-@click.group()
-def chk() -> None:
+@click.group
+@click.pass_context
+def chk(ctx: click.Context) -> None:
     """\b
        █████████  █████   █████ █████   ████
       ███░░░░░███░░███   ░░███ ░░███   ███░
@@ -43,6 +44,7 @@ def chk() -> None:
     Low-code API quality testing, and automation toolbox.
     Version 0.4.3, supported version strings: 0.7.2
     """
+    ctx.ensure_object(dict)
 
 
 # run http sub-command
