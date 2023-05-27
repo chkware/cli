@@ -7,22 +7,27 @@ import json
 
 from collections import UserDict
 from urllib.parse import unquote, urlparse
+
 from requests.auth import HTTPBasicAuth
 
 from defusedxml.minidom import parseString
 import xmltodict
 
-from chk.infrastructure.document import VersionedDocument
+from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import data_get
 from chk.infrastructure.symbol_table import (
     VariableTableManager,
     Variables,
     replace_value,
+    VARIABLE_SCHEMA as VAR_SCHEMA,
+    EXPOSE_SCHEMA as EXP_SCHEMA,
 )
 
 from chk.infrastructure.third_party.http_fetcher import ApiResponse, fetch
-from chk.infrastructure.version import DocumentVersionMaker
+from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
+
+VERSION_SCOPE = ["http"]
 
 
 class HttpMethod(enum.StrEnum):
@@ -42,7 +47,6 @@ class RequestConfigNode(enum.StrEnum):
 
     ROOT = "request"
     LOCAL = "_response"
-    RETURN = "return"
 
     # common request
     URL = enum.auto()
@@ -65,6 +69,102 @@ class RequestConfigNode(enum.StrEnum):
     BODY_JSN = "body[json]"
     BODY_XML = "body[xml]"
     BODY_TXT = "body[text]"
+
+
+SCHEMA = {
+    RequestConfigNode.ROOT: {
+        "required": True,
+        "type": "dict",
+        "schema": {
+            RequestConfigNode.URL: {
+                "required": True,
+                "empty": False,
+                "type": "string",
+            },
+            RequestConfigNode.METHOD: {
+                "required": True,
+                "type": "string",
+            },
+            RequestConfigNode.PARAMS: {
+                "required": False,
+                "empty": False,
+                "type": "dict",
+            },
+            RequestConfigNode.HEADERS: {
+                "required": False,
+                "empty": False,
+                "type": "dict",
+            },
+            RequestConfigNode.AUTH_BA: {
+                "required": False,
+                "empty": False,
+                "type": "dict",
+                "excludes": RequestConfigNode.AUTH_BE,
+            },
+            RequestConfigNode.AUTH_BE: {
+                "required": False,
+                "empty": False,
+                "type": "dict",
+                "excludes": RequestConfigNode.AUTH_BA,
+            },
+            RequestConfigNode.BODY_FRM: {
+                "required": False,
+                "empty": False,
+                "type": "dict",
+                "excludes": [
+                    RequestConfigNode.BODY_FRM_DAT,
+                    RequestConfigNode.BODY_JSN,
+                    RequestConfigNode.BODY_XML,
+                    RequestConfigNode.BODY_TXT,
+                ],
+            },
+            RequestConfigNode.BODY_FRM_DAT: {
+                "required": False,
+                "empty": False,
+                "type": "dict",
+                "excludes": [
+                    RequestConfigNode.BODY_FRM,
+                    RequestConfigNode.BODY_JSN,
+                    RequestConfigNode.BODY_XML,
+                    RequestConfigNode.BODY_TXT,
+                ],
+            },
+            RequestConfigNode.BODY_JSN: {
+                "required": False,
+                "empty": False,
+                "type": "dict",
+                "excludes": [
+                    RequestConfigNode.BODY_FRM,
+                    RequestConfigNode.BODY_FRM_DAT,
+                    RequestConfigNode.BODY_XML,
+                    RequestConfigNode.BODY_TXT,
+                ],
+            },
+            RequestConfigNode.BODY_XML: {
+                "required": False,
+                "empty": False,
+                "type": "string",
+                "excludes": [
+                    RequestConfigNode.BODY_FRM,
+                    RequestConfigNode.BODY_FRM_DAT,
+                    RequestConfigNode.BODY_JSN,
+                    RequestConfigNode.BODY_TXT,
+                ],
+            },
+            RequestConfigNode.BODY_TXT: {
+                "required": False,
+                "empty": False,
+                "type": "string",
+                "excludes": [
+                    RequestConfigNode.BODY_FRM,
+                    RequestConfigNode.BODY_FRM_DAT,
+                    RequestConfigNode.BODY_JSN,
+                    RequestConfigNode.BODY_XML,
+                ],
+            },
+        },
+    }
+}
 
 
 def allowed_method(value: str) -> bool:
@@ -297,6 +397,16 @@ class HttpDocumentSupport:
 
         http_doc.request = replace_value(http_doc.request, variables.data)
 
+    @staticmethod
+    def build_schema() -> dict:
+        """Validate a http document with given json-schema
+
+        Returns:
+            dict: Containing http document schema
+        """
+
+        return {**VER_SCHEMA, **SCHEMA, **VAR_SCHEMA, **EXP_SCHEMA}
+
 
 def execute(ctx: FileContext, exec_ctx: ExecuteContext) -> None:
     """Run a http document
@@ -307,7 +417,14 @@ def execute(ctx: FileContext, exec_ctx: ExecuteContext) -> None:
     """
 
     http_doc = HttpDocument.from_file_context(ctx)
-    DocumentVersionMaker.from_dict(http_doc.as_dict)
+
+    DocumentVersionMaker.verify_if_allowed(
+        DocumentVersionMaker.from_dict(http_doc.as_dict), VERSION_SCOPE
+    )
+
+    VersionedDocumentSupport.validate_with_schema(
+        HttpDocumentSupport.build_schema(), http_doc
+    )
 
     variable_doc = Variables()
     VariableTableManager.handle(variable_doc, http_doc, exec_ctx)

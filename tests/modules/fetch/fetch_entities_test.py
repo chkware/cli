@@ -147,3 +147,8 @@ class TestHttpDocumentSupport:
 
         HttpDocumentSupport.process_request_template(http_doc, variable_doc)
         assert http_doc.request["method"] == "GET"
+
+    @staticmethod
+    def test_build_schema_pass():
+        x = HttpDocumentSupport.build_schema()
+        assert len(x) == 4
