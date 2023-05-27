@@ -15,7 +15,7 @@ import xmltodict
 
 from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
-from chk.infrastructure.helper import data_get
+from chk.infrastructure.helper import data_get, formatter
 from chk.infrastructure.symbol_table import (
     VariableTableManager,
     Variables,
@@ -407,6 +407,23 @@ class HttpDocumentSupport:
 
         return {**VER_SCHEMA, **SCHEMA, **VAR_SCHEMA, **EXP_SCHEMA}
 
+    @staticmethod
+    def display(response: ApiResponse, exec_ctx: ExecuteContext) -> None:
+        """Displays the response based on the command response format
+
+        Args:
+            response: ApiResponse
+            exec_ctx: ExecuteContext
+        """
+
+        if exec_ctx.options["format"]:
+            formatter(response.as_fmt_str, dump=exec_ctx.options["dump"])
+        else:
+            formatter(
+                ApiResponseDict.from_api_response(response).as_json,
+                dump=exec_ctx.options["dump"],
+            )
+
 
 def execute(ctx: FileContext, exec_ctx: ExecuteContext) -> None:
     """Run a http document
@@ -430,11 +447,8 @@ def execute(ctx: FileContext, exec_ctx: ExecuteContext) -> None:
     VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
     HttpDocumentSupport.process_request_template(http_doc, variable_doc)
 
-    # process out-file variable
-    # process context-passed variable
+    # @TODO process out-file variable
+    # @TODO process context-passed variable
 
-    response_ = HttpDocumentSupport.execute_request(http_doc)
-    response = ApiResponseDict.from_api_response(response_)
-
-    print(response.as_json, response_)
-    print(variable_doc.data)
+    response = HttpDocumentSupport.execute_request(http_doc)
+    HttpDocumentSupport.display(response, exec_ctx)
