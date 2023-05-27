@@ -46,14 +46,13 @@ def chk() -> None:
 
 
 # run http sub-command
-@chk.command()
+@chk.command
 @click.argument("file", type=click.Path(exists=True))
-@click.option("-r", "--result", is_flag=True, help="Only shows the returned output")
 @click.option(
     "-nf", "--no-format", is_flag=True, help="No formatting to show the output"
 )
 @click.option("-V", "--variables", type=str, help="Pass variable(s) as JSON object")
-def fetch(file: str, result: bool, no_format: bool, variables: str) -> None:
+def fetch(file: str, no_format: bool, variables: str) -> None:
     """\b
     Command to run Http config files.
     FILE: Any .chk file, that has any of the following versions:
@@ -66,7 +65,6 @@ def fetch(file: str, result: bool, no_format: bool, variables: str) -> None:
     execution_ctx = ExecuteContext(
         {
             "dump": True,
-            "result": result,
             "format": not no_format,
         },
         {"variables": load_variables_as_dict(variables)},
