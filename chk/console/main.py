@@ -26,6 +26,23 @@ def load_variables_as_dict(variables: str) -> dict:
     return {}
 
 
+def after_hook(resp: object) -> None:
+    """Saves custom data from commands to global context bus
+
+    Args:
+        resp: object
+    """
+
+    if curr_ctx := click.get_current_context():
+        if curr_ctx.parent:
+            if not curr_ctx.parent.obj:
+                curr_ctx.parent.obj = {}
+
+            curr_ctx.parent.obj |= resp
+    else:
+        raise RuntimeError("Default context not found")
+
+
 # root command
 @click.group
 @click.pass_context
@@ -72,7 +89,7 @@ def fetch(file: str, no_format: bool, variables: str) -> None:
         {"variables": load_variables_as_dict(variables)},
     )
 
-    fetch_executor.execute(ctx, execution_ctx)
+    fetch_executor.execute(ctx, execution_ctx, after_hook)
 
 
 # run http sub-command

@@ -5,7 +5,7 @@ import dataclasses
 import enum
 import json
 
-from collections import UserDict
+from collections import UserDict, abc
 from urllib.parse import unquote, urlparse
 
 from requests.auth import HTTPBasicAuth
@@ -425,12 +425,15 @@ class HttpDocumentSupport:
             )
 
 
-def execute(ctx: FileContext, exec_ctx: ExecuteContext) -> None:
+def execute(
+    ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...
+) -> None:
     """Run a http document
 
     Args:
         ctx: FileContext object to handle
         exec_ctx: ExecuteContext
+        cb: Callable
     """
 
     http_doc = HttpDocument.from_file_context(ctx)
@@ -451,4 +454,5 @@ def execute(ctx: FileContext, exec_ctx: ExecuteContext) -> None:
     # @TODO process context-passed variable
 
     response = HttpDocumentSupport.execute_request(http_doc)
+    cb({ctx.filepath_hash: {"_response": response.data}})
     HttpDocumentSupport.display(response, exec_ctx)
