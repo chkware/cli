@@ -4,3 +4,6 @@ version: default:http:0.8.0
 request:
   url: https://api.coinstats.app/public/v1/coins/bitcoin?currency=USD
   method: GET
+
+expose:
+  - "{{ _response }}"
