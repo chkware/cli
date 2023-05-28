@@ -8,6 +8,7 @@ from chk.infrastructure.symbol_table import (
     Variables,
     VariableTableManager,
     replace_value,
+    ExposeManager,
 )
 from chk.modules.fetch import HttpDocument
 
@@ -180,3 +181,30 @@ class TestReplaceValue:
             "method": "GET",
             "auth[bearer]": {"token": "asdf123"},
         }
+
+
+class TestExposeManager:
+    @staticmethod
+    def test_get_expose_doc_always_pass():
+        document = {
+            "version": "default:http:0.7.2",
+            "request": {
+                "url": "https://httpbin.org/get",
+                "method": "GET",
+                "auth[bearer]": {"token": "1234"},
+            },
+        }
+
+        expose_block = {
+            "expose": ["{{ _response }}", "{{ _response.code }}"],
+        }
+
+        expose_doc = ExposeManager.get_expose_doc(document | expose_block)
+
+        assert isinstance(expose_doc, list)
+        assert len(expose_doc) == 2
+
+        expose_doc = ExposeManager.get_expose_doc(document)
+
+        assert isinstance(expose_doc, list)
+        assert len(expose_doc) == 0

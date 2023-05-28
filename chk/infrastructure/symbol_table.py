@@ -170,3 +170,19 @@ class VariableTableManager:
 
         for key, val in ext_vars.items():
             variable_doc[key] = val
+
+
+class ExposeManager:
+    """ExposeManager handles all expose related functionality"""
+
+    @staticmethod
+    def get_expose_doc(document: dict) -> list:
+        """Get `expose:` from a given document in dict
+
+        Args:
+            document: dict
+        Returns:
+            list: Contains expose as list or an empty list
+        """
+
+        return data_get(document, VariableConfigNode.EXPOSE, [])
