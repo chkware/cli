@@ -10,6 +10,7 @@ from chk.infrastructure.symbol_table import (
     replace_value,
     ExposeManager,
     linear_replace,
+    replace_value_in_traversable,
 )
 from chk.modules.fetch import HttpDocument
 
@@ -182,6 +183,54 @@ class TestReplaceValue:
             "method": "GET",
             "auth[bearer]": {"token": "asdf123"},
         }
+
+
+class TestReplaceValueInTraversable:
+    @staticmethod
+    def test_replace_value_in_traversable_dict_pass():
+        vals = {
+            "va": 1,
+            "vb": {"x": "y"},
+            "vc": {"p": "1", "q": {"x": "y"}},
+            "vd": ["a", "b"],
+        }
+
+        var1 = {
+            "a": "a {{ va }}",
+            "b": "a {{ vd }}",
+            "c": "{{ vc }}",
+            "d": "a {{ vc.q.x }}",
+        }
+
+        assert replace_value_in_traversable(var1, vals) == {
+            "a": "a 1",
+            "b": "a ['a', 'b']",
+            "c": {"p": "1", "q": {"x": "y"}},
+            "d": "a y",
+        }
+
+    @staticmethod
+    def test_replace_value_in_traversable_list_pass():
+        vals = {
+            "va": 1,
+            "vb": {"x": "y"},
+            "vc": {"p": "1", "q": {"x": "y"}},
+            "vd": ["a", "b"],
+        }
+
+        var2 = [
+            "a {{ va }}",
+            "a {{ vd }}",
+            "{{ vc }}",
+            "a {{ vc.q.x }}",
+        ]
+
+        assert replace_value_in_traversable(var2, vals) == [
+            "a 1",
+            "a ['a', 'b']",
+            {"p": "1", "q": {"x": "y"}},
+            "a y",
+        ]
 
 
 class TestExposeManager:

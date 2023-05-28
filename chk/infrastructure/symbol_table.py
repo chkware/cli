@@ -89,6 +89,22 @@ def linear_replace(container: str, replace_with: dict) -> object:
     )
 
 
+def replace_value_in_traversable(doc: dict | list, var_s: dict) -> dict | list:
+    """
+    replace variables with values
+    :param doc:
+    :param var_s:
+    :return:
+    """
+
+    for key, val in list(doc.items() if isinstance(doc, dict) else enumerate(doc)):
+        if isinstance(val, str):
+            doc[key] = linear_replace(str(val), var_s)
+        elif isinstance(val, (dict, list)):
+            doc[key] = replace_value_in_traversable(doc[key], var_s)
+    return doc
+
+
 def replace_value(obj: dict, vals: dict) -> dict:
     """Replaces all values on a given dict
 
