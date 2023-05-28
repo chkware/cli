@@ -233,3 +233,23 @@ class ExposeManager:
         """
 
         return data_get(document, VariableConfigNode.EXPOSE, [])
+
+    @staticmethod
+    def replace_values(
+        expose_doc: list,
+        values: dict,
+        replace_callback: Callable = replace_value_in_traversable,
+    ) -> list:
+        """Replace values on expose document
+
+        Args:
+            expose_doc: list containing the expose document
+            values: dict containing data to replace values with
+            replace_callback: Callable to use for value replace strategy.
+                            default: replace_value
+        """
+
+        if not isinstance(expose_doc, list):
+            raise RuntimeError("Unsupported expose structure")
+
+        return replace_callback(expose_doc, values)

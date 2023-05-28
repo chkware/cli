@@ -268,10 +268,9 @@ class TestExposeManager:
         }
 
         replaced = ExposeManager.replace_values(expose_block, response)
-        import var_dump
-        import html
 
-        var_dump.var_dump([html.unescape(item) for item in replaced])
+        assert len(replaced) == 2
+        assert replaced[1] == 201
 
 
 class TestLinearReplace:
