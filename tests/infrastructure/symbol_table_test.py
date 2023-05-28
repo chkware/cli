@@ -9,6 +9,7 @@ from chk.infrastructure.symbol_table import (
     VariableTableManager,
     replace_value,
     ExposeManager,
+    linear_replace,
 )
 from chk.modules.fetch import HttpDocument
 
@@ -208,3 +209,71 @@ class TestExposeManager:
 
         assert isinstance(expose_doc, list)
         assert len(expose_doc) == 0
+
+    @staticmethod
+    def test_replace_values_pass():
+        expose_block = ["{{ _response }}", "{{ _response.code }}"]
+        response = {
+            "A": "https://httpbin.org/get",
+            "_response": {"code": 201},
+        }
+
+        replaced = ExposeManager.replace_values(expose_block, response)
+        import var_dump
+        import html
+
+        var_dump.var_dump([html.unescape(item) for item in replaced])
+
+
+class TestLinearReplace:
+    vals = {
+        "va": 1,
+        "vb": {"x": "y"},
+        "vc": {"p": "1", "q": {"x": "y"}},
+        "vd": ["a", "b"],
+    }
+
+    @classmethod
+    def test_ret_same_when_nothing_to_replace(cls):
+        v1 = "a"  # "a"
+        assert linear_replace(v1, cls.vals) == "a"
+
+    @classmethod
+    def test_pass_when_scalar(cls):
+        v2 = "a {{ va }}"  # "a 1"
+        assert linear_replace(v2, cls.vals) == "a 1"
+
+    @classmethod
+    def test_pass_when_dict_with_str(cls):
+        v3 = "a {{ vb }}"  # "a {'x': 'y'}"
+        assert linear_replace(v3, cls.vals) == "a {'x': 'y'}"
+
+    @classmethod
+    def test_pass_when_list_with_str(cls):
+        v4 = "a {{ vd }}"  # "a ['a', 'b']"
+        assert linear_replace(v4, cls.vals) == "a ['a', 'b']"
+
+    @classmethod
+    def test_pass_when_dict_scalar_value_with_str(cls):
+        v5 = "a {{ vc.p }}"  # "a 1"
+        assert linear_replace(v5, cls.vals) == "a 1"
+
+    @classmethod
+    def test_pass_when_dict_deep_scalar_value_with_str(cls):
+        v6 = "a {{ vc.q.x }}"  # "a y"
+        assert linear_replace(v6, cls.vals) == "a y"
+
+    @classmethod
+    def test_pass_when_dict_deep_scalar_value(cls):
+        v7 = "{{ vc.q.x }}"  # y
+        assert linear_replace(v7, cls.vals) == "y"
+
+    @classmethod
+    def test_pass_when_dict(cls):
+        v8 = "{{ vc }}"  # {'p': '1', 'q': {'x': 'y'}}
+        assert linear_replace(v8, cls.vals) == {"p": "1", "q": {"x": "y"}}
+
+    @classmethod
+    def test_pass_when_list(cls):
+        v9 = "{{ vd }}"
+        assert linear_replace(v9, cls.vals) == ["a", "b"]
