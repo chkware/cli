@@ -272,6 +272,61 @@ class TestExposeManager:
         assert len(replaced) == 2
         assert replaced[1] == 201
 
+    @staticmethod
+    def test_get_exposed_replaced_data_pass_returns_empty_list():
+        document = {
+            "version": "default:http:0.7.2",
+            "request": {
+                "url": "https://httpbin.org/get",
+                "method": "GET",
+            },
+        }
+
+        file_ctx = FileContext(filepath_hash="ab12", document=document)
+        exec_ctx = ExecuteContext(
+            arguments={VariableConfigNode.VARIABLES: {"extension": ".org"}}
+        )
+
+        http_doc = HttpDocument.from_file_context(file_ctx)
+
+        variable_doc = Variables()
+        VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
+
+        exposed_data = ExposeManager.get_exposed_replaced_data(
+            http_doc, variable_doc, {"a": 1, "b": 2}
+        )
+
+        assert isinstance(exposed_data, list)
+        assert len(exposed_data) == 0
+
+    @staticmethod
+    def test_get_exposed_replaced_data_pass_returns_nonempty_list():
+        document = {
+            "version": "default:http:0.7.2",
+            "request": {
+                "url": "https://httpbin.org/get",
+                "method": "GET",
+            },
+            "expose": ["_response"],
+        }
+
+        file_ctx = FileContext(filepath_hash="ab12", document=document)
+        exec_ctx = ExecuteContext(
+            arguments={VariableConfigNode.VARIABLES: {"extension": ".org"}}
+        )
+
+        http_doc = HttpDocument.from_file_context(file_ctx)
+
+        variable_doc = Variables()
+        VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
+
+        exposed_data = ExposeManager.get_exposed_replaced_data(
+            http_doc, variable_doc, {"a": 1, "b": 2}
+        )
+
+        assert isinstance(exposed_data, list)
+        assert len(exposed_data) == 1
+
 
 class TestLinearReplace:
     vals = {
