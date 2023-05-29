@@ -22,6 +22,7 @@ from chk.infrastructure.symbol_table import (
     replace_value,
     VARIABLE_SCHEMA as VAR_SCHEMA,
     EXPOSE_SCHEMA as EXP_SCHEMA,
+    ExposeManager,
 )
 
 from chk.infrastructure.third_party.http_fetcher import ApiResponse, fetch
@@ -408,21 +409,34 @@ class HttpDocumentSupport:
         return {**VER_SCHEMA, **SCHEMA, **VAR_SCHEMA, **EXP_SCHEMA}
 
     @staticmethod
-    def display(response: ApiResponse, exec_ctx: ExecuteContext) -> None:
+    def display(expose_list: list, exec_ctx: ExecuteContext) -> None:
         """Displays the response based on the command response format
 
         Args:
-            response: ApiResponse
+            expose_list: list
             exec_ctx: ExecuteContext
         """
+        printed_before = False
 
-        if exec_ctx.options["format"]:
-            formatter(response.as_fmt_str, dump=exec_ctx.options["dump"])
-        else:
-            formatter(
-                ApiResponseDict.from_api_response(response).as_json,
-                dump=exec_ctx.options["dump"],
-            )
+        for expose_item in expose_list:
+            if isinstance(expose_item, (dict, list)):
+                if {"code", "info", "headers", "body"}.issubset(expose_item):
+                    resp = ApiResponse(expose_item)
+
+                    if exec_ctx.options["format"]:
+                        item = resp.as_fmt_str
+                    else:
+                        item = ApiResponseDict.from_api_response(resp).as_json
+                else:
+                    item = json.dumps(expose_item)
+            else:
+                item = str(expose_item)
+
+            if printed_before:
+                print("---")
+
+            formatter(item, dump=exec_ctx.options["dump"])
+            printed_before = True
 
 
 def execute(
@@ -454,5 +468,9 @@ def execute(
     # @TODO process context-passed variable
 
     response = HttpDocumentSupport.execute_request(http_doc)
+    exposed_data = ExposeManager.get_exposed_replaced_data(
+        http_doc, variable_doc, response.data
+    )
+
     cb({ctx.filepath_hash: {"_response": response.data}})
-    HttpDocumentSupport.display(response, exec_ctx)
+    HttpDocumentSupport.display(exposed_data, exec_ctx)
