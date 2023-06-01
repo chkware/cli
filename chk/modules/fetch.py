@@ -320,7 +320,7 @@ class HttpDocument(VersionedDocument):
 class ApiResponseDict(UserDict):
     """Represents a API response with body in dict representation"""
 
-    api_resp: ApiResponse
+    api_resp: dict
     body_as_dict: dict
 
     @staticmethod
@@ -351,7 +351,7 @@ class ApiResponseDict(UserDict):
             if not body:
                 body = dict(resp["body"])
 
-            return ApiResponseDict(api_resp=resp, body_as_dict=body)
+            return ApiResponseDict(api_resp=resp.data, body_as_dict=body)
 
         except Exception:
             raise RuntimeError("Unsupported response format.")
@@ -364,7 +364,7 @@ class ApiResponseDict(UserDict):
             str: JSON object as string representation
         """
 
-        return json.dumps({**dict(self["api_resp"]), **{"body": self["body_as_dict"]}})
+        return json.dumps({**self["api_resp"], **{"body": self["body_as_dict"]}})
 
 
 class HttpDocumentSupport:
@@ -416,7 +416,8 @@ class HttpDocumentSupport:
             expose_list: list
             exec_ctx: ExecuteContext
         """
-        printed_before = False
+
+        display_item_list: list[object] = []
 
         for expose_item in expose_list:
             if isinstance(expose_item, (dict, list)):
@@ -424,19 +425,33 @@ class HttpDocumentSupport:
                     resp = ApiResponse(expose_item)
 
                     if exec_ctx.options["format"]:
-                        item = resp.as_fmt_str
+                        display_item_list.append(resp.as_fmt_str)
                     else:
-                        item = ApiResponseDict.from_api_response(resp).as_json
+                        item = ApiResponseDict.from_api_response(resp).data
+                        display_item_list.append(item)
                 else:
-                    item = json.dumps(expose_item)
+                    if exec_ctx.options["format"]:
+                        display_item_list.append(json.dumps(expose_item))
+                    else:
+                        display_item_list.append(expose_item)
             else:
-                item = str(expose_item)
+                if exec_ctx.options["format"]:
+                    display_item_list.append(str(expose_item))
+                else:
+                    display_item_list.append(expose_item)
 
-            if printed_before:
-                print("---")
-
-            formatter(item, dump=exec_ctx.options["dump"])
-            printed_before = True
+        if exec_ctx.options["format"]:
+            formatter(
+                "\n---\n".join(
+                    [
+                        item if isinstance(item, str) else str(item)
+                        for item in display_item_list
+                    ]
+                ),
+                dump=exec_ctx.options["dump"],
+            )
+        else:
+            formatter(json.dumps(display_item_list), dump=exec_ctx.options["dump"])
 
 
 def execute(
