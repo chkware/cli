@@ -22,6 +22,7 @@ from chk.infrastructure.symbol_table import (
     replace_value,
     VARIABLE_SCHEMA as VAR_SCHEMA,
     EXPOSE_SCHEMA as EXP_SCHEMA,
+    ExposeManager,
 )
 
 from chk.infrastructure.third_party.http_fetcher import ApiResponse, fetch
@@ -319,7 +320,7 @@ class HttpDocument(VersionedDocument):
 class ApiResponseDict(UserDict):
     """Represents a API response with body in dict representation"""
 
-    api_resp: ApiResponse
+    api_resp: dict
     body_as_dict: dict
 
     @staticmethod
@@ -350,7 +351,7 @@ class ApiResponseDict(UserDict):
             if not body:
                 body = dict(resp["body"])
 
-            return ApiResponseDict(api_resp=resp, body_as_dict=body)
+            return ApiResponseDict(api_resp=resp.data, body_as_dict=body)
 
         except Exception:
             raise RuntimeError("Unsupported response format.")
@@ -363,7 +364,17 @@ class ApiResponseDict(UserDict):
             str: JSON object as string representation
         """
 
-        return json.dumps({**dict(self["api_resp"]), **{"body": self["body_as_dict"]}})
+        return json.dumps(self.as_dict)
+
+    @property
+    def as_dict(self) -> dict:
+        """Converts to JSON string
+
+        Returns:
+            str: JSON object as string representation
+        """
+
+        return {**self["api_resp"], **{"body": self["body_as_dict"]}}
 
 
 class HttpDocumentSupport:
@@ -408,19 +419,55 @@ class HttpDocumentSupport:
         return {**VER_SCHEMA, **SCHEMA, **VAR_SCHEMA, **EXP_SCHEMA}
 
     @staticmethod
-    def display(response: ApiResponse, exec_ctx: ExecuteContext) -> None:
+    def display(expose_list: list, exec_ctx: ExecuteContext) -> None:
         """Displays the response based on the command response format
 
         Args:
-            response: ApiResponse
+            expose_list: list
             exec_ctx: ExecuteContext
         """
 
+        display_item_list: list[object] = []
+
+        for expose_item in expose_list:
+            if isinstance(expose_item, (dict, list)):
+                if {"code", "info", "headers", "body"}.issubset(expose_item):
+                    resp = ApiResponse(expose_item)
+
+                    if exec_ctx.options["format"]:
+                        display_item_list.append(resp.as_fmt_str)
+                    else:
+                        display_item_list.append(
+                            ApiResponseDict.from_api_response(resp).as_dict
+                        )
+                else:
+                    if exec_ctx.options["format"]:
+                        display_item_list.append(json.dumps(expose_item))
+                    else:
+                        display_item_list.append(expose_item)
+            else:
+                if exec_ctx.options["format"]:
+                    display_item_list.append(str(expose_item))
+                else:
+                    display_item_list.append(expose_item)
+
         if exec_ctx.options["format"]:
-            formatter(response.as_fmt_str, dump=exec_ctx.options["dump"])
+            formatter(
+                "\n---\n".join(
+                    [
+                        item if isinstance(item, str) else str(item)
+                        for item in display_item_list
+                    ]
+                )
+                if len(display_item_list) > 1
+                else display_item_list.pop(),
+                dump=exec_ctx.options["dump"],
+            )
         else:
             formatter(
-                ApiResponseDict.from_api_response(response).as_json,
+                json.dumps(display_item_list)
+                if len(display_item_list) > 1
+                else json.dumps(display_item_list.pop()),
                 dump=exec_ctx.options["dump"],
             )
 
@@ -454,5 +501,9 @@ def execute(
     # @TODO process context-passed variable
 
     response = HttpDocumentSupport.execute_request(http_doc)
+    exposed_data = ExposeManager.get_exposed_replaced_data(
+        http_doc, variable_doc, response.data
+    )
+
     cb({ctx.filepath_hash: {"_response": response.data}})
-    HttpDocumentSupport.display(response, exec_ctx)
+    HttpDocumentSupport.display(exposed_data, exec_ctx)

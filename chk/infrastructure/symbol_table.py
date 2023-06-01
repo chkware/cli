@@ -58,6 +58,53 @@ class Variables(UserDict):
     """Holds data for a variable"""
 
 
+def linear_replace(container: str, replace_with: dict) -> object:
+    """replace values found in string with typed return"""
+
+    if not isinstance(container, str):
+        return container
+
+    if len(replace_with) == 0:
+        return container
+
+    line_split = re.split(r"({{\s*[a-zA-Z0-9_.]+\s*}})", container)
+
+    if len(line_split) == 1 and container in line_split:
+        return container
+
+    line_strip = [
+        "".join(item.split() if "$" in item else item) for item in line_split if item
+    ]
+
+    for i, item in enumerate(line_strip):
+        if "{{" in item and "}}" in item:
+            value = data_get(replace_with, item.strip(" {}"), None)
+
+            line_strip[i] = value or item
+
+    return (
+        "".join([str(li) for li in line_strip])
+        if len(line_strip) > 1
+        else line_strip.pop()
+    )
+
+
+def replace_value_in_traversable(doc: dict | list, var_s: dict) -> dict | list:
+    """
+    replace variables with values
+    :param doc:
+    :param var_s:
+    :return:
+    """
+
+    for key, val in list(doc.items() if isinstance(doc, dict) else enumerate(doc)):
+        if isinstance(val, str):
+            doc[key] = linear_replace(str(val), var_s)
+        elif isinstance(val, (dict, list)):
+            doc[key] = replace_value_in_traversable(doc[key], var_s)
+    return doc
+
+
 def replace_value(obj: dict, vals: dict) -> dict:
     """Replaces all values on a given dict
 
@@ -170,3 +217,64 @@ class VariableTableManager:
 
         for key, val in ext_vars.items():
             variable_doc[key] = val
+
+
+class ExposeManager:
+    """ExposeManager handles all expose related functionality"""
+
+    @staticmethod
+    def get_expose_doc(document: dict) -> list:
+        """Get `expose:` from a given document in dict
+
+        Args:
+            document: dict
+        Returns:
+            list: Contains expose as list or an empty list
+        """
+
+        return data_get(document, VariableConfigNode.EXPOSE, [])
+
+    @staticmethod
+    def replace_values(
+        expose_doc: list,
+        values: dict,
+        replace_callback: Callable = replace_value_in_traversable,
+    ) -> list:
+        """Replace values on expose document
+
+        Args:
+            expose_doc: list containing the expose document
+            values: dict containing data to replace values with
+            replace_callback: Callable to use for value replace strategy.
+                            default: replace_value
+        """
+
+        if not isinstance(expose_doc, list):
+            raise RuntimeError("Unsupported expose structure")
+
+        return replace_callback(expose_doc, values)
+
+    @staticmethod
+    def get_exposed_replaced_data(
+        document: VersionedDocument, var_document: Variables, store: dict
+    ) -> list:
+        """Get expose doc from a `VersionedDocument`, and prepare it from the
+            value of `Variables`, and `store`, and return
+
+        Args:
+            document: VersionedDocument to get expose definition from it
+            var_document: Variables to use as value store
+            store: dict to use as value store
+
+        Returns:
+            dict: list of expose data
+        """
+
+        file_ctx = FileContext(*document.context)
+
+        if expose_doc := ExposeManager.get_expose_doc(file_ctx.document):
+            return ExposeManager.replace_values(
+                expose_doc, var_document.data | {"_response": store}
+            )
+
+        return []

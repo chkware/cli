@@ -8,6 +8,9 @@ from chk.infrastructure.symbol_table import (
     Variables,
     VariableTableManager,
     replace_value,
+    ExposeManager,
+    linear_replace,
+    replace_value_in_traversable,
 )
 from chk.modules.fetch import HttpDocument
 
@@ -180,3 +183,200 @@ class TestReplaceValue:
             "method": "GET",
             "auth[bearer]": {"token": "asdf123"},
         }
+
+
+class TestReplaceValueInTraversable:
+    @staticmethod
+    def test_replace_value_in_traversable_dict_pass():
+        vals = {
+            "va": 1,
+            "vb": {"x": "y"},
+            "vc": {"p": "1", "q": {"x": "y"}},
+            "vd": ["a", "b"],
+        }
+
+        var1 = {
+            "a": "a {{ va }}",
+            "b": "a {{ vd }}",
+            "c": "{{ vc }}",
+            "d": "a {{ vc.q.x }}",
+        }
+
+        assert replace_value_in_traversable(var1, vals) == {
+            "a": "a 1",
+            "b": "a ['a', 'b']",
+            "c": {"p": "1", "q": {"x": "y"}},
+            "d": "a y",
+        }
+
+    @staticmethod
+    def test_replace_value_in_traversable_list_pass():
+        vals = {
+            "va": 1,
+            "vb": {"x": "y"},
+            "vc": {"p": "1", "q": {"x": "y"}},
+            "vd": ["a", "b"],
+        }
+
+        var2 = [
+            "a {{ va }}",
+            "a {{ vd }}",
+            "{{ vc }}",
+            "a {{ vc.q.x }}",
+        ]
+
+        assert replace_value_in_traversable(var2, vals) == [
+            "a 1",
+            "a ['a', 'b']",
+            {"p": "1", "q": {"x": "y"}},
+            "a y",
+        ]
+
+
+class TestExposeManager:
+    @staticmethod
+    def test_get_expose_doc_always_pass():
+        document = {
+            "version": "default:http:0.7.2",
+            "request": {
+                "url": "https://httpbin.org/get",
+                "method": "GET",
+                "auth[bearer]": {"token": "1234"},
+            },
+        }
+
+        expose_block = {
+            "expose": ["{{ _response }}", "{{ _response.code }}"],
+        }
+
+        expose_doc = ExposeManager.get_expose_doc(document | expose_block)
+
+        assert isinstance(expose_doc, list)
+        assert len(expose_doc) == 2
+
+        expose_doc = ExposeManager.get_expose_doc(document)
+
+        assert isinstance(expose_doc, list)
+        assert len(expose_doc) == 0
+
+    @staticmethod
+    def test_replace_values_pass():
+        expose_block = ["{{ _response }}", "{{ _response.code }}"]
+        response = {
+            "A": "https://httpbin.org/get",
+            "_response": {"code": 201},
+        }
+
+        replaced = ExposeManager.replace_values(expose_block, response)
+
+        assert len(replaced) == 2
+        assert replaced[1] == 201
+
+    @staticmethod
+    def test_get_exposed_replaced_data_pass_returns_empty_list():
+        document = {
+            "version": "default:http:0.7.2",
+            "request": {
+                "url": "https://httpbin.org/get",
+                "method": "GET",
+            },
+        }
+
+        file_ctx = FileContext(filepath_hash="ab12", document=document)
+        exec_ctx = ExecuteContext(
+            arguments={VariableConfigNode.VARIABLES: {"extension": ".org"}}
+        )
+
+        http_doc = HttpDocument.from_file_context(file_ctx)
+
+        variable_doc = Variables()
+        VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
+
+        exposed_data = ExposeManager.get_exposed_replaced_data(
+            http_doc, variable_doc, {"a": 1, "b": 2}
+        )
+
+        assert isinstance(exposed_data, list)
+        assert len(exposed_data) == 0
+
+    @staticmethod
+    def test_get_exposed_replaced_data_pass_returns_nonempty_list():
+        document = {
+            "version": "default:http:0.7.2",
+            "request": {
+                "url": "https://httpbin.org/get",
+                "method": "GET",
+            },
+            "expose": ["_response"],
+        }
+
+        file_ctx = FileContext(filepath_hash="ab12", document=document)
+        exec_ctx = ExecuteContext(
+            arguments={VariableConfigNode.VARIABLES: {"extension": ".org"}}
+        )
+
+        http_doc = HttpDocument.from_file_context(file_ctx)
+
+        variable_doc = Variables()
+        VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
+
+        exposed_data = ExposeManager.get_exposed_replaced_data(
+            http_doc, variable_doc, {"a": 1, "b": 2}
+        )
+
+        assert isinstance(exposed_data, list)
+        assert len(exposed_data) == 1
+
+
+class TestLinearReplace:
+    vals = {
+        "va": 1,
+        "vb": {"x": "y"},
+        "vc": {"p": "1", "q": {"x": "y"}},
+        "vd": ["a", "b"],
+    }
+
+    @classmethod
+    def test_ret_same_when_nothing_to_replace(cls):
+        v1 = "a"  # "a"
+        assert linear_replace(v1, cls.vals) == "a"
+
+    @classmethod
+    def test_pass_when_scalar(cls):
+        v2 = "a {{ va }}"  # "a 1"
+        assert linear_replace(v2, cls.vals) == "a 1"
+
+    @classmethod
+    def test_pass_when_dict_with_str(cls):
+        v3 = "a {{ vb }}"  # "a {'x': 'y'}"
+        assert linear_replace(v3, cls.vals) == "a {'x': 'y'}"
+
+    @classmethod
+    def test_pass_when_list_with_str(cls):
+        v4 = "a {{ vd }}"  # "a ['a', 'b']"
+        assert linear_replace(v4, cls.vals) == "a ['a', 'b']"
+
+    @classmethod
+    def test_pass_when_dict_scalar_value_with_str(cls):
+        v5 = "a {{ vc.p }}"  # "a 1"
+        assert linear_replace(v5, cls.vals) == "a 1"
+
+    @classmethod
+    def test_pass_when_dict_deep_scalar_value_with_str(cls):
+        v6 = "a {{ vc.q.x }}"  # "a y"
+        assert linear_replace(v6, cls.vals) == "a y"
+
+    @classmethod
+    def test_pass_when_dict_deep_scalar_value(cls):
+        v7 = "{{ vc.q.x }}"  # y
+        assert linear_replace(v7, cls.vals) == "y"
+
+    @classmethod
+    def test_pass_when_dict(cls):
+        v8 = "{{ vc }}"  # {'p': '1', 'q': {'x': 'y'}}
+        assert linear_replace(v8, cls.vals) == {"p": "1", "q": {"x": "y"}}
+
+    @classmethod
+    def test_pass_when_list(cls):
+        v9 = "{{ vd }}"
+        assert linear_replace(v9, cls.vals) == ["a", "b"]
