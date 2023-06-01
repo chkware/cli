@@ -364,7 +364,17 @@ class ApiResponseDict(UserDict):
             str: JSON object as string representation
         """
 
-        return json.dumps({**self["api_resp"], **{"body": self["body_as_dict"]}})
+        return json.dumps(self.as_dict)
+
+    @property
+    def as_dict(self) -> dict:
+        """Converts to JSON string
+
+        Returns:
+            str: JSON object as string representation
+        """
+
+        return {**self["api_resp"], **{"body": self["body_as_dict"]}}
 
 
 class HttpDocumentSupport:
@@ -427,8 +437,9 @@ class HttpDocumentSupport:
                     if exec_ctx.options["format"]:
                         display_item_list.append(resp.as_fmt_str)
                     else:
-                        item = ApiResponseDict.from_api_response(resp).data
-                        display_item_list.append(item)
+                        display_item_list.append(
+                            ApiResponseDict.from_api_response(resp).as_dict
+                        )
                 else:
                     if exec_ctx.options["format"]:
                         display_item_list.append(json.dumps(expose_item))
@@ -447,11 +458,18 @@ class HttpDocumentSupport:
                         item if isinstance(item, str) else str(item)
                         for item in display_item_list
                     ]
-                ),
+                )
+                if len(display_item_list) > 1
+                else display_item_list.pop(),
                 dump=exec_ctx.options["dump"],
             )
         else:
-            formatter(json.dumps(display_item_list), dump=exec_ctx.options["dump"])
+            formatter(
+                json.dumps(display_item_list)
+                if len(display_item_list) > 1
+                else json.dumps(display_item_list.pop()),
+                dump=exec_ctx.options["dump"],
+            )
 
 
 def execute(
