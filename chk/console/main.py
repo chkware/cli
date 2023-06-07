@@ -10,19 +10,21 @@ import chk.modules.validate as validate_executor
 from chk.infrastructure.file_loader import ExecuteContext, FileContext, FileLoader
 
 
-def load_variables_as_dict(variables: str) -> dict:
+def load_variables_as_dict(json_str: str, expect_msg: str) -> dict:
     """Reads a json string and converts to dict while doing validation
 
     Args:
-        variables: str
+        json_str: str
+        expect_msg: str
     Returns:
-        dict containing variables
+        dict containing json_str
     """
-    if variables:
+
+    if json_str:
         try:
-            return FileLoader.load_json_from_str(variables)
+            return FileLoader.load_json_from_str(json_str)
         except Exception:
-            raise click.UsageError("-V, --variables accept values as JSON object")
+            raise click.UsageError(expect_msg)
 
     return {}
 
@@ -87,7 +89,12 @@ def fetch(file: str, no_format: bool, variables: str) -> None:
             "dump": True,
             "format": not no_format,
         },
-        {"variables": load_variables_as_dict(variables)},
+        {
+            "variables": load_variables_as_dict(
+                variables,
+                "-V, --variables accept values as JSON object",
+            )
+        },
     )
 
     fetch_executor.execute(ctx, execution_ctx, after_hook)
@@ -115,7 +122,12 @@ def validate(file: str, no_format: bool, data: str) -> None:
             "dump": True,
             "format": not no_format,
         },
-        {"data": load_variables_as_dict(data)},
+        {
+            "data": load_variables_as_dict(
+                data,
+                "-D, --data accept values as JSON object",
+            )
+        },
     )
 
     validate_executor.execute(ctx, execution_ctx, after_hook)
@@ -134,7 +146,10 @@ def http(file: str, result: bool, no_format: bool, variables: str) -> None:
     Command to run Http config file.
     FILE: Any .chk file, that has 'version: default.http.*' string in it"""
 
-    variables_j = load_variables_as_dict(variables)
+    variables_j = load_variables_as_dict(
+        variables,
+        "-V, --variables accept values as JSON object",
+    )
 
     ctx: FileContext = FileContext.from_file(
         file,
@@ -162,7 +177,10 @@ def testcase(file: str, result: bool, no_format: bool, variables: str) -> None:
     Command to run Testcase config file.
     FILE: Any .chk file, that has 'version: default.testcase.*' string in it."""
 
-    variables_j = load_variables_as_dict(variables)
+    variables_j = load_variables_as_dict(
+        variables,
+        "-V, --variables accept values as JSON object",
+    )
 
     ctx: FileContext = FileContext.from_file(
         file,
