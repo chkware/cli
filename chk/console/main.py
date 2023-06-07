@@ -5,6 +5,7 @@ import click
 import chk.modules.http.main as http_executor
 import chk.modules.testcase.main as testcase_executor
 import chk.modules.fetch as fetch_executor
+import chk.modules.validate as validate_executor
 
 from chk.infrastructure.file_loader import ExecuteContext, FileContext, FileLoader
 
@@ -64,7 +65,7 @@ def chk(ctx: click.Context) -> None:
     ctx.ensure_object(dict)
 
 
-# run http sub-command
+# run fetch sub-command
 @chk.command
 @click.argument("file", type=click.Path(exists=True))
 @click.option(
@@ -90,6 +91,34 @@ def fetch(file: str, no_format: bool, variables: str) -> None:
     )
 
     fetch_executor.execute(ctx, execution_ctx, after_hook)
+
+
+# run validate sub-command
+@chk.command
+@click.argument("file", type=click.Path(exists=True))
+@click.option(
+    "-nf", "--no-format", is_flag=True, help="No formatting to show the output"
+)
+@click.option("-D", "--data", type=str, help="Pass data as JSON")
+def validate(file: str, no_format: bool, data: str) -> None:
+    """\b
+    Command to run Http config files.
+    FILE: Any .chk file, that has any of the following versions:
+
+    \b
+    - default.http.*"""
+
+    ctx: FileContext = FileContext.from_file(file)
+
+    execution_ctx = ExecuteContext(
+        {
+            "dump": True,
+            "format": not no_format,
+        },
+        {"data": load_variables_as_dict(data)},
+    )
+
+    validate_executor.execute(ctx, execution_ctx, after_hook)
 
 
 # run http sub-command
