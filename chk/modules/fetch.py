@@ -290,7 +290,7 @@ class HttpDocument(VersionedDocument):
     Http document entity
     """
 
-    request: dict = dataclasses.field(default_factory=dict)
+    request:  dict = dataclasses.field(default_factory=dict)
 
     @staticmethod
     def from_file_context(ctx: FileContext) -> "HttpDocument":
