@@ -3,9 +3,10 @@ Validate module
 """
 
 import dataclasses
+import datetime
 import enum
 import typing
-from collections import abc, UserList
+from collections import abc, UserDict
 
 from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
@@ -50,9 +51,36 @@ ASSERTS_SCHEMA = {
 }
 
 
+class SingleTestRunResult(UserDict):
+    """Result of an assertion run"""
+
+    is_pass: bool
+    time_start: datetime.datetime
+    time_end: datetime.datetime
+    message: str
+
+
+class AllTestRunResult(UserDict):
+    """Result of a test run"""
+
+    id: str
+    time_start: datetime.datetime
+    time_end: datetime.datetime
+    count_all: int
+    results: list[SingleTestRunResult]
+    count_fail: int = 0
+
+    @property
+    def is_all_pass(self) -> bool:
+        """Have all assertion passed for this test run"""
+
+        return self.count_fail == 0
+
+
 class AssertionEntry(typing.NamedTuple):
     """AssertionEntry holds one assertion operation"""
 
+    assert_id: str
     assert_function: str
     type_of_actual: object
     actual: typing.Any
@@ -62,8 +90,12 @@ class AssertionEntry(typing.NamedTuple):
     msg_fail: str
 
 
-class AssertionEntryList(UserList):
-    """Holds a list of AssertionEntry"""
+class AssertionAntiquary:
+    """AssertionAntiquary is service class that run assertion"""
+
+    @staticmethod
+    def test_run():
+        pass
 
 
 @dataclasses.dataclass(slots=True)
@@ -175,7 +207,6 @@ def execute(
     # handle passed data in asserts
     ValidationDocumentSupport.set_data_template(validate_doc, variable_doc, exec_ctx)
     ValidationDocumentSupport.process_data_template(variable_doc)
-    ValidationDocumentSupport.process_asserts_template(validate_doc, variable_doc)
 
     import var_dump
 
