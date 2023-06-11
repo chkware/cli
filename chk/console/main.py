@@ -106,8 +106,9 @@ def fetch(file: str, no_format: bool, variables: str) -> None:
 @click.option(
     "-nf", "--no-format", is_flag=True, help="No formatting to show the output"
 )
+@click.option("-V", "--variables", type=str, help="Pass variable(s) as JSON object")
 @click.option("-D", "--data", type=str, help="Pass data as JSON")
-def validate(file: str, no_format: bool, data: str) -> None:
+def validate(file: str, no_format: bool, variables: str, data: str) -> None:
     """\b
     Command to run Http config files.
     FILE: Any .chk file, that has any of the following versions:
@@ -123,10 +124,14 @@ def validate(file: str, no_format: bool, data: str) -> None:
             "format": not no_format,
         },
         {
+            "variables": load_variables_as_dict(
+                variables,
+                "-V, --variables accept values as JSON object",
+            ),
             "data": load_variables_as_dict(
                 data,
                 "-D, --data accept values as JSON object",
-            )
+            ),
         },
     )
 
