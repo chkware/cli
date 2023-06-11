@@ -80,14 +80,14 @@ class AllTestRunResult(UserDict):
 class AssertionEntry(typing.NamedTuple):
     """AssertionEntry holds one assertion operation"""
 
-    assert_id: str
-    assert_function: str
+    assert_type: str
     type_of_actual: object
     actual: typing.Any
     type_of_expected: object
     expected: typing.Any
     msg_pass: str
     msg_fail: str
+    assert_id: str = ""
 
 
 class AssertionAntiquary:
@@ -105,7 +105,7 @@ class ValidationDocument(VersionedDocument):
     """
 
     data: dict = dataclasses.field(default_factory=dict)
-    asserts: dict = dataclasses.field(default_factory=dict)
+    asserts: list = dataclasses.field(default_factory=list)
 
     @staticmethod
     def from_file_context(ctx: FileContext) -> "ValidationDocument":
@@ -113,21 +113,19 @@ class ValidationDocument(VersionedDocument):
         :param ctx: FileContext to create the ValidationDocument from
         """
 
-        if not (version_str := data_get(ctx.document, "version")):
+        if not (_version := data_get(ctx.document, "version")):
             raise RuntimeError("`version:` not found.")
 
-        if not (
-            asserts_dct := data_get(ctx.document, ValidationConfigNode.ASSERTS, {})
-        ):
+        if not (_asserts := data_get(ctx.document, ValidationConfigNode.ASSERTS, [])):
             raise RuntimeError(f"`{ValidationConfigNode.ASSERTS}:` not found.")
 
-        data_dct = data_get(ctx.document, ValidationConfigNode.DATA, {})
+        _data = data_get(ctx.document, ValidationConfigNode.DATA, {})
 
         return ValidationDocument(
             context=tuple(ctx),
-            version=version_str,
-            asserts=asserts_dct,
-            data=data_dct,
+            version=_version,
+            asserts=_asserts,
+            data=_data,
         )
 
     @property
@@ -178,6 +176,35 @@ class ValidationDocumentSupport:
         }
 
         variables[ValidationConfigNode.VAR_NODE] = replace_value(data, tmp_variables)
+
+    @staticmethod
+    def make_assertion_entry_list(asserts: list[dict]) -> list["AssertionEntry"]:
+        new_assertion_lst: list["AssertionEntry"] = []
+
+        for each_assert in asserts:
+            if not (_assert_type := each_assert.get("type", None)):
+                raise RuntimeError("key: `type` not found in one of the asserts.")
+
+            if not (_actual := each_assert.get("actual", None)):
+                raise RuntimeError("key: `actual` not found in one of the asserts.")
+
+            if not (_expected := each_assert.get("expected", None)):
+                raise RuntimeError("key: `expected` not found in one of the asserts.")
+
+            new_assertion_lst.append(
+                AssertionEntry(
+                    assert_type=_assert_type,
+                    actual=_actual,
+                    type_of_actual=type(_actual),
+                    expected=_expected,
+                    type_of_expected=type(_expected),
+                    msg_pass="",
+                    msg_fail="",
+                    assert_id="",
+                )
+            )
+
+        return new_assertion_lst
 
 
 def execute(
