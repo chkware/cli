@@ -4,7 +4,8 @@ Validate module
 
 import dataclasses
 import enum
-from collections import abc
+import typing
+from collections import abc, UserList
 
 from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
@@ -14,6 +15,9 @@ from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEM
 from chk.infrastructure.symbol_table import (
     VARIABLE_SCHEMA as VAR_SCHEMA,
     EXPOSE_SCHEMA as EXP_SCHEMA,
+    Variables,
+    VariableTableManager,
+    replace_value,
 )
 
 VERSION_SCOPE = ["validation"]
@@ -24,13 +28,14 @@ class ValidationConfigNode(enum.StrEnum):
 
     ASSERTS = enum.auto()
     DATA = enum.auto()
+    VAR_NODE = "_data"
 
 
 DATA_SCHEMA = {
     ValidationConfigNode.DATA: {
         "required": False,
-        "empty": True,
-        "nullable": True,
+        "empty": False,
+        "nullable": False,
         "type": "dict",
     }
 }
@@ -43,6 +48,22 @@ ASSERTS_SCHEMA = {
         "valuesrules": {"type": "dict"},
     }
 }
+
+
+class AssertionEntry(typing.NamedTuple):
+    """AssertionEntry holds one assertion operation"""
+
+    assert_function: str
+    type_of_actual: object
+    actual: typing.Any
+    type_of_expected: object
+    expected: typing.Any
+    msg_pass: str
+    msg_fail: str
+
+
+class AssertionEntryList(UserList):
+    """Holds a list of AssertionEntry"""
 
 
 @dataclasses.dataclass(slots=True)
@@ -103,6 +124,29 @@ class ValidationDocumentSupport:
             **EXP_SCHEMA,
         }
 
+    @staticmethod
+    def set_data_template(
+        validate_doc: ValidationDocument,
+        variables: Variables,
+        exec_ctx: ExecuteContext,
+    ) -> None:
+        """sets data or template"""
+
+        data = data_get(exec_ctx.arguments, "data", {})
+        variables[ValidationConfigNode.VAR_NODE] = data if data else validate_doc.data
+
+    @staticmethod
+    def process_data_template(variables: Variables) -> None:
+        """process data or template before assertion"""
+        data = variables[ValidationConfigNode.VAR_NODE]
+        tmp_variables = {
+            key: val
+            for key, val in variables.data.items()
+            if key != ValidationConfigNode.VAR_NODE
+        }
+
+        variables[ValidationConfigNode.VAR_NODE] = replace_value(data, tmp_variables)
+
 
 def execute(
     ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...
@@ -124,3 +168,19 @@ def execute(
     VersionedDocumentSupport.validate_with_schema(
         ValidationDocumentSupport.build_schema(), validate_doc
     )
+
+    variable_doc = Variables()
+    VariableTableManager.handle(variable_doc, validate_doc, exec_ctx)
+
+    # handle passed data in asserts
+    ValidationDocumentSupport.set_data_template(validate_doc, variable_doc, exec_ctx)
+    ValidationDocumentSupport.process_data_template(variable_doc)
+    ValidationDocumentSupport.process_asserts_template(validate_doc, variable_doc)
+
+    import var_dump
+
+    var_dump.var_dump(validate_doc.asserts)
+
+    # handle passed templated data in asserts, with variables
+    # handle passed templated data in templated asserts, with variables
+    # handle passed in-file data in templated asserts, with variables
