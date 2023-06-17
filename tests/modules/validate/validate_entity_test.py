@@ -11,7 +11,7 @@ from chk.modules.validate import (
     ValidationDocumentSupport,
     ValidationConfigNode,
 )
-from chk.modules.validate import AssertionEntry
+from chk.modules.validate.assertion_services import AssertionEntry
 
 
 class TestValidationDocument:
