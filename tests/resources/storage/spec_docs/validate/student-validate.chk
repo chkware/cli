@@ -1,0 +1,8 @@
+---
+version: default:validation:0.7.2
+
+asserts:
+  - { type: AssertEquals, actual: "{{ _data.roll }}", expected: 39 }
+
+expose:
+  - $_asserts_response
