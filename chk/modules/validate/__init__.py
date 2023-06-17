@@ -178,10 +178,10 @@ class ValidationDocumentSupport:
         variables[ValidationConfigNode.VAR_NODE] = replace_value(data, tmp_variables)
 
     @staticmethod
-    def make_assertion_entry_list(asserts: list[dict]) -> list["AssertionEntry"]:
-        new_assertion_lst: list["AssertionEntry"] = []
+    def make_assertion_entry_list(assert_lst: list[dict]) -> list[AssertionEntry]:
+        new_assertion_lst: list[AssertionEntry] = []
 
-        for each_assert in asserts:
+        for each_assert in assert_lst:
             if not (_assert_type := each_assert.get("type", None)):
                 raise RuntimeError("key: `type` not found in one of the asserts.")
 

@@ -11,6 +11,7 @@ from chk.modules.validate import (
     ValidationDocumentSupport,
     ValidationConfigNode,
 )
+from chk.modules.validate import AssertionEntry
 
 
 class TestValidationDocument:
@@ -252,3 +253,30 @@ class TestValidationDocumentSupport:
 
         assert bool(variables[ValidationConfigNode.VAR_NODE])
         assert variables[ValidationConfigNode.VAR_NODE].get("greet") == "Hello Somebody"
+
+    @staticmethod
+    def test_make_assertion_entry_list_pass():
+        ctx = FileContext(
+            document={
+                "version": "default:validation:0.7.2",
+                "asserts": [
+                    {
+                        "type": "AssertEquals",
+                        "actual": "{{ _data.roll }}",
+                        "expected": 39,
+                    },
+                    {
+                        "type": "AssertEquals",
+                        "actual": "{{ _data.name }}",
+                        "expected": "Some one",
+                    },
+                ],
+                "data": {"roll": 39, "name": "Some one"},
+                "expose": ["$_asserts_response"],
+            }
+        )
+
+        doc = ValidationDocument.from_file_context(ctx)
+        resp = ValidationDocumentSupport.make_assertion_entry_list(doc.asserts)
+
+        assert all([isinstance(aitem, AssertionEntry) for aitem in resp])
