@@ -187,10 +187,12 @@ def execute(
     ValidationDocumentSupport.set_data_template(validate_doc, variable_doc, exec_ctx)
     ValidationDocumentSupport.process_data_template(variable_doc)
 
+    assert_list = ValidationDocumentSupport.make_assertion_entry_list(
+        validate_doc.asserts
+    )
+
     import var_dump
 
-    var_dump.var_dump(validate_doc.asserts)
+    var_dump.var_dump(assert_list)
 
-    # handle passed templated data in asserts, with variables
-    # handle passed templated data in templated asserts, with variables
     # handle passed in-file data in templated asserts, with variables
