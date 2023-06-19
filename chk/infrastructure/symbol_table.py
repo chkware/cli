@@ -213,7 +213,7 @@ class VariableTableManager:
             exec_ctx: ExecuteContext; passed external context
         """
 
-        ext_vars = data_get(exec_ctx.arguments, VariableConfigNode.VARIABLES)
+        ext_vars = data_get(exec_ctx.arguments, VariableConfigNode.VARIABLES, {})
 
         for key, val in ext_vars.items():
             variable_doc[key] = val
