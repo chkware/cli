@@ -147,9 +147,9 @@ class ValidationDocumentSupport:
                 AssertionEntry(
                     assert_type=_assert_type,
                     actual=_actual,
-                    type_of_actual=type(_actual),
+                    type_of_actual=_actual.__class__.__name__,
                     expected=_expected,
-                    type_of_expected=type(_expected),
+                    type_of_expected=_expected.__class__.__name__,
                     msg_pass="",
                     msg_fail="",
                     assert_id="",
