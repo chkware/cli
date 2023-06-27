@@ -1,9 +1,13 @@
 """
 Assertion Functions mod
 """
+from typing import TypeAlias
+
+# assertion result type; internal use
+_AResult: TypeAlias = tuple[bool, Exception | str]
 
 
-def assert_equals(actual: object, expected: object, **_: object) -> bool:
+def assert_equals(actual: object, expected: object, **_: object) -> _AResult:
     """Assert equals
 
     Args:
@@ -11,16 +15,24 @@ def assert_equals(actual: object, expected: object, **_: object) -> bool:
         expected: object
         **_: object ignores any other params
     Returns:
-        True if equals
-    Raises:
-        AssertionError unless equal
+        _AResult result
     """
 
     if actual != expected:
-        raise AssertionError(
-            f"actual `{actual.__class__.__name__}({actual})`"
-            + " is not equal to "
-            + f"expected `{expected.__class__.__name__}({expected})`"
+        return (
+            False,
+            AssertionError(
+                f"actual `{actual.__class__.__name__}({actual})`"
+                + " is not equal to "
+                + f"expected `{expected.__class__.__name__}({expected})`"
+            ),
         )
 
-    return True
+    return (
+        True,
+        (
+            f"actual `{actual.__class__.__name__}({actual})`"
+            + " is equal to "
+            + f"expected `{expected.__class__.__name__}({expected})`"
+        ),
+    )
