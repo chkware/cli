@@ -73,13 +73,13 @@ class AssertionEntryListRunner:
 
     @staticmethod
     def test_run(
-        assert_list: list[AssertionEntry], variable_doc: dict
+        assert_list: list[AssertionEntry], variables: dict
     ) -> AllTestRunResult:
         """Run the tests
 
         Args:
             assert_list: list[AssertionEntry]
-            variable_doc: dict
+            variables: dict
 
         Returns:
             AllTestRunResult: Test run result
@@ -98,7 +98,9 @@ class AssertionEntryListRunner:
             asrt_fn = MAP_TYPE_TO_FN[assert_item.assert_type]
 
             resp = SingleTestRunResult(time_start=datetime.now())
-            is_pass, asrt_resp = asrt_fn(**assert_item._asdict())
+            is_pass, asrt_resp = asrt_fn(
+                **{**assert_item._asdict(), **{"variables": variables}}
+            )
 
             if isinstance(asrt_resp, Exception):
                 test_run_result["count_fail"] += 1
