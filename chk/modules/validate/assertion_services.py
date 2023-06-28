@@ -13,6 +13,19 @@ MAP_TYPE_TO_FN = {
 }
 
 
+class AssertionEntry(typing.NamedTuple):
+    """AssertionEntry holds one assertion operation"""
+
+    assert_type: str
+    type_of_actual: str
+    actual: typing.Any
+    type_of_expected: str
+    expected: typing.Any
+    msg_pass: str
+    msg_fail: str
+    assert_id: str = ""
+
+
 class SingleTestRunResult(UserDict):
     """Result of an assertion run"""
 
@@ -42,6 +55,21 @@ class SingleTestRunResult(UserDict):
         }
 
         return _as_dict
+
+    @property
+    def as_fmt_str(self) -> str:
+        """String representation of ApiResponse
+
+        Returns:
+            str: String representation
+        """
+
+        return (
+            "\n"
+            f"Test [{'Pass' if self['is_pass'] else 'Fail'}] with message: {self['message']}\n"
+            + f"Test started at: {str(self['time_start'])}, and "
+            + f"finished at: {str(self['time_end'])}\n"
+        )
 
 
 class AllTestRunResult(UserDict):
@@ -91,18 +119,28 @@ class AllTestRunResult(UserDict):
 
         return _as_dict
 
+    @property
+    def as_fmt_str(self) -> str:
+        """String representation of ApiResponse
 
-class AssertionEntry(typing.NamedTuple):
-    """AssertionEntry holds one assertion operation"""
+        Returns:
+            str: String representation
+        """
 
-    assert_type: str
-    type_of_actual: str
-    actual: typing.Any
-    type_of_expected: str
-    expected: typing.Any
-    msg_pass: str
-    msg_fail: str
-    assert_id: str = ""
+        _display = (
+            "\n"
+            f"Test run id: {self['id']}\n"
+            + f"Test run started at: {str(self['time_start'])}, and "
+            + f"finished at: {str(self['time_end'])}\n"
+            + f"Total tests: {self['count_all']}, "
+            + f"Total tests failed: {self['count_fail']}\n"
+        )
+        _display += f"Test run result(s):\n"
+
+        for one_result in self["results"]:
+            _display += one_result.as_fmt_str
+
+        return _display
 
 
 class AssertionEntryListRunner:
