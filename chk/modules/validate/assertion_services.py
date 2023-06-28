@@ -28,6 +28,21 @@ class SingleTestRunResult(UserDict):
     time_end: datetime
     message: str
 
+    @property
+    def as_dict(self) -> dict:
+        """Convert SingleTestRunResult to a dict"""
+        _as_dict: dict = {
+            key: value for key, value in self.items() if not key.startswith("time_")
+        }
+
+        _as_dict |= {
+            key: value.timestamp()
+            for key, value in self.items()
+            if key.startswith("time_")
+        }
+
+        return _as_dict
+
 
 class AllTestRunResult(UserDict):
     """Result of a test run"""
@@ -53,6 +68,28 @@ class AllTestRunResult(UserDict):
         """Have all assertion passed for this test run"""
 
         return self.count_fail == 0
+
+    @property
+    def as_dict(self) -> dict:
+        """Convert AllTestRunResult to a dict"""
+        _as_dict: dict = {
+            key: value for key, value in self.items() if not key.startswith("time_")
+        }
+
+        _as_dict |= {
+            key: value.timestamp()
+            for key, value in self.items()
+            if key.startswith("time_")
+        }
+
+        if len(self["results"]) > 0:
+            _as_dict["results"] = [
+                test_result.as_dict
+                for test_result in self["results"]
+                if isinstance(test_result, SingleTestRunResult)
+            ]
+
+        return _as_dict
 
 
 class AssertionEntry(typing.NamedTuple):
