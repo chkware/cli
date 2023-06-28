@@ -45,6 +45,7 @@ class SingleTestRunResult(UserDict):
     @property
     def as_dict(self) -> dict:
         """Convert SingleTestRunResult to a dict"""
+
         _as_dict: dict = {
             key: value for key, value in self.items() if not key.startswith("time_")
         }
@@ -54,6 +55,8 @@ class SingleTestRunResult(UserDict):
             for key, value in self.items()
             if key.startswith("time_")
         }
+
+        _as_dict["assert_used"] = self["assert_used"]._asdict()
 
         return _as_dict
 
