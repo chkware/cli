@@ -23,6 +23,7 @@ from chk.infrastructure.symbol_table import (
     VARIABLE_SCHEMA as VAR_SCHEMA,
     EXPOSE_SCHEMA as EXP_SCHEMA,
     ExposeManager,
+    ExposableVariables,
 )
 
 from chk.infrastructure.third_party.http_fetcher import ApiResponse, fetch
@@ -498,9 +499,11 @@ def execute(
     HttpDocumentSupport.process_request_template(http_doc, variable_doc)
 
     response = HttpDocumentSupport.execute_request(http_doc)
+    output_data = ExposableVariables({"_response": response.data})
+
     exposed_data = ExposeManager.get_exposed_replaced_data(
-        http_doc, variable_doc, response.data
+        http_doc, {**variable_doc.data, **output_data.data}
     )
 
-    cb({ctx.filepath_hash: {"_response": response.data}})
+    cb({ctx.filepath_hash: output_data.data})
     HttpDocumentSupport.display(exposed_data, exec_ctx)

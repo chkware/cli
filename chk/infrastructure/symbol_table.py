@@ -58,6 +58,10 @@ class Variables(UserDict):
     """Holds data for a variable"""
 
 
+class ExposableVariables(UserDict):
+    """Holds data for a expose data"""
+
+
 def linear_replace(container: str, replace_with: dict) -> object:
     """replace values found in string with typed return"""
 
