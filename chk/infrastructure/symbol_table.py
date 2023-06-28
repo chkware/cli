@@ -255,15 +255,12 @@ class ExposeManager:
         return replace_callback(expose_doc, values)
 
     @staticmethod
-    def get_exposed_replaced_data(
-        document: VersionedDocument, var_document: Variables, store: dict
-    ) -> list:
+    def get_exposed_replaced_data(document: VersionedDocument, store: dict) -> list:
         """Get expose doc from a `VersionedDocument`, and prepare it from the
             value of `Variables`, and `store`, and return
 
         Args:
             document: VersionedDocument to get expose definition from it
-            var_document: Variables to use as value store
             store: dict to use as value store
 
         Returns:
@@ -273,8 +270,6 @@ class ExposeManager:
         file_ctx = FileContext(*document.context)
 
         if expose_doc := ExposeManager.get_expose_doc(file_ctx.document):
-            return ExposeManager.replace_values(
-                expose_doc, var_document.data | {"_response": store}
-            )
+            return ExposeManager.replace_values(expose_doc, store)
 
         return []

@@ -289,11 +289,8 @@ class TestExposeManager:
 
         http_doc = HttpDocument.from_file_context(file_ctx)
 
-        variable_doc = Variables()
-        VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
-
         exposed_data = ExposeManager.get_exposed_replaced_data(
-            http_doc, variable_doc, {"a": 1, "b": 2}
+            http_doc, {"a": 1, "b": 2}
         )
 
         assert isinstance(exposed_data, list)
@@ -307,7 +304,7 @@ class TestExposeManager:
                 "url": "https://httpbin.org/get",
                 "method": "GET",
             },
-            "expose": ["_response"],
+            "expose": ["{{ _response }}"],
         }
 
         file_ctx = FileContext(filepath_hash="ab12", document=document)
@@ -321,11 +318,13 @@ class TestExposeManager:
         VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
 
         exposed_data = ExposeManager.get_exposed_replaced_data(
-            http_doc, variable_doc, {"a": 1, "b": 2}
+            http_doc, {**variable_doc.data, **{"_response": {"a": 1, "b": 2}}}
         )
 
         assert isinstance(exposed_data, list)
         assert len(exposed_data) == 1
+        assert isinstance(exposed_data[0], dict)
+        assert len(exposed_data[0]) == 2
 
 
 class TestLinearReplace:
