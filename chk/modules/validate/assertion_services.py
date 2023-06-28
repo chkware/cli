@@ -40,6 +40,7 @@ class SingleTestRunResult(UserDict):
     time_start: datetime
     time_end: datetime
     message: str
+    assert_used: AssertionEntry
 
     @property
     def as_dict(self) -> dict:
@@ -66,7 +67,8 @@ class SingleTestRunResult(UserDict):
 
         return (
             "\n"
-            f"Test [{'Pass' if self['is_pass'] else 'Fail'}] with message: {self['message']}\n"
+            f"Test {self['assert_used'].assert_type} "
+            + f"[{'Pass' if self['is_pass'] else 'Fail'}] with message: {self['message']}\n"
             + f"Test started at: {str(self['time_start'])}, and "
             + f"finished at: {str(self['time_end'])}\n"
         )
@@ -183,6 +185,7 @@ class AssertionEntryListRunner:
             resp["is_pass"] = is_pass
             resp["message"] = str(asrt_resp)
             resp["time_end"] = datetime.now()
+            resp["assert_used"] = assert_item
 
             results.append(resp)
 
