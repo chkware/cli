@@ -8,7 +8,7 @@ from collections import abc
 
 from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
-from chk.infrastructure.helper import data_get
+from chk.infrastructure.helper import data_get, formatter
 from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
 
 from chk.infrastructure.symbol_table import (
@@ -16,9 +16,14 @@ from chk.infrastructure.symbol_table import (
     EXPOSE_SCHEMA as EXP_SCHEMA,
     Variables,
     VariableTableManager,
-    replace_value,
+    replace_value_in_traversable,
+    ExposeManager,
+    ExposableVariables,
 )
-from chk.modules.validate.assertion_services import AssertionEntry
+from chk.modules.validate.assertion_services import (
+    AssertionEntry,
+    AssertionEntryListRunner,
+)
 
 VERSION_SCOPE = ["validation"]
 
@@ -127,7 +132,9 @@ class ValidationDocumentSupport:
             if key != ValidationConfigNode.VAR_NODE
         }
 
-        variables[ValidationConfigNode.VAR_NODE] = replace_value(data, tmp_variables)
+        variables[ValidationConfigNode.VAR_NODE] = replace_value_in_traversable(
+            data, tmp_variables
+        )
 
     @staticmethod
     def make_assertion_entry_list(assert_lst: list[dict]) -> list[AssertionEntry]:
@@ -191,8 +198,19 @@ def execute(
         validate_doc.asserts
     )
 
-    import var_dump
+    test_run_result = AssertionEntryListRunner.test_run(assert_list, variable_doc.data)
 
-    var_dump.var_dump(assert_list)
+    # output_data = ExposableVariables(
+    #     {
+    #         "_asserts_response": test_run_result.data,
+    #         "_data": variable_doc["_data"],
+    #     }
+    # )
+    #
+    # exposed_data = ExposeManager.get_exposed_replaced_data(
+    #     validate_doc,
+    #     {**variable_doc.data, **{"_asserts_response": test_run_result.data}},
+    # )
 
-    # handle passed in-file data in templated asserts, with variables
+    # cb({ctx.filepath_hash: output_data})
+    # ValidationDocumentSupport.display(exposed_data, exec_ctx)
