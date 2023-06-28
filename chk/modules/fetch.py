@@ -290,7 +290,7 @@ class HttpDocument(VersionedDocument):
     Http document entity
     """
 
-    request:  dict = dataclasses.field(default_factory=dict)
+    request: dict = dataclasses.field(default_factory=dict)
 
     @staticmethod
     def from_file_context(ctx: FileContext) -> "HttpDocument":
@@ -496,9 +496,6 @@ def execute(
     variable_doc = Variables()
     VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
     HttpDocumentSupport.process_request_template(http_doc, variable_doc)
-
-    # @TODO process out-file variable
-    # @TODO process context-passed variable
 
     response = HttpDocumentSupport.execute_request(http_doc)
     exposed_data = ExposeManager.get_exposed_replaced_data(
