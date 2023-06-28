@@ -233,7 +233,7 @@ def parse_args(argv_s: list[str], delimiter: str = "=") -> dict:
     return {}
 
 
-def formatter(message: object, cb: Callable = str, dump: bool = True) -> str | None:
+def formatter(message: object, cb: Callable = str, dump: bool = True) -> str:
     """Format message with given callback
 
     Args:
