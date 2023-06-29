@@ -39,8 +39,6 @@ class SingleTestRunResult(UserDict):
     )
 
     is_pass: bool
-    time_start: datetime
-    time_end: datetime
     message: str
     assert_used: AssertionEntry
 
@@ -72,10 +70,8 @@ class SingleTestRunResult(UserDict):
 
         return (
             "\n"
-            f"{'+' if self['is_pass'] else '-'} Test {self['assert_used'].assert_type} "
-            + f"[{'Pass' if self['is_pass'] else 'Fail'}] with message: {self['message']}\n"
-            + f"  Test started at: {str(self['time_start'])}, and "
-            + f"finished at: {str(self['time_end'])}\n"
+            f"{'+' if self['is_pass'] else '-'} {self['assert_used'].assert_type} "
+            + f"[{'passed' if self['is_pass'] else 'failed'}] with message: {self['message']}"
         )
 
 
@@ -179,7 +175,7 @@ class AssertionEntryListRunner:
         for assert_item in assert_list:
             asrt_fn = MAP_TYPE_TO_FN[assert_item.assert_type]
 
-            resp = SingleTestRunResult(time_start=datetime.now())
+            resp = SingleTestRunResult()
 
             if (
                 isinstance(assert_item.actual, str)
@@ -197,7 +193,6 @@ class AssertionEntryListRunner:
 
             resp["is_pass"] = is_pass
             resp["message"] = str(asrt_resp)
-            resp["time_end"] = datetime.now()
             resp["assert_used"] = assert_item
 
             results.append(resp)
