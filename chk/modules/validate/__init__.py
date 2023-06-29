@@ -155,6 +155,7 @@ class ValidationDocumentSupport:
                 AssertionEntry(
                     assert_type=_assert_type,
                     actual=_actual,
+                    actual_given=_actual,
                     type_of_actual=_actual.__class__.__name__,
                     expected=_expected,
                     type_of_expected=_expected.__class__.__name__,

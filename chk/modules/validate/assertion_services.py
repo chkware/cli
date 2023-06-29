@@ -20,6 +20,7 @@ class AssertionEntry(typing.NamedTuple):
     assert_type: str
     type_of_actual: str
     actual: typing.Any
+    actual_given: typing.Any
     type_of_expected: str
     expected: typing.Any
     msg_pass: str
