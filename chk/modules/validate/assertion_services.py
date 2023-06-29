@@ -70,9 +70,9 @@ class SingleTestRunResult(UserDict):
 
         return (
             "\n"
-            f"Test {self['assert_used'].assert_type} "
+            f"{'+' if self['is_pass'] else '-'} Test {self['assert_used'].assert_type} "
             + f"[{'Pass' if self['is_pass'] else 'Fail'}] with message: {self['message']}\n"
-            + f"Test started at: {str(self['time_start'])}, and "
+            + f"  Test started at: {str(self['time_start'])}, and "
             + f"finished at: {str(self['time_end'])}\n"
         )
 
