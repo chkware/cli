@@ -71,7 +71,7 @@ class SingleTestRunResult(UserDict):
         return (
             "\n"
             f"{'+' if self['is_pass'] else '-'} {self['assert_used'].assert_type} "
-            + f"[{'passed' if self['is_pass'] else 'failed'}] with message: {self['message']}"
+            + f"{'PASSED' if self['is_pass'] else 'FAILED'} with message: {self['message']}"
         )
 
 
@@ -135,7 +135,7 @@ class AllTestRunResult(UserDict):
             + f"Total tests: {self['count_all']}, "
             + f"Total tests failed: {self['count_fail']}\n"
         )
-        _display += f"Test run result(s):\n"
+        _display += "\n> Test run result(s):"
 
         for one_result in self["results"]:
             _display += one_result.as_fmt_str
