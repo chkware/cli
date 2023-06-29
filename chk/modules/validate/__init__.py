@@ -23,6 +23,7 @@ from chk.infrastructure.symbol_table import (
 from chk.modules.validate.assertion_services import (
     AssertionEntry,
     AssertionEntryListRunner,
+    AllTestRunResult,
 )
 
 VERSION_SCOPE = ["validation"]
@@ -164,6 +165,18 @@ class ValidationDocumentSupport:
             )
 
         return new_assertion_lst
+
+    @staticmethod
+    def display(expose_list: list, exec_ctx: ExecuteContext) -> None:
+        """Displays the response based on the command response format
+
+        Args:
+            expose_list: list
+            exec_ctx: ExecuteContext
+        """
+        for expose_item in expose_list:
+            if isinstance(expose_item, AllTestRunResult):
+                formatter(expose_item.as_fmt_str)
 
 
 def execute(
