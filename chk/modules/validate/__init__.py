@@ -4,6 +4,7 @@ Validate module
 
 import dataclasses
 import enum
+import json
 from collections import abc
 
 from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
@@ -175,9 +176,21 @@ class ValidationDocumentSupport:
             expose_list: list
             exec_ctx: ExecuteContext
         """
+
+        display_item_list: list[str] = []
+
         for expose_item in expose_list:
             if isinstance(expose_item, AllTestRunResult):
-                formatter(expose_item.as_fmt_str)
+                display_item_list.append(expose_item.as_fmt_str)
+            else:
+                display_item_list.append(json.dumps(expose_item))
+
+        formatter(
+            "\n---\n".join(display_item_list)
+            if len(display_item_list) > 1
+            else display_item_list.pop(),
+            dump=exec_ctx.options["dump"],
+        )
 
 
 def execute(
