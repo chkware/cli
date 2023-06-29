@@ -131,10 +131,7 @@ class AllTestRunResult(UserDict):
         """
 
         _display = (
-            "\n"
-            f"Test run id: {self['id']}\n"
-            + f"Test run started at: {str(self['time_start'])}, and "
-            + f"finished at: {str(self['time_end'])}\n"
+            f"Test run id: {self['id']}, time taken {self['time_end'] - self['time_start']}\n"
             + f"Total tests: {self['count_all']}, "
             + f"Total tests failed: {self['count_fail']}\n"
         )
