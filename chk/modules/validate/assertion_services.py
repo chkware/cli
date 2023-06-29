@@ -7,6 +7,7 @@ from collections import UserDict
 from datetime import datetime
 
 import chk.modules.validate.assertion_function as asrt_f
+from chk.infrastructure.symbol_table import linear_replace
 
 MAP_TYPE_TO_FN = {
     "AssertEquals": asrt_f.assert_equals,
@@ -178,9 +179,17 @@ class AssertionEntryListRunner:
             asrt_fn = MAP_TYPE_TO_FN[assert_item.assert_type]
 
             resp = SingleTestRunResult(time_start=datetime.now())
-            is_pass, asrt_resp = asrt_fn(
-                **{**assert_item._asdict(), **{"variables": variables}}
-            )
+
+            if (
+                isinstance(assert_item.actual, str)
+                and "{{" in assert_item.actual
+                and "}}" in assert_item.actual
+            ):
+                assert_item = assert_item._replace(
+                    actual=linear_replace(assert_item.actual_given, variables)
+                )
+
+            is_pass, asrt_resp = asrt_fn(**assert_item._asdict())
 
             if isinstance(asrt_resp, Exception):
                 test_run_result["count_fail"] += 1

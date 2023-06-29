@@ -11,22 +11,16 @@ from chk.infrastructure.symbol_table import linear_replace
 _AResult: TypeAlias = tuple[bool, Exception | str]
 
 
-def assert_equals(
-    actual: object, expected: object, variables: dict, **_: object
-) -> _AResult:
+def assert_equals(actual: object, expected: object, **_: object) -> _AResult:
     """Assert equals
 
     Args:
         actual: object
         expected: object
-        variables: dict
         **_: object ignores any other params
     Returns:
         _AResult result
     """
-
-    if isinstance(actual, str) and "{{" in actual and "}}" in actual:
-        actual = linear_replace(actual, variables)
 
     if actual != expected:
         return (
