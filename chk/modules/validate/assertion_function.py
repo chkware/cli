@@ -3,10 +3,6 @@ Assertion Functions mod
 """
 from typing import TypeAlias
 
-import var_dump
-
-from chk.infrastructure.symbol_table import linear_replace
-
 # assertion result type; internal use
 _AResult: TypeAlias = tuple[bool, Exception | str]
 
