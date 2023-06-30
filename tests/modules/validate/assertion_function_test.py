@@ -29,5 +29,26 @@ class TestAssertEqual:
         assert not is_success
         assert isinstance(response, AssertionError)
 
+
+class TestAssertNotEqual:
+    @staticmethod
+    def test_assert_equal_pass_with_scaler():
+        assert asrt.assert_not_equal(1, 2)[0]
+        assert asrt.assert_not_equal("abc", "bac")[0]
+        assert asrt.assert_not_equal(3.02, 3.0)[0]
+        assert asrt.assert_not_equal(True, "True")[0]
+        assert asrt.assert_not_equal(False, "False")[0]
+
+    @staticmethod
+    def test_assert_not_equal_pass_with_collect():
+        assert asrt.assert_not_equal([1], [2])[0]
+        assert asrt.assert_not_equal(["abc"], ["bac"])[0]
+        assert asrt.assert_not_equal({"a": 3.02}, {"a": 3.0})[0]
+        assert asrt.assert_not_equal({"a": 3.02, "b": "c"}, {"a": 3.02, "b": "d"})[0]
+
+    @staticmethod
+    def test_assert_not_equal_fails_with_non_equals():
+        is_success, response = asrt.assert_not_equal([1], [1])
+
         assert not is_success
         assert isinstance(response, AssertionError)
