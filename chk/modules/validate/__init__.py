@@ -243,3 +243,14 @@ def execute(
         {**variable_doc.data, **{"_asserts_response": test_run_result}},
     )
     ValidationDocumentSupport.display(exposed_data, exec_ctx)
+
+    cb(
+        {
+            ctx.filepath_hash: ExposableVariables(
+                {
+                    "_asserts_response": test_run_result.as_dict,
+                    "_data": variable_doc["_data"],
+                }
+            ).data
+        }
+    )
