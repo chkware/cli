@@ -11,7 +11,7 @@ from chk.infrastructure.symbol_table import linear_replace
 _AResult: TypeAlias = tuple[bool, Exception | str]
 
 
-def assert_equals(actual: object, expected: object, **_: object) -> _AResult:
+def assert_equal(actual: object, expected: object, **_: object) -> _AResult:
     """Assert equals
 
     Args:

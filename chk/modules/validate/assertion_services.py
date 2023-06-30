@@ -10,7 +10,7 @@ import chk.modules.validate.assertion_function as asrt_f
 from chk.infrastructure.symbol_table import linear_replace
 
 MAP_TYPE_TO_FN = {
-    "AssertEquals": asrt_f.assert_equals,
+    "AssertEqual": asrt_f.assert_equal,
 }
 
 
