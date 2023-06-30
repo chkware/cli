@@ -2,8 +2,9 @@
 Helper functions module
 """
 import ast
+import re
 from collections.abc import Callable
-from typing import Any
+from typing import Any, Optional
 
 import click
 
@@ -250,3 +251,106 @@ def formatter(message: object, cb: Callable = str, dump: bool = True) -> str:
         click.echo(printable)
 
     return printable
+
+
+class StrTemplate:
+    """
+    class to replace variables given in between <%, and %>.
+    Supports value from dictionary and list.
+    """
+
+    d_start = "<%"
+    d_end = "%>"
+
+    def __init__(self, templated_string: str = "") -> None:
+        """StrTemplate Constructor
+
+        Args:
+            templated_string: string to set, "" is default
+        """
+        if not isinstance(templated_string, str):
+            raise ValueError("Only string allowed in template.")
+
+        self.template = templated_string
+
+    def substitute(self, mapping: Optional[dict] = None, /, **keywords: dict) -> Any:
+        """Substitute values from mapping and keywords"""
+
+        if not mapping:
+            mapping = {}
+
+        if not isinstance(mapping, dict):
+            raise ValueError("Only mapping allowed in mapping.")
+
+        if not (
+            StrTemplate.d_start in self.template and StrTemplate.d_end in self.template
+        ):
+            return self.template
+
+        return self._replace(self.template, {**mapping, **keywords})
+
+    @staticmethod
+    def _replace(container: str, replace_with: dict) -> Any:
+        """replace values found in string with typed return
+
+        Args:
+            container: str
+            replace_with: dict
+        Returns:
+            object: object found in replace_with
+        """
+
+        if not isinstance(container, str):
+            return container
+
+        if len(replace_with) == 0:
+            return container
+
+        line_split = re.split(
+            r"("
+            + StrTemplate.d_start
+            + r"\s*[a-zA-Z0-9_.]+\s*"
+            + StrTemplate.d_end
+            + ")",
+            container,
+        )
+
+        if len(line_split) == 1 and container in line_split:
+            return container
+
+        line_strip = [item for item in line_split if item]
+
+        for i, item in enumerate(line_strip):
+            if StrTemplate.d_start in item and StrTemplate.d_end in item:
+                value = StrTemplate._get(replace_with, item.strip(" <>%"), None)
+
+                line_strip[i] = value or item
+
+        return (
+            "".join([str(li) for li in line_strip])
+            if len(line_strip) > 1
+            else line_strip.pop()
+        )
+
+    @staticmethod
+    def _get(var: dict | list, keymap: str, default: object = None) -> object:
+        """
+        Get a value of a dict|list by dot notation key
+        :param var: the dict|list we'll get value for
+        :param keymap: dot separated keys
+        :param default: None
+        :return:
+        """
+
+        data = var.copy()
+        indexes = keymap.split(".")
+
+        for index in indexes:
+            if isinstance(data, dict) and index in data:
+                data = data[index]
+            elif isinstance(data, list) and index.isnumeric():
+                data = data[int(index)]
+            else:
+                return default
+
+        return data
