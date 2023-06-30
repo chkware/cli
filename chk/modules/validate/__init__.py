@@ -25,6 +25,7 @@ from chk.modules.validate.assertion_services import (
     AssertionEntry,
     AssertionEntryListRunner,
     AllTestRunResult,
+    MAP_TYPE_TO_FN,
 )
 
 VERSION_SCOPE = ["validation"]
@@ -145,6 +146,9 @@ class ValidationDocumentSupport:
         for each_assert in assert_lst:
             if not (_assert_type := each_assert.get("type", None)):
                 raise RuntimeError("key: `type` not found in one of the asserts.")
+
+            if _assert_type not in MAP_TYPE_TO_FN:
+                raise RuntimeError(f"type: `{_assert_type}` not supported.")
 
             if not (_actual := each_assert.get("actual", None)):
                 raise RuntimeError("key: `actual` not found in one of the asserts.")
