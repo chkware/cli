@@ -177,20 +177,31 @@ class ValidationDocumentSupport:
             exec_ctx: ExecuteContext
         """
 
-        display_item_list: list[str] = []
+        display_item_list: list[object] = []
 
         for expose_item in expose_list:
             if isinstance(expose_item, AllTestRunResult):
-                display_item_list.append(expose_item.as_fmt_str)
+                if exec_ctx.options["format"]:
+                    display_item_list.append(expose_item.as_fmt_str)
+                else:
+                    display_item_list.append(expose_item.as_dict)
             else:
-                display_item_list.append(json.dumps(expose_item))
+                display_item_list.append(expose_item)
 
-        formatter(
-            "\n---\n".join(display_item_list)
-            if len(display_item_list) > 1
-            else display_item_list.pop(),
-            dump=exec_ctx.options["dump"],
-        )
+        if exec_ctx.options["format"]:
+            formatter(
+                "\n---\n".join([str(item) for item in display_item_list])
+                if len(display_item_list) > 1
+                else display_item_list.pop(),
+                dump=exec_ctx.options["dump"],
+            )
+        else:
+            formatter(
+                json.dumps(display_item_list)
+                if len(display_item_list) > 1
+                else json.dumps(display_item_list.pop()),
+                dump=exec_ctx.options["dump"],
+            )
 
 
 def execute(
@@ -227,17 +238,8 @@ def execute(
 
     test_run_result = AssertionEntryListRunner.test_run(assert_list, variable_doc.data)
 
-    # output_data = ExposableVariables(
-    #     {
-    #         "_asserts_response": test_run_result.data,
-    #         "_data": variable_doc["_data"],
-    #     }
-    # )
-    #
-    # exposed_data = ExposeManager.get_exposed_replaced_data(
-    #     validate_doc,
-    #     {**variable_doc.data, **{"_asserts_response": test_run_result.data}},
-    # )
-
-    # cb({ctx.filepath_hash: output_data})
-    # ValidationDocumentSupport.display(exposed_data, exec_ctx)
+    exposed_data = ExposeManager.get_exposed_replaced_data(
+        validate_doc,
+        {**variable_doc.data, **{"_asserts_response": test_run_result}},
+    )
+    ValidationDocumentSupport.display(exposed_data, exec_ctx)
