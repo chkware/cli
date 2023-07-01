@@ -1,7 +1,9 @@
 """
 exception messages
 """
-from typing import Any
+
+import dataclasses
+from typing import Any, Self, Optional
 from chk.infrastructure.translation import l10n
 
 messages = dict(
@@ -39,3 +41,11 @@ def err_message(key: str, repl: dict | None = None, extra: Any = None) -> str:
     msg += " : " + str(extra) if extra else ""
 
     return "error: " + msg
+
+
+@dataclasses.dataclass(slots=True)
+class ValidationError(AssertionError):
+    """Holder of custom error messages, error linked list"""
+
+    msg: str = ""
+    parent: Optional[Self] = None
