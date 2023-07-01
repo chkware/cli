@@ -50,7 +50,9 @@ def assert_not_equal(actual: object, expected: object, **_: object) -> _AResult:
         _AResult result
     """
 
-    if actual == expected:
+    is_success, _ = assert_equal(actual, expected)
+
+    if is_success:
         return (
             False,
             AssertionError(
@@ -68,29 +70,3 @@ def assert_not_equal(actual: object, expected: object, **_: object) -> _AResult:
             + f"expected `{expected.__class__.__name__}({expected})`"
         ),
     )
-
-
-# case_AssertEmpty
-# case_AssertFalse
-# case_AssertTrue
-# case_AssertIsInt
-# case_AssertIsString
-# case_AssertIsFloat
-# case_AssertIsBool
-# case_AssertIsMap
-# case_AssertIsList
-# case_AssertCount
-# case_AssertGreater
-# case_AssertGreaterOrEqual
-# case_AssertLess
-# case_AssertLessOrEqual
-# case_AssertListContains
-# case_AssertMapHasKey
-# case_AssertMapDoNotHasKey
-# case_AssertStrContains
-# case_AssertMapKeyCount
-# case_AssertMapHasKeys
-# case_AssertMapDoNotHasKeys
-# case_AssertMapExactKeys
-# case_AssertListHasIndex
-# case_AssertMapContains
