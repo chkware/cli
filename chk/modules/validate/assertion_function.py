@@ -1,13 +1,27 @@
 """
 Assertion Functions mod
 """
-from typing import TypeAlias
+
+from typing import TypeAlias, Union
+
+from chk.infrastructure.exception import ValidationError
 
 # assertion result type; internal use
-_AResult: TypeAlias = tuple[bool, Exception | str]
+_AResult: TypeAlias = Union[ValidationError | bool]
+
+_ExMsg = {
+    "equal": {
+        "pass": "actual `{0}({1})` is equal to expected `{2}({3})`",
+        "fail": "actual `{0}({1})` is not equal to expected `{2}({3})`",
+    },
+    "not_equal": {
+        "pass": "actual `{0}({1})` is equal to expected `{2}({3})`",
+        "fail": "actual `{0}({1})` is not equal to expected `{2}({3})`",
+    },
+}
 
 
-def assert_equal(actual: object, expected: object, **_: object) -> _AResult:
+def equal(actual: object, expected: object, **_: object) -> _AResult:
     """Assert equals
 
     Args:
@@ -19,27 +33,12 @@ def assert_equal(actual: object, expected: object, **_: object) -> _AResult:
     """
 
     if actual != expected:
-        return (
-            False,
-            AssertionError(
-                f"actual `{actual.__class__.__name__}({actual})`"
-                + " is not equal to "
-                + f"expected `{expected.__class__.__name__}({expected})`"
-            ),
-        )
+        return ValidationError("equal")
 
-    return (
-        True,
-        (
-            f"actual `{actual.__class__.__name__}({actual})`"
-            + " is equal to "
-            + f"expected `{expected.__class__.__name__}({expected})`"
-        ),
-    )
+    return True
 
 
-# case_AssertNotEqual
-def assert_not_equal(actual: object, expected: object, **_: object) -> _AResult:
+def not_equal(actual: object, expected: object, **_: object) -> _AResult:
     """Assert not equal
 
     Args:
@@ -50,23 +49,9 @@ def assert_not_equal(actual: object, expected: object, **_: object) -> _AResult:
         _AResult result
     """
 
-    is_success, _ = assert_equal(actual, expected)
+    resp = equal(actual, expected)
 
-    if is_success:
-        return (
-            False,
-            AssertionError(
-                f"actual `{actual.__class__.__name__}({actual})`"
-                + " is equal to "
-                + f"expected `{expected.__class__.__name__}({expected})`"
-            ),
-        )
+    if isinstance(resp, bool):
+        return ValidationError("not_equal")
 
-    return (
-        True,
-        (
-            f"actual `{actual.__class__.__name__}({actual})`"
-            + " is not equal to "
-            + f"expected `{expected.__class__.__name__}({expected})`"
-        ),
-    )
+    return True

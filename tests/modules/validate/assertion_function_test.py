@@ -8,47 +8,43 @@ import chk.modules.validate.assertion_function as asrt
 
 class TestAssertEqual:
     @staticmethod
-    def test_assert_equal_pass_with_scaler():
-        assert asrt.assert_equal(1, 1)[0]
-        assert asrt.assert_equal("abc", "abc")[0]
-        assert asrt.assert_equal(3.02, 3.02)[0]
-        assert asrt.assert_equal(True, True)[0]
-        assert asrt.assert_equal(False, False)[0]
+    def test_equal_pass_with_scaler():
+        assert asrt.equal(1, 1)
+        assert asrt.equal("abc", "abc")
+        assert asrt.equal(3.02, 3.02)
+        assert asrt.equal(True, True)
+        assert asrt.equal(False, False)
 
     @staticmethod
-    def test_assert_equal_pass_with_collect():
-        assert asrt.assert_equal([1], [1])[0]
-        assert asrt.assert_equal(["abc"], ["abc"])[0]
-        assert asrt.assert_equal({"a": 3.02}, {"a": 3.02})[0]
-        assert asrt.assert_equal({"a": 3.02, "b": "c"}, {"a": 3.02, "b": "c"})[0]
+    def test_equal_pass_with_collect():
+        assert asrt.equal([1], [1])
+        assert asrt.equal(["abc"], ["abc"])
+        assert asrt.equal({"a": 3.02}, {"a": 3.02})
+        assert asrt.equal({"a": 3.02, "b": "c"}, {"a": 3.02, "b": "c"})
 
     @staticmethod
-    def test_assert_equal_fails_with_non_equals():
-        is_success, response = asrt.assert_equal([1], [2])
-
-        assert not is_success
+    def test_equal_fails_with_non_equals():
+        response = asrt.equal([1], [2])
         assert isinstance(response, AssertionError)
 
 
 class TestAssertNotEqual:
     @staticmethod
-    def test_assert_equal_pass_with_scaler():
-        assert asrt.assert_not_equal(1, 2)[0]
-        assert asrt.assert_not_equal("abc", "bac")[0]
-        assert asrt.assert_not_equal(3.02, 3.0)[0]
-        assert asrt.assert_not_equal(True, "True")[0]
-        assert asrt.assert_not_equal(False, "False")[0]
+    def test_equal_pass_with_scaler():
+        assert asrt.not_equal(1, 2)
+        assert asrt.not_equal("abc", "bac")
+        assert asrt.not_equal(3.02, 3.0)
+        assert asrt.not_equal(True, "True")
+        assert asrt.not_equal(False, "False")
 
     @staticmethod
-    def test_assert_not_equal_pass_with_collect():
-        assert asrt.assert_not_equal([1], [2])[0]
-        assert asrt.assert_not_equal(["abc"], ["bac"])[0]
-        assert asrt.assert_not_equal({"a": 3.02}, {"a": 3.0})[0]
-        assert asrt.assert_not_equal({"a": 3.02, "b": "c"}, {"a": 3.02, "b": "d"})[0]
+    def test_not_equal_pass_with_collect():
+        assert asrt.not_equal([1], [2])
+        assert asrt.not_equal(["abc"], ["bac"])
+        assert asrt.not_equal({"a": 3.02}, {"a": 3.0})
+        assert asrt.not_equal({"a": 3.02, "b": "c"}, {"a": 3.02, "b": "d"})
 
     @staticmethod
-    def test_assert_not_equal_fails_with_non_equals():
-        is_success, response = asrt.assert_not_equal([1], [1])
-
-        assert not is_success
+    def test_not_equal_fails_with_non_equals():
+        response = asrt.not_equal([1], [1])
         assert isinstance(response, AssertionError)
