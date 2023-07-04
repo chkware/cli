@@ -172,7 +172,8 @@ class AssertionEntryListRunner:
                 and "}}" in assert_item.actual
             ):
                 assert_item = assert_item._replace(
-                    actual=linear_replace(assert_item.actual_given, variables)
+                    actual=linear_replace(assert_item.actual_given, variables),
+                    expected=linear_replace(assert_item.expected, variables),
                 )
 
             asrt_resp = asrt_fn(**assert_item._asdict())
