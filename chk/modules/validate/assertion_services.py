@@ -7,6 +7,7 @@ from collections import UserDict
 from datetime import datetime
 
 import chk.modules.validate.assertion_function as asrt_f
+from chk.infrastructure.exception import ValidationError
 from chk.infrastructure.symbol_table import linear_replace
 
 MAP_TYPE_TO_FN = {
@@ -184,14 +185,14 @@ class AssertionEntryListRunner:
                     actual=linear_replace(assert_item.actual_given, variables)
                 )
 
-            is_pass, asrt_resp = asrt_fn(**assert_item._asdict())
+            asrt_resp = asrt_fn(**assert_item._asdict())
 
-            if isinstance(asrt_resp, Exception):
+            if isinstance(asrt_resp, ValidationError):
                 test_run_result["count_fail"] += 1
-
-            resp["is_pass"] = is_pass
-            resp["message"] = str(asrt_resp)
-            resp["assert_used"] = assert_item
+                resp["message"] = str(asrt_resp)
+            else:
+                resp["is_pass"] = True
+                resp["message"] = str(asrt_resp)
 
             results.append(resp)
 
