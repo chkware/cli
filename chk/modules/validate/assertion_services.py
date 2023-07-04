@@ -35,9 +35,8 @@ class SingleTestRunResult(UserDict):
 
     __slots__ = (
         "is_pass",
-        "time_start",
-        "time_end",
         "message",
+        "assert_used",
     )
 
     is_pass: bool
@@ -48,19 +47,10 @@ class SingleTestRunResult(UserDict):
     def as_dict(self) -> dict:
         """Convert SingleTestRunResult to a dict"""
 
-        _as_dict: dict = {
-            key: value for key, value in self.items() if not key.startswith("time_")
-        }
-
-        _as_dict |= {
-            key: value.timestamp()
+        return {
+            key: value._asdict() if key == "assert_used" else value
             for key, value in self.items()
-            if key.startswith("time_")
         }
-
-        _as_dict["assert_used"] = self["assert_used"]._asdict()
-
-        return _as_dict
 
     @property
     def as_fmt_str(self) -> str:
@@ -174,7 +164,7 @@ class AssertionEntryListRunner:
         for assert_item in assert_list:
             asrt_fn = MAP_TYPE_TO_FN[assert_item.assert_type]
 
-            resp = SingleTestRunResult()
+            resp = SingleTestRunResult(assert_used=assert_item)
 
             if (
                 isinstance(assert_item.actual, str)
