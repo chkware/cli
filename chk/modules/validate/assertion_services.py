@@ -178,12 +178,31 @@ class AssertionEntryListRunner:
 
             asrt_resp = asrt_fn(**assert_item._asdict())
 
+            actual = assert_item._asdict().get("actual")
+            expected = assert_item._asdict().get("expected")
+
             if isinstance(asrt_resp, ValidationError):
                 test_run_result["count_fail"] += 1
-                resp["message"] = str(asrt_resp)
+
+                resp["is_pass"] = False
+                resp["message"] = asrt_f.get_fail_assert_msg_for(
+                    asrt_fn.__name__
+                ).format(
+                    actual.__class__.__name__,
+                    actual,
+                    expected.__class__.__name__,
+                    expected,
+                )
             else:
                 resp["is_pass"] = True
-                resp["message"] = str(asrt_resp)
+                resp["message"] = asrt_f.get_pass_assert_msg_for(
+                    asrt_fn.__name__
+                ).format(
+                    actual.__class__.__name__,
+                    actual,
+                    expected.__class__.__name__,
+                    expected,
+                )
 
             results.append(resp)
 
