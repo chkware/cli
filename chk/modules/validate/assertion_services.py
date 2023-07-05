@@ -249,8 +249,3 @@ class AssertionEntryListRunner:
         test_run_result["results"] = results
 
         return test_run_result
-
-
-# @TODO:
-# - add more use-case oriented named such as laravel validation
-# - adjust existing asserts name; aligned name with new validator func
