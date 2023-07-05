@@ -20,14 +20,11 @@ class AssertionEntry(typing.NamedTuple):
     """AssertionEntry holds one assertion operation"""
 
     assert_type: str
-    type_of_actual: str
     actual: typing.Any
     actual_given: typing.Any
-    type_of_expected: str
     expected: typing.Any
     msg_pass: str
     msg_fail: str
-    assert_id: str = ""
 
 
 class SingleTestRunResult(UserDict):
