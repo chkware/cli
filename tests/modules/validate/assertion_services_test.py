@@ -14,7 +14,7 @@ from chk.modules.validate.assertion_services import (
 
 
 @pytest.fixture
-def setup_validation_document_both_pass_assert():
+def setup_assertion_entry_list_pass_assert():
     ctx = FileContext(
         document={
             "version": "default:validation:0.7.2",
@@ -23,11 +23,6 @@ def setup_validation_document_both_pass_assert():
                     "type": "Equal",
                     "actual": "{{ _data.roll }}",
                     "expected": 39,
-                },
-                {
-                    "type": "Equal",
-                    "actual": "{{ _data.year }}",
-                    "expected": 2023,
                 },
             ],
             "data": {
@@ -40,42 +35,9 @@ def setup_validation_document_both_pass_assert():
         }
     )
 
-    return ValidationDocument.from_file_context(ctx)
+    doc = ValidationDocument.from_file_context(ctx)
 
-
-@pytest.fixture
-def setup_validation_document_one_fail_assert():
-    ctx = FileContext(
-        document={
-            "version": "default:validation:0.7.2",
-            "asserts": [
-                {
-                    "type": "Equal",
-                    "actual": "{{ _data.roll }}",
-                    "expected": 39,
-                },
-                {
-                    "type": "Equal",
-                    "actual": "{{ _data.year }}",
-                    "expected": 2023,
-                },
-            ],
-            "data": {
-                "name": "Sadaqat",
-                "roll": 39,
-                "class": "Nursery",
-                "year": 2023,
-            },
-            "expose": ["$_asserts_response"],
-        }
-    )
-
-    return ValidationDocument.from_file_context(ctx)
-
-
-@pytest.fixture
-def setup_empty_execution_ctx():
-    return ExecuteContext(
+    exec_ctx = ExecuteContext(
         options={
             "dump": True,
             "format": False,
@@ -83,22 +45,29 @@ def setup_empty_execution_ctx():
         arguments={},
     )
 
+    variables = Variables()
+    VariableTableManager.handle(variables, doc, exec_ctx)
+    ValidationDocumentSupport.set_data_template(doc, variables, exec_ctx)
+    ValidationDocumentSupport.process_data_template(variables)
+
+    assert_list = ValidationDocumentSupport.make_assertion_entry_list(doc.asserts)
+
+    return assert_list, variables
+
 
 class TestAssertionEntryListRunner:
     @staticmethod
-    def test_test_run_pass(
-        setup_validation_document_both_pass_assert, setup_empty_execution_ctx
-    ):
-        exec_ctx = setup_empty_execution_ctx
-        doc = setup_validation_document_both_pass_assert
-
-        variables = Variables()
-        VariableTableManager.handle(variables, doc, exec_ctx)
-        ValidationDocumentSupport.set_data_template(doc, variables, exec_ctx)
-        ValidationDocumentSupport.process_data_template(variables)
-
-        assert_list = ValidationDocumentSupport.make_assertion_entry_list(doc.asserts)
-
+    def test_test_run_pass(setup_assertion_entry_list_pass_assert):
+        assert_list, variables = setup_assertion_entry_list_pass_assert
         test_run_result = AssertionEntryListRunner.test_run(assert_list, variables.data)
 
         assert isinstance(test_run_result, AllTestRunResult)
+
+    @staticmethod
+    def test__replace_assertion_values_pass(setup_assertion_entry_list_pass_assert):
+        assert_list, variables = setup_assertion_entry_list_pass_assert
+        assert_item = AssertionEntryListRunner._replace_assertion_values(
+            assert_list[0], variables.data
+        )
+
+        assert assert_item.actual == assert_item.expected
