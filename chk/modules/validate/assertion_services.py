@@ -58,29 +58,10 @@ class SingleTestRunResult(UserDict):
 
 
 class AllTestRunResult(UserDict):
-    """Result of a test run"""
+    """Result of a test run
 
-    __slots__ = (
-        "id",
-        "time_start",
-        "time_end",
-        "count_all",
-        "results",
-        "count_fail",
-    )
-
-    id: str
-    time_start: datetime
-    time_end: datetime
-    count_all: int
-    results: list[SingleTestRunResult]
-    count_fail: int
-
-    @property
-    def is_all_pass(self) -> bool:
-        """Have all assertion passed for this test run"""
-
-        return self.count_fail == 0
+    keys: id, time_start, time_end, count_all, results, count_fail
+    """
 
     @property
     def as_dict(self) -> dict:
