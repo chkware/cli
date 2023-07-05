@@ -4,6 +4,7 @@ Test assertion_services
 """
 import pytest
 
+from chk.infrastructure.exception import ValidationError
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
 from chk.infrastructure.symbol_table import Variables, VariableTableManager
 from chk.modules.validate import ValidationDocument, ValidationDocumentSupport
@@ -71,3 +72,10 @@ class TestAssertionEntryListRunner:
         )
 
         assert assert_item.actual == assert_item.expected
+
+    @staticmethod
+    def test__call_assertion_method_pass(setup_assertion_entry_list_pass_assert):
+        assert_list, variables = setup_assertion_entry_list_pass_assert
+        assert_resp = AssertionEntryListRunner._call_assertion_method(assert_list[0])
+
+        assert isinstance(assert_resp, ValidationError)

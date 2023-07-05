@@ -139,6 +139,73 @@ class AssertionEntryListRunner:
     """AssertionAntiquary is service class that run assertion"""
 
     @staticmethod
+    def _replace_assertion_values(
+        assert_item: AssertionEntry, variable_d: dict
+    ) -> AssertionEntry:
+        """Replace value for actual and expected data
+
+        Args:
+            assert_item: AssertionEntry
+            variable_d: dict
+        Returns:
+            AssertionEntry
+        """
+
+        if (
+            isinstance(assert_item.actual, str)
+            and "{{" in assert_item.actual
+            and "}}" in assert_item.actual
+        ):
+            return assert_item._replace(
+                actual=linear_replace(assert_item.actual_given, variable_d),
+                expected=linear_replace(assert_item.expected, variable_d),
+            )
+
+        return assert_item
+
+    @staticmethod
+    def _prepare_test_run_result(
+        resp: SingleTestRunResult,
+        assert_item: AssertionEntry,
+        asrt_resp: typing.Union[ValidationError | bool],
+    ) -> None:
+        asrt_fn_name = MAP_TYPE_TO_FN[assert_item.assert_type].__name__
+        actual = assert_item._asdict().get("actual")
+        expected = assert_item._asdict().get("expected")
+
+        if isinstance(asrt_resp, ValidationError):
+            resp["is_pass"] = False
+            resp["message"] = asrt_f.get_fail_assert_msg_for(asrt_fn_name).format(
+                actual.__class__.__name__,
+                actual,
+                expected.__class__.__name__,
+                expected,
+            )
+        else:
+            resp["is_pass"] = True
+            resp["message"] = asrt_f.get_pass_assert_msg_for(asrt_fn_name).format(
+                actual.__class__.__name__,
+                actual,
+                expected.__class__.__name__,
+                expected,
+            )
+
+    @staticmethod
+    def _call_assertion_method(
+        assert_item: AssertionEntry,
+    ) -> typing.Union[ValidationError | bool]:
+        """Call assertion method
+
+        Args:
+            assert_item: AssertionEntry
+        Returns:
+            Union[ValidationError | bool]
+        """
+
+        asrt_fn = MAP_TYPE_TO_FN[assert_item.assert_type]
+        return asrt_fn(**assert_item._asdict())
+
+    @staticmethod
     def test_run(
         assert_list: list[AssertionEntry], variables: dict
     ) -> AllTestRunResult:
@@ -162,47 +229,19 @@ class AssertionEntryListRunner:
         results: list[SingleTestRunResult] = []
 
         for assert_item in assert_list:
-            asrt_fn = MAP_TYPE_TO_FN[assert_item.assert_type]
+            assert_item = AssertionEntryListRunner._replace_assertion_values(
+                assert_item, variables
+            )
 
             resp = SingleTestRunResult(assert_used=assert_item)
+            asrt_resp = AssertionEntryListRunner._call_assertion_method(assert_item)
 
-            if (
-                isinstance(assert_item.actual, str)
-                and "{{" in assert_item.actual
-                and "}}" in assert_item.actual
-            ):
-                assert_item = assert_item._replace(
-                    actual=linear_replace(assert_item.actual_given, variables),
-                    expected=linear_replace(assert_item.expected, variables),
-                )
+            AssertionEntryListRunner._prepare_test_run_result(
+                resp, assert_item, asrt_resp
+            )
 
-            asrt_resp = asrt_fn(**assert_item._asdict())
-
-            actual = assert_item._asdict().get("actual")
-            expected = assert_item._asdict().get("expected")
-
-            if isinstance(asrt_resp, ValidationError):
+            if resp["is_pass"] is False:
                 test_run_result["count_fail"] += 1
-
-                resp["is_pass"] = False
-                resp["message"] = asrt_f.get_fail_assert_msg_for(
-                    asrt_fn.__name__
-                ).format(
-                    actual.__class__.__name__,
-                    actual,
-                    expected.__class__.__name__,
-                    expected,
-                )
-            else:
-                resp["is_pass"] = True
-                resp["message"] = asrt_f.get_pass_assert_msg_for(
-                    asrt_fn.__name__
-                ).format(
-                    actual.__class__.__name__,
-                    actual,
-                    expected.__class__.__name__,
-                    expected,
-                )
 
             results.append(resp)
 
