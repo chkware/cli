@@ -99,16 +99,44 @@ class TestAssertionEntryListRunner:
         assert resp["message"]
 
 
+@pytest.fixture
+def setup_new_single_test_run_result():
+    s = SingleTestRunResult()
+
+    s["is_pass"] = True
+    s["message"] = "Ok"
+    s["assert_used"] = AssertionEntry(
+        assert_type="Empty",
+        actual="39",
+        actual_given="{{ _data.roll }}",
+        expected=39,
+        msg_pass="",
+        msg_fail="",
+    )
+
+    return s
+
+
 class TestSingleTestRunResult:
     @staticmethod
-    def test_create():
+    def test_create(setup_new_single_test_run_result):
         s = SingleTestRunResult()
-
         assert len(s) == 0
 
-        s["is_pass"] = True
-        s["message"] = ""
-        s["assert_used"] = object()
+        s = setup_new_single_test_run_result
+        assert len(s) == 3
+
+    @staticmethod
+    def test_as_dict(setup_new_single_test_run_result):
+        s = setup_new_single_test_run_result
+        assert isinstance(s.as_dict, dict)
+
+    @staticmethod
+    def test_as_fmt_str(setup_new_single_test_run_result):
+        s = setup_new_single_test_run_result
+
+        assert isinstance(s.as_fmt_str, str)
+        assert s.as_fmt_str == "\n+ Empty PASSED with message: Ok"
 
         assert len(s) == 3
 
