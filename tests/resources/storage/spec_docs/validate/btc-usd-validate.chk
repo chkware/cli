@@ -2,7 +2,7 @@
 version: default:validation:0.7.2
 
 asserts:
-  - {type: AssertEquals, actual: $_data.code, expected: 200, silent: true}
+  - {type: Equals, actual: $_data.code, expected: 200, silent: true}
 
 expose:
   - $_asserts_response

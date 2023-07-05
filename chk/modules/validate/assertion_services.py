@@ -7,10 +7,12 @@ from collections import UserDict
 from datetime import datetime
 
 import chk.modules.validate.assertion_function as asrt_f
+from chk.infrastructure.exception import ValidationError
 from chk.infrastructure.symbol_table import linear_replace
 
 MAP_TYPE_TO_FN = {
-    "AssertEquals": asrt_f.assert_equals,
+    "Equal": asrt_f.equal,
+    "NotEqual": asrt_f.not_equal,
 }
 
 
@@ -18,47 +20,27 @@ class AssertionEntry(typing.NamedTuple):
     """AssertionEntry holds one assertion operation"""
 
     assert_type: str
-    type_of_actual: str
     actual: typing.Any
     actual_given: typing.Any
-    type_of_expected: str
     expected: typing.Any
     msg_pass: str
     msg_fail: str
-    assert_id: str = ""
 
 
 class SingleTestRunResult(UserDict):
-    """Result of an assertion run"""
+    """Result of an assertion run
 
-    __slots__ = (
-        "is_pass",
-        "time_start",
-        "time_end",
-        "message",
-    )
-
-    is_pass: bool
-    message: str
-    assert_used: AssertionEntry
+    keys: is_pass, message, assert_used
+    """
 
     @property
     def as_dict(self) -> dict:
         """Convert SingleTestRunResult to a dict"""
 
-        _as_dict: dict = {
-            key: value for key, value in self.items() if not key.startswith("time_")
-        }
-
-        _as_dict |= {
-            key: value.timestamp()
+        return {
+            key: value._asdict() if key == "assert_used" else value
             for key, value in self.items()
-            if key.startswith("time_")
         }
-
-        _as_dict["assert_used"] = self["assert_used"]._asdict()
-
-        return _as_dict
 
     @property
     def as_fmt_str(self) -> str:
@@ -76,29 +58,10 @@ class SingleTestRunResult(UserDict):
 
 
 class AllTestRunResult(UserDict):
-    """Result of a test run"""
+    """Result of a test run
 
-    __slots__ = (
-        "id",
-        "time_start",
-        "time_end",
-        "count_all",
-        "results",
-        "count_fail",
-    )
-
-    id: str
-    time_start: datetime
-    time_end: datetime
-    count_all: int
-    results: list[SingleTestRunResult]
-    count_fail: int
-
-    @property
-    def is_all_pass(self) -> bool:
-        """Have all assertion passed for this test run"""
-
-        return self.count_fail == 0
+    keys: id, time_start, time_end, count_all, results, count_fail
+    """
 
     @property
     def as_dict(self) -> dict:
@@ -147,6 +110,73 @@ class AssertionEntryListRunner:
     """AssertionAntiquary is service class that run assertion"""
 
     @staticmethod
+    def _replace_assertion_values(
+        assert_item: AssertionEntry, variable_d: dict
+    ) -> AssertionEntry:
+        """Replace value for actual and expected data
+
+        Args:
+            assert_item: AssertionEntry
+            variable_d: dict
+        Returns:
+            AssertionEntry
+        """
+
+        if (
+            isinstance(assert_item.actual, str)
+            and "{{" in assert_item.actual
+            and "}}" in assert_item.actual
+        ):
+            return assert_item._replace(
+                actual=linear_replace(assert_item.actual_given, variable_d),
+                expected=linear_replace(assert_item.expected, variable_d),
+            )
+
+        return assert_item
+
+    @staticmethod
+    def _prepare_test_run_result(
+        resp: SingleTestRunResult,
+        assert_item: AssertionEntry,
+        asrt_resp: typing.Union[ValidationError | bool],
+    ) -> None:
+        asrt_fn_name = MAP_TYPE_TO_FN[assert_item.assert_type].__name__
+        actual = assert_item._asdict().get("actual")
+        expected = assert_item._asdict().get("expected")
+
+        if isinstance(asrt_resp, ValidationError):
+            resp["is_pass"] = False
+            resp["message"] = asrt_f.get_fail_assert_msg_for(asrt_fn_name).format(
+                actual.__class__.__name__,
+                actual,
+                expected.__class__.__name__,
+                expected,
+            )
+        else:
+            resp["is_pass"] = True
+            resp["message"] = asrt_f.get_pass_assert_msg_for(asrt_fn_name).format(
+                actual.__class__.__name__,
+                actual,
+                expected.__class__.__name__,
+                expected,
+            )
+
+    @staticmethod
+    def _call_assertion_method(
+        assert_item: AssertionEntry,
+    ) -> typing.Union[ValidationError | bool]:
+        """Call assertion method
+
+        Args:
+            assert_item: AssertionEntry
+        Returns:
+            Union[ValidationError | bool]
+        """
+
+        asrt_fn = MAP_TYPE_TO_FN[assert_item.assert_type]
+        return asrt_fn(**assert_item._asdict())
+
+    @staticmethod
     def test_run(
         assert_list: list[AssertionEntry], variables: dict
     ) -> AllTestRunResult:
@@ -170,27 +200,19 @@ class AssertionEntryListRunner:
         results: list[SingleTestRunResult] = []
 
         for assert_item in assert_list:
-            asrt_fn = MAP_TYPE_TO_FN[assert_item.assert_type]
+            assert_item = AssertionEntryListRunner._replace_assertion_values(
+                assert_item, variables
+            )
 
-            resp = SingleTestRunResult()
+            resp = SingleTestRunResult(assert_used=assert_item)
+            asrt_resp = AssertionEntryListRunner._call_assertion_method(assert_item)
 
-            if (
-                isinstance(assert_item.actual, str)
-                and "{{" in assert_item.actual
-                and "}}" in assert_item.actual
-            ):
-                assert_item = assert_item._replace(
-                    actual=linear_replace(assert_item.actual_given, variables)
-                )
+            AssertionEntryListRunner._prepare_test_run_result(
+                resp, assert_item, asrt_resp
+            )
 
-            is_pass, asrt_resp = asrt_fn(**assert_item._asdict())
-
-            if isinstance(asrt_resp, Exception):
+            if resp["is_pass"] is False:
                 test_run_result["count_fail"] += 1
-
-            resp["is_pass"] = is_pass
-            resp["message"] = str(asrt_resp)
-            resp["assert_used"] = assert_item
 
             results.append(resp)
 
@@ -198,8 +220,3 @@ class AssertionEntryListRunner:
         test_run_result["results"] = results
 
         return test_run_result
-
-
-# @TODO:
-# - add more use-case oriented named such as laravel validation
-# - adjust existing asserts name; aligned name with new validator func
