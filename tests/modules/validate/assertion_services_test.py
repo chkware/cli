@@ -11,6 +11,7 @@ from chk.modules.validate import ValidationDocument, ValidationDocumentSupport
 from chk.modules.validate.assertion_services import (
     AssertionEntryListRunner,
     AllTestRunResult,
+    SingleTestRunResult,
 )
 
 
@@ -75,7 +76,22 @@ class TestAssertionEntryListRunner:
 
     @staticmethod
     def test__call_assertion_method_pass(setup_assertion_entry_list_pass_assert):
-        assert_list, variables = setup_assertion_entry_list_pass_assert
+        assert_list, _ = setup_assertion_entry_list_pass_assert
         assert_resp = AssertionEntryListRunner._call_assertion_method(assert_list[0])
 
         assert isinstance(assert_resp, ValidationError)
+
+    @staticmethod
+    def test__prepare_test_run_result(setup_assertion_entry_list_pass_assert):
+        assert_list, _ = setup_assertion_entry_list_pass_assert
+        assert_resp = AssertionEntryListRunner._call_assertion_method(assert_list[0])
+        assert_item = assert_list[0]
+
+        resp = SingleTestRunResult(assert_used=assert_item)
+        AssertionEntryListRunner._prepare_test_run_result(
+            resp, assert_item, assert_resp
+        )
+
+        assert resp["assert_used"] == assert_item
+        assert not resp["is_pass"]
+        assert resp["message"]
