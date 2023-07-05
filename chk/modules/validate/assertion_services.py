@@ -28,17 +28,10 @@ class AssertionEntry(typing.NamedTuple):
 
 
 class SingleTestRunResult(UserDict):
-    """Result of an assertion run"""
+    """Result of an assertion run
 
-    __slots__ = (
-        "is_pass",
-        "message",
-        "assert_used",
-    )
-
-    is_pass: bool
-    message: str
-    assert_used: AssertionEntry
+    keys: is_pass, message, assert_used
+    """
 
     @property
     def as_dict(self) -> dict:

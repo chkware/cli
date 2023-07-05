@@ -3,6 +3,7 @@
 Test assertion_services
 """
 import pytest
+import var_dump
 
 from chk.infrastructure.exception import ValidationError
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
@@ -12,6 +13,7 @@ from chk.modules.validate.assertion_services import (
     AssertionEntryListRunner,
     AllTestRunResult,
     SingleTestRunResult,
+    AssertionEntry,
 )
 
 
@@ -95,3 +97,52 @@ class TestAssertionEntryListRunner:
         assert resp["assert_used"] == assert_item
         assert not resp["is_pass"]
         assert resp["message"]
+
+
+class TestSingleTestRunResult:
+    @staticmethod
+    def test_create():
+        s = SingleTestRunResult()
+
+        assert len(s) == 0
+
+        s["is_pass"] = True
+        s["message"] = ""
+        s["assert_used"] = object()
+
+        assert len(s) == 3
+
+    @staticmethod
+    def test_as_dict():
+        s = SingleTestRunResult()
+
+        s["is_pass"] = True
+        s["message"] = ""
+        s["assert_used"] = AssertionEntry(
+            assert_type="Empty",
+            actual="39",
+            actual_given="{{ _data.roll }}",
+            expected=39,
+            msg_pass="",
+            msg_fail="",
+        )
+
+        assert isinstance(s.as_dict, dict)
+
+    @staticmethod
+    def test_as_fmt_str():
+        s = SingleTestRunResult()
+
+        s["is_pass"] = True
+        s["message"] = "Ok"
+        s["assert_used"] = AssertionEntry(
+            assert_type="Empty",
+            actual="39",
+            actual_given="{{ _data.roll }}",
+            expected=39,
+            msg_pass="",
+            msg_fail="",
+        )
+
+        assert isinstance(s.as_fmt_str, str)
+        assert s.as_fmt_str == "\n+ Empty PASSED with message: Ok"
