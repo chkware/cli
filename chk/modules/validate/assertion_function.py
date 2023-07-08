@@ -103,3 +103,17 @@ def declined(actual: object, **_: object) -> _AResult:
         return ValueError("declined_not_allowed")
 
     return actual in declined_values
+
+
+def empty(actual: object, **_: object) -> _AResult:
+    """Assert empty
+
+    Args:
+        actual: object
+        **_: object ignores any other params
+    Returns:
+        _AResult result
+    """
+
+    return not bool(actual)
+

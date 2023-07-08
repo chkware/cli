@@ -118,3 +118,24 @@ class TestDeclined:
     @staticmethod
     def test_fail_with_exception_other_values():
         assert isinstance(asrt.declined("Nein"), ValueError)
+
+
+class TestEmpty:
+    @staticmethod
+    def test_pass_with_allowed_values():
+        assert asrt.empty("")
+        assert asrt.empty(None)
+        assert asrt.empty(False)
+        assert asrt.empty(0)
+        assert asrt.empty([])
+        assert asrt.empty({})
+        assert asrt.empty(())
+
+    @staticmethod
+    def test_pass_with_not_allowed_values():
+        assert not asrt.empty("YES")
+        assert not asrt.empty(True)
+        assert not asrt.empty(1)
+        assert not asrt.empty([1])
+        assert not asrt.empty({"a": 1})
+        assert not asrt.empty((2, 3))
