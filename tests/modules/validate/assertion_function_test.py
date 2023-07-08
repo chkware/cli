@@ -139,3 +139,24 @@ class TestEmpty:
         assert not asrt.empty([1])
         assert not asrt.empty({"a": 1})
         assert not asrt.empty((2, 3))
+
+
+class TestNotEmpty:
+    @staticmethod
+    def test_pass_with_allowed_values():
+        assert asrt.not_empty("YES")
+        assert asrt.not_empty(True)
+        assert asrt.not_empty(1)
+        assert asrt.not_empty([1])
+        assert asrt.not_empty({"a": 1})
+        assert asrt.not_empty((2, 3))
+
+    @staticmethod
+    def test_pass_with_not_allowed_values():
+        assert not asrt.not_empty("")
+        assert not asrt.not_empty(None)
+        assert not asrt.not_empty(False)
+        assert not asrt.not_empty(0)
+        assert not asrt.not_empty([])
+        assert not asrt.not_empty({})
+        assert not asrt.not_empty(())

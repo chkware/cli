@@ -117,3 +117,15 @@ def empty(actual: object, **_: object) -> _AResult:
 
     return not bool(actual)
 
+
+def not_empty(actual: object, **_: object) -> _AResult:
+    """Assert not empty
+
+    Args:
+        actual: object
+        **_: object ignores any other params
+    Returns:
+        _AResult result
+    """
+
+    return bool(actual)
