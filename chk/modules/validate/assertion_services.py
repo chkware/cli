@@ -1,12 +1,17 @@
 """
 Assertion services
 """
+
 import typing
 import uuid
 from collections import UserDict
 from datetime import datetime
 
 import chk.modules.validate.assertion_function as asrt_f
+from chk.modules.validate.assertion_message import (
+    get_fail_assert_msg_for,
+    get_pass_assert_msg_for,
+)
 from chk.infrastructure.symbol_table import linear_replace
 
 MAP_TYPE_TO_FN = {
@@ -137,7 +142,7 @@ class AssertionEntryListRunner:
     def _prepare_test_run_result(
         resp: SingleTestRunResult,
         assert_item: AssertionEntry,
-        asrt_resp: typing.Union[ValueError | bool],
+        asrt_resp: ValueError | bool,
     ) -> None:
         asrt_fn_name = MAP_TYPE_TO_FN[assert_item.assert_type].__name__
         actual = assert_item._asdict().get("actual")
@@ -146,7 +151,7 @@ class AssertionEntryListRunner:
         if isinstance(asrt_resp, ValueError):
             resp["is_pass"] = False
             asrt_fn_name = str(asrt_resp)
-            resp["message"] = asrt_f.get_fail_assert_msg_for(asrt_fn_name).format(
+            resp["message"] = get_fail_assert_msg_for(asrt_fn_name).format(
                 actual.__class__.__name__,
                 actual,
                 expected.__class__.__name__,
@@ -156,9 +161,9 @@ class AssertionEntryListRunner:
             resp["is_pass"] = asrt_resp
 
             message = (
-                asrt_f.get_pass_assert_msg_for(asrt_fn_name)
+                get_pass_assert_msg_for(asrt_fn_name)
                 if asrt_resp
-                else asrt_f.get_fail_assert_msg_for(asrt_fn_name)
+                else get_fail_assert_msg_for(asrt_fn_name)
             )
             resp["message"] = message.format(
                 actual.__class__.__name__,
@@ -170,13 +175,13 @@ class AssertionEntryListRunner:
     @staticmethod
     def _call_assertion_method(
         assert_item: AssertionEntry,
-    ) -> typing.Union[ValueError | bool]:
+    ) -> ValueError | bool:
         """Call assertion method
 
         Args:
             assert_item: AssertionEntry
         Returns:
-            Union[ValueError | bool]
+            ValueError | bool
         """
 
         asrt_fn = MAP_TYPE_TO_FN[assert_item.assert_type]
