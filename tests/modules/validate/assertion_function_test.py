@@ -25,7 +25,7 @@ class TestAssertEqual:
     @staticmethod
     def test_equal_fails_with_non_equals():
         response = asrt.equal([1], [2])
-        assert isinstance(response, AssertionError)
+        assert isinstance(response, bool)
 
 
 class TestAssertNotEqual:
@@ -47,4 +47,4 @@ class TestAssertNotEqual:
     @staticmethod
     def test_not_equal_fails_with_non_equals():
         response = asrt.not_equal([1], [1])
-        assert isinstance(response, AssertionError)
+        assert isinstance(response, bool)

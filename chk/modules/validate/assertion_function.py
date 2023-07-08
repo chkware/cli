@@ -3,10 +3,8 @@ Assertion Functions mod
 """
 from typing import TypeAlias, Union
 
-from chk.infrastructure.exception import ValidationError
-
 # assertion result type; internal use
-_AResult: TypeAlias = Union[ValidationError | bool]
+_AResult: TypeAlias = Union[ValueError | bool]
 
 _AMessages = {
     "equal": {
@@ -45,10 +43,7 @@ def equal(actual: object, expected: object, **_: object) -> _AResult:
         _AResult result
     """
 
-    if actual != expected:
-        return ValidationError("equal")
-
-    return True
+    return actual == expected
 
 
 def not_equal(actual: object, expected: object, **_: object) -> _AResult:
@@ -62,9 +57,4 @@ def not_equal(actual: object, expected: object, **_: object) -> _AResult:
         _AResult result
     """
 
-    resp = equal(actual, expected)
-
-    if isinstance(resp, bool):
-        return ValidationError("not_equal")
-
-    return True
+    return actual != expected
