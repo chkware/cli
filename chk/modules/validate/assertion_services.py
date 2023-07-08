@@ -5,6 +5,7 @@ Assertion services
 import typing
 import uuid
 from collections import UserDict
+from collections.abc import Callable
 from datetime import datetime
 
 import chk.modules.validate.assertion_function as asrt_f
@@ -14,7 +15,7 @@ from chk.modules.validate.assertion_message import (
 )
 from chk.infrastructure.symbol_table import linear_replace
 
-MAP_TYPE_TO_FN = {
+MAP_TYPE_TO_FN: dict[str, Callable] = {
     "Accepted": asrt_f.accepted,
     "Declined": asrt_f.declined,
     "Equal": asrt_f.equal,

@@ -3,7 +3,6 @@
 """
 Test module for assertion Functions mod
 """
-import pytest
 
 import chk.modules.validate.assertion_function as asrt
 
