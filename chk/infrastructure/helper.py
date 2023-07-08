@@ -4,7 +4,7 @@ Helper functions module
 import ast
 import re
 from collections.abc import Callable
-from typing import Any, Optional
+from typing import Any
 
 import click
 
@@ -273,7 +273,7 @@ class StrTemplate:
 
         self.template = templated_string
 
-    def substitute(self, mapping: Optional[dict] = None, /, **keywords: dict) -> Any:
+    def substitute(self, mapping: dict | None = None, /, **keywords: dict) -> Any:
         """Substitute values from mapping and keywords"""
 
         if not mapping:
