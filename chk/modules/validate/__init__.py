@@ -178,6 +178,9 @@ class ValidationDocumentSupport:
             exec_ctx: ExecuteContext
         """
 
+        if not expose_list:
+            return
+
         display_item_list: list[object] = []
 
         for expose_item in expose_list:
