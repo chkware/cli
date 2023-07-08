@@ -15,8 +15,12 @@ from chk.modules.validate.assertion_message import (
 from chk.infrastructure.symbol_table import linear_replace
 
 MAP_TYPE_TO_FN = {
+    "Accepted": asrt_f.accepted,
+    "Declined": asrt_f.declined,
     "Equal": asrt_f.equal,
     "NotEqual": asrt_f.not_equal,
+    "Empty": asrt_f.empty,
+    "NotEmpty": asrt_f.not_empty,
 }
 
 
