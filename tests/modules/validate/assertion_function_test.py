@@ -3,10 +3,12 @@
 """
 Test module for assertion Functions mod
 """
+import pytest
+
 import chk.modules.validate.assertion_function as asrt
 
 
-class TestAssertEqual:
+class TestEqual:
     @staticmethod
     def test_equal_pass_with_scaler():
         assert asrt.equal(1, 1)
@@ -28,7 +30,7 @@ class TestAssertEqual:
         assert isinstance(response, bool)
 
 
-class TestAssertNotEqual:
+class TestNotEqual:
     @staticmethod
     def test_equal_pass_with_scaler():
         assert asrt.not_equal(1, 2)
@@ -48,3 +50,37 @@ class TestAssertNotEqual:
     def test_not_equal_fails_with_non_equals():
         response = asrt.not_equal([1], [1])
         assert isinstance(response, bool)
+
+
+class TestAccepted:
+    @staticmethod
+    def test_pass_with_allowed_values():
+        assert asrt.accepted("YES")
+        assert asrt.accepted("yes")
+        assert asrt.accepted("Yes")
+        assert asrt.accepted("ON")
+        assert asrt.accepted("on")
+        assert asrt.accepted("On")
+        assert asrt.accepted(1)
+        assert asrt.accepted(True)
+        assert asrt.accepted("True")
+        assert asrt.accepted("TRUE")
+        assert asrt.accepted("true")
+
+    @staticmethod
+    def test_pass_with_not_allowed_values():
+        assert not asrt.accepted("no")
+        assert not asrt.accepted("NO")
+        assert not asrt.accepted("No")
+        assert not asrt.accepted("off")
+        assert not asrt.accepted("OFF")
+        assert not asrt.accepted("Off")
+        assert not asrt.accepted(0)
+        assert not asrt.accepted(False)
+        assert not asrt.accepted("False")
+        assert not asrt.accepted("FALSE")
+        assert not asrt.accepted("false")
+
+    @staticmethod
+    def test_fail_with_exception_other_values():
+        assert isinstance(asrt.accepted("Nein"), ValueError)
