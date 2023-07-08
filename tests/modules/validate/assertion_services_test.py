@@ -7,7 +7,6 @@ import uuid
 
 import pytest
 
-from chk.infrastructure.exception import ValidationError
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
 from chk.infrastructure.symbol_table import Variables, VariableTableManager
 from chk.modules.validate import ValidationDocument, ValidationDocumentSupport
@@ -83,7 +82,7 @@ class TestAssertionEntryListRunner:
         assert_list, _ = setup_assertion_entry_list_pass_assert
         assert_resp = AssertionEntryListRunner._call_assertion_method(assert_list[0])
 
-        assert isinstance(assert_resp, ValidationError)
+        assert isinstance(assert_resp, bool)
 
     @staticmethod
     def test__prepare_test_run_result(setup_assertion_entry_list_pass_assert):
