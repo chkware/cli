@@ -215,6 +215,30 @@ class StrTemplate:
         return self._replace(self.template, {**mapping, **keywords})
 
     @staticmethod
+    def _parse(container: str) -> list[str]:
+        """replace values found in string with typed return
+
+        Args:
+            container: str
+        Returns:
+            list: list of parsed object
+        """
+
+        if not isinstance(container, str):
+            return []
+
+        line_split = re.split(
+            "("
+            + StrTemplate.d_start
+            + r"\s*[a-zA-Z0-9_.]+\s*"
+            + StrTemplate.d_end
+            + ")",
+            container,
+        )
+
+        return [item for item in line_split if item]
+
+    @staticmethod
     def _replace(container: str, replace_with: dict) -> Any:
         """replace values found in string with typed return
 

@@ -427,3 +427,51 @@ class TestIsTplFromStrTemplate:
     @staticmethod
     def test_is_tpl_fail_with_only_end_delimiter():
         assert not StrTemplate.is_tpl("some time %>")
+
+
+class TestParseFromStrTemplate:
+    @classmethod
+    def test_return_empty_list_when_container_not_str(cls):
+        assert StrTemplate._parse(11) == []
+        assert StrTemplate._parse((11,)) == []
+        assert StrTemplate._parse({"a": 11}) == []
+        assert StrTemplate._parse([11]) == []
+
+    @classmethod
+    def test_return_list_with_container_when_not_parsable(cls):
+        v2 = "a"
+        assert StrTemplate._parse(v2) == ["a"]
+
+    @classmethod
+    def test_return_list_with_parsable(cls):
+        assert StrTemplate._parse("a <% vb %>") == ["a ", "<% vb %>"]
+
+    # @classmethod
+    # def test_replace_pass_when_list_with_str(cls):
+    #     v4 = "a <% vd %>"  # "a ['a', 'b']"
+    #     assert StrTemplate._replace(v4, cls.vals) == "a ['a', 'b']"
+    #
+    # @classmethod
+    # def test_replace_pass_when_dict_scalar_value_with_str(cls):
+    #     v5 = "a <% vc.p %>"  # "a 1"
+    #     assert StrTemplate._replace(v5, cls.vals) == "a 1"
+    #
+    # @classmethod
+    # def test_replace_pass_when_dict_deep_scalar_value_with_str(cls):
+    #     v6 = "a <% vc.q.x %>"  # "a y"
+    #     assert StrTemplate._replace(v6, cls.vals) == "a y"
+    #
+    # @classmethod
+    # def test_replace_pass_when_dict_deep_scalar_value(cls):
+    #     v7 = "<% vc.q.x %>"  # y
+    #     assert StrTemplate._replace(v7, cls.vals) == "y"
+    #
+    # @classmethod
+    # def test_replace_pass_when_dict(cls):
+    #     v8 = "<% vc %>"  # {'p': '1', 'q': {'x': 'y'}}
+    #     assert StrTemplate._replace(v8, cls.vals) == {"p": "1", "q": {"x": "y"}}
+    #
+    # @classmethod
+    # def test_replace_pass_when_list(cls):
+    #     v9 = "<% vd %>"
+    #     assert StrTemplate._replace(v9, cls.vals) == ["a", "b"]
