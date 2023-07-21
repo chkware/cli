@@ -249,36 +249,34 @@ class StrTemplate:
             object: object found in replace_with
         """
 
-        if not isinstance(container, str):
-            return container
-
         if len(replace_with) == 0:
             return container
 
-        line_split = re.split(
-            r"("
-            + StrTemplate.d_start
-            + r"\s*[a-zA-Z0-9_.]+\s*"
-            + StrTemplate.d_end
-            + ")",
-            container,
-        )
-
-        if len(line_split) == 1 and container in line_split:
+        if not (line_strip := StrTemplate._parse(container)):
             return container
 
-        line_strip = [item for item in line_split if item]
+        if (
+            len(line_strip) == 1
+            and container in line_strip
+            and StrTemplate.d_start not in container
+            and StrTemplate.d_end not in container
+        ):
+            return container
 
-        for i, item in enumerate(line_strip):
+        final_list_strip: list[object] = []
+
+        for item in line_strip:
             if StrTemplate.d_start in item and StrTemplate.d_end in item:
                 value = StrTemplate._get(replace_with, item.strip(" <>%"), None)
 
-                line_strip[i] = value or item
+                final_list_strip.append(value or item)
+            else:
+                final_list_strip.append(item)
 
         return (
-            "".join([str(li) for li in line_strip])
-            if len(line_strip) > 1
-            else line_strip.pop()
+            "".join([str(li) for li in final_list_strip])
+            if len(final_list_strip) > 1
+            else final_list_strip.pop()
         )
 
     @staticmethod

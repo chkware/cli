@@ -445,33 +445,3 @@ class TestParseFromStrTemplate:
     @classmethod
     def test_return_list_with_parsable(cls):
         assert StrTemplate._parse("a <% vb %>") == ["a ", "<% vb %>"]
-
-    # @classmethod
-    # def test_replace_pass_when_list_with_str(cls):
-    #     v4 = "a <% vd %>"  # "a ['a', 'b']"
-    #     assert StrTemplate._replace(v4, cls.vals) == "a ['a', 'b']"
-    #
-    # @classmethod
-    # def test_replace_pass_when_dict_scalar_value_with_str(cls):
-    #     v5 = "a <% vc.p %>"  # "a 1"
-    #     assert StrTemplate._replace(v5, cls.vals) == "a 1"
-    #
-    # @classmethod
-    # def test_replace_pass_when_dict_deep_scalar_value_with_str(cls):
-    #     v6 = "a <% vc.q.x %>"  # "a y"
-    #     assert StrTemplate._replace(v6, cls.vals) == "a y"
-    #
-    # @classmethod
-    # def test_replace_pass_when_dict_deep_scalar_value(cls):
-    #     v7 = "<% vc.q.x %>"  # y
-    #     assert StrTemplate._replace(v7, cls.vals) == "y"
-    #
-    # @classmethod
-    # def test_replace_pass_when_dict(cls):
-    #     v8 = "<% vc %>"  # {'p': '1', 'q': {'x': 'y'}}
-    #     assert StrTemplate._replace(v8, cls.vals) == {"p": "1", "q": {"x": "y"}}
-    #
-    # @classmethod
-    # def test_replace_pass_when_list(cls):
-    #     v9 = "<% vd %>"
-    #     assert StrTemplate._replace(v9, cls.vals) == ["a", "b"]
