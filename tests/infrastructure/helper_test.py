@@ -340,13 +340,6 @@ def test_formatter_pass_print_with_cb_dict():
 
 
 class TestStrTemplate:
-    vals = {
-        "va": 1,
-        "vb": {"x": "y"},
-        "vc": {"p": "1", "q": {"x": "y"}},
-        "vd": ["a", "b"],
-    }
-
     @staticmethod
     def test_create_str_templates_pass():
         tpl = StrTemplate()
@@ -387,6 +380,53 @@ class TestStrTemplate:
             tpl.substitute({"name": {"first": "John", "last": "Doe"}})
             == "Hello Doe, John"
         )
+
+
+class TestGetFromStrTemplate:
+    @staticmethod
+    def test_get_pass_when_key_found():
+        dct = {"a": {"aa": {"aaa": 1}}}
+        keymap = "a.aa.aaa"
+
+        assert StrTemplate._get(dct, keymap) == 1
+
+    @staticmethod
+    def test_get_pass_return_none_when_key_not_found():
+        dct = {"a": {"aa": {"aaa": 1}}}
+        keymap = "a.aa.aaaa"
+
+        assert not StrTemplate._get(dct, keymap)
+
+    @staticmethod
+    def test_get_pass_for_non_existent_key():
+        dct = {"a": {"aa": {"aaa": 1}}}
+        keymap = "a.aa.aaa.aaaa"
+
+        assert not StrTemplate._get(dct, keymap)
+
+    @staticmethod
+    def test_get_pass_for_list():
+        dct = {"a": {"aa": {"aaa": [1, 2]}}}
+        keymap = "a.aa.aaa.1"
+
+        assert StrTemplate._get(dct, keymap) == 2
+
+    @staticmethod
+    def test_get_pass_for_list_stating_index():
+        dct = [{"aa": {"aaa": [1, 2]}}, 2]
+        keymap = "0.aa.aaa.1"
+
+        assert StrTemplate._get(dct, keymap) == 2
+
+
+class TestReplaceFromStrTemplate:
+
+    vals = {
+        "va": 1,
+        "vb": {"x": "y"},
+        "vc": {"p": "1", "q": {"x": "y"}},
+        "vd": ["a", "b"],
+    }
 
     @classmethod
     def test_replace_ret_same_when_nothing_to_replace(cls):
@@ -432,40 +472,3 @@ class TestStrTemplate:
     def test_replace_pass_when_list(cls):
         v9 = "<% vd %>"
         assert StrTemplate._replace(v9, cls.vals) == ["a", "b"]
-
-
-class TestGetFromStrTemplate:
-    @staticmethod
-    def test_get_pass_when_key_found():
-        dct = {"a": {"aa": {"aaa": 1}}}
-        keymap = "a.aa.aaa"
-
-        assert StrTemplate._get(dct, keymap) == 1
-
-    @staticmethod
-    def test_get_pass_return_none_when_key_not_found():
-        dct = {"a": {"aa": {"aaa": 1}}}
-        keymap = "a.aa.aaaa"
-
-        assert not StrTemplate._get(dct, keymap)
-
-    @staticmethod
-    def test_get_pass_for_non_existent_key():
-        dct = {"a": {"aa": {"aaa": 1}}}
-        keymap = "a.aa.aaa.aaaa"
-
-        assert not StrTemplate._get(dct, keymap)
-
-    @staticmethod
-    def test_get_pass_for_list():
-        dct = {"a": {"aa": {"aaa": [1, 2]}}}
-        keymap = "a.aa.aaa.1"
-
-        assert StrTemplate._get(dct, keymap) == 2
-
-    @staticmethod
-    def test_get_pass_for_list_stating_index():
-        dct = [{"aa": {"aaa": [1, 2]}}, 2]
-        keymap = "0.aa.aaa.1"
-
-        assert StrTemplate._get(dct, keymap) == 2
