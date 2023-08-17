@@ -1,7 +1,7 @@
 """
 Assertion services
 """
-
+import copy
 import typing
 import uuid
 from collections import UserDict
@@ -9,6 +9,7 @@ from collections.abc import Callable
 from datetime import datetime
 
 import chk.modules.validate.assertion_function as asrt_f
+from chk.infrastructure.helper import Cast
 from chk.modules.validate.assertion_message import (
     get_fail_assert_msg_for,
     get_pass_assert_msg_for,
@@ -142,17 +143,51 @@ class AssertionEntryListRunner:
             AssertionEntry
         """
 
+        new_assert_item = copy.copy(assert_item)
+
+        # replace actual value for template
         if (
-            isinstance(assert_item.actual, str)
-            and "{{" in assert_item.actual
-            and "}}" in assert_item.actual
+                isinstance(new_assert_item.actual, str)
+                and "{{" in new_assert_item.actual
+                and "}}" in new_assert_item.actual
         ):
-            return assert_item._replace(
-                actual=linear_replace(assert_item.actual_given, variable_d),
-                expected=linear_replace(assert_item.expected, variable_d),
+            new_assert_item = new_assert_item._replace(
+                actual=linear_replace(new_assert_item.actual_given, variable_d)
             )
 
-        return assert_item
+        # convert actual value type
+        if new_assert_item.cast_actual_to != "":
+            _actual = new_assert_item.actual
+
+            match new_assert_item.cast_actual_to:
+                case "int_or_flot":
+                    _actual = Cast.to_int(_actual)
+                case "int":
+                    _actual = Cast.to_int(_actual)
+                case "float":
+                    _actual = Cast.to_float(_actual)
+                case "bool":
+                    _actual = Cast.to_bool(_actual)
+                case "none":
+                    _actual = Cast.to_none(_actual)
+                case "dict" | "list" | "str":
+                    _actual = Cast.to_hashable(_actual)
+                case "auto":
+                    _actual = Cast.to_auto(_actual)
+
+            new_assert_item = new_assert_item._replace(actual=_actual)
+
+        # replace expected value for template
+        if (
+                isinstance(new_assert_item.expected, str)
+                and "{{" in new_assert_item.expected
+                and "}}" in new_assert_item.expected
+        ):
+            new_assert_item = new_assert_item._replace(
+                expected=linear_replace(new_assert_item.expected, variable_d)
+            )
+
+        return new_assert_item
 
     @staticmethod
     def _prepare_test_run_result(
