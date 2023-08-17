@@ -156,17 +156,15 @@ class ValidationDocumentSupport:
             if not (_expected := each_assert.get("expected", None)):
                 raise RuntimeError("key: `expected` not found in one of the asserts.")
 
-            _cast_actual_to = each_assert.get("cast_actual_to", None)
+            _cast_actual_to = each_assert.get("cast_actual_to", "")
 
             new_assertion_lst.append(
                 AssertionEntry(
                     assert_type=_assert_type,
-                    cast_actual_to=_cast_actual_to,
                     actual=_actual,
                     actual_given=_actual,
                     expected=_expected,
-                    msg_pass="",
-                    msg_fail="",
+                    cast_actual_to=_cast_actual_to,
                 )
             )
 
