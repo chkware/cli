@@ -112,8 +112,6 @@ def setup_new_single_test_run_result():
         actual="39",
         actual_given="{{ _data.roll }}",
         expected=39,
-        msg_pass="",
-        msg_fail="",
     )
 
     return s
@@ -181,12 +179,9 @@ class TestAssertionEntry:
     def test_create():
         ae = AssertionEntry(
             "Empty",
-            "int",
             "10",
             "10",
             10,
-            "msg_pass",
-            "msg_fail",
         )
 
         assert isinstance(ae, AssertionEntry)
@@ -195,12 +190,12 @@ class TestAssertionEntry:
     def test_copy():
         ae = AssertionEntry(
             "Empty",
-            "int",
             "10",
             "10",
             10,
             "msg_pass",
             "msg_fail",
+            "int",
         )
 
         ar = copy.copy(ae)
