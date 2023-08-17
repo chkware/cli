@@ -36,6 +36,16 @@ class AssertionEntry(typing.NamedTuple):
     msg_pass: str
     msg_fail: str
 
+    def __copy__(self) -> "AssertionEntry":
+        """Copy protocol
+
+        Returns:
+            AssertionEntry
+        """
+
+        members = self._asdict()
+        return AssertionEntry(**members)
+
 
 class SingleTestRunResult(UserDict):
     """Result of an assertion run

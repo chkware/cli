@@ -2,6 +2,7 @@
 """
 Test assertion_services
 """
+import copy
 import datetime
 import uuid
 
@@ -173,3 +174,35 @@ class TestAllTestRunResult:
         s = setup_new_all_test_run_result
 
         assert isinstance(s.as_fmt_str, str)
+
+
+class TestAssertionEntry:
+    @staticmethod
+    def test_create():
+        ae = AssertionEntry(
+            "Empty",
+            "int",
+            "10",
+            "10",
+            10,
+            "msg_pass",
+            "msg_fail",
+        )
+
+        assert isinstance(ae, AssertionEntry)
+
+    @staticmethod
+    def test_copy():
+        ae = AssertionEntry(
+            "Empty",
+            "int",
+            "10",
+            "10",
+            10,
+            "msg_pass",
+            "msg_fail",
+        )
+
+        ar = copy.copy(ae)
+        assert ar.assert_type == ae.assert_type
+        assert ar is not ae
