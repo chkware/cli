@@ -29,6 +29,7 @@ class AssertionEntry(typing.NamedTuple):
     """AssertionEntry holds one assertion operation"""
 
     assert_type: str
+    cast_actual_to: str
     actual: typing.Any
     actual_given: typing.Any
     expected: typing.Any
