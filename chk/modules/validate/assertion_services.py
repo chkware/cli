@@ -72,9 +72,9 @@ class SingleTestRunResult(UserDict):
         """
 
         return (
-            "\n"
-            f"{'+' if self['is_pass'] else '-'} {self['assert_used'].assert_type} "
-            + f"{'PASSED' if self['is_pass'] else 'FAILED'} with message: {self['message']}"
+                "\n"
+                f"{'+' if self['is_pass'] else '-'} {self['assert_used'].assert_type} "
+                + f"{'PASSED' if self['is_pass'] else 'FAILED'} with message: {self['message']}"
         )
 
 
@@ -115,9 +115,9 @@ class AllTestRunResult(UserDict):
         """
 
         _display = (
-            f"Test run id: {self['id']}, time taken {self['time_end'] - self['time_start']}\n"
-            + f"Total tests: {self['count_all']}, "
-            + f"Total tests failed: {self['count_fail']}\n"
+                f"Test run id: {self['id']}, time taken {self['time_end'] - self['time_start']}\n"
+                + f"Total tests: {self['count_all']}, "
+                + f"Total tests failed: {self['count_fail']}\n"
         )
         _display += "\n> Test run result(s):"
 
@@ -132,7 +132,7 @@ class AssertionEntryListRunner:
 
     @staticmethod
     def _replace_assertion_values(
-        assert_item: AssertionEntry, variable_d: dict
+            assert_item: AssertionEntry, variable_d: dict
     ) -> AssertionEntry:
         """Replace value for actual and expected data
 
@@ -191,9 +191,9 @@ class AssertionEntryListRunner:
 
     @staticmethod
     def _prepare_test_run_result(
-        resp: SingleTestRunResult,
-        assert_item: AssertionEntry,
-        asrt_resp: ValueError | bool,
+            resp: SingleTestRunResult,
+            assert_item: AssertionEntry,
+            asrt_resp: ValueError | bool,
     ) -> None:
         asrt_fn_name = MAP_TYPE_TO_FN[assert_item.assert_type].__name__
         actual = assert_item._asdict().get("actual")
@@ -225,7 +225,7 @@ class AssertionEntryListRunner:
 
     @staticmethod
     def _call_assertion_method(
-        assert_item: AssertionEntry,
+            assert_item: AssertionEntry,
     ) -> ValueError | bool:
         """Call assertion method
 
@@ -240,7 +240,7 @@ class AssertionEntryListRunner:
 
     @staticmethod
     def test_run(
-        assert_list: list[AssertionEntry], variables: dict
+            assert_list: list[AssertionEntry], variables: dict
     ) -> AllTestRunResult:
         """Run the tests
 
