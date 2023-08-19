@@ -66,7 +66,7 @@ def accepted(actual: object, **_: object) -> _AResult:
     # fmt: on
 
     if actual not in accepted_values + declined_values:
-        return ValueError("accepted_not_allowed")
+        return ValueError("accepted_actual_not_allowed")
 
     return actual in accepted_values
 
@@ -101,7 +101,7 @@ def declined(actual: object, **_: object) -> _AResult:
     # fmt: on
 
     if actual not in accepted_values + declined_values:
-        return ValueError("declined_not_allowed")
+        return ValueError("declined_actual_not_allowed")
 
     return actual in declined_values
 
