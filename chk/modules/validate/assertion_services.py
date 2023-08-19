@@ -71,9 +71,9 @@ class SingleTestRunResult(UserDict):
         """
 
         return (
-                "\n"
-                f"{'+' if self['is_pass'] else '-'} {self['assert_used'].assert_type} "
-                + f"{'PASSED' if self['is_pass'] else 'FAILED'} with message: {self['message']}"
+            "\n"
+            f"{'+' if self['is_pass'] else '-'} {self['assert_used'].assert_type} "
+            + f"{'PASSED' if self['is_pass'] else 'FAILED'} with message: {self['message']}"
         )
 
 
@@ -114,9 +114,9 @@ class AllTestRunResult(UserDict):
         """
 
         _display = (
-                f"Test run id: {self['id']}, time taken {self['time_end'] - self['time_start']}\n"
-                + f"Total tests: {self['count_all']}, "
-                + f"Total tests failed: {self['count_fail']}\n"
+            f"Test run id: {self['id']}, time taken {self['time_end'] - self['time_start']}\n"
+            + f"Total tests: {self['count_all']}, "
+            + f"Total tests failed: {self['count_fail']}\n"
         )
         _display += "\n> Test run result(s):"
 
@@ -131,7 +131,7 @@ class AssertionEntryListRunner:
 
     @staticmethod
     def _replace_assertion_values(
-            assert_item: AssertionEntry, variable_d: dict
+        assert_item: AssertionEntry, variable_d: dict
     ) -> AssertionEntry:
         """Replace value for actual and expected data
 
@@ -144,9 +144,9 @@ class AssertionEntryListRunner:
 
         # replace actual value for template
         if (
-                isinstance(new_assert_item.actual, str)
-                and "{{" in new_assert_item.actual
-                and "}}" in new_assert_item.actual
+            isinstance(assert_item.actual, str)
+            and "{{" in assert_item.actual
+            and "}}" in assert_item.actual
         ):
             new_assert_item = new_assert_item._replace(
                 actual=linear_replace(new_assert_item.actual_given, variable_d)
@@ -178,9 +178,9 @@ class AssertionEntryListRunner:
 
         # replace expected value for template
         if (
-                isinstance(new_assert_item.expected, str)
-                and "{{" in new_assert_item.expected
-                and "}}" in new_assert_item.expected
+            isinstance(assert_item.expected, str)
+            and "{{" in assert_item.expected
+            and "}}" in assert_item.expected
         ):
             new_assert_item = new_assert_item._replace(
                 expected=linear_replace(new_assert_item.expected, variable_d)
