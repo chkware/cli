@@ -148,33 +148,27 @@ class AssertionEntryListRunner:
             and "{{" in assert_item.actual
             and "}}" in assert_item.actual
         ):
-            new_assert_item = new_assert_item._replace(
-                actual=linear_replace(new_assert_item.actual_given, variable_d)
-            )
+            assert_item.actual_given = assert_item.actual
+            assert_item.actual = linear_replace(assert_item.actual, variable_d)
 
         # convert actual value type
-        if new_assert_item.cast_actual_to != "":
-            _actual = new_assert_item.actual
-            _actual_b4_cast = new_assert_item.actual
+        if assert_item.cast_actual_to != "" and isinstance(assert_item.actual, str):
+            assert_item.actual_b4_cast = assert_item.actual
 
-            match new_assert_item.cast_actual_to:
-                case "int_or_flot":
-                    _actual = Cast.to_int(_actual)
-                case "int":
-                    _actual = Cast.to_int(_actual)
-                case "float":
-                    _actual = Cast.to_float(_actual)
-                case "bool":
-                    _actual = Cast.to_bool(_actual)
-                case "none":
-                    _actual = Cast.to_none(_actual)
-                case "dict" | "list" | "str":
-                    _actual = Cast.to_hashable(_actual)
-                case "auto":
-                    _actual = Cast.to_auto(_actual)
-
-            new_assert_item = new_assert_item._replace(actual=_actual,
-                                                       actual_b4_cast=_actual_b4_cast)
+            if assert_item.cast_actual_to == "int_or_flot":
+                assert_item.actual = Cast.to_int_or_float(assert_item.actual)
+            elif assert_item.cast_actual_to == "int":
+                assert_item.actual = Cast.to_int(assert_item.actual)
+            elif assert_item.cast_actual_to == "float":
+                assert_item.actual = Cast.to_float(assert_item.actual)
+            elif assert_item.cast_actual_to == "bool":
+                assert_item.actual = Cast.to_bool(assert_item.actual)
+            elif assert_item.cast_actual_to == "none":
+                assert_item.actual = Cast.to_none(assert_item.actual)
+            elif assert_item.cast_actual_to in ["dict", "list", "str"]:
+                assert_item.actual = Cast.to_hashable(assert_item.actual)
+            elif assert_item.cast_actual_to == "auto":
+                assert_item.actual = Cast.to_auto(assert_item.actual)
 
         # replace expected value for template
         if (
@@ -182,11 +176,9 @@ class AssertionEntryListRunner:
             and "{{" in assert_item.expected
             and "}}" in assert_item.expected
         ):
-            new_assert_item = new_assert_item._replace(
-                expected=linear_replace(new_assert_item.expected, variable_d)
-            )
+            assert_item.expected = linear_replace(assert_item.expected, variable_d)
 
-        return new_assert_item
+        return assert_item
 
     @staticmethod
     def _prepare_test_run_result(

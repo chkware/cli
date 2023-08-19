@@ -257,18 +257,17 @@ class TestAssertionEntry:
         ae = AssertionEntry(
             "Empty",
             "10",
-            "10",
             10,
         )
 
         assert isinstance(ae, AssertionEntry)
         assert isinstance(ae.actual_b4_cast, types.NotImplementedType)
+        assert isinstance(ae.actual_given, types.NotImplementedType)
 
     @staticmethod
     def test_copy():
         ae = AssertionEntry(
             "Empty",
-            "10",
             "10",
             10,
             cast_actual_to="int",
