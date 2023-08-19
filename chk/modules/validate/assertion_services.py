@@ -2,6 +2,7 @@
 Assertion services
 """
 import copy
+import dataclasses
 import typing
 import uuid
 from collections import UserDict
@@ -26,20 +27,18 @@ MAP_TYPE_TO_FN: dict[str, Callable] = {
 }
 
 
-class AssertionEntry(typing.NamedTuple):
+@dataclasses.dataclass
+class AssertionEntry:
     """AssertionEntry holds one assertion operation"""
 
     assert_type: str
     actual: typing.Any
-    actual_given: typing.Any
     expected: typing.Any
-    msg_pass: str = ""
-    msg_fail: str = ""
-    cast_actual_to: str = ""
-    actual_b4_cast: typing.Any = NotImplemented
-
-    def __copy__(self) -> "AssertionEntry":
-        """Copy protocol
+    msg_pass: str = dataclasses.field(default_factory=str)
+    msg_fail: str = dataclasses.field(default_factory=str)
+    cast_actual_to: str = dataclasses.field(default_factory=str)
+    actual_given: typing.Any = dataclasses.field(default=NotImplemented)
+    actual_b4_cast: typing.Any = dataclasses.field(default=NotImplemented)
 
         Returns:
             AssertionEntry
