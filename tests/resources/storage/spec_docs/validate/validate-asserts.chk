@@ -48,6 +48,7 @@ asserts:
 
   - { type: Accepted, actual: 2 }
   - { type: Accepted, actual: "Yes" }
+  - { type: Accepted, actual: "YES" }
   - { type: Accepted, actual: "yes" }
   - { type: Accepted, actual: 1 }
   - { type: Accepted, actual: "On" }
@@ -57,6 +58,19 @@ asserts:
   - { type: Accepted, actual: "True" }
   - { type: Accepted, actual: "TRUE" }
   - { type: Accepted, actual: "true" }
+
+  - { type: Declined, actual: 2 }
+  - { type: Declined, actual: "No" }
+  - { type: Declined, actual: "NO" }
+  - { type: Declined, actual: "no" }
+  - { type: Declined, actual: 0 }
+  - { type: Declined, actual: "Off" }
+  - { type: Declined, actual: "OFF" }
+  - { type: Declined, actual: "off" }
+  - { type: Declined, actual: False }
+  - { type: Declined, actual: "False" }
+  - { type: Declined, actual: "FALSE" }
+  - { type: Declined, actual: "false" }
 
   - { type: Boolean, actual: 2 }
   - { type: Boolean, actual: True }
