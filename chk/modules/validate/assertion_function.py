@@ -133,7 +133,7 @@ def not_empty(actual: object, **_: object) -> _AResult:
 
 
 def boolean(actual: object, expected: object, **_: object) -> _AResult:
-    """Assert empty
+    """Assert boolean
 
     Args:
         actual: object
@@ -155,3 +155,16 @@ def boolean(actual: object, expected: object, **_: object) -> _AResult:
             return eq_response
 
     return eq_response and isinstance(actual, bool)
+
+
+def integer(actual: object, **_: object) -> _AResult:
+    """Assert integer
+
+    Args:
+        actual: object
+        **_: object ignores any other params
+    Returns:
+        _AResult result
+    """
+
+    return isinstance(actual, int)

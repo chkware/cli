@@ -25,6 +25,7 @@ MAP_TYPE_TO_FN: dict[str, Callable] = {
     "Empty": asrt_f.empty,
     "NotEmpty": asrt_f.not_empty,
     "Boolean": asrt_f.boolean,
+    "Integer": asrt_f.integer,
 }
 
 

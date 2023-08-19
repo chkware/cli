@@ -31,6 +31,10 @@ _AMessages = {
         "pass": "actual `{0}({1})` is a boolean value, expected `{2}({3})`",
         "fail": "actual `{0}({1})` is not a boolean value, expected `{2}({3})`",
     },
+    "integer": {
+        "pass": "actual `{0}({1})` is a integer value",
+        "fail": "actual `{0}({1})` is not a integer value",
+    },
 }
 
 
