@@ -1,6 +1,7 @@
 """
 Assertion Functions mod
 """
+import types
 from typing import TypeAlias, Union
 
 # assertion result type; internal use
@@ -129,3 +130,28 @@ def not_empty(actual: object, **_: object) -> _AResult:
     """
 
     return bool(actual)
+
+
+def boolean(actual: object, expected: object, **_: object) -> _AResult:
+    """Assert empty
+
+    Args:
+        actual: object
+        expected: object
+        **_: object ignores any other params
+    Returns:
+        _AResult result
+    """
+
+    eq_response: _AResult = True
+
+    if not isinstance(expected, types.NotImplementedType):
+        if not isinstance(expected, bool):
+            return ValueError("expected_not_bool")
+
+        eq_response = equal(actual, expected)
+
+        if isinstance(eq_response, ValueError):
+            return eq_response
+
+    return eq_response and isinstance(actual, bool)

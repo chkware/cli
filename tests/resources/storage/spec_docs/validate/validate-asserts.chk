@@ -43,9 +43,12 @@ asserts:
     expected: False
 
 #  - { type: Empty, actual: ~ }
-#  - { type: False, actual: 'false' }
-#  - { type: True, actual: 'true' }
 #  - { type: AssertIsInt, actual: "{$_response.body.coin.priceBtc}" }
+  - { type: Boolean, actual: 2 }
+  - { type: Boolean, actual: True }
+  - { type: Boolean, actual: "true", cast_actual_to: bool }
+  - { type: Boolean, actual: True, expected: False }
+  - { type: Boolean, actual: "true", expected: False, cast_actual_to: bool }
 #  - { type: AssertIsInt, actual: 10 }
 #  - { type: AssertIsString, actual: "{$_response.body.coin.websiteUrl}" }
 #  - { type: AssertStrContains, actual: 'https://someurl.com', expected: 'https' }
