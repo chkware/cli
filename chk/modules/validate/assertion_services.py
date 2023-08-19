@@ -1,7 +1,7 @@
 """
 Assertion services
 """
-import copy
+
 import dataclasses
 import typing
 import uuid
@@ -142,8 +142,6 @@ class AssertionEntryListRunner:
             AssertionEntry
         """
 
-        new_assert_item = copy.copy(assert_item)
-
         # replace actual value for template
         if (
                 isinstance(new_assert_item.actual, str)
@@ -192,9 +190,9 @@ class AssertionEntryListRunner:
 
     @staticmethod
     def _prepare_test_run_result(
-            resp: SingleTestRunResult,
-            assert_item: AssertionEntry,
-            asrt_resp: ValueError | bool,
+        resp: SingleTestRunResult,
+        assert_item: AssertionEntry,
+        asrt_resp: ValueError | bool,
     ) -> None:
         asrt_fn_name = MAP_TYPE_TO_FN[assert_item.assert_type].__name__
         actual = assert_item.actual
@@ -226,7 +224,7 @@ class AssertionEntryListRunner:
 
     @staticmethod
     def _call_assertion_method(
-            assert_item: AssertionEntry,
+        assert_item: AssertionEntry,
     ) -> ValueError | bool:
         """Call assertion method
 
@@ -241,7 +239,7 @@ class AssertionEntryListRunner:
 
     @staticmethod
     def test_run(
-            assert_list: list[AssertionEntry], variables: dict
+        assert_list: list[AssertionEntry], variables: dict
     ) -> AllTestRunResult:
         """Run the tests
 
