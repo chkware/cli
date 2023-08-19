@@ -42,8 +42,9 @@ asserts:
     actual: "False"
     expected: False
 
-#  - { type: Empty, actual: ~ }
 #  - { type: AssertIsInt, actual: "{$_response.body.coin.priceBtc}" }
+  - { type: Empty, actual: ~ }
+  - { type: NotEmpty, actual: 2 }
   - { type: Boolean, actual: 2 }
   - { type: Boolean, actual: True }
   - { type: Boolean, actual: "true", cast_actual_to: bool }
