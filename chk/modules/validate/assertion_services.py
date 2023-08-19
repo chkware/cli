@@ -40,12 +40,11 @@ class AssertionEntry:
     actual_given: typing.Any = dataclasses.field(default=NotImplemented)
     actual_b4_cast: typing.Any = dataclasses.field(default=NotImplemented)
 
-        Returns:
-            AssertionEntry
-        """
+    @property
+    def as_dict(self) -> dict:
+        """Return dict representation"""
 
-        members = self._asdict()
-        return AssertionEntry(**members)
+        return dataclasses.asdict(self)
 
 
 class SingleTestRunResult(UserDict):
@@ -59,7 +58,7 @@ class SingleTestRunResult(UserDict):
         """Convert SingleTestRunResult to a dict"""
 
         return {
-            key: value._asdict() if key == "assert_used" else value
+            key: value.as_dict if key == "assert_used" else value
             for key, value in self.items()
         }
 
@@ -198,8 +197,8 @@ class AssertionEntryListRunner:
             asrt_resp: ValueError | bool,
     ) -> None:
         asrt_fn_name = MAP_TYPE_TO_FN[assert_item.assert_type].__name__
-        actual = assert_item._asdict().get("actual")
-        expected = assert_item._asdict().get("expected")
+        actual = assert_item.actual
+        expected = assert_item.expected
 
         if isinstance(asrt_resp, ValueError):
             resp["is_pass"] = False
@@ -238,7 +237,7 @@ class AssertionEntryListRunner:
         """
 
         asrt_fn = MAP_TYPE_TO_FN[assert_item.assert_type]
-        return asrt_fn(**assert_item._asdict())
+        return asrt_fn(**assert_item.as_dict)
 
     @staticmethod
     def test_run(
