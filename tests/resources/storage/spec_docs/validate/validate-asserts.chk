@@ -45,6 +45,19 @@ asserts:
 #  - { type: AssertIsInt, actual: "{$_response.body.coin.priceBtc}" }
   - { type: Empty, actual: ~ }
   - { type: NotEmpty, actual: 2 }
+
+  - { type: Accepted, actual: 2 }
+  - { type: Accepted, actual: "Yes" }
+  - { type: Accepted, actual: "yes" }
+  - { type: Accepted, actual: 1 }
+  - { type: Accepted, actual: "On" }
+  - { type: Accepted, actual: "ON" }
+  - { type: Accepted, actual: "on" }
+  - { type: Accepted, actual: True }
+  - { type: Accepted, actual: "True" }
+  - { type: Accepted, actual: "TRUE" }
+  - { type: Accepted, actual: "true" }
+
   - { type: Boolean, actual: 2 }
   - { type: Boolean, actual: True }
   - { type: Boolean, actual: "true", cast_actual_to: bool }
