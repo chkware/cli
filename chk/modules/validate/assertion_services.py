@@ -36,6 +36,7 @@ class AssertionEntry(typing.NamedTuple):
     msg_pass: str = ""
     msg_fail: str = ""
     cast_actual_to: str = ""
+    actual_b4_cast: typing.Any = NotImplemented
 
     def __copy__(self) -> "AssertionEntry":
         """Copy protocol
@@ -158,6 +159,7 @@ class AssertionEntryListRunner:
         # convert actual value type
         if new_assert_item.cast_actual_to != "":
             _actual = new_assert_item.actual
+            _actual_b4_cast = new_assert_item.actual
 
             match new_assert_item.cast_actual_to:
                 case "int_or_flot":
@@ -175,7 +177,8 @@ class AssertionEntryListRunner:
                 case "auto":
                     _actual = Cast.to_auto(_actual)
 
-            new_assert_item = new_assert_item._replace(actual=_actual)
+            new_assert_item = new_assert_item._replace(actual=_actual,
+                                                       actual_b4_cast=_actual_b4_cast)
 
         # replace expected value for template
         if (

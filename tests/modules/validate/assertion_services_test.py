@@ -4,6 +4,7 @@ Test assertion_services
 """
 import copy
 import datetime
+import types
 import uuid
 
 import pytest
@@ -261,6 +262,7 @@ class TestAssertionEntry:
         )
 
         assert isinstance(ae, AssertionEntry)
+        assert isinstance(ae.actual_b4_cast, types.NotImplementedType)
 
     @staticmethod
     def test_copy():
@@ -269,9 +271,7 @@ class TestAssertionEntry:
             "10",
             "10",
             10,
-            "msg_pass",
-            "msg_fail",
-            "int",
+            cast_actual_to="int",
         )
 
         ar = copy.copy(ae)
