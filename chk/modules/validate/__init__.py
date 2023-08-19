@@ -150,11 +150,13 @@ class ValidationDocumentSupport:
             if _assert_type not in MAP_TYPE_TO_FN:
                 raise RuntimeError(f"type: `{_assert_type}` not supported.")
 
-            if not (_actual := each_assert.get("actual", None)):
+            if "actual" not in each_assert:
                 raise RuntimeError("key: `actual` not found in one of the asserts.")
+            _actual = each_assert["actual"]
 
-            if not (_expected := each_assert.get("expected", None)):
-                raise RuntimeError("key: `expected` not found in one of the asserts.")
+            _expected = (
+                each_assert["expected"] if "expected" in each_assert else NotImplemented
+            )
 
             _cast_actual_to = each_assert.get("cast_actual_to", "")
 
@@ -162,7 +164,6 @@ class ValidationDocumentSupport:
                 AssertionEntry(
                     assert_type=_assert_type,
                     actual=_actual,
-                    actual_given=_actual,
                     expected=_expected,
                     cast_actual_to=_cast_actual_to,
                 )
