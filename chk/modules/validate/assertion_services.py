@@ -193,7 +193,6 @@ class AssertionEntryListRunner:
 
         if isinstance(asrt_resp, ValueError):
             resp["is_pass"] = False
-            asrt_fn_name = str(asrt_resp)
             resp["message"] = get_fail_assert_msg_for(asrt_fn_name).format(
                 actual.__class__.__name__,
                 actual,
