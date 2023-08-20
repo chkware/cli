@@ -120,6 +120,15 @@ def _get_schema_for_boolean(_gen_schema: dict) -> dict:
     return _t_gen_schema
 
 
+def _get_schema_for_integer(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.Integer)
+    del _t_gen_schema["expected"]
+    return _t_gen_schema
+
+
 def get_schema_map(item: AssertionEntityType | None = None) -> dict:
     """get_schema_map
 
@@ -135,6 +144,7 @@ def get_schema_map(item: AssertionEntityType | None = None) -> dict:
         AssertionEntityType.Empty: _get_schema_for_empty(_generic_schema),
         AssertionEntityType.NotEmpty: _get_schema_for_not_empty(_generic_schema),
         AssertionEntityType.Boolean: _get_schema_for_boolean(_generic_schema),
+        AssertionEntityType.Integer: _get_schema_for_integer(_generic_schema),
     }
 
     if item:
