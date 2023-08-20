@@ -159,3 +159,19 @@ class TestNotEmpty:
         assert not asrt.not_empty([])
         assert not asrt.not_empty({})
         assert not asrt.not_empty(())
+
+
+class TestBoolean:
+
+    @staticmethod
+    def test_pass_with_actual():
+        assert asrt.boolean(True, NotImplemented)
+        assert asrt.boolean(False, NotImplemented)
+        assert not asrt.boolean(1, NotImplemented)
+        assert not asrt.boolean("True", NotImplemented)
+
+    @staticmethod
+    def test_pass_with_not_allowed_values():
+        assert asrt.boolean(True, True)
+        assert asrt.boolean(False, False)
+        assert not asrt.boolean(True, False)
