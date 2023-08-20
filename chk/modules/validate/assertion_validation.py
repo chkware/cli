@@ -85,6 +85,15 @@ def _get_schema_for_accepted(_gen_schema: dict) -> dict:
     return _t_gen_schema
 
 
+def _get_schema_for_declined(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.Declined)
+    del _t_gen_schema["expected"]
+    return _t_gen_schema
+
+
 def get_schema_map(item: AssertionEntityType | None = None) -> dict:
     """get_schema_map
 
@@ -96,6 +105,7 @@ def get_schema_map(item: AssertionEntityType | None = None) -> dict:
         AssertionEntityType.Equal: _get_schema_for_equal(_generic_schema),
         AssertionEntityType.NotEqual: _get_schema_for_not_equal(_generic_schema),
         AssertionEntityType.Accepted: _get_schema_for_accepted(_generic_schema),
+        AssertionEntityType.Declined: _get_schema_for_declined(_generic_schema),
     }
 
     if item:
