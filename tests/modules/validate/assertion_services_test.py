@@ -267,12 +267,10 @@ class TestAssertionEntry:
     @staticmethod
     def test_copy():
         ae = AssertionEntry(
-            "Empty",
-            "10",
-            10,
-            cast_actual_to="int",
+            "Empty", "10", 10, cast_actual_to="int", extra_fields={"a": 1}
         )
 
         ar = copy.copy(ae)
         assert ar.assert_type == ae.assert_type
         assert ar is not ae
+        assert "a" in ar.extra_fields

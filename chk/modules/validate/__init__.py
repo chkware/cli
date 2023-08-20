@@ -5,6 +5,7 @@ Validate module
 import dataclasses
 import enum
 import json
+import operator
 from collections import abc
 
 import cerberus
@@ -29,7 +30,10 @@ from chk.modules.validate.assertion_services import (
     AllTestRunResult,
     MAP_TYPE_TO_FN,
 )
-from chk.modules.validate.assertion_validation import get_schema_map
+from chk.modules.validate.assertion_validation import (
+    get_schema_map,
+    AssertionEntityProperty,
+)
 
 VERSION_SCOPE = ["validation"]
 
@@ -170,12 +174,19 @@ class ValidationDocumentSupport:
 
             _cast_actual_to = each_assert.get("cast_actual_to", "")
 
+            only = tuple(set(each_assert.keys()) - set(AssertionEntityProperty))
+            _extra_fld = {}
+
+            if len(only) > 0:
+                _extra_fld = dict(zip(only, operator.itemgetter(*only)(each_assert)))
+
             new_assertion_lst.append(
                 AssertionEntry(
                     assert_type=_assert_type,
                     actual=_actual,
                     expected=_expected,
                     cast_actual_to=_cast_actual_to,
+                    extra_fields=_extra_fld,
                 )
             )
 

@@ -42,6 +42,7 @@ class AssertionEntry:
     cast_actual_to: str = dataclasses.field(default_factory=str)
     actual_given: typing.Any = dataclasses.field(default=NotImplemented)
     actual_b4_cast: typing.Any = dataclasses.field(default=NotImplemented)
+    extra_fields: dict = dataclasses.field(default_factory=dict)
 
     @property
     def as_dict(self) -> dict:

@@ -4,6 +4,8 @@ Assertion validation module
 import copy
 import enum
 
+AssertionEntityProperty = ("type", "actual", "expected", "cast_actual_to")
+
 
 class AssertionEntityType(enum.StrEnum):
     """Type value constants for assertion entities"""
