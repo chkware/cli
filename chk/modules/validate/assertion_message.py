@@ -36,8 +36,8 @@ _AMessages = {
         "fail": "actual `{type_actual}({value_actual})` is not a integer value",
     },
     "integer_between": {
-        "pass": "actual `{type_actual}({value_actual})` is a integer value, between ",
-        "fail": "actual `{type_actual}({value_actual})` is not a integer value",
+        "pass": "actual `{type_actual}({value_actual})` is a integer value, between `{extra_fields[min]}` and `{extra_fields[max]}`",
+        "fail": "actual `{type_actual}({value_actual})` is not a integer value, or not between `{extra_fields[min]}` and `{extra_fields[max]}`",
     },
 }
 

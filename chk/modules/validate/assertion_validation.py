@@ -18,6 +18,7 @@ class AssertionEntityType(enum.StrEnum):
     NotEmpty = "NotEmpty"
     Boolean = "Boolean"
     Integer = "Integer"
+    IntegerBetween = "IntegerBetween"
 
 
 _generic_schema = {
@@ -129,6 +130,29 @@ def _get_schema_for_integer(_gen_schema: dict) -> dict:
     return _t_gen_schema
 
 
+def _get_schema_for_integer_between(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.IntegerBetween)
+    del _t_gen_schema["expected"]
+
+    return _t_gen_schema | {
+        "min": {
+            "required": True,
+            "empty": False,
+            "nullable": False,
+            "type": "integer",
+        },
+        "max": {
+            "required": False,
+            "empty": False,
+            "nullable": False,
+            "type": "integer",
+        },
+    }
+
+
 def get_schema_map(item: AssertionEntityType | None = None) -> dict:
     """get_schema_map
 
@@ -145,6 +169,9 @@ def get_schema_map(item: AssertionEntityType | None = None) -> dict:
         AssertionEntityType.NotEmpty: _get_schema_for_not_empty(_generic_schema),
         AssertionEntityType.Boolean: _get_schema_for_boolean(_generic_schema),
         AssertionEntityType.Integer: _get_schema_for_integer(_generic_schema),
+        AssertionEntityType.IntegerBetween: _get_schema_for_integer_between(
+            _generic_schema
+        ),
     }
 
     if item:

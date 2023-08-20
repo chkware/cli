@@ -42,7 +42,6 @@ asserts:
     actual: "False"
     expected: False
 
-#  - { type: AssertIsInt, actual: "{$_response.body.coin.priceBtc}" }
   - { type: Empty, actual: ~ }
   - { type: NotEmpty, actual: 2 }
 
@@ -80,6 +79,13 @@ asserts:
   - { type: Integer, actual: 10 }
   - { type: Integer, actual: -10 }
   - { type: Integer, actual: a }
+
+  - { type: IntegerBetween, actual: 12, min: 11, max: 13 }
+  - { type: IntegerBetween, actual: 5, min: 11, max: 13 }
+  - { type: IntegerBetween, actual: 15, min: 11, max: 13 }
+  - { type: IntegerBetween, actual: "15", min: 11, max: 13 }
+  - { type: IntegerBetween, actual: "12", min: 11, max: 13, cast_actual_to: int }
+
 #  - { type: AssertIsString, actual: "{$_response.body.coin.websiteUrl}" }
 #  - { type: AssertStrContains, actual: 'https://someurl.com', expected: 'https' }
 #  - { type: AssertStrContains, actual: '{"a": 1, "b": 2}', expected: '"b":' }
