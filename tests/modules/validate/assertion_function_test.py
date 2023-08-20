@@ -162,7 +162,6 @@ class TestNotEmpty:
 
 
 class TestBoolean:
-
     @staticmethod
     def test_pass_with_actual():
         assert asrt.boolean(True, NotImplemented)
@@ -171,7 +170,15 @@ class TestBoolean:
         assert not asrt.boolean("True", NotImplemented)
 
     @staticmethod
-    def test_pass_with_not_allowed_values():
+    def test_pass_with_expected():
         assert asrt.boolean(True, True)
         assert asrt.boolean(False, False)
         assert not asrt.boolean(True, False)
+
+
+class TestInteger:
+    @staticmethod
+    def test_pass_with_actual():
+        assert asrt.integer(10)
+        assert asrt.integer(-10)
+        assert not asrt.integer("-10")
