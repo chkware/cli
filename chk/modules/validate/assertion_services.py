@@ -19,14 +19,14 @@ from chk.infrastructure.symbol_table import linear_replace
 from chk.modules.validate.assertion_validation import AssertionEntityType
 
 MAP_TYPE_TO_FN: dict[str, Callable] = {
-    AssertionEntityType.ACCEPTED: asrt_f.accepted,
-    AssertionEntityType.DECLINED: asrt_f.declined,
-    AssertionEntityType.EQUAL: asrt_f.equal,
-    AssertionEntityType.NOT_EQUAL: asrt_f.not_equal,
-    AssertionEntityType.EMPTY: asrt_f.empty,
-    AssertionEntityType.NOT_EMPTY: asrt_f.not_empty,
-    AssertionEntityType.BOOLEAN: asrt_f.boolean,
-    AssertionEntityType.INTEGER: asrt_f.integer,
+    AssertionEntityType.Accepted: asrt_f.accepted,
+    AssertionEntityType.Declined: asrt_f.declined,
+    AssertionEntityType.Equal: asrt_f.equal,
+    AssertionEntityType.NotEqual: asrt_f.not_equal,
+    AssertionEntityType.Empty: asrt_f.empty,
+    AssertionEntityType.NotEmpty: asrt_f.not_empty,
+    AssertionEntityType.Boolean: asrt_f.boolean,
+    AssertionEntityType.Integer: asrt_f.integer,
 }
 
 
