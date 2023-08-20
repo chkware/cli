@@ -1,6 +1,7 @@
 """
 Assertion validation module
 """
+import copy
 import enum
 
 
@@ -32,7 +33,7 @@ _generic_schema = {
     },
     "expected": {
         "required": False,
-        "empty": False,
+        "empty": True,
         "nullable": True,
     },
     "cast_actual_to": {
@@ -54,3 +55,38 @@ _generic_schema = {
     },
 }
 
+
+def _get_schema_for_equal(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.Equal)
+    _t_gen_schema["expected"]["required"] = True
+    return _t_gen_schema
+
+
+def _get_schema_for_not_equal(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.NotEqual)
+    _t_gen_schema["expected"]["required"] = True
+    return _t_gen_schema
+
+
+def get_schema_map(item: AssertionEntityType | None = None) -> dict:
+    """get_schema_map
+
+    Args:
+        item: Assertion type
+    """
+
+    schema_map = {
+        AssertionEntityType.Equal: _get_schema_for_equal(_generic_schema),
+        AssertionEntityType.NotEqual: _get_schema_for_not_equal(_generic_schema),
+    }
+
+    if item:
+        return schema_map[item]
+
+    return schema_map

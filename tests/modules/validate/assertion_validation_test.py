@@ -3,8 +3,6 @@
 Test mod for assertion_validation
 """
 
-import cerberus
-
 from chk.modules.validate.assertion_validation import (
     get_schema_map,
     AssertionEntityType,
@@ -25,3 +23,4 @@ class TestGetSchemaMap:
         assert "type" in equal_schema
         assert "actual" in equal_schema
         assert AssertionEntityType.Equal in equal_schema["type"]["allowed"]
+        assert len(equal_schema["type"]["allowed"]) == 1

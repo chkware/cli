@@ -7,6 +7,8 @@ import enum
 import json
 from collections import abc
 
+import cerberus
+
 from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
 from chk.infrastructure.helper import data_get, formatter
@@ -27,6 +29,7 @@ from chk.modules.validate.assertion_services import (
     AllTestRunResult,
     MAP_TYPE_TO_FN,
 )
+from chk.modules.validate.assertion_validation import get_schema_map
 
 VERSION_SCOPE = ["validation"]
 
@@ -146,6 +149,13 @@ class ValidationDocumentSupport:
         for each_assert in assert_lst:
             if not (_assert_type := each_assert.get("type", None)):
                 raise RuntimeError("key: `type` not found in one of the asserts.")
+
+            validator = cerberus.Validator(get_schema_map(_assert_type))
+
+            if not validator.validate(each_assert):
+                raise RuntimeError(
+                    f"key: Unsupported structure for `type: {_assert_type}`."
+                )
 
             if _assert_type not in MAP_TYPE_TO_FN:
                 raise RuntimeError(f"type: `{_assert_type}` not supported.")
