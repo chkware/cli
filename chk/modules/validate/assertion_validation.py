@@ -30,8 +30,8 @@ _generic_schema = {
     },
     "actual": {
         "required": True,
-        "empty": False,
-        "nullable": False,
+        "empty": True,
+        "nullable": True,
     },
     "expected": {
         "required": False,
