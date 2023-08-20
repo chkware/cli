@@ -158,7 +158,7 @@ class ValidationDocumentSupport:
 
             if not validator.validate(each_assert):
                 raise RuntimeError(
-                    f"key: Unsupported structure for `type: {_assert_type}`."
+                    f"key: Unsupported structure for `{each_assert}`. {validator.errors}"
                 )
 
             if _assert_type not in MAP_TYPE_TO_FN:
