@@ -190,17 +190,24 @@ class AssertionEntryListRunner:
         assert_item: AssertionEntry,
         asrt_resp: ValueError | bool,
     ) -> None:
+        def _prepare_message_values() -> dict:
+            return {
+                "assert_type": assert_item.assert_type,
+                "type_actual": assert_item.actual.__class__.__name__,
+                "type_expected": assert_item.expected.__class__.__name__,
+                "value_actual": assert_item.actual,
+                "value_expected": assert_item.expected,
+                "value_actual_given": assert_item.actual_given,
+                "value_actual_b4_cast": assert_item.actual_b4_cast,
+                "extra_fields": assert_item.extra_fields,
+            }
+
         asrt_fn_name = MAP_TYPE_TO_FN[assert_item.assert_type].__name__
-        actual = assert_item.actual
-        expected = assert_item.expected
 
         if isinstance(asrt_resp, ValueError):
             resp["is_pass"] = False
             resp["message"] = get_fail_assert_msg_for(asrt_fn_name).format(
-                actual.__class__.__name__,
-                actual,
-                expected.__class__.__name__,
-                expected,
+                **_prepare_message_values()
             )
         else:
             resp["is_pass"] = asrt_resp
@@ -210,12 +217,7 @@ class AssertionEntryListRunner:
                 if asrt_resp
                 else get_fail_assert_msg_for(asrt_fn_name)
             )
-            resp["message"] = message.format(
-                actual.__class__.__name__,
-                actual,
-                expected.__class__.__name__,
-                expected,
-            )
+            resp["message"] = message.format(**_prepare_message_values())
 
     @staticmethod
     def _call_assertion_method(

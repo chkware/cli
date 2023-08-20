@@ -4,36 +4,40 @@ Assertion Functions return messages
 
 _AMessages = {
     "equal": {
-        "pass": "actual `{0}({1})` is equal to expected `{2}({3})`",
-        "fail": "actual `{0}({1})` is not equal to expected `{2}({3})`",
+        "pass": "actual `{type_actual}({value_actual})` is equal to expected `{type_expected}({value_expected})`",
+        "fail": "actual `{type_actual}({value_actual})` is not equal to expected `{type_expected}({value_expected})`",
     },
     "not_equal": {
-        "pass": "actual `{0}({1})` is equal to expected `{2}({3})`",
-        "fail": "actual `{0}({1})` is not equal to expected `{2}({3})`",
+        "pass": "actual `{type_actual}({value_actual})` is equal to expected `{type_expected}({value_expected})`",
+        "fail": "actual `{type_actual}({value_actual})` is not equal to expected `{type_expected}({value_expected})`",
     },
     "accepted": {
-        "pass": "actual `{0}({1})` is an accepted value",
-        "fail": "actual `{0}({1})` is not an accepted value",
+        "pass": "actual `{type_actual}({value_actual})` is an accepted value",
+        "fail": "actual `{type_actual}({value_actual})` is not an accepted value",
     },
     "declined": {
-        "pass": "actual `{0}({1})` is a declined value",
-        "fail": "actual `{0}({1})` is not a declined value",
+        "pass": "actual `{type_actual}({value_actual})` is a declined value",
+        "fail": "actual `{type_actual}({value_actual})` is not a declined value",
     },
     "empty": {
-        "pass": "actual `{0}({1})` is an empty value",
-        "fail": "actual `{0}({1})` is not an empty value",
+        "pass": "actual `{type_actual}({value_actual})` is an empty value",
+        "fail": "actual `{type_actual}({value_actual})` is not an empty value",
     },
     "not_empty": {
-        "pass": "actual `{0}({1})` is a non-empty value",
-        "fail": "actual `{0}({1})` is not a non-empty value",
+        "pass": "actual `{type_actual}({value_actual})` is a non-empty value",
+        "fail": "actual `{type_actual}({value_actual})` is not a non-empty value",
     },
     "boolean": {
-        "pass": "actual `{0}({1})` is a boolean value, expected `{2}({3})`",
-        "fail": "actual `{0}({1})` is not a boolean value, expected `{2}({3})`",
+        "pass": "actual `{type_actual}({value_actual})` is a boolean value, expected `{type_expected}({value_expected})`",
+        "fail": "actual `{type_actual}({value_actual})` is not a boolean value, expected `{type_expected}({value_expected})`",
     },
     "integer": {
-        "pass": "actual `{0}({1})` is a integer value",
-        "fail": "actual `{0}({1})` is not a integer value",
+        "pass": "actual `{type_actual}({value_actual})` is a integer value",
+        "fail": "actual `{type_actual}({value_actual})` is not a integer value",
+    },
+    "integer_between": {
+        "pass": "actual `{type_actual}({value_actual})` is a integer value, between ",
+        "fail": "actual `{type_actual}({value_actual})` is not a integer value",
     },
 }
 
