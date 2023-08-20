@@ -16,16 +16,17 @@ from chk.modules.validate.assertion_message import (
     get_pass_assert_msg_for,
 )
 from chk.infrastructure.symbol_table import linear_replace
+from chk.modules.validate.assertion_validation import AssertionEntityType
 
 MAP_TYPE_TO_FN: dict[str, Callable] = {
-    "Accepted": asrt_f.accepted,
-    "Declined": asrt_f.declined,
-    "Equal": asrt_f.equal,
-    "NotEqual": asrt_f.not_equal,
-    "Empty": asrt_f.empty,
-    "NotEmpty": asrt_f.not_empty,
-    "Boolean": asrt_f.boolean,
-    "Integer": asrt_f.integer,
+    AssertionEntityType.ACCEPTED: asrt_f.accepted,
+    AssertionEntityType.DECLINED: asrt_f.declined,
+    AssertionEntityType.EQUAL: asrt_f.equal,
+    AssertionEntityType.NOT_EQUAL: asrt_f.not_equal,
+    AssertionEntityType.EMPTY: asrt_f.empty,
+    AssertionEntityType.NOT_EMPTY: asrt_f.not_empty,
+    AssertionEntityType.BOOLEAN: asrt_f.boolean,
+    AssertionEntityType.INTEGER: asrt_f.integer,
 }
 
 
