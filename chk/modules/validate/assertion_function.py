@@ -164,7 +164,7 @@ def integer(actual: object, **_: object) -> _AResult:
 
 
 def integer_between(actual: object, extra_fields: dict, **_: object) -> _AResult:
-    """Assert integer"""
+    """Assert integer between"""
 
     return isinstance(actual, int) and (
         int(extra_fields["min"]) < actual < int(extra_fields["max"])
@@ -198,6 +198,14 @@ def integer_less_or_equal(actual: object, extra_fields: dict, **_: object) -> _A
 
 
 def float_(actual: object, **_: object) -> _AResult:
-    """Assert integer"""
+    """Assert float"""
 
     return isinstance(actual, float)
+
+
+def float_between(actual: object, extra_fields: dict, **_: object) -> _AResult:
+    """Assert float between"""
+
+    return isinstance(actual, float) and (
+        int(extra_fields["min"]) < actual < int(extra_fields["max"])
+    )

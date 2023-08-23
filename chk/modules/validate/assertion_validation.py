@@ -24,6 +24,7 @@ class AssertionEntityType(enum.StrEnum):
     IntegerLess = "IntegerLess"
     IntegerLessOrEqual = "IntegerLessOrEqual"
     Float = "Float"
+    FloatBetween = "FloatBetween"
 
 
 _generic_schema = {
@@ -235,6 +236,29 @@ def _get_schema_for_float(_gen_schema: dict) -> dict:
     return _t_gen_schema
 
 
+def _get_schema_for_float_between(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.FloatBetween)
+    del _t_gen_schema["expected"]
+
+    return _t_gen_schema | {
+        "min": {
+            "required": True,
+            "empty": False,
+            "nullable": False,
+            "type": "number",
+        },
+        "max": {
+            "required": False,
+            "empty": False,
+            "nullable": False,
+            "type": "number",
+        },
+    }
+
+
 # ------------------------------------------------
 # Scheme selector
 # ------------------------------------------------
@@ -270,6 +294,9 @@ def get_schema_map(item: AssertionEntityType | None = None) -> dict:
             _generic_schema
         ),
         AssertionEntityType.Float: _get_schema_for_float(_generic_schema),
+        AssertionEntityType.FloatBetween: _get_schema_for_float_between(
+            _generic_schema
+        ),
     }
 
     if item:
