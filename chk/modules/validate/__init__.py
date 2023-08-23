@@ -178,7 +178,9 @@ class ValidationDocumentSupport:
             _extra_fld = {}
 
             if len(only) > 0:
-                _extra_fld = dict(zip(only, operator.itemgetter(*only)(each_assert)))
+                _extra_fld = {
+                    key: val for key, val in each_assert.items() if key in only
+                }
 
             new_assertion_lst.append(
                 AssertionEntry(
