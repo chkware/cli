@@ -176,3 +176,9 @@ def integer_between(actual: object, extra_fields: dict, **_: object) -> _AResult
     return isinstance(actual, int) and (
         int(extra_fields["min"]) < actual < int(extra_fields["max"])
     )
+
+
+def integer_greater(actual: object, extra_fields: dict, **_: object) -> _AResult:
+    """Assert integer is greater than"""
+
+    return isinstance(actual, int) and int(extra_fields["other"]) < actual

@@ -39,6 +39,10 @@ _AMessages = {
         "pass": "actual `{type_actual}({value_actual})` is a integer value, between `{extra_fields[min]}` and `{extra_fields[max]}`",
         "fail": "actual `{type_actual}({value_actual})` is not a integer value, or not between `{extra_fields[min]}` and `{extra_fields[max]}`",
     },
+    "integer_greater": {
+        "pass": "actual `{type_actual}({value_actual})` is a integer value, greater than `{extra_fields[other]}`",
+        "fail": "actual `{type_actual}({value_actual})` is not a integer value, or not greater than `{extra_fields[other]}`",
+    },
 }
 
 

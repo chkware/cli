@@ -86,6 +86,11 @@ asserts:
   - { type: IntegerBetween, actual: "15", min: 11, max: 13 }
   - { type: IntegerBetween, actual: "12", min: 11, max: 13, cast_actual_to: int }
 
+  - { type: IntegerGreater, actual: 12, other: 11 }
+  - { type: IntegerGreater, actual: 5, other: 11 }
+  - { type: IntegerGreater, actual: "15", other: 11 }
+  - { type: IntegerGreater, actual: "12", other: 11, cast_actual_to: int }
+
 #  - { type: AssertIsString, actual: "{$_response.body.coin.websiteUrl}" }
 #  - { type: AssertStrContains, actual: 'https://someurl.com', expected: 'https' }
 #  - { type: AssertStrContains, actual: '{"a": 1, "b": 2}', expected: '"b":' }

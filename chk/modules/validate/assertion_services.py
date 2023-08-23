@@ -28,6 +28,7 @@ MAP_TYPE_TO_FN: dict[str, Callable] = {
     AssertionEntityType.Boolean: asrt_f.boolean,
     AssertionEntityType.Integer: asrt_f.integer,
     AssertionEntityType.IntegerBetween: asrt_f.integer_between,
+    AssertionEntityType.IntegerGreater: asrt_f.integer_greater,
 }
 
 
