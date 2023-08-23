@@ -212,6 +212,12 @@ def float_between(actual: object, extra_fields: dict, **_: object) -> _AResult:
 
 
 def float_greater(actual: object, extra_fields: dict, **_: object) -> _AResult:
-    """Assert integer is greater than"""
+    """Assert float is greater than"""
 
     return isinstance(actual, float) and extra_fields["other"] < actual
+
+
+def float_greater_or_equal(actual: object, extra_fields: dict, **_: object) -> _AResult:
+    """Assert float is greater than or equal to other"""
+
+    return isinstance(actual, float) and extra_fields["other"] <= actual

@@ -123,6 +123,12 @@ asserts:
   - { type: FloatGreater, actual: "15.32", other: 13 }
   - { type: FloatGreater, actual: "13.24", other: 13, cast_actual_to: float }
 
+  - { type: FloatGreaterOrEqual, actual: 12.0, other: 12 }
+  - { type: FloatGreaterOrEqual, actual: 5.0, other: 11 }
+  - { type: FloatGreaterOrEqual, actual: "15", other: 15 }
+  - { type: FloatGreaterOrEqual, actual: "12.23", other: 15, cast_actual_to: float }
+  - { type: FloatGreaterOrEqual, actual: "16.56", other: 15, cast_actual_to: float }
+
 #  - { type: AssertIsString, actual: "{$_response.body.coin.websiteUrl}" }
 #  - { type: AssertStrContains, actual: 'https://someurl.com', expected: 'https' }
 #  - { type: AssertStrContains, actual: '{"a": 1, "b": 2}', expected: '"b":' }
