@@ -171,14 +171,7 @@ def integer(actual: object, **_: object) -> _AResult:
 
 
 def integer_between(actual: object, extra_fields: dict, **_: object) -> _AResult:
-    """Assert integer
-
-    Args:
-        actual: object
-        **_: object ignores any other params
-    Returns:
-        _AResult result
-    """
+    """Assert integer"""
 
     return isinstance(actual, int) and (
         int(extra_fields["min"]) < actual < int(extra_fields["max"])
