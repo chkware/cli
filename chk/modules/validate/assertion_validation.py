@@ -21,6 +21,7 @@ class AssertionEntityType(enum.StrEnum):
     IntegerBetween = "IntegerBetween"
     IntegerGreater = "IntegerGreater"
     IntegerGreaterOrEqual = "IntegerGreaterOrEqual"
+    IntegerLess = "IntegerLess"
 
 
 _generic_schema = {
@@ -189,6 +190,23 @@ def _get_schema_for_integer_greater_or_equal(_gen_schema: dict) -> dict:
     }
 
 
+def _get_schema_for_integer_less(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.IntegerLess)
+    del _t_gen_schema["expected"]
+
+    return _t_gen_schema | {
+        "other": {
+            "required": True,
+            "empty": False,
+            "nullable": False,
+            "type": "integer",
+        },
+    }
+
+
 # ------------------------------------------------
 # Scheme selector
 # ------------------------------------------------
@@ -219,6 +237,7 @@ def get_schema_map(item: AssertionEntityType | None = None) -> dict:
         AssertionEntityType.IntegerGreaterOrEqual: _get_schema_for_integer_greater_or_equal(
             _generic_schema
         ),
+        AssertionEntityType.IntegerLess: _get_schema_for_integer_less(_generic_schema),
     }
 
     if item:
