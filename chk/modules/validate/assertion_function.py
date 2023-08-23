@@ -195,3 +195,9 @@ def integer_less_or_equal(actual: object, extra_fields: dict, **_: object) -> _A
     """Assert integer is less than or equal to other"""
 
     return isinstance(actual, int) and int(extra_fields["other"]) >= actual
+
+
+def float_(actual: object, **_: object) -> _AResult:
+    """Assert integer"""
+
+    return isinstance(actual, float)

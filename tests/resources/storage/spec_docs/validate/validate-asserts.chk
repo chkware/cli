@@ -107,6 +107,10 @@ asserts:
   - { type: IntegerLessOrEqual, actual: "12", other: 15, cast_actual_to: int }
   - { type: IntegerLessOrEqual, actual: "16", other: 15, cast_actual_to: int }
 
+  - { type: Float, actual: 10.0 }
+  - { type: Float, actual: -10.00000000001 }
+  - { type: Float, actual: a }
+
 #  - { type: AssertIsString, actual: "{$_response.body.coin.websiteUrl}" }
 #  - { type: AssertStrContains, actual: 'https://someurl.com', expected: 'https' }
 #  - { type: AssertStrContains, actual: '{"a": 1, "b": 2}', expected: '"b":' }
