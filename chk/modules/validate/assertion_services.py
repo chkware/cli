@@ -34,6 +34,7 @@ MAP_TYPE_TO_FN: dict[str, Callable] = {
     AssertionEntityType.IntegerLessOrEqual: asrt_f.integer_less_or_equal,
     AssertionEntityType.Float: asrt_f.float_,
     AssertionEntityType.FloatBetween: asrt_f.float_between,
+    AssertionEntityType.FloatGreater: asrt_f.float_greater,
 }
 
 

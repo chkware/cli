@@ -63,6 +63,10 @@ _AMessages = {
         "pass": "actual `{type_actual}({value_actual})` is a floating point value, between `{extra_fields[min]}` and `{extra_fields[max]}`",
         "fail": "actual `{type_actual}({value_actual})` is not a floating point value, or not between `{extra_fields[min]}` and `{extra_fields[max]}`",
     },
+    "float_greater": {
+        "pass": "actual `{type_actual}({value_actual})` is a floating point value, greater than `{extra_fields[other]}`",
+        "fail": "actual `{type_actual}({value_actual})` is not a floating point value, or not greater than `{extra_fields[other]}`",
+    },
 }
 
 

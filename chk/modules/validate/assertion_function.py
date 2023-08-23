@@ -207,5 +207,11 @@ def float_between(actual: object, extra_fields: dict, **_: object) -> _AResult:
     """Assert float between"""
 
     return isinstance(actual, float) and (
-        int(extra_fields["min"]) < actual < int(extra_fields["max"])
+        extra_fields["min"] < actual < extra_fields["max"]
     )
+
+
+def float_greater(actual: object, extra_fields: dict, **_: object) -> _AResult:
+    """Assert integer is greater than"""
+
+    return isinstance(actual, float) and extra_fields["other"] < actual
