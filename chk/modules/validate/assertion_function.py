@@ -182,3 +182,11 @@ def integer_greater(actual: object, extra_fields: dict, **_: object) -> _AResult
     """Assert integer is greater than"""
 
     return isinstance(actual, int) and int(extra_fields["other"]) < actual
+
+
+def integer_greater_or_equal(
+    actual: object, extra_fields: dict, **_: object
+) -> _AResult:
+    """Assert integer is greater than or equal to other"""
+
+    return isinstance(actual, int) and int(extra_fields["other"]) <= actual

@@ -91,6 +91,12 @@ asserts:
   - { type: IntegerGreater, actual: "15", other: 11 }
   - { type: IntegerGreater, actual: "12", other: 11, cast_actual_to: int }
 
+  - { type: IntegerGreaterOrEqual, actual: 12, other: 12 }
+  - { type: IntegerGreaterOrEqual, actual: 5, other: 11 }
+  - { type: IntegerGreaterOrEqual, actual: "15", other: 15 }
+  - { type: IntegerGreaterOrEqual, actual: "12", other: 15, cast_actual_to: int }
+  - { type: IntegerGreaterOrEqual, actual: "16", other: 15, cast_actual_to: int }
+
 #  - { type: AssertIsString, actual: "{$_response.body.coin.websiteUrl}" }
 #  - { type: AssertStrContains, actual: 'https://someurl.com', expected: 'https' }
 #  - { type: AssertStrContains, actual: '{"a": 1, "b": 2}', expected: '"b":' }
