@@ -158,14 +158,7 @@ def boolean(actual: object, expected: object, **_: object) -> _AResult:
 
 
 def integer(actual: object, **_: object) -> _AResult:
-    """Assert integer
-
-    Args:
-        actual: object
-        **_: object ignores any other params
-    Returns:
-        _AResult result
-    """
+    """Assert integer"""
 
     return isinstance(actual, int)
 
