@@ -74,15 +74,10 @@ _AMessages = {
 }
 
 
-def get_pass_assert_msg_for(function_name: str) -> str:
-    try:
-        return _AMessages[function_name].get("pass", "")
-    except KeyError:
-        return ""
+def get_assert_msg_for(fn_signature: str) -> str:
+    [func, sign] = fn_signature.split(".")
 
-
-def get_fail_assert_msg_for(function_name: str) -> str:
     try:
-        return _AMessages[function_name].get("fail", "")
+        return _AMessages[func][sign]
     except KeyError:
         return ""

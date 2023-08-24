@@ -11,10 +11,7 @@ from datetime import datetime
 
 import chk.modules.validate.assertion_function as asrt_f
 from chk.infrastructure.helper import Cast
-from chk.modules.validate.assertion_message import (
-    get_fail_assert_msg_for,
-    get_pass_assert_msg_for,
-)
+from chk.modules.validate.assertion_message import get_assert_msg_for
 from chk.infrastructure.symbol_table import linear_replace
 from chk.modules.validate.assertion_validation import AssertionEntityType
 
@@ -215,16 +212,16 @@ class AssertionEntryListRunner:
 
         if isinstance(asrt_resp, ValueError):
             resp["is_pass"] = False
-            resp["message"] = get_fail_assert_msg_for(asrt_fn_name).format(
-                **_prepare_message_values()
-            )
+            resp["message"] = get_assert_msg_for(
+                f"{asrt_fn_name}.{str(asrt_resp)}"
+            ).format(**_prepare_message_values())
         else:
             resp["is_pass"] = asrt_resp
 
             message = (
-                get_pass_assert_msg_for(asrt_fn_name)
+                get_assert_msg_for(f"{asrt_fn_name}.pass")
                 if asrt_resp
-                else get_fail_assert_msg_for(asrt_fn_name)
+                else get_assert_msg_for(f"{asrt_fn_name}.fail")
             )
             resp["message"] = message.format(**_prepare_message_values())
 
