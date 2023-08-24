@@ -242,3 +242,12 @@ def float_less(actual: object, extra_fields: dict, **_: object) -> _AResult:
         return ValueError("actual_not_float")
 
     return extra_fields["other"] > actual
+
+
+def float_less_or_equal(actual: object, extra_fields: dict, **_: object) -> _AResult:
+    """Assert float is greater than or equal to other"""
+
+    if not isinstance(actual, float):
+        return ValueError("actual_not_float")
+
+    return extra_fields["other"] >= actual
