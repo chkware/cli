@@ -56,21 +56,23 @@ _AMessages = {
         "fail": "actual `{type_actual}({value_actual})` is not a integer value, or not less than or equal to `{extra_fields[other]}`",
     },
     "float_": {
-        "pass": "actual `{type_actual}({value_actual})` is a floating point value",
-        "fail": "actual `{type_actual}({value_actual})` is not a floating point value",
+        "pass": "actual `{type_actual}({value_actual})` is a float value",
+        "fail": "actual `{type_actual}({value_actual})` is not a float value",
     },
     "float_between": {
-        "pass": "actual `{type_actual}({value_actual})` is a floating point value, between `{extra_fields[min]}` and `{extra_fields[max]}`",
-        "fail": "actual `{type_actual}({value_actual})` is not a floating point value, or not between `{extra_fields[min]}` and `{extra_fields[max]}`",
+        "pass": "actual `{type_actual}({value_actual})` is between `{extra_fields[min]}` and `{extra_fields[max]}`",
+        "fail": "actual `{type_actual}({value_actual})` is not between `{extra_fields[min]}` and `{extra_fields[max]}`",
+        "actual_not_float": "actual `{type_actual}({value_actual})` is not a float value",
     },
     "float_greater": {
-        "pass": "actual `{type_actual}({value_actual})` is a floating point value, greater than `{extra_fields[other]}`",
-        "fail": "actual `{type_actual}({value_actual})` is not a floating point value, or not greater than `{extra_fields[other]}`",
+        "pass": "actual `{type_actual}({value_actual})` is greater than `{extra_fields[other]}`",
+        "fail": "actual `{type_actual}({value_actual})` is not greater than `{extra_fields[other]}`",
+        "actual_not_float": "actual `{type_actual}({value_actual})` is not a float value",
     },
     "float_greater_or_equal": {
         "pass": "actual `{type_actual}({value_actual})` is greater than or equal to `{extra_fields[other]}`",
         "fail": "actual `{type_actual}({value_actual})` is not greater than or equal to `{extra_fields[other]}`",
-        "actual_not_float": "actual `{type_actual}({value_actual})` is not a floating point value",
+        "actual_not_float": "actual `{type_actual}({value_actual})` is not a float value",
     },
 }
 
