@@ -68,8 +68,9 @@ _AMessages = {
         "fail": "actual `{type_actual}({value_actual})` is not a floating point value, or not greater than `{extra_fields[other]}`",
     },
     "float_greater_or_equal": {
-        "pass": "actual `{type_actual}({value_actual})` is a floating point value, greater than or equal to `{extra_fields[other]}`",
-        "fail": "actual `{type_actual}({value_actual})` is not a floating point value, or not greater than or equal to `{extra_fields[other]}`",
+        "pass": "actual `{type_actual}({value_actual})` is greater than or equal to `{extra_fields[other]}`",
+        "fail": "actual `{type_actual}({value_actual})` is not greater than or equal to `{extra_fields[other]}`",
+        "actual_not_float": "actual `{type_actual}({value_actual})` is not a floating point value",
     },
 }
 
