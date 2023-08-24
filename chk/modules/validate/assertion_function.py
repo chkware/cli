@@ -166,15 +166,19 @@ def integer(actual: object, **_: object) -> _AResult:
 def integer_between(actual: object, extra_fields: dict, **_: object) -> _AResult:
     """Assert integer between"""
 
-    return isinstance(actual, int) and (
-        int(extra_fields["min"]) < actual < int(extra_fields["max"])
-    )
+    if not isinstance(actual, int):
+        return ValueError("actual_not_int")
+
+    return int(extra_fields["min"]) < actual < int(extra_fields["max"])
 
 
 def integer_greater(actual: object, extra_fields: dict, **_: object) -> _AResult:
     """Assert integer is greater than"""
 
-    return isinstance(actual, int) and int(extra_fields["other"]) < actual
+    if not isinstance(actual, int):
+        return ValueError("actual_not_int")
+
+    return int(extra_fields["other"]) < actual
 
 
 def integer_greater_or_equal(
@@ -182,19 +186,28 @@ def integer_greater_or_equal(
 ) -> _AResult:
     """Assert integer is greater than or equal to other"""
 
-    return isinstance(actual, int) and int(extra_fields["other"]) <= actual
+    if not isinstance(actual, int):
+        return ValueError("actual_not_int")
+
+    return int(extra_fields["other"]) <= actual
 
 
 def integer_less(actual: object, extra_fields: dict, **_: object) -> _AResult:
     """Assert integer is less than"""
 
-    return isinstance(actual, int) and int(extra_fields["other"]) > actual
+    if not isinstance(actual, int):
+        return ValueError("actual_not_int")
+
+    return int(extra_fields["other"]) > actual
 
 
 def integer_less_or_equal(actual: object, extra_fields: dict, **_: object) -> _AResult:
     """Assert integer is less than or equal to other"""
 
-    return isinstance(actual, int) and int(extra_fields["other"]) >= actual
+    if not isinstance(actual, int):
+        return ValueError("actual_not_int")
+
+    return int(extra_fields["other"]) >= actual
 
 
 def float_(actual: object, **_: object) -> _AResult:
