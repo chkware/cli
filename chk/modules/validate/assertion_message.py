@@ -18,6 +18,7 @@ _AMessages = {
     "declined": {
         "pass": "actual `{type_actual}({value_actual})` is a declined value",
         "fail": "actual `{type_actual}({value_actual})` is not a declined value",
+        "actual_not_allowed": "actual `{type_actual}({value_actual})` is not an accepted value",
     },
     "empty": {
         "pass": "actual `{type_actual}({value_actual})` is an empty value",
