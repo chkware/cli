@@ -133,28 +133,20 @@ def not_empty(actual: object, **_: object) -> _AResult:
 
 
 def boolean(actual: object, expected: object, **_: object) -> _AResult:
-    """Assert boolean
+    """Assert boolean"""
 
-    Args:
-        actual: object
-        expected: object
-        **_: object ignores any other params
-    Returns:
-        _AResult result
-    """
+    if not isinstance(actual, bool):
+        return ValueError("actual_not_bool")
 
-    eq_response: _AResult = True
+    if not isinstance(expected, types.NotImplementedType) and not isinstance(
+        expected, bool
+    ):
+        return ValueError("expected_not_bool")
 
-    if not isinstance(expected, types.NotImplementedType):
-        if not isinstance(expected, bool):
-            return ValueError("expected_not_bool")
+    if isinstance(expected, bool):
+        return True if actual == expected else ValueError("expected_mismatch")
 
-        eq_response = equal(actual, expected)
-
-        if isinstance(eq_response, ValueError):
-            return eq_response
-
-    return eq_response and isinstance(actual, bool)
+    return True
 
 
 def integer(actual: object, **_: object) -> _AResult:

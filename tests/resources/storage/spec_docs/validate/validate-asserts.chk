@@ -75,7 +75,9 @@ asserts:
   - { type: Boolean, actual: True }
   - { type: Boolean, actual: "true", cast_actual_to: bool }
   - { type: Boolean, actual: True, expected: False }
+  - { type: Boolean, actual: True, expected: 2 }
   - { type: Boolean, actual: "true", expected: False, cast_actual_to: bool }
+
   - { type: Integer, actual: 10 }
   - { type: Integer, actual: -10 }
   - { type: Integer, actual: a }

@@ -28,8 +28,11 @@ _AMessages = {
         "fail": "actual `{type_actual}({value_actual})` is not a non-empty value",
     },
     "boolean": {
-        "pass": "actual `{type_actual}({value_actual})` is a boolean value, expected `{type_expected}({value_expected})`",
-        "fail": "actual `{type_actual}({value_actual})` is not a boolean value, expected `{type_expected}({value_expected})`",
+        "pass": "actual `{type_actual}({value_actual})` is a boolean value.",
+        "fail": "actual `{type_actual}({value_actual})` is not a boolean value",
+        "actual_not_bool": "actual `{type_actual}({value_actual})` is not a boolean value",
+        "expected_not_bool": "expected `{type_expected}({value_expected})` is not a boolean value",
+        "expected_mismatch": "actual `{type_actual}({value_actual})` and expected `{type_expected}({value_expected})` mismatch",
     },
     "integer": {
         "pass": "actual `{type_actual}({value_actual})` is a integer value",
