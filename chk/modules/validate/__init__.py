@@ -5,7 +5,10 @@ Validate module
 import dataclasses
 import enum
 import json
+import operator
 from collections import abc
+
+import cerberus
 
 from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
@@ -26,6 +29,10 @@ from chk.modules.validate.assertion_services import (
     AssertionEntryListRunner,
     AllTestRunResult,
     MAP_TYPE_TO_FN,
+)
+from chk.modules.validate.assertion_validation import (
+    get_schema_map,
+    AssertionEntityProperty,
 )
 
 VERSION_SCOPE = ["validation"]
@@ -147,23 +154,41 @@ class ValidationDocumentSupport:
             if not (_assert_type := each_assert.get("type", None)):
                 raise RuntimeError("key: `type` not found in one of the asserts.")
 
+            validator = cerberus.Validator(get_schema_map(_assert_type))
+
+            if not validator.validate(each_assert):
+                raise RuntimeError(
+                    f"key: Unsupported structure for `{each_assert}`. {validator.errors}"
+                )
+
             if _assert_type not in MAP_TYPE_TO_FN:
                 raise RuntimeError(f"type: `{_assert_type}` not supported.")
 
-            if not (_actual := each_assert.get("actual", None)):
+            if "actual" not in each_assert:
                 raise RuntimeError("key: `actual` not found in one of the asserts.")
+            _actual = each_assert["actual"]
 
-            if not (_expected := each_assert.get("expected", None)):
-                raise RuntimeError("key: `expected` not found in one of the asserts.")
+            _expected = (
+                each_assert["expected"] if "expected" in each_assert else NotImplemented
+            )
+
+            _cast_actual_to = each_assert.get("cast_actual_to", "")
+
+            only = tuple(set(each_assert.keys()) - set(AssertionEntityProperty))
+            _extra_fld = {}
+
+            if len(only) > 0:
+                _extra_fld = {
+                    key: val for key, val in each_assert.items() if key in only
+                }
 
             new_assertion_lst.append(
                 AssertionEntry(
                     assert_type=_assert_type,
                     actual=_actual,
-                    actual_given=_actual,
                     expected=_expected,
-                    msg_pass="",
-                    msg_fail="",
+                    cast_actual_to=_cast_actual_to,
+                    extra_fields=_extra_fld,
                 )
             )
 
@@ -177,6 +202,9 @@ class ValidationDocumentSupport:
             expose_list: list
             exec_ctx: ExecuteContext
         """
+
+        if not expose_list:
+            return
 
         display_item_list: list[object] = []
 

@@ -340,13 +340,6 @@ def test_formatter_pass_print_with_cb_dict():
 
 
 class TestStrTemplate:
-    vals = {
-        "va": 1,
-        "vb": {"x": "y"},
-        "vc": {"p": "1", "q": {"x": "y"}},
-        "vd": ["a", "b"],
-    }
-
     @staticmethod
     def test_create_str_templates_pass():
         tpl = StrTemplate()
@@ -388,6 +381,8 @@ class TestStrTemplate:
             == "Hello Doe, John"
         )
 
+
+class TestGetFromStrTemplate:
     @staticmethod
     def test_get_pass_when_key_found():
         dct = {"a": {"aa": {"aaa": 1}}}
@@ -422,6 +417,16 @@ class TestStrTemplate:
         keymap = "0.aa.aaa.1"
 
         assert StrTemplate._get(dct, keymap) == 2
+
+
+class TestReplaceFromStrTemplate:
+
+    vals = {
+        "va": 1,
+        "vb": {"x": "y"},
+        "vc": {"p": "1", "q": {"x": "y"}},
+        "vd": ["a", "b"],
+    }
 
     @classmethod
     def test_replace_ret_same_when_nothing_to_replace(cls):

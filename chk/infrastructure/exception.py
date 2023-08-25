@@ -41,11 +41,3 @@ def err_message(key: str, repl: dict | None = None, extra: Any = None) -> str:
     msg += " : " + str(extra) if extra else ""
 
     return "error: " + msg
-
-
-@dataclasses.dataclass(slots=True)
-class ValidationError(AssertionError):
-    """Holder of custom error messages, error linked list"""
-
-    msg: str = ""
-    parent: Optional[Self] = None

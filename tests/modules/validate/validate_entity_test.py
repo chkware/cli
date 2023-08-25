@@ -22,7 +22,7 @@ class TestValidationDocument:
                 "version": "default:validation:0.7.2",
                 "asserts": [
                     {
-                        "type": "AssertEquals",
+                        "type": "Equal",
                         "actual": "{{ _data.roll }}",
                         "expected": 39,
                     }
@@ -49,7 +49,7 @@ class TestValidationDocument:
                 "version": "default:validation:0.7.2",
                 "asserts": [
                     {
-                        "type": "AssertEquals",
+                        "type": "Equal",
                         "actual": "{{ _data.roll }}",
                         "expected": 39,
                     }
@@ -100,7 +100,7 @@ class TestValidationDocument:
                 "version": "default:validation:0.7.2",
                 "asserts": [
                     {
-                        "type": "AssertEquals",
+                        "type": "Equal",
                         "actual": "{{ _data.roll }}",
                         "expected": 39,
                     }
@@ -135,7 +135,7 @@ class TestValidationDocumentSupport:
                 "version": "default:validation:0.7.2",
                 "asserts": [
                     {
-                        "type": "AssertEquals",
+                        "type": "Equal",
                         "actual": "{{ _data.roll }}",
                         "expected": 39,
                     }
@@ -164,7 +164,7 @@ class TestValidationDocumentSupport:
                 "version": "default:validation:0.7.2",
                 "asserts": [
                     {
-                        "type": "AssertEquals",
+                        "type": "Equal",
                         "actual": "{{ _data.roll }}",
                         "expected": 39,
                     }
@@ -193,7 +193,7 @@ class TestValidationDocumentSupport:
                 "version": "default:validation:0.7.2",
                 "asserts": [
                     {
-                        "type": "AssertEquals",
+                        "type": "Equal",
                         "actual": "{{ _data.roll }}",
                         "expected": 39,
                     }
@@ -225,7 +225,7 @@ class TestValidationDocumentSupport:
                 "version": "default:validation:0.7.2",
                 "asserts": [
                     {
-                        "type": "AssertEquals",
+                        "type": "Equal",
                         "actual": "{{ _data.roll }}",
                         "expected": 39,
                     }
@@ -261,12 +261,12 @@ class TestValidationDocumentSupport:
                 "version": "default:validation:0.7.2",
                 "asserts": [
                     {
-                        "type": "AssertEquals",
+                        "type": "Equal",
                         "actual": "{{ _data.roll }}",
                         "expected": 39,
                     },
                     {
-                        "type": "AssertEquals",
+                        "type": "Equal",
                         "actual": "{{ _data.name }}",
                         "expected": "Some one",
                     },
@@ -279,4 +279,4 @@ class TestValidationDocumentSupport:
         doc = ValidationDocument.from_file_context(ctx)
         resp = ValidationDocumentSupport.make_assertion_entry_list(doc.asserts)
 
-        assert all([isinstance(aitem, AssertionEntry) for aitem in resp])
+        assert all(list(isinstance(a_item, AssertionEntry) for a_item in resp))

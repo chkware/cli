@@ -1,30 +1,61 @@
 """
 Assertion services
 """
+
+import dataclasses
 import typing
 import uuid
 from collections import UserDict
+from collections.abc import Callable
 from datetime import datetime
 
 import chk.modules.validate.assertion_function as asrt_f
-from chk.infrastructure.exception import ValidationError
+from chk.infrastructure.helper import Cast
+from chk.modules.validate.assertion_message import get_assert_msg_for
 from chk.infrastructure.symbol_table import linear_replace
+from chk.modules.validate.assertion_validation import AssertionEntityType
 
-MAP_TYPE_TO_FN = {
-    "Equal": asrt_f.equal,
-    "NotEqual": asrt_f.not_equal,
+MAP_TYPE_TO_FN: dict[str, Callable] = {
+    AssertionEntityType.Accepted: asrt_f.accepted,
+    AssertionEntityType.Declined: asrt_f.declined,
+    AssertionEntityType.Equal: asrt_f.equal,
+    AssertionEntityType.NotEqual: asrt_f.not_equal,
+    AssertionEntityType.Empty: asrt_f.empty,
+    AssertionEntityType.NotEmpty: asrt_f.not_empty,
+    AssertionEntityType.Boolean: asrt_f.boolean,
+    AssertionEntityType.Integer: asrt_f.integer,
+    AssertionEntityType.IntegerBetween: asrt_f.integer_between,
+    AssertionEntityType.IntegerGreater: asrt_f.integer_greater,
+    AssertionEntityType.IntegerGreaterOrEqual: asrt_f.integer_greater_or_equal,
+    AssertionEntityType.IntegerLess: asrt_f.integer_less,
+    AssertionEntityType.IntegerLessOrEqual: asrt_f.integer_less_or_equal,
+    AssertionEntityType.Float: asrt_f.float_,
+    AssertionEntityType.FloatBetween: asrt_f.float_between,
+    AssertionEntityType.FloatGreater: asrt_f.float_greater,
+    AssertionEntityType.FloatLess: asrt_f.float_less,
+    AssertionEntityType.FloatLessOrEqual: asrt_f.float_less_or_equal,
 }
 
 
-class AssertionEntry(typing.NamedTuple):
+@dataclasses.dataclass
+class AssertionEntry:
     """AssertionEntry holds one assertion operation"""
 
     assert_type: str
     actual: typing.Any
-    actual_given: typing.Any
     expected: typing.Any
-    msg_pass: str
-    msg_fail: str
+    msg_pass: str = dataclasses.field(default_factory=str)
+    msg_fail: str = dataclasses.field(default_factory=str)
+    cast_actual_to: str = dataclasses.field(default_factory=str)
+    actual_given: typing.Any = dataclasses.field(default=NotImplemented)
+    actual_b4_cast: typing.Any = dataclasses.field(default=NotImplemented)
+    extra_fields: dict = dataclasses.field(default_factory=dict)
+
+    @property
+    def as_dict(self) -> dict:
+        """Return dict representation"""
+
+        return dataclasses.asdict(self)
 
 
 class SingleTestRunResult(UserDict):
@@ -38,7 +69,7 @@ class SingleTestRunResult(UserDict):
         """Convert SingleTestRunResult to a dict"""
 
         return {
-            key: value._asdict() if key == "assert_used" else value
+            key: value.as_dict if key == "assert_used" else value
             for key, value in self.items()
         }
 
@@ -122,15 +153,41 @@ class AssertionEntryListRunner:
             AssertionEntry
         """
 
+        # replace actual value for template
         if (
             isinstance(assert_item.actual, str)
             and "{{" in assert_item.actual
             and "}}" in assert_item.actual
         ):
-            return assert_item._replace(
-                actual=linear_replace(assert_item.actual_given, variable_d),
-                expected=linear_replace(assert_item.expected, variable_d),
-            )
+            assert_item.actual_given = assert_item.actual
+            assert_item.actual = linear_replace(assert_item.actual, variable_d)
+
+        # convert actual value type
+        if assert_item.cast_actual_to != "" and isinstance(assert_item.actual, str):
+            assert_item.actual_b4_cast = assert_item.actual
+
+            if assert_item.cast_actual_to == "int_or_flot":
+                assert_item.actual = Cast.to_int_or_float(assert_item.actual)
+            elif assert_item.cast_actual_to == "int":
+                assert_item.actual = Cast.to_int(assert_item.actual)
+            elif assert_item.cast_actual_to == "float":
+                assert_item.actual = Cast.to_float(assert_item.actual)
+            elif assert_item.cast_actual_to == "bool":
+                assert_item.actual = Cast.to_bool(assert_item.actual)
+            elif assert_item.cast_actual_to == "none":
+                assert_item.actual = Cast.to_none(assert_item.actual)
+            elif assert_item.cast_actual_to in ["dict", "list", "str"]:
+                assert_item.actual = Cast.to_hashable(assert_item.actual)
+            elif assert_item.cast_actual_to == "auto":
+                assert_item.actual = Cast.to_auto(assert_item.actual)
+
+        # replace expected value for template
+        if (
+            isinstance(assert_item.expected, str)
+            and "{{" in assert_item.expected
+            and "}}" in assert_item.expected
+        ):
+            assert_item.expected = linear_replace(assert_item.expected, variable_d)
 
         return assert_item
 
@@ -138,43 +195,51 @@ class AssertionEntryListRunner:
     def _prepare_test_run_result(
         resp: SingleTestRunResult,
         assert_item: AssertionEntry,
-        asrt_resp: typing.Union[ValidationError | bool],
+        asrt_resp: ValueError | bool,
     ) -> None:
-        asrt_fn_name = MAP_TYPE_TO_FN[assert_item.assert_type].__name__
-        actual = assert_item._asdict().get("actual")
-        expected = assert_item._asdict().get("expected")
+        def _prepare_message_values() -> dict:
+            return {
+                "assert_type": assert_item.assert_type,
+                "type_actual": assert_item.actual.__class__.__name__,
+                "type_expected": assert_item.expected.__class__.__name__,
+                "value_actual": assert_item.actual,
+                "value_expected": assert_item.expected,
+                "value_actual_given": assert_item.actual_given,
+                "value_actual_b4_cast": assert_item.actual_b4_cast,
+                "extra_fields": assert_item.extra_fields,
+            }
 
-        if isinstance(asrt_resp, ValidationError):
+        asrt_fn_name = MAP_TYPE_TO_FN[assert_item.assert_type].__name__
+
+        if isinstance(asrt_resp, ValueError):
             resp["is_pass"] = False
-            resp["message"] = asrt_f.get_fail_assert_msg_for(asrt_fn_name).format(
-                actual.__class__.__name__,
-                actual,
-                expected.__class__.__name__,
-                expected,
-            )
+            resp["message"] = get_assert_msg_for(
+                f"{asrt_fn_name}.{str(asrt_resp)}"
+            ).format(**_prepare_message_values())
         else:
-            resp["is_pass"] = True
-            resp["message"] = asrt_f.get_pass_assert_msg_for(asrt_fn_name).format(
-                actual.__class__.__name__,
-                actual,
-                expected.__class__.__name__,
-                expected,
+            resp["is_pass"] = asrt_resp
+
+            message = (
+                get_assert_msg_for(f"{asrt_fn_name}.pass")
+                if asrt_resp
+                else get_assert_msg_for(f"{asrt_fn_name}.fail")
             )
+            resp["message"] = message.format(**_prepare_message_values())
 
     @staticmethod
     def _call_assertion_method(
         assert_item: AssertionEntry,
-    ) -> typing.Union[ValidationError | bool]:
+    ) -> ValueError | bool:
         """Call assertion method
 
         Args:
             assert_item: AssertionEntry
         Returns:
-            Union[ValidationError | bool]
+            ValueError | bool
         """
 
         asrt_fn = MAP_TYPE_TO_FN[assert_item.assert_type]
-        return asrt_fn(**assert_item._asdict())
+        return asrt_fn(**assert_item.as_dict)
 
     @staticmethod
     def test_run(
