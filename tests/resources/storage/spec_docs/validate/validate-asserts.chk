@@ -151,9 +151,9 @@ asserts:
   - { type: Str, actual: 23 }
   - { type: Str, actual: ~ }
 
-#  - { type: AssertStrContains, actual: 'https://someurl.com', expected: 'https' }
-#  - { type: AssertStrContains, actual: '{"a": 1, "b": 2}', expected: '"b":' }
-#  - { type: AssertIsFloat, actual: "{$_response.body.coin.priceChange1w}" }
+  - { type: StrHave, actual: 'https://someurl.com', other: 'someurl' }
+  - { type: StrHave, actual: '{"a": 1, "b": 2}', other: '"b":' }
+  - { type: StrHave, actual: '{"a": 1, "b": 2}', other: '{"a": 1}' }
 
 #  - { type: AssertIsMap, actual: "{$_response.body.coin}" }
 #  - { type: AssertIsMap, actual: { 'a': 1, 'b': 2 } }

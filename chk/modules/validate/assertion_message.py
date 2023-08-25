@@ -97,6 +97,10 @@ _AMessages = {
         "pass": "actual `{type_actual}({value_actual})` is a string",
         "fail": "actual `{type_actual}({value_actual})` is not a string",
     },
+    "str_have": {
+        "pass": "actual `{type_actual}({value_actual})` have `{extra_fields[other]}` in it.",
+        "fail": "actual `{type_actual}({value_actual})` do not  have `{extra_fields[other]}` in it.",
+    },
 }
 
 
