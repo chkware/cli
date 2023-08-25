@@ -251,3 +251,9 @@ def float_less_or_equal(actual: object, extra_fields: dict, **_: object) -> _ARe
         return ValueError("actual_not_float")
 
     return extra_fields["other"] >= actual
+
+
+def str_(actual: object, **_: object) -> _AResult:
+    """Assert string"""
+
+    return isinstance(actual, str)

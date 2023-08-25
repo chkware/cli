@@ -5,6 +5,9 @@ variables:
   response:
     int: 200
     float: 200.23
+    string1: "200.23"
+    string2: "Some random string"
+    string3: Some random string
 
 data:
   code: 200
@@ -142,7 +145,12 @@ asserts:
   - { type: FloatLessOrEqual, actual: "12.23", other: 15.7, cast_actual_to: float }
   - { type: FloatLessOrEqual, actual: "16.56", other: 15, cast_actual_to: float }
 
-#  - { type: AssertIsString, actual: "{$_response.body.coin.websiteUrl}" }
+  - { type: Str, actual: "{{ response.string1}}" }
+  - { type: Str, actual: "{{ response.string2 }}" }
+  - { type: Str, actual: "{{ response.string3 }}" }
+  - { type: Str, actual: 23 }
+  - { type: Str, actual: ~ }
+
 #  - { type: AssertStrContains, actual: 'https://someurl.com', expected: 'https' }
 #  - { type: AssertStrContains, actual: '{"a": 1, "b": 2}', expected: '"b":' }
 #  - { type: AssertIsFloat, actual: "{$_response.body.coin.priceChange1w}" }

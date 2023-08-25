@@ -93,6 +93,10 @@ _AMessages = {
         "fail": "actual `{type_actual}({value_actual})` is not less than or equal to `{extra_fields[other]}`",
         "actual_not_float": "actual `{type_actual}({value_actual})` is not a float value",
     },
+    "str_": {
+        "pass": "actual `{type_actual}({value_actual})` is a string",
+        "fail": "actual `{type_actual}({value_actual})` is not a string",
+    },
 }
 
 
