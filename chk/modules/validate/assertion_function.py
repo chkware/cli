@@ -263,3 +263,9 @@ def str_have(actual: object, extra_fields: dict, **_: object) -> _AResult:
     """Assert string have a sub-string"""
 
     return extra_fields["other"] in actual
+
+
+def str_do_not_have(actual: object, extra_fields: dict, **_: object) -> _AResult:
+    """Assert string have a sub-string"""
+
+    return extra_fields["other"] not in actual
