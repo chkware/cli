@@ -13,37 +13,14 @@ data:
   code: 200
 
 asserts:
-  - type: Equal
-    actual: "{{ response.int }}"
-    expected: 200
+  - { type: Equal, actual: "{{ response.int }}", expected: 200 }
+  - { type: Equal, actual: "{{ response.float }}", expected: 200.23 }
+  - { type: Equal, actual: "[ 1, 2, 3 ]", expected: [ 1, 2, 3 ], cast_actual_to: list }
+  - { type: Equal, actual: "{'a': 1, 'c': 3, 'b': 2}", expected: { 'a': 1, 'c': 3, 'b': 2 }, cast_actual_to: dict }
+  - { type: Equal, actual: "False", expected: False, cast_actual_to: bool }
+  - { type: Equal, actual: "False", expected: False, cast_actual_to: auto }
 
-  - type: Equal
-    actual: "{{ response.float }}"
-    expected: 200.23
-
-  - type: Equal
-    actual: "[ 1, 2, 3 ]"
-    expected: [ 1, 2, 3 ]
-    cast_actual_to: list
-
-  - type: Equal
-    actual: "{'a': 1, 'c': 3, 'b': 2}"
-    expected: { 'a': 1, 'c': 3, 'b': 2 }
-    cast_actual_to: dict
-
-  - type: Equal
-    actual: "False"
-    expected: False
-    cast_actual_to: bool
-
-  - type: Equal
-    actual: "False"
-    expected: False
-    cast_actual_to: auto
-
-  - type: NotEqual
-    actual: "False"
-    expected: False
+  - { type: NotEqual, actual: "False", expected: False }
 
   - { type: Empty, actual: ~ }
   - { type: NotEmpty, actual: 2 }
