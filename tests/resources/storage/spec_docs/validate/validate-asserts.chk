@@ -148,6 +148,10 @@ asserts:
   - { type: StrEndsWith, actual: '{"a": 1, "b": 2}', other: '": 2}' }
   - { type: StrEndsWith, actual: '{"a": 1, "b": 2}', other: '{"a"' }
 
+  - { type: StrDoNotEndsWith, actual: 'https://someurl.com', other: 'https' }
+  - { type: StrDoNotEndsWith, actual: '{"a": 1, "b": 2}', other: '"b":' }
+  - { type: StrDoNotEndsWith, actual: '{"a": 1, "b": 2}', other: '": 2}' }
+
 #  - { type: AssertIsMap, actual: "{$_response.body.coin}" }
 #  - { type: AssertIsMap, actual: { 'a': 1, 'b': 2 } }
 #  - { type: AssertMapHasKey, actual: { 'a': 1, 'b': 2 }, expected: 'a' }
