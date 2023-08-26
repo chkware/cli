@@ -50,6 +50,7 @@ MAP_TYPE_TO_FN: dict[str, Callable] = {
     AssertionEntityType.List: asrt_f.list_,
     AssertionEntityType.ListContains: asrt_f.list_contains,
     AssertionEntityType.ListDoNotContains: asrt_f.list_do_not_contains,
+    AssertionEntityType.ListHasIndex: asrt_f.list_has_index,
 }
 
 

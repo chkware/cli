@@ -44,6 +44,7 @@ class AssertionEntityType(enum.StrEnum):
     List = "List"
     ListContains = "ListContains"
     ListDoNotContains = "ListDoNotContains"
+    ListHasIndex = "ListHasIndex"
 
 
 _generic_schema = {
@@ -576,6 +577,23 @@ def _get_schema_for_list_do_not_contains(_gen_schema: dict) -> dict:
     return _t_gen_schema
 
 
+def _get_schema_for_list_has_index(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.ListHasIndex)
+    del _t_gen_schema["expected"]
+
+    return _t_gen_schema | {
+        "index": {
+            "required": True,
+            "empty": False,
+            "nullable": False,
+            "type": "integer",
+        },
+    }
+
+
 # ------------------------------------------------
 # Scheme selector
 # ------------------------------------------------
@@ -653,6 +671,9 @@ def get_schema_map(item: AssertionEntityType | None = None) -> dict:
             _generic_schema
         ),
         AssertionEntityType.ListDoNotContains: _get_schema_for_list_do_not_contains(
+            _generic_schema
+        ),
+        AssertionEntityType.ListHasIndex: _get_schema_for_list_has_index(
             _generic_schema
         ),
     }
