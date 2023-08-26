@@ -436,3 +436,12 @@ def list_contains(actual: list, expected: object, **_: object) -> _AResult:
         return ValueError("actual_not_list")
 
     return expected in actual
+
+
+def list_do_not_contains(actual: list, expected: object, **_: object) -> _AResult:
+    """Assert actual date is after expected date"""
+
+    if not isinstance(actual, list):
+        return ValueError("actual_not_list")
+
+    return expected not in actual
