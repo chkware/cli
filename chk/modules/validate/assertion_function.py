@@ -341,5 +341,23 @@ def date(actual: str, extra_fields: dict, **_: object) -> _AResult:
     try:
         datetime.datetime.strptime(actual, extra_fields["format"]).date()
         return True
-    except ValueError as err:
+    except ValueError:
         return False
+
+
+def date_after(actual: str, expected: str, extra_fields: dict, **_: object) -> _AResult:
+    """Assert string have a sub-string"""
+
+    if not isinstance(actual, str):
+        return ValueError("actual_not_str")
+
+    if not isinstance(expected, str):
+        return ValueError("expected_not_str")
+
+    try:
+        d_actual = datetime.datetime.strptime(actual, extra_fields["format"]).date()
+        d_expected = datetime.datetime.strptime(expected, extra_fields["format"]).date()
+
+        return d_actual > d_expected
+    except ValueError:
+        return ValueError("date_conversion_issue")

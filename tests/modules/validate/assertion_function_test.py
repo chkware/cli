@@ -515,3 +515,20 @@ class TestDate:
         assert not asrt.date("abcd", {"format": "%Y-%m-%d"})
         assert not asrt.date("1972-33-07", {"format": "%Y-%d-%m"})
         assert asrt.date("1972-07", {"format": "%Y-%m"})
+
+
+class TestDateAfter:
+    @staticmethod
+    def test_pass():
+        assert asrt.date_after("1972-07-30", "1972-07-29", {"format": "%Y-%m-%d"})
+        assert not asrt.date_after("1972-07-20", "1972-07-29", {"format": "%Y-%m-%d"})
+
+        ret = asrt.date_after("abcd", "1972-07-29", {"format": "%Y-%m-%d"})
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "date_conversion_issue"
+
+        ret = asrt.date_after("1972-33-07", "1972-07-29", {"format": "%Y-%d-%m"})
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "date_conversion_issue"
+
+        assert asrt.date_after("1972-07", "1972-06", {"format": "%Y-%m"})
