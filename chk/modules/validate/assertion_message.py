@@ -113,6 +113,10 @@ _AMessages = {
         "pass": "actual `{type_actual}({value_actual})` do not starts with `{extra_fields[other]}`.",
         "fail": "actual `{type_actual}({value_actual})` starts with `{extra_fields[other]}`.",
     },
+    "str_ends_with": {
+        "pass": "actual `{type_actual}({value_actual})` ends with `{extra_fields[other]}`.",
+        "fail": "actual `{type_actual}({value_actual})` do not ends with `{extra_fields[other]}`.",
+    },
 }
 
 

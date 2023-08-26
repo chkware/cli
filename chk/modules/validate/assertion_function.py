@@ -281,3 +281,9 @@ def str_do_not_starts_with(actual: str, extra_fields: dict, **_: object) -> _ARe
     """Assert string have a sub-string"""
 
     return not actual.startswith(extra_fields["other"])
+
+
+def str_ends_with(actual: str, extra_fields: dict, **_: object) -> _AResult:
+    """Assert string have a sub-string"""
+
+    return actual.endswith(extra_fields["other"])

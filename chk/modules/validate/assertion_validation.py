@@ -34,6 +34,7 @@ class AssertionEntityType(enum.StrEnum):
     StrDoNotHave = "StrDoNotHave"
     StrStartsWith = "StrStartsWith"
     StrDoNotStartsWith = "StrDoNotStartsWith"
+    StrEndsWith = "StrEndsWith"
 
 
 _generic_schema = {
@@ -413,6 +414,23 @@ def _get_schema_for_str_do_not_starts_with(_gen_schema: dict) -> dict:
     }
 
 
+def _get_schema_for_str_ends_with(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.StrEndsWith)
+    del _t_gen_schema["expected"]
+
+    return _t_gen_schema | {
+        "other": {
+            "required": True,
+            "empty": False,
+            "nullable": False,
+            "type": "string",
+        },
+    }
+
+
 # ------------------------------------------------
 # Scheme selector
 # ------------------------------------------------
@@ -470,6 +488,9 @@ def get_schema_map(item: AssertionEntityType | None = None) -> dict:
             _generic_schema
         ),
         AssertionEntityType.StrDoNotStartsWith: _get_schema_for_str_do_not_starts_with(
+            _generic_schema
+        ),
+        AssertionEntityType.StrEndsWith: _get_schema_for_str_ends_with(
             _generic_schema
         ),
     }
