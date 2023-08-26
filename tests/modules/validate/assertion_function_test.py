@@ -193,3 +193,25 @@ class TestInteger:
         assert asrt.integer(10)
         assert asrt.integer(-10)
         assert not asrt.integer("-10")
+
+
+class TestIntegerBetween:
+    @staticmethod
+    def test_pass_with_actual():
+        assert asrt.integer_between(
+            10,
+            {
+                "min": 2,
+                "max": 12,
+            },
+        )
+        assert not asrt.integer_between(
+            -10,
+            {
+                "min": 2,
+                "max": 12,
+            },
+        )
+
+        ret = asrt.integer_between("-10", {})
+        assert isinstance(ret, ValueError)
