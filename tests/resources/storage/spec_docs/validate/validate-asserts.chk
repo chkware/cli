@@ -169,6 +169,9 @@ asserts:
   - { type: DateBefore, actual: "1972-07-20", expected: "1972-07-29", format: "%Y-%m-%d" }
   - { type: DateBefore, actual: "1972-07", expected: "1972-06", format: "%Y-%m" }
 
+  - { type: DateBeforeOrEqual, actual: '1972-06-30', expected: "1972-07-30", format: "%Y-%m-%d" }
+  - { type: DateBeforeOrEqual, actual: "1972-07", expected: "1972-07", format: "%Y-%m" }
+
 #  - { type: AssertIsMap, actual: "{$_response.body.coin}" }
 #  - { type: AssertIsMap, actual: { 'a': 1, 'b': 2 } }
 #  - { type: AssertMapHasKey, actual: { 'a': 1, 'b': 2 }, expected: 'a' }

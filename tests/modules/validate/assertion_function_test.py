@@ -575,3 +575,29 @@ class TestDateBefore:
         assert str(ret) == "date_conversion_issue"
 
         assert asrt.date_before("1972-05", "1972-06", {"format": "%Y-%m"})
+
+
+class TestDateBeforeOrEqual:
+    @staticmethod
+    def test_pass():
+        assert asrt.date_before_or_equal(
+            "1972-07-30", "1972-07-30", {"format": "%Y-%m-%d"}
+        )
+        assert asrt.date_before_or_equal(
+            "1972-07-30", "1972-07-31", {"format": "%Y-%m-%d"}
+        )
+        assert not asrt.date_before_or_equal(
+            "1972-07-30", "1972-07-29", {"format": "%Y-%m-%d"}
+        )
+
+        ret = asrt.date_before_or_equal("abcd", "1972-07-29", {"format": "%Y-%m-%d"})
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "date_conversion_issue"
+
+        ret = asrt.date_before_or_equal(
+            "1972-33-07", "1972-07-29", {"format": "%Y-%d-%m"}
+        )
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "date_conversion_issue"
+
+        assert asrt.date_before_or_equal("1972-05", "1972-06", {"format": "%Y-%m"})
