@@ -309,3 +309,134 @@ class TestIntegerLessOrEqual:
 
         ret = asrt.integer_less_or_equal("-10", {})
         assert isinstance(ret, ValueError)
+
+
+class TestFloat:
+    @staticmethod
+    def test_pass():
+        assert asrt.float_(10.0)
+        assert asrt.float_(-10.9)
+        assert not asrt.float_(9)
+        assert not asrt.float_("-10.2")
+
+
+class TestFloatBetween:
+    @staticmethod
+    def test_pass():
+        assert asrt.float_between(
+            10.9,
+            {
+                "min": 2,
+                "max": 12,
+            },
+        )
+        assert not asrt.float_between(
+            -10.9,
+            {
+                "min": 2,
+                "max": 12,
+            },
+        )
+        ret = asrt.float_between(
+            10,
+            {
+                "min": 2,
+                "max": 12,
+            },
+        )
+
+        assert isinstance(ret, ValueError)
+
+
+class TestFloatGreater:
+    @staticmethod
+    def test_pass():
+        assert asrt.float_greater(
+            10.2,
+            {
+                "other": 2,
+            },
+        )
+        assert not asrt.float_greater(
+            -10.2,
+            {
+                "other": 2,
+            },
+        )
+
+        ret = asrt.float_greater(10, {})
+        assert isinstance(ret, ValueError)
+
+
+class TestFloatGreaterOrEqual:
+    @staticmethod
+    def test_pass():
+        assert asrt.float_greater_or_equal(
+            10.2,
+            {
+                "other": 2,
+            },
+        )
+        assert not asrt.float_greater_or_equal(
+            -10.2,
+            {
+                "other": 2,
+            },
+        )
+
+        assert asrt.float_greater_or_equal(
+            2.9,
+            {
+                "other": 2.9,
+            },
+        )
+
+        ret = asrt.float_greater_or_equal(-10, {})
+        assert isinstance(ret, ValueError)
+
+
+class TestFloatLess:
+    @staticmethod
+    def test_pass():
+        assert asrt.float_less(
+            10.0,
+            {
+                "other": 12,
+            },
+        )
+        assert not asrt.float_less(
+            10.0,
+            {
+                "other": 2,
+            },
+        )
+
+        ret = asrt.float_less(-10, {})
+        assert isinstance(ret, ValueError)
+
+
+class TestFloatLessOrEqual:
+    @staticmethod
+    def test_pass():
+        assert asrt.float_less_or_equal(
+            10.0,
+            {
+                "other": 12,
+            },
+        )
+        assert not asrt.float_less_or_equal(
+            10.0,
+            {
+                "other": 2,
+            },
+        )
+
+        assert asrt.float_less_or_equal(
+            2.0,
+            {
+                "other": 2,
+            },
+        )
+
+        ret = asrt.float_less_or_equal(-1, {})
+        assert isinstance(ret, ValueError)
