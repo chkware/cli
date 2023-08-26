@@ -1,6 +1,7 @@
 """
 Assertion Functions mod
 """
+import datetime
 import types
 from typing import TypeAlias, Union
 
@@ -329,3 +330,16 @@ def str_do_not_ends_with(actual: str, extra_fields: dict, **_: object) -> _AResu
         return ValueError("other_not_str")
 
     return not actual.endswith(extra_fields["other"])
+
+
+def date(actual: str, extra_fields: dict, **_: object) -> _AResult:
+    """Assert string have a sub-string"""
+
+    if not isinstance(actual, str):
+        return ValueError("actual_not_str")
+
+    try:
+        datetime.datetime.strptime(actual, extra_fields["format"]).date()
+        return True
+    except ValueError as err:
+        return False

@@ -505,3 +505,13 @@ class TestStrDoNotEndsWith:
         assert not asrt.str_do_not_ends_with("abcd", {"other": "d"})
         assert isinstance(asrt.str_do_not_ends_with(9, {"other": "bc"}), ValueError)
         assert isinstance(asrt.str_do_not_ends_with("This", {"other": 2}), ValueError)
+
+
+class TestDate:
+    @staticmethod
+    def test_pass():
+        assert asrt.date("1972-07-30", {"format": "%Y-%m-%d"})
+        assert not asrt.date("1972-30-07", {"format": "%Y-%m-%d"})
+        assert not asrt.date("abcd", {"format": "%Y-%m-%d"})
+        assert not asrt.date("1972-33-07", {"format": "%Y-%d-%m"})
+        assert asrt.date("1972-07", {"format": "%Y-%m"})
