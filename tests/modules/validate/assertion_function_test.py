@@ -458,3 +458,50 @@ class TestStrHave:
         assert asrt.str_have("abcd", {"other": "bc"})
         assert isinstance(asrt.str_have(9, {"other": "bc"}), ValueError)
         assert isinstance(asrt.str_have("This", {"other": 2}), ValueError)
+
+
+class TestStrDoNotHave:
+    @staticmethod
+    def test_pass():
+        assert not asrt.str_do_not_have("10.0", {"other": "0."})
+        assert asrt.str_do_not_have("abcd", {"other": "de"})
+        assert isinstance(asrt.str_do_not_have(9, {"other": "bc"}), ValueError)
+        assert isinstance(asrt.str_do_not_have("This", {"other": 2}), ValueError)
+
+
+class TestStrStartsWith:
+    @staticmethod
+    def test_pass():
+        assert asrt.str_starts_with("10.0", {"other": "10."})
+        assert not asrt.str_starts_with("abcd", {"other": "bc"})
+        assert isinstance(asrt.str_starts_with(9, {"other": "bc"}), ValueError)
+        assert isinstance(asrt.str_starts_with("This", {"other": 2}), ValueError)
+
+
+class TestStrDoNotStartsWith:
+    @staticmethod
+    def test_pass():
+        assert asrt.str_do_not_starts_with("10.0", {"other": "0."})
+        assert not asrt.str_do_not_starts_with("abcd", {"other": "ab"})
+        assert isinstance(asrt.str_do_not_starts_with(9, {"other": "bc"}), ValueError)
+        assert isinstance(asrt.str_do_not_starts_with("This", {"other": 2}), ValueError)
+
+
+class TestStrEndsWith:
+    @staticmethod
+    def test_pass():
+        assert asrt.str_ends_with("10.0", {"other": ".0"})
+        assert asrt.str_ends_with("abcd", {"other": "d"})
+        assert not asrt.str_ends_with("abcd", {"other": "c"})
+        assert isinstance(asrt.str_ends_with(9, {"other": "bc"}), ValueError)
+        assert isinstance(asrt.str_ends_with("This", {"other": 2}), ValueError)
+
+
+class TestStrDoNotEndsWith:
+    @staticmethod
+    def test_pass():
+        assert asrt.str_do_not_ends_with("10.0", {"other": "0."})
+        assert asrt.str_do_not_ends_with("abcd", {"other": "ab"})
+        assert not asrt.str_do_not_ends_with("abcd", {"other": "d"})
+        assert isinstance(asrt.str_do_not_ends_with(9, {"other": "bc"}), ValueError)
+        assert isinstance(asrt.str_do_not_ends_with("This", {"other": 2}), ValueError)

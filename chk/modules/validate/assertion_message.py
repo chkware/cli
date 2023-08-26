@@ -106,22 +106,32 @@ _AMessages = {
     "str_do_not_have": {
         "pass": "actual `{type_actual}({value_actual})` do not have `{extra_fields[other]}` in it.",
         "fail": "actual `{type_actual}({value_actual})` have `{extra_fields[other]}` in it.",
+        "actual_not_str": "actual `{type_actual}({value_actual})` is not a string.",
+        "other_not_str": "other `{extra_fields[other]}` is not a string.",
     },
     "str_starts_with": {
         "pass": "actual `{type_actual}({value_actual})` starts with `{extra_fields[other]}`.",
         "fail": "actual `{type_actual}({value_actual})` do not starts with `{extra_fields[other]}`.",
+        "actual_not_str": "actual `{type_actual}({value_actual})` is not a string.",
+        "other_not_str": "other `{extra_fields[other]}` is not a string.",
     },
     "str_do_not_starts_with": {
         "pass": "actual `{type_actual}({value_actual})` do not starts with `{extra_fields[other]}`.",
         "fail": "actual `{type_actual}({value_actual})` starts with `{extra_fields[other]}`.",
+        "actual_not_str": "actual `{type_actual}({value_actual})` is not a string.",
+        "other_not_str": "other `{extra_fields[other]}` is not a string.",
     },
     "str_ends_with": {
         "pass": "actual `{type_actual}({value_actual})` ends with `{extra_fields[other]}`.",
         "fail": "actual `{type_actual}({value_actual})` do not ends with `{extra_fields[other]}`.",
+        "actual_not_str": "actual `{type_actual}({value_actual})` is not a string.",
+        "other_not_str": "other `{extra_fields[other]}` is not a string.",
     },
     "str_do_not_ends_with": {
         "pass": "actual `{type_actual}({value_actual})` do not ends with `{extra_fields[other]}`.",
         "fail": "actual `{type_actual}({value_actual})` ends with `{extra_fields[other]}`.",
+        "actual_not_str": "actual `{type_actual}({value_actual})` is not a string.",
+        "other_not_str": "other `{extra_fields[other]}` is not a string.",
     },
 }
 

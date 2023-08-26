@@ -274,11 +274,23 @@ def str_have(actual: str, extra_fields: dict, **_: object) -> _AResult:
 def str_do_not_have(actual: str, extra_fields: dict, **_: object) -> _AResult:
     """Assert string have a sub-string"""
 
+    if not isinstance(actual, str):
+        return ValueError("actual_not_str")
+
+    if not isinstance(extra_fields["other"], str):
+        return ValueError("other_not_str")
+
     return extra_fields["other"] not in actual
 
 
 def str_starts_with(actual: str, extra_fields: dict, **_: object) -> _AResult:
     """Assert string have a sub-string"""
+
+    if not isinstance(actual, str):
+        return ValueError("actual_not_str")
+
+    if not isinstance(extra_fields["other"], str):
+        return ValueError("other_not_str")
 
     return actual.startswith(extra_fields["other"])
 
@@ -286,16 +298,34 @@ def str_starts_with(actual: str, extra_fields: dict, **_: object) -> _AResult:
 def str_do_not_starts_with(actual: str, extra_fields: dict, **_: object) -> _AResult:
     """Assert string have a sub-string"""
 
+    if not isinstance(actual, str):
+        return ValueError("actual_not_str")
+
+    if not isinstance(extra_fields["other"], str):
+        return ValueError("other_not_str")
+
     return not actual.startswith(extra_fields["other"])
 
 
 def str_ends_with(actual: str, extra_fields: dict, **_: object) -> _AResult:
     """Assert string have a sub-string"""
 
+    if not isinstance(actual, str):
+        return ValueError("actual_not_str")
+
+    if not isinstance(extra_fields["other"], str):
+        return ValueError("other_not_str")
+
     return actual.endswith(extra_fields["other"])
 
 
 def str_do_not_ends_with(actual: str, extra_fields: dict, **_: object) -> _AResult:
     """Assert string have a sub-string"""
+
+    if not isinstance(actual, str):
+        return ValueError("actual_not_str")
+
+    if not isinstance(extra_fields["other"], str):
+        return ValueError("other_not_str")
 
     return not actual.endswith(extra_fields["other"])
