@@ -262,3 +262,23 @@ class TestIntegerGreaterOrEqual:
 
         ret = asrt.integer_between("-10", {})
         assert isinstance(ret, ValueError)
+
+
+class TestIntegerLess:
+    @staticmethod
+    def test_pass():
+        assert asrt.integer_less(
+            10,
+            {
+                "other": 12,
+            },
+        )
+        assert not asrt.integer_less(
+            10,
+            {
+                "other": 2,
+            },
+        )
+
+        ret = asrt.integer_between("-10", {})
+        assert isinstance(ret, ValueError)
