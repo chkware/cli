@@ -213,7 +213,7 @@ class TestSingleTestRunResult:
         s = setup_new_single_test_run_result
 
         assert isinstance(s.as_fmt_str, str)
-        assert s.as_fmt_str == "\n+ Empty PASSED with message: Ok"
+        assert s.as_fmt_str == "\n+ Empty PASSED, Ok"
 
 
 @pytest.fixture

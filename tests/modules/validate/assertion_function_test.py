@@ -3,6 +3,7 @@
 """
 Test module for assertion Functions mod
 """
+import pytest
 
 import chk.modules.validate.assertion_function as asrt
 
@@ -82,7 +83,8 @@ class TestAccepted:
 
     @staticmethod
     def test_fail_with_exception_other_values():
-        assert isinstance(asrt.accepted("Nein"), ValueError)
+        assert isinstance(asrt.accepted("Nein"), bool)
+        assert asrt.accepted("Nein") == False
 
 
 class TestDeclined:
@@ -166,14 +168,23 @@ class TestBoolean:
     def test_pass_with_actual():
         assert asrt.boolean(True, NotImplemented)
         assert asrt.boolean(False, NotImplemented)
-        assert not asrt.boolean(1, NotImplemented)
-        assert not asrt.boolean("True", NotImplemented)
+
+        err = asrt.boolean(1, NotImplemented)
+        assert isinstance(err, ValueError)
+        assert str(err) == "actual_not_bool"
 
     @staticmethod
     def test_pass_with_expected():
         assert asrt.boolean(True, True)
         assert asrt.boolean(False, False)
-        assert not asrt.boolean(True, False)
+
+        err = asrt.boolean(True, "NotImplemented")
+        assert isinstance(err, ValueError)
+        assert str(err) == "expected_not_bool"
+
+        err = asrt.boolean(True, False)
+        assert isinstance(err, ValueError)
+        assert str(err) == "expected_mismatch"
 
 
 class TestInteger:
@@ -182,3 +193,315 @@ class TestInteger:
         assert asrt.integer(10)
         assert asrt.integer(-10)
         assert not asrt.integer("-10")
+
+
+class TestIntegerBetween:
+    @staticmethod
+    def test_pass_with_actual():
+        assert asrt.integer_between(
+            10,
+            {
+                "min": 2,
+                "max": 12,
+            },
+        )
+        assert not asrt.integer_between(
+            -10,
+            {
+                "min": 2,
+                "max": 12,
+            },
+        )
+
+        ret = asrt.integer_between("-10", {})
+        assert isinstance(ret, ValueError)
+
+
+class TestIntegerGreater:
+    @staticmethod
+    def test_pass():
+        assert asrt.integer_greater(
+            10,
+            {
+                "other": 2,
+            },
+        )
+        assert not asrt.integer_greater(
+            -10,
+            {
+                "other": 2,
+            },
+        )
+
+        ret = asrt.integer_greater("-10", {})
+        assert isinstance(ret, ValueError)
+
+
+class TestIntegerGreaterOrEqual:
+    @staticmethod
+    def test_pass():
+        assert asrt.integer_greater_or_equal(
+            10,
+            {
+                "other": 2,
+            },
+        )
+        assert not asrt.integer_greater_or_equal(
+            -10,
+            {
+                "other": 2,
+            },
+        )
+
+        assert asrt.integer_greater_or_equal(
+            2,
+            {
+                "other": 2,
+            },
+        )
+
+        ret = asrt.integer_greater_or_equal("-10", {})
+        assert isinstance(ret, ValueError)
+
+
+class TestIntegerLess:
+    @staticmethod
+    def test_pass():
+        assert asrt.integer_less(
+            10,
+            {
+                "other": 12,
+            },
+        )
+        assert not asrt.integer_less(
+            10,
+            {
+                "other": 2,
+            },
+        )
+
+        ret = asrt.integer_less("-10", {})
+        assert isinstance(ret, ValueError)
+
+
+class TestIntegerLessOrEqual:
+    @staticmethod
+    def test_pass():
+        assert asrt.integer_less_or_equal(
+            10,
+            {
+                "other": 12,
+            },
+        )
+        assert not asrt.integer_less_or_equal(
+            10,
+            {
+                "other": 2,
+            },
+        )
+
+        assert asrt.integer_less_or_equal(
+            2,
+            {
+                "other": 2,
+            },
+        )
+
+        ret = asrt.integer_less_or_equal("-10", {})
+        assert isinstance(ret, ValueError)
+
+
+class TestFloat:
+    @staticmethod
+    def test_pass():
+        assert asrt.float_(10.0)
+        assert asrt.float_(-10.9)
+        assert not asrt.float_(9)
+        assert not asrt.float_("-10.2")
+
+
+class TestFloatBetween:
+    @staticmethod
+    def test_pass():
+        assert asrt.float_between(
+            10.9,
+            {
+                "min": 2,
+                "max": 12,
+            },
+        )
+        assert not asrt.float_between(
+            -10.9,
+            {
+                "min": 2,
+                "max": 12,
+            },
+        )
+        ret = asrt.float_between(
+            10,
+            {
+                "min": 2,
+                "max": 12,
+            },
+        )
+
+        assert isinstance(ret, ValueError)
+
+
+class TestFloatGreater:
+    @staticmethod
+    def test_pass():
+        assert asrt.float_greater(
+            10.2,
+            {
+                "other": 2,
+            },
+        )
+        assert not asrt.float_greater(
+            -10.2,
+            {
+                "other": 2,
+            },
+        )
+
+        ret = asrt.float_greater(10, {})
+        assert isinstance(ret, ValueError)
+
+
+class TestFloatGreaterOrEqual:
+    @staticmethod
+    def test_pass():
+        assert asrt.float_greater_or_equal(
+            10.2,
+            {
+                "other": 2,
+            },
+        )
+        assert not asrt.float_greater_or_equal(
+            -10.2,
+            {
+                "other": 2,
+            },
+        )
+
+        assert asrt.float_greater_or_equal(
+            2.9,
+            {
+                "other": 2.9,
+            },
+        )
+
+        ret = asrt.float_greater_or_equal(-10, {})
+        assert isinstance(ret, ValueError)
+
+
+class TestFloatLess:
+    @staticmethod
+    def test_pass():
+        assert asrt.float_less(
+            10.0,
+            {
+                "other": 12,
+            },
+        )
+        assert not asrt.float_less(
+            10.0,
+            {
+                "other": 2,
+            },
+        )
+
+        ret = asrt.float_less(-10, {})
+        assert isinstance(ret, ValueError)
+
+
+class TestFloatLessOrEqual:
+    @staticmethod
+    def test_pass():
+        assert asrt.float_less_or_equal(
+            10.0,
+            {
+                "other": 12,
+            },
+        )
+        assert not asrt.float_less_or_equal(
+            10.0,
+            {
+                "other": 2,
+            },
+        )
+
+        assert asrt.float_less_or_equal(
+            2.0,
+            {
+                "other": 2,
+            },
+        )
+
+        ret = asrt.float_less_or_equal(-1, {})
+        assert isinstance(ret, ValueError)
+
+
+class TestStr:
+    @staticmethod
+    def test_pass():
+        assert asrt.str_("10.0")
+        assert asrt.str_("abcd")
+        assert not asrt.str_(9)
+        assert not asrt.str_(-10.2)
+
+
+class TestStrHave:
+    @staticmethod
+    def test_pass():
+        assert asrt.str_have("10.0", {"other": "0."})
+        assert asrt.str_have("abcd", {"other": "bc"})
+        assert isinstance(asrt.str_have(9, {"other": "bc"}), ValueError)
+        assert isinstance(asrt.str_have("This", {"other": 2}), ValueError)
+
+
+class TestStrDoNotHave:
+    @staticmethod
+    def test_pass():
+        assert not asrt.str_do_not_have("10.0", {"other": "0."})
+        assert asrt.str_do_not_have("abcd", {"other": "de"})
+        assert isinstance(asrt.str_do_not_have(9, {"other": "bc"}), ValueError)
+        assert isinstance(asrt.str_do_not_have("This", {"other": 2}), ValueError)
+
+
+class TestStrStartsWith:
+    @staticmethod
+    def test_pass():
+        assert asrt.str_starts_with("10.0", {"other": "10."})
+        assert not asrt.str_starts_with("abcd", {"other": "bc"})
+        assert isinstance(asrt.str_starts_with(9, {"other": "bc"}), ValueError)
+        assert isinstance(asrt.str_starts_with("This", {"other": 2}), ValueError)
+
+
+class TestStrDoNotStartsWith:
+    @staticmethod
+    def test_pass():
+        assert asrt.str_do_not_starts_with("10.0", {"other": "0."})
+        assert not asrt.str_do_not_starts_with("abcd", {"other": "ab"})
+        assert isinstance(asrt.str_do_not_starts_with(9, {"other": "bc"}), ValueError)
+        assert isinstance(asrt.str_do_not_starts_with("This", {"other": 2}), ValueError)
+
+
+class TestStrEndsWith:
+    @staticmethod
+    def test_pass():
+        assert asrt.str_ends_with("10.0", {"other": ".0"})
+        assert asrt.str_ends_with("abcd", {"other": "d"})
+        assert not asrt.str_ends_with("abcd", {"other": "c"})
+        assert isinstance(asrt.str_ends_with(9, {"other": "bc"}), ValueError)
+        assert isinstance(asrt.str_ends_with("This", {"other": 2}), ValueError)
+
+
+class TestStrDoNotEndsWith:
+    @staticmethod
+    def test_pass():
+        assert asrt.str_do_not_ends_with("10.0", {"other": "0."})
+        assert asrt.str_do_not_ends_with("abcd", {"other": "ab"})
+        assert not asrt.str_do_not_ends_with("abcd", {"other": "d"})
+        assert isinstance(asrt.str_do_not_ends_with(9, {"other": "bc"}), ValueError)
+        assert isinstance(asrt.str_do_not_ends_with("This", {"other": 2}), ValueError)

@@ -5,42 +5,22 @@ variables:
   response:
     int: 200
     float: 200.23
+    string1: "200.23"
+    string2: "Some random string"
+    string3: Some random string
 
 data:
   code: 200
 
 asserts:
-  - type: Equal
-    actual: "{{ response.int }}"
-    expected: 200
+  - { type: Equal, actual: "{{ response.int }}", expected: 200 }
+  - { type: Equal, actual: "{{ response.float }}", expected: 200.23 }
+  - { type: Equal, actual: "[ 1, 2, 3 ]", expected: [ 1, 2, 3 ], cast_actual_to: list }
+  - { type: Equal, actual: "{'a': 1, 'c': 3, 'b': 2}", expected: { 'a': 1, 'c': 3, 'b': 2 }, cast_actual_to: dict }
+  - { type: Equal, actual: "False", expected: False, cast_actual_to: bool }
+  - { type: Equal, actual: "False", expected: False, cast_actual_to: auto }
 
-  - type: Equal
-    actual: "{{ response.float }}"
-    expected: 200.23
-
-  - type: Equal
-    actual: "[ 1, 2, 3 ]"
-    expected: [ 1, 2, 3 ]
-    cast_actual_to: list
-
-  - type: Equal
-    actual: "{'a': 1, 'c': 3, 'b': 2}"
-    expected: { 'a': 1, 'c': 3, 'b': 2 }
-    cast_actual_to: dict
-
-  - type: Equal
-    actual: "False"
-    expected: False
-    cast_actual_to: bool
-
-  - type: Equal
-    actual: "False"
-    expected: False
-    cast_actual_to: auto
-
-  - type: NotEqual
-    actual: "False"
-    expected: False
+  - { type: NotEqual, actual: "False", expected: False }
 
   - { type: Empty, actual: ~ }
   - { type: NotEmpty, actual: 2 }
@@ -142,13 +122,36 @@ asserts:
   - { type: FloatLessOrEqual, actual: "12.23", other: 15.7, cast_actual_to: float }
   - { type: FloatLessOrEqual, actual: "16.56", other: 15, cast_actual_to: float }
 
-#  - { type: AssertIsString, actual: "{$_response.body.coin.websiteUrl}" }
-#  - { type: AssertStrContains, actual: 'https://someurl.com', expected: 'https' }
-#  - { type: AssertStrContains, actual: '{"a": 1, "b": 2}', expected: '"b":' }
-#  - { type: AssertIsFloat, actual: "{$_response.body.coin.priceChange1w}" }
-#  - { type: AssertIsFloat, actual: 1.0 }
-#  - { type: AssertIsBool, actual: "true" }
-#  - { type: AssertIsBool, actual: true }
+  - { type: Str, actual: "{{ response.string1}}" }
+  - { type: Str, actual: "{{ response.string2 }}" }
+  - { type: Str, actual: "{{ response.string3 }}" }
+  - { type: Str, actual: 23 }
+  - { type: Str, actual: ~ }
+
+  - { type: StrHave, actual: 'https://someurl.com', other: 'someurl' }
+  - { type: StrHave, actual: '{"a": 1, "b": 2}', other: '"b":' }
+  - { type: StrHave, actual: '{"a": 1, "b": 2}', other: '{"a": 1}' }
+
+  - { type: StrDoNotHave, actual: 'https://someurl.com', other: 'someurl' }
+  - { type: StrDoNotHave, actual: '{"a": 1, "b": 2}', other: '"b":' }
+  - { type: StrDoNotHave, actual: '{"a": 1, "b": 2}', other: '{"a": 1}' }
+
+  - { type: StrStartsWith, actual: 'https://someurl.com', other: 'http' }
+  - { type: StrStartsWith, actual: '{"a": 1, "b": 2}', other: '"b":' }
+  - { type: StrStartsWith, actual: '{"a": 1, "b": 2}', other: '{"a"' }
+
+  - { type: StrDoNotStartsWith, actual: 'https://someurl.com', other: '.com' }
+  - { type: StrDoNotStartsWith, actual: '{"a": 1, "b": 2}', other: '"b":' }
+  - { type: StrDoNotStartsWith, actual: '{"a": 1, "b": 2}', other: '{"a"' }
+
+  - { type: StrEndsWith, actual: 'https://someurl.com', other: '.com' }
+  - { type: StrEndsWith, actual: '{"a": 1, "b": 2}', other: '": 2}' }
+  - { type: StrEndsWith, actual: '{"a": 1, "b": 2}', other: '{"a"' }
+
+  - { type: StrDoNotEndsWith, actual: 'https://someurl.com', other: 'https' }
+  - { type: StrDoNotEndsWith, actual: '{"a": 1, "b": 2}', other: '"b":' }
+  - { type: StrDoNotEndsWith, actual: '{"a": 1, "b": 2}', other: '": 2}' }
+
 #  - { type: AssertIsMap, actual: "{$_response.body.coin}" }
 #  - { type: AssertIsMap, actual: { 'a': 1, 'b': 2 } }
 #  - { type: AssertMapHasKey, actual: { 'a': 1, 'b': 2 }, expected: 'a' }
@@ -175,16 +178,6 @@ asserts:
 #  - { type: AssertListHasIndex, actual: [ 1, 1, 3 ], expected: 2 }
 #  - { type: AssertListHasIndex, actual: '[1, 5, 3]', expected: 0 }
 #  - { type: AssertCount, actual: "{$_response.body.coin.exp}", expected: 3 }
-#  - { type: AssertGreater, actual: 1.2, expected: 0.5 }
-#  - { type: AssertGreaterOrEqual, actual: 1.4, expected: 0.5 }
-#  - { type: AssertLess, actual: 0.4, expected: 0.5 }
-#  - { type: AssertLess, actual: '3', expected: 5 }
-#  - { type: AssertLessOrEqual, actual: 0.4, expected: 0.5 }
-#  - { type: AssertLessOrEqual, actual: 0.4, expected: 1 }
-#  - { type: AssertLessOrEqual, actual: '3', expected: 5 }
-#  - { type: AssertLessOrEqual, actual: 0.5, expected: 0.5 }
-#  - { type: AssertLessOrEqual, actual: 5, expected: 5 }
-#  - { type: AssertNotEqual, actual: "{$_response.body.coin.priceBtc}", expected: 2 }
 
 expose:
   - "{{ _asserts_response }}"

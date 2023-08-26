@@ -32,8 +32,16 @@ MAP_TYPE_TO_FN: dict[str, Callable] = {
     AssertionEntityType.Float: asrt_f.float_,
     AssertionEntityType.FloatBetween: asrt_f.float_between,
     AssertionEntityType.FloatGreater: asrt_f.float_greater,
+    AssertionEntityType.FloatGreaterOrEqual: asrt_f.float_greater_or_equal,
     AssertionEntityType.FloatLess: asrt_f.float_less,
     AssertionEntityType.FloatLessOrEqual: asrt_f.float_less_or_equal,
+    AssertionEntityType.Str: asrt_f.str_,
+    AssertionEntityType.StrHave: asrt_f.str_have,
+    AssertionEntityType.StrDoNotHave: asrt_f.str_do_not_have,
+    AssertionEntityType.StrStartsWith: asrt_f.str_starts_with,
+    AssertionEntityType.StrDoNotStartsWith: asrt_f.str_do_not_starts_with,
+    AssertionEntityType.StrEndsWith: asrt_f.str_ends_with,
+    AssertionEntityType.StrDoNotEndsWith: asrt_f.str_do_not_ends_with,
 }
 
 
@@ -84,7 +92,7 @@ class SingleTestRunResult(UserDict):
         return (
             "\n"
             f"{'+' if self['is_pass'] else '-'} {self['assert_used'].assert_type} "
-            + f"{'PASSED' if self['is_pass'] else 'FAILED'} with message: {self['message']}"
+            + f"{'PASSED' if self['is_pass'] else 'FAILED'}, {self['message']}"
         )
 
 

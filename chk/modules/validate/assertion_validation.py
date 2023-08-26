@@ -29,6 +29,13 @@ class AssertionEntityType(enum.StrEnum):
     FloatGreaterOrEqual = "FloatGreaterOrEqual"
     FloatLess = "FloatLess"
     FloatLessOrEqual = "FloatLessOrEqual"
+    Str = "Str"
+    StrHave = "StrHave"
+    StrDoNotHave = "StrDoNotHave"
+    StrStartsWith = "StrStartsWith"
+    StrDoNotStartsWith = "StrDoNotStartsWith"
+    StrEndsWith = "StrEndsWith"
+    StrDoNotEndsWith = "StrDoNotEndsWith"
 
 
 _generic_schema = {
@@ -331,6 +338,117 @@ def _get_schema_for_float_less_or_equal(_gen_schema: dict) -> dict:
     }
 
 
+def _get_schema_for_str(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.Str)
+    del _t_gen_schema["expected"]
+    return _t_gen_schema
+
+
+def _get_schema_for_str_have(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.StrHave)
+    del _t_gen_schema["expected"]
+
+    return _t_gen_schema | {
+        "other": {
+            "required": True,
+            "empty": False,
+            "nullable": False,
+            "type": "string",
+        },
+    }
+
+
+def _get_schema_for_str_do_not_have(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.StrDoNotHave)
+    del _t_gen_schema["expected"]
+
+    return _t_gen_schema | {
+        "other": {
+            "required": True,
+            "empty": False,
+            "nullable": False,
+            "type": "string",
+        },
+    }
+
+
+def _get_schema_for_str_starts_with(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.StrStartsWith)
+    del _t_gen_schema["expected"]
+
+    return _t_gen_schema | {
+        "other": {
+            "required": True,
+            "empty": False,
+            "nullable": False,
+            "type": "string",
+        },
+    }
+
+
+def _get_schema_for_str_do_not_starts_with(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.StrDoNotStartsWith)
+    del _t_gen_schema["expected"]
+
+    return _t_gen_schema | {
+        "other": {
+            "required": True,
+            "empty": False,
+            "nullable": False,
+            "type": "string",
+        },
+    }
+
+
+def _get_schema_for_str_ends_with(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.StrEndsWith)
+    del _t_gen_schema["expected"]
+
+    return _t_gen_schema | {
+        "other": {
+            "required": True,
+            "empty": False,
+            "nullable": False,
+            "type": "string",
+        },
+    }
+
+
+def _get_schema_for_str_do_not_ends_with(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.StrDoNotEndsWith)
+    del _t_gen_schema["expected"]
+
+    return _t_gen_schema | {
+        "other": {
+            "required": True,
+            "empty": False,
+            "nullable": False,
+            "type": "string",
+        },
+    }
+
+
 # ------------------------------------------------
 # Scheme selector
 # ------------------------------------------------
@@ -377,6 +495,21 @@ def get_schema_map(item: AssertionEntityType | None = None) -> dict:
         ),
         AssertionEntityType.FloatLess: _get_schema_for_float_less(_generic_schema),
         AssertionEntityType.FloatLessOrEqual: _get_schema_for_float_less_or_equal(
+            _generic_schema
+        ),
+        AssertionEntityType.Str: _get_schema_for_str(_generic_schema),
+        AssertionEntityType.StrHave: _get_schema_for_str_have(_generic_schema),
+        AssertionEntityType.StrDoNotHave: _get_schema_for_str_do_not_have(
+            _generic_schema
+        ),
+        AssertionEntityType.StrStartsWith: _get_schema_for_str_starts_with(
+            _generic_schema
+        ),
+        AssertionEntityType.StrDoNotStartsWith: _get_schema_for_str_do_not_starts_with(
+            _generic_schema
+        ),
+        AssertionEntityType.StrEndsWith: _get_schema_for_str_ends_with(_generic_schema),
+        AssertionEntityType.StrDoNotEndsWith: _get_schema_for_str_do_not_ends_with(
             _generic_schema
         ),
     }
