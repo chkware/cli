@@ -39,6 +39,7 @@ MAP_TYPE_TO_FN: dict[str, Callable] = {
     AssertionEntityType.StrHave: asrt_f.str_have,
     AssertionEntityType.StrDoNotHave: asrt_f.str_do_not_have,
     AssertionEntityType.StrStartsWith: asrt_f.str_starts_with,
+    AssertionEntityType.StrDoNotStartsWith: asrt_f.str_do_not_starts_with,
 }
 
 
