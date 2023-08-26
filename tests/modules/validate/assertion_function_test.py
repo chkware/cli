@@ -440,3 +440,21 @@ class TestFloatLessOrEqual:
 
         ret = asrt.float_less_or_equal(-1, {})
         assert isinstance(ret, ValueError)
+
+
+class TestStr:
+    @staticmethod
+    def test_pass():
+        assert asrt.str_("10.0")
+        assert asrt.str_("abcd")
+        assert not asrt.str_(9)
+        assert not asrt.str_(-10.2)
+
+
+class TestStrHave:
+    @staticmethod
+    def test_pass():
+        assert asrt.str_have("10.0", {"other": "0."})
+        assert asrt.str_have("abcd", {"other": "bc"})
+        assert isinstance(asrt.str_have(9, {"other": "bc"}), ValueError)
+        assert isinstance(asrt.str_have("This", {"other": 2}), ValueError)

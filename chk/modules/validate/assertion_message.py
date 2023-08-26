@@ -100,6 +100,8 @@ _AMessages = {
     "str_have": {
         "pass": "actual `{type_actual}({value_actual})` have `{extra_fields[other]}` in it.",
         "fail": "actual `{type_actual}({value_actual})` do not have `{extra_fields[other]}` in it.",
+        "actual_not_str": "actual `{type_actual}({value_actual})` is not a string.",
+        "other_not_str": "other `{extra_fields[other]}` is not a string.",
     },
     "str_do_not_have": {
         "pass": "actual `{type_actual}({value_actual})` do not have `{extra_fields[other]}` in it.",
