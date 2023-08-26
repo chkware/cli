@@ -38,6 +38,7 @@ class AssertionEntityType(enum.StrEnum):
     StrDoNotEndsWith = "StrDoNotEndsWith"
     Date = "Date"
     DateAfter = "DateAfter"
+    DateAfterOrEqual = "DateAfterOrEqual"
 
 
 _generic_schema = {
@@ -486,6 +487,24 @@ def _get_schema_for_date_after(_gen_schema: dict) -> dict:
     }
 
 
+def _get_schema_for_date_after_or_equal(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.DateAfterOrEqual)
+    _t_gen_schema["expected"]["required"] = True
+    _t_gen_schema["expected"]["type"] = "string"
+
+    return _t_gen_schema | {
+        "format": {
+            "required": True,
+            "empty": False,
+            "nullable": False,
+            "type": "string",
+        },
+    }
+
+
 # ------------------------------------------------
 # Scheme selector
 # ------------------------------------------------
@@ -551,6 +570,9 @@ def get_schema_map(item: AssertionEntityType | None = None) -> dict:
         ),
         AssertionEntityType.Date: _get_schema_for_date(_generic_schema),
         AssertionEntityType.DateAfter: _get_schema_for_date_after(_generic_schema),
+        AssertionEntityType.DateAfterOrEqual: _get_schema_for_date_after_or_equal(
+            _generic_schema
+        ),
     }
 
     if item:

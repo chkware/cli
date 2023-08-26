@@ -145,6 +145,13 @@ _AMessages = {
         "expected_not_str": "expected `{type_expected}({value_expected})` is not a string formatted date.",
         "date_conversion_issue": "date conversion error. actual `{type_actual}({value_actual})`, expected `{type_expected}({value_expected})`, format `{extra_fields[format]}`.",
     },
+    "date_after_or_equal": {
+        "pass": "actual `{type_actual}({value_actual})` is after or equal `{type_expected}({value_expected})`",
+        "fail": "actual `{type_actual}({value_actual})` is not after or equal `{type_expected}({value_expected})`",
+        "actual_not_str": "actual `{type_actual}({value_actual})` is not a string formatted date.",
+        "expected_not_str": "expected `{type_expected}({value_expected})` is not a string formatted date.",
+        "date_conversion_issue": "date conversion error. actual `{type_actual}({value_actual})`, expected `{type_expected}({value_expected})`, format `{extra_fields[format]}`.",
+    },
 }
 
 

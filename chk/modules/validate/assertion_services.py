@@ -44,6 +44,7 @@ MAP_TYPE_TO_FN: dict[str, Callable] = {
     AssertionEntityType.StrDoNotEndsWith: asrt_f.str_do_not_ends_with,
     AssertionEntityType.Date: asrt_f.date,
     AssertionEntityType.DateAfter: asrt_f.date_after,
+    AssertionEntityType.DateAfterOrEqual: asrt_f.date_after_or_equal,
 }
 
 
