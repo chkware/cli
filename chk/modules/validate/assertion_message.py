@@ -170,6 +170,11 @@ _AMessages = {
         "pass": "actual `{type_actual}({value_actual})` is a list",
         "fail": "actual `{type_actual}({value_actual})` is not a list",
     },
+    "list_contains": {
+        "pass": "expected `{type_expected}({value_expected})` found in actual `{type_actual}({value_actual})`",
+        "fail": "expected `{type_expected}({value_expected})` not found in actual `{type_actual}({value_actual})`",
+        "actual_not_list": "actual `{type_actual}({value_actual})` is not a list",
+    },
 }
 
 

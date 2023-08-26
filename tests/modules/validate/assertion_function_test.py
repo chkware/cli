@@ -609,3 +609,14 @@ class TestList:
         assert not asrt.list_("1972-07-30")
         assert not asrt.list_("[1, 2, 3]")
         assert asrt.list_([1, 2, 3])
+
+
+class TestListContains:
+    @staticmethod
+    def test_pass():
+        ret = asrt.list_contains("1972-07-30", "7")
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "actual_not_list"
+
+        assert asrt.list_contains([1, 2, 3], 2)
+        assert asrt.list_contains([1, {"a": 1}, 3], {"a": 1})

@@ -42,6 +42,7 @@ class AssertionEntityType(enum.StrEnum):
     DateBefore = "DateBefore"
     DateBeforeOrEqual = "DateBeforeOrEqual"
     List = "List"
+    ListContains = "ListContains"
 
 
 _generic_schema = {
@@ -554,6 +555,16 @@ def _get_schema_for_list(_gen_schema: dict) -> dict:
     return _t_gen_schema
 
 
+def _get_schema_for_list_contains(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.ListContains)
+    _t_gen_schema["expected"]["required"] = True
+
+    return _t_gen_schema
+
+
 # ------------------------------------------------
 # Scheme selector
 # ------------------------------------------------
@@ -627,6 +638,9 @@ def get_schema_map(item: AssertionEntityType | None = None) -> dict:
             _generic_schema
         ),
         AssertionEntityType.List: _get_schema_for_list(_generic_schema),
+        AssertionEntityType.ListContains: _get_schema_for_list_contains(
+            _generic_schema
+        ),
     }
 
     if item:

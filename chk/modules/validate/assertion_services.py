@@ -48,6 +48,7 @@ MAP_TYPE_TO_FN: dict[str, Callable] = {
     AssertionEntityType.DateBefore: asrt_f.date_before,
     AssertionEntityType.DateBeforeOrEqual: asrt_f.date_before_or_equal,
     AssertionEntityType.List: asrt_f.list_,
+    AssertionEntityType.ListContains: asrt_f.list_contains,
 }
 
 
