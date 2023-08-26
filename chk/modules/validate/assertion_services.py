@@ -87,7 +87,7 @@ class SingleTestRunResult(UserDict):
         return (
             "\n"
             f"{'+' if self['is_pass'] else '-'} {self['assert_used'].assert_type} "
-            + f"{'PASSED' if self['is_pass'] else 'FAILED'} with message: {self['message']}"
+            + f"{'PASSED' if self['is_pass'] else 'FAILED'}, {self['message']}"
         )
 
 
