@@ -3,6 +3,7 @@
 """
 Test module for assertion Functions mod
 """
+import pytest
 
 import chk.modules.validate.assertion_function as asrt
 
@@ -82,7 +83,8 @@ class TestAccepted:
 
     @staticmethod
     def test_fail_with_exception_other_values():
-        assert isinstance(asrt.accepted("Nein"), ValueError)
+        assert isinstance(asrt.accepted("Nein"), bool)
+        assert asrt.accepted("Nein") == False
 
 
 class TestDeclined:
@@ -166,14 +168,23 @@ class TestBoolean:
     def test_pass_with_actual():
         assert asrt.boolean(True, NotImplemented)
         assert asrt.boolean(False, NotImplemented)
-        assert not asrt.boolean(1, NotImplemented)
-        assert not asrt.boolean("True", NotImplemented)
+
+        err = asrt.boolean(1, NotImplemented)
+        assert isinstance(err, ValueError)
+        assert str(err) == "actual_not_bool"
 
     @staticmethod
     def test_pass_with_expected():
         assert asrt.boolean(True, True)
         assert asrt.boolean(False, False)
-        assert not asrt.boolean(True, False)
+
+        err = asrt.boolean(True, "NotImplemented")
+        assert isinstance(err, ValueError)
+        assert str(err) == "expected_not_bool"
+
+        err = asrt.boolean(True, False)
+        assert isinstance(err, ValueError)
+        assert str(err) == "expected_mismatch"
 
 
 class TestInteger:
