@@ -421,3 +421,9 @@ def date_before_or_equal(
         return d_actual <= d_expected
     except ValueError:
         return ValueError("date_conversion_issue")
+
+
+def list_(actual: list, **_: object) -> _AResult:
+    """Assert actual date is after expected date"""
+
+    return isinstance(actual, list)

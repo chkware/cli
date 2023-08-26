@@ -601,3 +601,11 @@ class TestDateBeforeOrEqual:
         assert str(ret) == "date_conversion_issue"
 
         assert asrt.date_before_or_equal("1972-05", "1972-06", {"format": "%Y-%m"})
+
+
+class TestList:
+    @staticmethod
+    def test_pass():
+        assert not asrt.list_("1972-07-30")
+        assert not asrt.list_("[1, 2, 3]")
+        assert asrt.list_([1, 2, 3])
