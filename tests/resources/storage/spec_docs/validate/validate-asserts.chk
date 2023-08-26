@@ -159,6 +159,10 @@ asserts:
   - { type: StrDoNotHave, actual: '{"a": 1, "b": 2}', other: '"b":' }
   - { type: StrDoNotHave, actual: '{"a": 1, "b": 2}', other: '{"a": 1}' }
 
+  - { type: StrStartsWith, actual: 'https://someurl.com', other: 'http' }
+  - { type: StrStartsWith, actual: '{"a": 1, "b": 2}', other: '"b":' }
+  - { type: StrStartsWith, actual: '{"a": 1, "b": 2}', other: '{"a"' }
+
 #  - { type: AssertIsMap, actual: "{$_response.body.coin}" }
 #  - { type: AssertIsMap, actual: { 'a': 1, 'b': 2 } }
 #  - { type: AssertMapHasKey, actual: { 'a': 1, 'b': 2 }, expected: 'a' }
