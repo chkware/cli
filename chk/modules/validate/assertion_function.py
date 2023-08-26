@@ -1,6 +1,7 @@
 """
 Assertion Functions mod
 """
+import datetime
 import types
 from typing import TypeAlias, Union
 
@@ -272,7 +273,7 @@ def str_have(actual: str, extra_fields: dict, **_: object) -> _AResult:
 
 
 def str_do_not_have(actual: str, extra_fields: dict, **_: object) -> _AResult:
-    """Assert string have a sub-string"""
+    """Assert string do not have a sub-string"""
 
     if not isinstance(actual, str):
         return ValueError("actual_not_str")
@@ -284,7 +285,7 @@ def str_do_not_have(actual: str, extra_fields: dict, **_: object) -> _AResult:
 
 
 def str_starts_with(actual: str, extra_fields: dict, **_: object) -> _AResult:
-    """Assert string have a sub-string"""
+    """Assert string starts with sub-string"""
 
     if not isinstance(actual, str):
         return ValueError("actual_not_str")
@@ -296,7 +297,7 @@ def str_starts_with(actual: str, extra_fields: dict, **_: object) -> _AResult:
 
 
 def str_do_not_starts_with(actual: str, extra_fields: dict, **_: object) -> _AResult:
-    """Assert string have a sub-string"""
+    """Assert string do not starts with sub-string"""
 
     if not isinstance(actual, str):
         return ValueError("actual_not_str")
@@ -308,7 +309,7 @@ def str_do_not_starts_with(actual: str, extra_fields: dict, **_: object) -> _ARe
 
 
 def str_ends_with(actual: str, extra_fields: dict, **_: object) -> _AResult:
-    """Assert string have a sub-string"""
+    """Assert string ends with sub-string"""
 
     if not isinstance(actual, str):
         return ValueError("actual_not_str")
@@ -320,7 +321,7 @@ def str_ends_with(actual: str, extra_fields: dict, **_: object) -> _AResult:
 
 
 def str_do_not_ends_with(actual: str, extra_fields: dict, **_: object) -> _AResult:
-    """Assert string have a sub-string"""
+    """Assert string do not ends with sub-string"""
 
     if not isinstance(actual, str):
         return ValueError("actual_not_str")
@@ -329,3 +330,94 @@ def str_do_not_ends_with(actual: str, extra_fields: dict, **_: object) -> _AResu
         return ValueError("other_not_str")
 
     return not actual.endswith(extra_fields["other"])
+
+
+def date(actual: str, extra_fields: dict, **_: object) -> _AResult:
+    """Assert actual date"""
+
+    if not isinstance(actual, str):
+        return ValueError("actual_not_str")
+
+    try:
+        datetime.datetime.strptime(actual, extra_fields["format"]).date()
+        return True
+    except ValueError:
+        return False
+
+
+def date_after(actual: str, expected: str, extra_fields: dict, **_: object) -> _AResult:
+    """Assert actual date is after expected date"""
+
+    if not isinstance(actual, str):
+        return ValueError("actual_not_str")
+
+    if not isinstance(expected, str):
+        return ValueError("expected_not_str")
+
+    try:
+        d_actual = datetime.datetime.strptime(actual, extra_fields["format"]).date()
+        d_expected = datetime.datetime.strptime(expected, extra_fields["format"]).date()
+
+        return d_actual > d_expected
+    except ValueError:
+        return ValueError("date_conversion_issue")
+
+
+def date_after_or_equal(
+    actual: str, expected: str, extra_fields: dict, **_: object
+) -> _AResult:
+    """Assert actual date is after or equal to expected date"""
+
+    if not isinstance(actual, str):
+        return ValueError("actual_not_str")
+
+    if not isinstance(expected, str):
+        return ValueError("expected_not_str")
+
+    try:
+        d_actual = datetime.datetime.strptime(actual, extra_fields["format"]).date()
+        d_expected = datetime.datetime.strptime(expected, extra_fields["format"]).date()
+
+        return d_actual >= d_expected
+    except ValueError:
+        return ValueError("date_conversion_issue")
+
+
+def date_before(
+    actual: str, expected: str, extra_fields: dict, **_: object
+) -> _AResult:
+    """Assert actual date is after expected date"""
+
+    if not isinstance(actual, str):
+        return ValueError("actual_not_str")
+
+    if not isinstance(expected, str):
+        return ValueError("expected_not_str")
+
+    try:
+        d_actual = datetime.datetime.strptime(actual, extra_fields["format"]).date()
+        d_expected = datetime.datetime.strptime(expected, extra_fields["format"]).date()
+
+        return d_actual < d_expected
+    except ValueError:
+        return ValueError("date_conversion_issue")
+
+
+def date_before_or_equal(
+    actual: str, expected: str, extra_fields: dict, **_: object
+) -> _AResult:
+    """Assert actual date is after expected date"""
+
+    if not isinstance(actual, str):
+        return ValueError("actual_not_str")
+
+    if not isinstance(expected, str):
+        return ValueError("expected_not_str")
+
+    try:
+        d_actual = datetime.datetime.strptime(actual, extra_fields["format"]).date()
+        d_expected = datetime.datetime.strptime(expected, extra_fields["format"]).date()
+
+        return d_actual <= d_expected
+    except ValueError:
+        return ValueError("date_conversion_issue")

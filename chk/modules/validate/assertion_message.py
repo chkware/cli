@@ -133,6 +133,39 @@ _AMessages = {
         "actual_not_str": "actual `{type_actual}({value_actual})` is not a string.",
         "other_not_str": "other `{extra_fields[other]}` is not a string.",
     },
+    "date": {
+        "pass": "actual `{type_actual}({value_actual})` match format `{extra_fields[format]}`.",
+        "fail": "actual `{type_actual}({value_actual})` do not match format `{extra_fields[format]}`.",
+        "actual_not_str": "actual `{type_actual}({value_actual})` is not a string formatted date.",
+    },
+    "date_after": {
+        "pass": "actual `{type_actual}({value_actual})` is after `{type_expected}({value_expected})`",
+        "fail": "actual `{type_actual}({value_actual})` is not after `{type_expected}({value_expected})`",
+        "actual_not_str": "actual `{type_actual}({value_actual})` is not a string formatted date.",
+        "expected_not_str": "expected `{type_expected}({value_expected})` is not a string formatted date.",
+        "date_conversion_issue": "date conversion error. actual `{type_actual}({value_actual})`, expected `{type_expected}({value_expected})`, format `{extra_fields[format]}`.",
+    },
+    "date_after_or_equal": {
+        "pass": "actual `{type_actual}({value_actual})` is after or equal `{type_expected}({value_expected})`",
+        "fail": "actual `{type_actual}({value_actual})` is not after or equal `{type_expected}({value_expected})`",
+        "actual_not_str": "actual `{type_actual}({value_actual})` is not a string formatted date.",
+        "expected_not_str": "expected `{type_expected}({value_expected})` is not a string formatted date.",
+        "date_conversion_issue": "date conversion error. actual `{type_actual}({value_actual})`, expected `{type_expected}({value_expected})`, format `{extra_fields[format]}`.",
+    },
+    "date_before": {
+        "pass": "actual `{type_actual}({value_actual})` is before `{type_expected}({value_expected})`",
+        "fail": "actual `{type_actual}({value_actual})` is not before `{type_expected}({value_expected})`",
+        "actual_not_str": "actual `{type_actual}({value_actual})` is not a string formatted date.",
+        "expected_not_str": "expected `{type_expected}({value_expected})` is not a string formatted date.",
+        "date_conversion_issue": "date conversion error. actual `{type_actual}({value_actual})`, expected `{type_expected}({value_expected})`, format `{extra_fields[format]}`.",
+    },
+    "date_before_or_equal": {
+        "pass": "actual `{type_actual}({value_actual})` is before or equal `{type_expected}({value_expected})`",
+        "fail": "actual `{type_actual}({value_actual})` is not before or equal `{type_expected}({value_expected})`",
+        "actual_not_str": "actual `{type_actual}({value_actual})` is not a string formatted date.",
+        "expected_not_str": "expected `{type_expected}({value_expected})` is not a string formatted date.",
+        "date_conversion_issue": "date conversion error. actual `{type_actual}({value_actual})`, expected `{type_expected}({value_expected})`, format `{extra_fields[format]}`.",
+    },
 }
 
 
