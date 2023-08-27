@@ -41,6 +41,11 @@ class AssertionEntityType(enum.StrEnum):
     DateAfterOrEqual = "DateAfterOrEqual"
     DateBefore = "DateBefore"
     DateBeforeOrEqual = "DateBeforeOrEqual"
+    List = "List"
+    ListContains = "ListContains"
+    ListDoNotContains = "ListDoNotContains"
+    ListHasIndex = "ListHasIndex"
+    ListDoNotHasIndex = "ListDoNotHasIndex"
 
 
 _generic_schema = {
@@ -543,6 +548,70 @@ def _get_schema_for_date_before_or_equal(_gen_schema: dict) -> dict:
     }
 
 
+def _get_schema_for_list(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.List)
+    del _t_gen_schema["expected"]
+
+    return _t_gen_schema
+
+
+def _get_schema_for_list_contains(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.ListContains)
+    _t_gen_schema["expected"]["required"] = True
+
+    return _t_gen_schema
+
+
+def _get_schema_for_list_do_not_contains(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.ListDoNotContains)
+    _t_gen_schema["expected"]["required"] = True
+
+    return _t_gen_schema
+
+
+def _get_schema_for_list_has_index(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.ListHasIndex)
+    del _t_gen_schema["expected"]
+
+    return _t_gen_schema | {
+        "index": {
+            "required": True,
+            "empty": False,
+            "nullable": False,
+            "type": "integer",
+        },
+    }
+
+
+def _get_schema_for_list_do_not_has_index(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.ListDoNotHasIndex)
+    del _t_gen_schema["expected"]
+
+    return _t_gen_schema | {
+        "index": {
+            "required": True,
+            "empty": False,
+            "nullable": False,
+            "type": "integer",
+        },
+    }
+
+
 # ------------------------------------------------
 # Scheme selector
 # ------------------------------------------------
@@ -613,6 +682,19 @@ def get_schema_map(item: AssertionEntityType | None = None) -> dict:
         ),
         AssertionEntityType.DateBefore: _get_schema_for_date_before(_generic_schema),
         AssertionEntityType.DateBeforeOrEqual: _get_schema_for_date_before_or_equal(
+            _generic_schema
+        ),
+        AssertionEntityType.List: _get_schema_for_list(_generic_schema),
+        AssertionEntityType.ListContains: _get_schema_for_list_contains(
+            _generic_schema
+        ),
+        AssertionEntityType.ListDoNotContains: _get_schema_for_list_do_not_contains(
+            _generic_schema
+        ),
+        AssertionEntityType.ListHasIndex: _get_schema_for_list_has_index(
+            _generic_schema
+        ),
+        AssertionEntityType.ListDoNotHasIndex: _get_schema_for_list_do_not_has_index(
             _generic_schema
         ),
     }

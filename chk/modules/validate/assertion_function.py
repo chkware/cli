@@ -421,3 +421,51 @@ def date_before_or_equal(
         return d_actual <= d_expected
     except ValueError:
         return ValueError("date_conversion_issue")
+
+
+def list_(actual: list, **_: object) -> _AResult:
+    """Assert actual date is after expected date"""
+
+    return isinstance(actual, list)
+
+
+def list_contains(actual: list, expected: object, **_: object) -> _AResult:
+    """Assert actual date is after expected date"""
+
+    if not isinstance(actual, list):
+        return ValueError("actual_not_list")
+
+    return expected in actual
+
+
+def list_do_not_contains(actual: list, expected: object, **_: object) -> _AResult:
+    """Assert actual date is after expected date"""
+
+    if not isinstance(actual, list):
+        return ValueError("actual_not_list")
+
+    return expected not in actual
+
+
+def list_has_index(actual: list, extra_fields: dict, **_: object) -> _AResult:
+    """Assert actual date is after expected date"""
+
+    if not isinstance(actual, list):
+        return ValueError("actual_not_list")
+
+    if not isinstance(extra_fields["index"], int):
+        return ValueError("index_not_int")
+
+    return len(actual) > extra_fields["index"]
+
+
+def list_do_not_has_index(actual: list, extra_fields: dict, **_: object) -> _AResult:
+    """Assert actual date is after expected date"""
+
+    if not isinstance(actual, list):
+        return ValueError("actual_not_list")
+
+    if not isinstance(extra_fields["index"], int):
+        return ValueError("index_not_int")
+
+    return len(actual) <= extra_fields["index"]

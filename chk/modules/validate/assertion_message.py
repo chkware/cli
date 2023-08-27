@@ -166,6 +166,32 @@ _AMessages = {
         "expected_not_str": "expected `{type_expected}({value_expected})` is not a string formatted date.",
         "date_conversion_issue": "date conversion error. actual `{type_actual}({value_actual})`, expected `{type_expected}({value_expected})`, format `{extra_fields[format]}`.",
     },
+    "list_": {
+        "pass": "actual `{type_actual}({value_actual})` is a list",
+        "fail": "actual `{type_actual}({value_actual})` is not a list",
+    },
+    "list_contains": {
+        "pass": "expected `{type_expected}({value_expected})` found in actual `{type_actual}({value_actual})`",
+        "fail": "expected `{type_expected}({value_expected})` not found in actual `{type_actual}({value_actual})`",
+        "actual_not_list": "actual `{type_actual}({value_actual})` is not a list",
+    },
+    "list_do_not_contains": {
+        "pass": "expected `{type_expected}({value_expected})` not found in actual `{type_actual}({value_actual})`",
+        "fail": "expected `{type_expected}({value_expected})` found in actual `{type_actual}({value_actual})`",
+        "actual_not_list": "actual `{type_actual}({value_actual})` is not a list",
+    },
+    "list_has_index": {
+        "pass": "index `{extra_fields[index]}` found in actual `{type_actual}({value_actual})`",
+        "fail": "index `{extra_fields[index]}` not found in actual `{type_actual}({value_actual})`",
+        "actual_not_list": "actual `{type_actual}({value_actual})` is not a list",
+        "index_not_int": "index `{extra_fields[index]}` is not a list",
+    },
+    "list_do_not_has_index": {
+        "pass": "index `{extra_fields[index]}` not found in actual `{type_actual}({value_actual})`",
+        "fail": "index `{extra_fields[index]}` found in actual `{type_actual}({value_actual})`",
+        "actual_not_list": "actual `{type_actual}({value_actual})` is not a list",
+        "index_not_int": "index `{extra_fields[index]}` is not a list",
+    },
 }
 
 
