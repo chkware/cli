@@ -475,3 +475,15 @@ def map_(actual: list, **_: object) -> _AResult:
     """Actual is a map"""
 
     return isinstance(actual, dict)
+
+
+def map_key_count(actual: dict, expected: int, **_: object) -> _AResult:
+    """Actual is a map key count as expected"""
+
+    if not isinstance(actual, dict):
+        return ValueError("actual_not_dict")
+
+    if not isinstance(expected, int):
+        return ValueError("expected_not_int")
+
+    return len(actual.keys()) == expected

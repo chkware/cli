@@ -672,3 +672,18 @@ class TestMap:
         assert asrt.map_({"a": 1})
         assert not asrt.map_({"a", 1})
         assert not asrt.map_(["a", 1])
+
+
+class TestMapKeyCount:
+    @staticmethod
+    def test_pass():
+        assert asrt.map_key_count({"a": 1}, 1)
+        assert not asrt.map_key_count({"a": 1}, 2)
+
+        ret = asrt.map_key_count(["a", 1], 2)
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "actual_not_dict"
+
+        ret = asrt.map_key_count({"a": 1}, "2")
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "expected_not_int"
