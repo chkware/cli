@@ -52,6 +52,12 @@ MAP_TYPE_TO_FN: dict[str, Callable] = {
     AssertionEntityType.ListDoNotContains: asrt_f.list_do_not_contains,
     AssertionEntityType.ListHasIndex: asrt_f.list_has_index,
     AssertionEntityType.ListDoNotHasIndex: asrt_f.list_do_not_has_index,
+    AssertionEntityType.Map: asrt_f.map_,
+    AssertionEntityType.MapKeyCount: asrt_f.map_key_count,
+    AssertionEntityType.MapHasKeys: asrt_f.map_has_keys,
+    AssertionEntityType.MapDoNotHasKeys: asrt_f.map_do_not_has_keys,
+    AssertionEntityType.MapExactKeys: asrt_f.map_exact_keys,
+    AssertionEntityType.Count: asrt_f.count,
 }
 
 
@@ -194,7 +200,7 @@ class AssertionEntryListRunner:
                 assert_item.actual = Cast.to_bool(assert_item.actual)
             elif assert_item.cast_actual_to == "none":
                 assert_item.actual = Cast.to_none(assert_item.actual)
-            elif assert_item.cast_actual_to in ["dict", "list", "str"]:
+            elif assert_item.cast_actual_to in ["map", "list", "str"]:
                 assert_item.actual = Cast.to_hashable(assert_item.actual)
             elif assert_item.cast_actual_to == "auto":
                 assert_item.actual = Cast.to_auto(assert_item.actual)

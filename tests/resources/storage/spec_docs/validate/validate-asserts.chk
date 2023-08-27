@@ -8,6 +8,10 @@ variables:
     string1: "200.23"
     string2: "Some random string"
     string3: Some random string
+    map: {
+      "name": Thin Air,
+      "address": Mountains
+    }
 
 data:
   code: 200
@@ -16,7 +20,7 @@ asserts:
   - { type: Equal, actual: "{{ response.int }}", expected: 200 }
   - { type: Equal, actual: "{{ response.float }}", expected: 200.23 }
   - { type: Equal, actual: "[ 1, 2, 3 ]", expected: [ 1, 2, 3 ], cast_actual_to: list }
-  - { type: Equal, actual: "{'a': 1, 'c': 3, 'b': 2}", expected: { 'a': 1, 'c': 3, 'b': 2 }, cast_actual_to: dict }
+  - { type: Equal, actual: "{'a': 1, 'c': 3, 'b': 2}", expected: { 'a': 1, 'c': 3, 'b': 2 }, cast_actual_to: map }
   - { type: Equal, actual: "False", expected: False, cast_actual_to: bool }
   - { type: Equal, actual: "False", expected: False, cast_actual_to: auto }
 
@@ -194,24 +198,34 @@ asserts:
   - { type: ListDoNotHasIndex, actual: [ 1, 2, 3 ], index: 3 }
   - { type: ListDoNotHasIndex, actual: [ 1, "2", 3.0 ], index: 4 }
 
-#  - { type: AssertIsMap, actual: "{$_response.body.coin}" }
-#  - { type: AssertIsMap, actual: { 'a': 1, 'b': 2 } }
-#  - { type: AssertMapHasKey, actual: { 'a': 1, 'b': 2 }, expected: 'a' }
-#  - { type: AssertMapHasKey, actual: '{"a": 1, "b": 2}', expected: 'a' }
-#  - { type: AssertMapDoNotHasKey, actual: { 'a': 1, 'b': 2 }, expected: 'c' }
-#  - { type: AssertMapDoNotHasKey, actual: '{"a": 1, "b": 2}', expected: 'c' }
-#  - { type: AssertMapHasKeys, actual: { 'a': 1, 'b': 2 }, expected: [ 'a' ] }
-#  - { type: AssertMapHasKeys, actual: { 'a': 1, 'b': 2, 'c': 3 }, expected: [ 'a', 'b', 'c' ] }
-#  - { type: AssertMapHasKeys, actual: '{"a": 1, "b": 2, "c": 3}', expected: [ 'a', 'b', 'c' ] }
-#  - { type: AssertMapDoNotHasKeys, actual: { 'a': 1, 'b': 2, 'c': 3 }, expected: [ 'd', 'e', 'f' ] }
-#  - { type: AssertMapDoNotHasKeys, actual: '{"a": 1, "b": 2, "c": 3}', expected: [ 'd', 'e', 'f' ] }
-#  - { type: AssertMapExactKeys, actual: { 'a': 1, 'b': 2, 'c': 3 }, expected: [ 'a', 'b', 'c' ] }
-#  - { type: AssertMapExactKeys, actual: '{"a": 1, "b": 2, "c": 3}', expected: [ 'a', 'b', 'c' ] }
-#  - { type: AssertMapContains, actual: '{"a": 1, "b": 2, "c": 3}', expected: 1 }
-#  - { type: AssertMapContains, actual: { "a": [ 1, 2 ], "b": [ 1, 3 ], "c": 3 }, expected: [ 1, 2 ] }
-#  - { type: AssertMapContains, actual: { "a": { "foo": 1 }, "b": [ 1, 3 ], "c": 3 }, expected: { "foo": 1 } }
-#  - { type: AssertMapKeyCount, actual: { 'a': 1, 'b': 2 }, expected: 2 }
-#  - { type: AssertCount, actual: "{$_response.body.coin.exp}", expected: 3 }
+  - { type: Map, actual: "{{ response.map }}", cast_actual_to: map }
+  - { type: Map, actual: "{ 'a': 1, 'b': 2 }", cast_actual_to: map }
+  - { type: Map, actual: { 'a': 1, 'b': 2 } }
+  - { type: Map, actual: [ 'a', 1, 'b', 2 ] }
+
+  - { type: MapKeyCount, actual: "{{ response.map }}", expected: 2, cast_actual_to: map }
+  - { type: MapKeyCount, actual: { 'a': 1, 'b': 2 }, expected: 3, cast_actual_to: map }
+
+  - { type: MapHasKeys, actual: "{{ response.map }}", expected: [ "address", "name" ] }
+  - { type: MapHasKeys, actual: { 'a': 1, 'b': 2 }, expected: [ "b" ] }
+  - { type: MapHasKeys, actual: { 'a': 1, 'b': 2 }, expected: "b" }
+
+  - { type: MapHasKeys, actual: "{{ response.map }}", expected: [ "address", "name" ] }
+  - { type: MapHasKeys, actual: { 'a': 1, 'b': 2 }, expected: [ "b" ] }
+  - { type: MapHasKeys, actual: { 'a': 1, 'b': 2 }, expected: "b" }
+
+  - { type: MapDoNotHasKeys, actual: "{{ response.map }}", expected: [ "address", "name" ] }
+  - { type: MapDoNotHasKeys, actual: { 'a': 1, 'b': 2 }, expected: [ "c" ] }
+  - { type: MapDoNotHasKeys, actual: { 'a': 1, 'b': 2 }, expected: "b" }
+
+  - { type: MapExactKeys, actual: "{{ response.map }}", expected: [ "address", "name" ] }
+  - { type: MapExactKeys, actual: { 'a': 1, 'b': 2 }, expected: [ "a" ] }
+  - { type: MapExactKeys, actual: { 'a': 1, 'b': 2 }, expected: "b" }
+
+  - { type: Count, actual: { 'a': 1, 'b': 2 }, expected: 2 }
+  - { type: Count, actual: { 'a', 'b', 'c', 'd' }, expected: 4 }
+  - { type: Count, actual: 'abcd', expected: 4 }
+  - { type: Count, actual: 1, expected: 1 }
 
 expose:
   - "{{ _asserts_response }}"

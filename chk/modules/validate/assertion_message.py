@@ -192,6 +192,40 @@ _AMessages = {
         "actual_not_list": "actual `{type_actual}({value_actual})` is not a list",
         "index_not_int": "index `{extra_fields[index]}` is not a list",
     },
+    "map_": {
+        "pass": "actual `{type_actual}({value_actual})` is a map",
+        "fail": "actual `{type_actual}({value_actual})` is not a map",
+    },
+    "map_key_count": {
+        "pass": "actual `{type_actual}({value_actual})` key count is `{value_expected}`",
+        "fail": "actual `{type_actual}({value_actual})` key count is not `{value_expected}`",
+        "actual_not_dict": "actual `{type_actual}({value_actual})` is not a map",
+        "expected_not_int": "expected `{type_expected}({value_expected})` is not integer",
+    },
+    "map_has_keys": {
+        "pass": "actual `{type_actual}({value_actual})` has keys `{value_expected}`",
+        "fail": "actual `{type_actual}({value_actual})` do not have keys `{value_expected}`",
+        "actual_not_dict": "actual `{type_actual}({value_actual})` is not a map",
+        "expected_not_list": "expected `{type_expected}({value_expected})` is not a list",
+    },
+    "map_do_not_has_keys": {
+        "pass": "actual `{type_actual}({value_actual})` do not have keys `{value_expected}`",
+        "fail": "actual `{type_actual}({value_actual})` have keys `{value_expected}`",
+        "actual_not_dict": "actual `{type_actual}({value_actual})` is not a map",
+        "expected_not_list": "expected `{type_expected}({value_expected})` is not a list",
+    },
+    "map_exact_keys": {
+        "pass": "actual `{type_actual}({value_actual})` exactly have keys `{value_expected}`",
+        "fail": "actual `{type_actual}({value_actual})` do not exactly have keys `{value_expected}`",
+        "actual_not_dict": "actual `{type_actual}({value_actual})` is not a map",
+        "expected_not_list": "expected `{type_expected}({value_expected})` is not a list",
+    },
+    "count": {
+        "pass": "actual `{type_actual}({value_actual})` count is `{value_expected}`",
+        "fail": "actual `{type_actual}({value_actual})` count is not `{value_expected}`",
+        "actual_no_len": "no count for actual `{type_actual}({value_actual})`",
+        "expected_not_int": "expected `{type_expected}({value_expected})` is not integer",
+    },
 }
 
 

@@ -663,3 +663,90 @@ class TestListDoNotHasIndex:
         ret = asrt.list_do_not_has_index([1, {"a": 1}, 3], {"index": "1"})
         assert isinstance(ret, ValueError)
         assert str(ret) == "index_not_int"
+
+
+class TestMap:
+    @staticmethod
+    def test_pass():
+        assert not asrt.map_("1972-07-30")
+        assert asrt.map_({"a": 1})
+        assert not asrt.map_({"a", 1})
+        assert not asrt.map_(["a", 1])
+
+
+class TestMapKeyCount:
+    @staticmethod
+    def test_pass():
+        assert asrt.map_has_keys({"a": 1}, 1)
+        assert not asrt.map_key_count({"a": 1}, 2)
+
+        ret = asrt.map_key_count(["a", 1], 2)
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "actual_not_dict"
+
+        ret = asrt.map_key_count({"a": 1}, "2")
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "expected_not_int"
+
+
+class TestMapHasKeys:
+    @staticmethod
+    def test_pass():
+        assert asrt.map_has_keys({"a": 1, "b": 2, "c": 3}, ["a", "c"])
+        assert not asrt.map_has_keys({"a": 1, "b": 2, "c": 3}, ["a", "d"])
+
+        ret = asrt.map_has_keys(["a", 1], ["a", "d"])
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "actual_not_dict"
+
+        ret = asrt.map_has_keys({"a": 1}, "2")
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "expected_not_list"
+
+
+class TestMapDoNotHasKeys:
+    @staticmethod
+    def test_pass():
+        assert asrt.map_do_not_has_keys({"a": 1, "b": 2, "c": 3}, ["a", "d"])
+        assert not asrt.map_do_not_has_keys({"a": 1, "b": 2, "c": 3}, ["a", "c"])
+
+        ret = asrt.map_do_not_has_keys(["a", 1], ["a", "d"])
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "actual_not_dict"
+
+        ret = asrt.map_do_not_has_keys({"a": 1}, "2")
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "expected_not_list"
+
+
+class TestMapExactKeys:
+    @staticmethod
+    def test_pass():
+        assert asrt.map_exact_keys({"a": 1, "b": 2, "c": 3}, ["a", "b", "c"])
+        assert not asrt.map_exact_keys({"a": 1, "b": 2, "c": 3}, ["a", "c"])
+
+        ret = asrt.map_exact_keys(["a", 1], ["a", "d"])
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "actual_not_dict"
+
+        ret = asrt.map_exact_keys({"a": 1}, "2")
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "expected_not_list"
+
+
+class TestCount:
+    @staticmethod
+    def test_pass():
+        assert asrt.count({"a": 1, "b": 2, "c": 3}, 3)
+        assert asrt.count(["a", 1, "b", 2, "c", 3], 6)
+        assert asrt.count("as we speak", 11)
+
+        assert not asrt.count({"a": 1, "b": 2, "c": 3}, 2)
+
+        ret = asrt.count(1, 1)
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "actual_no_len"
+
+        ret = asrt.count({"a": 1}, "1")
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "expected_not_int"

@@ -4,6 +4,7 @@ Assertion Functions mod
 import datetime
 import types
 from typing import TypeAlias, Union
+from collections.abc import Sized
 
 # assertion result type; internal use
 _AResult: TypeAlias = Union[ValueError | bool]
@@ -424,13 +425,13 @@ def date_before_or_equal(
 
 
 def list_(actual: list, **_: object) -> _AResult:
-    """Assert actual date is after expected date"""
+    """Assert actual value is a list"""
 
     return isinstance(actual, list)
 
 
 def list_contains(actual: list, expected: object, **_: object) -> _AResult:
-    """Assert actual date is after expected date"""
+    """Assert actual list contains given value"""
 
     if not isinstance(actual, list):
         return ValueError("actual_not_list")
@@ -439,7 +440,7 @@ def list_contains(actual: list, expected: object, **_: object) -> _AResult:
 
 
 def list_do_not_contains(actual: list, expected: object, **_: object) -> _AResult:
-    """Assert actual date is after expected date"""
+    """Assert actual list do no contains given value"""
 
     if not isinstance(actual, list):
         return ValueError("actual_not_list")
@@ -448,7 +449,7 @@ def list_do_not_contains(actual: list, expected: object, **_: object) -> _AResul
 
 
 def list_has_index(actual: list, extra_fields: dict, **_: object) -> _AResult:
-    """Assert actual date is after expected date"""
+    """Assert actual list has given index"""
 
     if not isinstance(actual, list):
         return ValueError("actual_not_list")
@@ -460,7 +461,7 @@ def list_has_index(actual: list, extra_fields: dict, **_: object) -> _AResult:
 
 
 def list_do_not_has_index(actual: list, extra_fields: dict, **_: object) -> _AResult:
-    """Assert actual date is after expected date"""
+    """Assert actual list do no has given index"""
 
     if not isinstance(actual, list):
         return ValueError("actual_not_list")
@@ -469,3 +470,71 @@ def list_do_not_has_index(actual: list, extra_fields: dict, **_: object) -> _ARe
         return ValueError("index_not_int")
 
     return len(actual) <= extra_fields["index"]
+
+
+def map_(actual: list, **_: object) -> _AResult:
+    """Actual is a map"""
+
+    return isinstance(actual, dict)
+
+
+def map_key_count(actual: dict, expected: int, **_: object) -> _AResult:
+    """Actual is a map key count as expected"""
+
+    if not isinstance(actual, dict):
+        return ValueError("actual_not_dict")
+
+    if not isinstance(expected, int):
+        return ValueError("expected_not_int")
+
+    return len(actual.keys()) == expected
+
+
+def map_has_keys(actual: dict, expected: list, **_: object) -> _AResult:
+    """Actual is a map has same keys as expected"""
+
+    if not isinstance(actual, dict):
+        return ValueError("actual_not_dict")
+
+    if not isinstance(expected, list):
+        return ValueError("expected_not_list")
+
+    intersection = set(actual.keys()) & set(expected)
+    return intersection == set(expected)
+
+
+def map_do_not_has_keys(actual: dict, expected: list, **_: object) -> _AResult:
+    """Actual is a map do no have keys as expected"""
+
+    if not isinstance(actual, dict):
+        return ValueError("actual_not_dict")
+
+    if not isinstance(expected, list):
+        return ValueError("expected_not_list")
+
+    intersection = set(actual.keys()) & set(expected)
+    return intersection != set(expected)
+
+
+def map_exact_keys(actual: dict, expected: list, **_: object) -> _AResult:
+    """Actual is a map keys are as expected"""
+
+    if not isinstance(actual, dict):
+        return ValueError("actual_not_dict")
+
+    if not isinstance(expected, list):
+        return ValueError("expected_not_list")
+
+    return set(actual.keys()) & set(expected) == set(expected) == set(actual.keys())
+
+
+def count(actual: Sized, expected: object, **_: object) -> _AResult:
+    """If actual is countable validate count"""
+
+    if not hasattr(actual, "__len__"):
+        return ValueError("actual_no_len")
+
+    if not isinstance(expected, int):
+        return ValueError("expected_not_int")
+
+    return len(actual) == expected

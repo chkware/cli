@@ -46,6 +46,12 @@ class AssertionEntityType(enum.StrEnum):
     ListDoNotContains = "ListDoNotContains"
     ListHasIndex = "ListHasIndex"
     ListDoNotHasIndex = "ListDoNotHasIndex"
+    Map = "Map"
+    MapKeyCount = "MapKeyCount"
+    MapHasKeys = "MapHasKeys"
+    MapDoNotHasKeys = "MapDoNotHasKeys"
+    MapExactKeys = "MapExactKeys"
+    Count = "Count"
 
 
 _generic_schema = {
@@ -77,7 +83,7 @@ _generic_schema = {
             "float",
             "bool",
             "none",
-            "dict",
+            "map",
             "list",
             "str",
             "auto",
@@ -612,6 +618,68 @@ def _get_schema_for_list_do_not_has_index(_gen_schema: dict) -> dict:
     }
 
 
+def _get_schema_for_map(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.Map)
+    del _t_gen_schema["expected"]
+
+    return _t_gen_schema
+
+
+def _get_schema_for_map_key_count(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.MapKeyCount)
+    _t_gen_schema["expected"]["required"] = True
+    _t_gen_schema["expected"]["type"] = "integer"
+
+    return _t_gen_schema
+
+
+def _get_schema_for_map_has_keys(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.MapHasKeys)
+    _t_gen_schema["expected"]["required"] = True
+
+    return _t_gen_schema
+
+
+def _get_schema_for_map_do_not_has_keys(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.MapDoNotHasKeys)
+    _t_gen_schema["expected"]["required"] = True
+
+    return _t_gen_schema
+
+
+def _get_schema_for_map_exact_keys(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.MapExactKeys)
+    _t_gen_schema["expected"]["required"] = True
+
+    return _t_gen_schema
+
+
+def _get_schema_for_count(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.Count)
+    _t_gen_schema["expected"]["required"] = True
+    _t_gen_schema["expected"]["type"] = "integer"
+
+    return _t_gen_schema
+
+
 # ------------------------------------------------
 # Scheme selector
 # ------------------------------------------------
@@ -697,6 +765,16 @@ def get_schema_map(item: AssertionEntityType | None = None) -> dict:
         AssertionEntityType.ListDoNotHasIndex: _get_schema_for_list_do_not_has_index(
             _generic_schema
         ),
+        AssertionEntityType.Map: _get_schema_for_map(_generic_schema),
+        AssertionEntityType.MapKeyCount: _get_schema_for_map_key_count(_generic_schema),
+        AssertionEntityType.MapHasKeys: _get_schema_for_map_has_keys(_generic_schema),
+        AssertionEntityType.MapDoNotHasKeys: _get_schema_for_map_do_not_has_keys(
+            _generic_schema
+        ),
+        AssertionEntityType.MapExactKeys: _get_schema_for_map_exact_keys(
+            _generic_schema
+        ),
+        AssertionEntityType.Count: _get_schema_for_count(_generic_schema),
     }
 
     if item:
