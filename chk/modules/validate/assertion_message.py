@@ -202,6 +202,12 @@ _AMessages = {
         "actual_not_dict": "actual `{type_actual}({value_actual})` is not a map",
         "expected_not_int": "expected `{type_expected}({value_expected})` is not integer",
     },
+    "map_has_keys": {
+        "pass": "actual `{type_actual}({value_actual})` has keys `{value_expected}`",
+        "fail": "actual `{type_actual}({value_actual})` do not have keys `{value_expected}`",
+        "actual_not_dict": "actual `{type_actual}({value_actual})` is not a map",
+        "expected_not_list": "expected `{type_expected}({value_expected})` is not a list",
+    },
 }
 
 

@@ -48,6 +48,7 @@ class AssertionEntityType(enum.StrEnum):
     ListDoNotHasIndex = "ListDoNotHasIndex"
     Map = "Map"
     MapKeyCount = "MapKeyCount"
+    MapHasKeys = "MapHasKeys"
 
 
 _generic_schema = {
@@ -635,6 +636,16 @@ def _get_schema_for_map_key_count(_gen_schema: dict) -> dict:
     return _t_gen_schema
 
 
+def _get_schema_for_map_has_keys(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.MapHasKeys)
+    _t_gen_schema["expected"]["required"] = True
+
+    return _t_gen_schema
+
+
 # ------------------------------------------------
 # Scheme selector
 # ------------------------------------------------
@@ -722,6 +733,7 @@ def get_schema_map(item: AssertionEntityType | None = None) -> dict:
         ),
         AssertionEntityType.Map: _get_schema_for_map(_generic_schema),
         AssertionEntityType.MapKeyCount: _get_schema_for_map_key_count(_generic_schema),
+        AssertionEntityType.MapHasKeys: _get_schema_for_map_has_keys(_generic_schema),
     }
 
     if item:

@@ -487,3 +487,16 @@ def map_key_count(actual: dict, expected: int, **_: object) -> _AResult:
         return ValueError("expected_not_int")
 
     return len(actual.keys()) == expected
+
+
+def map_has_keys(actual: dict, expected: list, **_: object) -> _AResult:
+    """Actual is a map key count as expected"""
+
+    if not isinstance(actual, dict):
+        return ValueError("actual_not_dict")
+
+    if not isinstance(expected, list):
+        return ValueError("expected_not_list")
+
+    intersection = set(actual.keys()) & set(expected)
+    return intersection == set(expected)
