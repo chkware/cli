@@ -469,3 +469,9 @@ def list_do_not_has_index(actual: list, extra_fields: dict, **_: object) -> _ARe
         return ValueError("index_not_int")
 
     return len(actual) <= extra_fields["index"]
+
+
+def map_(actual: list, **_: object) -> _AResult:
+    """Actual is a map"""
+
+    return isinstance(actual, dict)

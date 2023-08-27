@@ -192,6 +192,10 @@ _AMessages = {
         "actual_not_list": "actual `{type_actual}({value_actual})` is not a list",
         "index_not_int": "index `{extra_fields[index]}` is not a list",
     },
+    "map_": {
+        "pass": "actual `{type_actual}({value_actual})` is a map",
+        "fail": "actual `{type_actual}({value_actual})` is not a map",
+    },
 }
 
 

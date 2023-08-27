@@ -663,3 +663,12 @@ class TestListDoNotHasIndex:
         ret = asrt.list_do_not_has_index([1, {"a": 1}, 3], {"index": "1"})
         assert isinstance(ret, ValueError)
         assert str(ret) == "index_not_int"
+
+
+class TestMap:
+    @staticmethod
+    def test_pass():
+        assert not asrt.map_("1972-07-30")
+        assert asrt.map_({"a": 1})
+        assert not asrt.map_({"a", 1})
+        assert not asrt.map_(["a", 1])
