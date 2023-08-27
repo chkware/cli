@@ -424,13 +424,13 @@ def date_before_or_equal(
 
 
 def list_(actual: list, **_: object) -> _AResult:
-    """Assert actual date is after expected date"""
+    """Assert actual value is a list"""
 
     return isinstance(actual, list)
 
 
 def list_contains(actual: list, expected: object, **_: object) -> _AResult:
-    """Assert actual date is after expected date"""
+    """Assert actual list contains given value"""
 
     if not isinstance(actual, list):
         return ValueError("actual_not_list")
@@ -439,7 +439,7 @@ def list_contains(actual: list, expected: object, **_: object) -> _AResult:
 
 
 def list_do_not_contains(actual: list, expected: object, **_: object) -> _AResult:
-    """Assert actual date is after expected date"""
+    """Assert actual list do no contains given value"""
 
     if not isinstance(actual, list):
         return ValueError("actual_not_list")
@@ -448,7 +448,7 @@ def list_do_not_contains(actual: list, expected: object, **_: object) -> _AResul
 
 
 def list_has_index(actual: list, extra_fields: dict, **_: object) -> _AResult:
-    """Assert actual date is after expected date"""
+    """Assert actual list has given index"""
 
     if not isinstance(actual, list):
         return ValueError("actual_not_list")
@@ -460,7 +460,7 @@ def list_has_index(actual: list, extra_fields: dict, **_: object) -> _AResult:
 
 
 def list_do_not_has_index(actual: list, extra_fields: dict, **_: object) -> _AResult:
-    """Assert actual date is after expected date"""
+    """Assert actual list do no has given index"""
 
     if not isinstance(actual, list):
         return ValueError("actual_not_list")
