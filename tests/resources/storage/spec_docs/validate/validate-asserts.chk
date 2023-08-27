@@ -20,7 +20,7 @@ asserts:
   - { type: Equal, actual: "{{ response.int }}", expected: 200 }
   - { type: Equal, actual: "{{ response.float }}", expected: 200.23 }
   - { type: Equal, actual: "[ 1, 2, 3 ]", expected: [ 1, 2, 3 ], cast_actual_to: list }
-  - { type: Equal, actual: "{'a': 1, 'c': 3, 'b': 2}", expected: { 'a': 1, 'c': 3, 'b': 2 }, cast_actual_to: dict }
+  - { type: Equal, actual: "{'a': 1, 'c': 3, 'b': 2}", expected: { 'a': 1, 'c': 3, 'b': 2 }, cast_actual_to: map }
   - { type: Equal, actual: "False", expected: False, cast_actual_to: bool }
   - { type: Equal, actual: "False", expected: False, cast_actual_to: auto }
 
@@ -208,6 +208,7 @@ asserts:
 
   - { type: MapHasKeys, actual: "{{ response.map }}", expected: [ "address", "name" ] }
   - { type: MapHasKeys, actual: { 'a': 1, 'b': 2 }, expected: [ "b" ] }
+  - { type: MapHasKeys, actual: { 'a': 1, 'b': 2 }, expected: "b" }
 
 #  - { type: AssertMapDoNotHasKeys, actual: { 'a': 1, 'b': 2, 'c': 3 }, expected: [ 'd', 'e', 'f' ] }
 #  - { type: AssertMapDoNotHasKeys, actual: '{"a": 1, "b": 2, "c": 3}', expected: [ 'd', 'e', 'f' ] }
