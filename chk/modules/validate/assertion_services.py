@@ -55,6 +55,7 @@ MAP_TYPE_TO_FN: dict[str, Callable] = {
     AssertionEntityType.Map: asrt_f.map_,
     AssertionEntityType.MapKeyCount: asrt_f.map_key_count,
     AssertionEntityType.MapHasKeys: asrt_f.map_has_keys,
+    AssertionEntityType.MapDoNotHasKeys: asrt_f.map_do_not_has_keys,
 }
 
 

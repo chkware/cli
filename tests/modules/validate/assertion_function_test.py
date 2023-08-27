@@ -702,3 +702,18 @@ class TestMapHasKeys:
         ret = asrt.map_has_keys({"a": 1}, "2")
         assert isinstance(ret, ValueError)
         assert str(ret) == "expected_not_list"
+
+
+class TestMapDoNotHasKeys:
+    @staticmethod
+    def test_pass():
+        assert asrt.map_do_not_has_keys({"a": 1, "b": 2, "c": 3}, ["a", "d"])
+        assert not asrt.map_do_not_has_keys({"a": 1, "b": 2, "c": 3}, ["a", "c"])
+
+        ret = asrt.map_do_not_has_keys(["a", 1], ["a", "d"])
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "actual_not_dict"
+
+        ret = asrt.map_do_not_has_keys({"a": 1}, "2")
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "expected_not_list"

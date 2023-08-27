@@ -210,6 +210,14 @@ asserts:
   - { type: MapHasKeys, actual: { 'a': 1, 'b': 2 }, expected: [ "b" ] }
   - { type: MapHasKeys, actual: { 'a': 1, 'b': 2 }, expected: "b" }
 
+  - { type: MapHasKeys, actual: "{{ response.map }}", expected: [ "address", "name" ] }
+  - { type: MapHasKeys, actual: { 'a': 1, 'b': 2 }, expected: [ "b" ] }
+  - { type: MapHasKeys, actual: { 'a': 1, 'b': 2 }, expected: "b" }
+
+  - { type: MapDoNotHasKeys, actual: "{{ response.map }}", expected: [ "address", "name" ] }
+  - { type: MapDoNotHasKeys, actual: { 'a': 1, 'b': 2 }, expected: [ "c" ] }
+  - { type: MapDoNotHasKeys, actual: { 'a': 1, 'b': 2 }, expected: "b" }
+
 #  - { type: AssertMapDoNotHasKeys, actual: { 'a': 1, 'b': 2, 'c': 3 }, expected: [ 'd', 'e', 'f' ] }
 #  - { type: AssertMapDoNotHasKeys, actual: '{"a": 1, "b": 2, "c": 3}', expected: [ 'd', 'e', 'f' ] }
 #  - { type: AssertMapExactKeys, actual: { 'a': 1, 'b': 2, 'c': 3 }, expected: [ 'a', 'b', 'c' ] }
