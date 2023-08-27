@@ -744,6 +744,7 @@ def get_schema_map(item: AssertionEntityType | None = None) -> dict:
         ),
         AssertionEntityType.Map: _get_schema_for_map(_generic_schema),
         AssertionEntityType.MapKeyCount: _get_schema_for_map_key_count(_generic_schema),
+        AssertionEntityType.MapHasKeys: _get_schema_for_map_has_keys(_generic_schema),
         AssertionEntityType.MapDoNotHasKeys: _get_schema_for_map_do_not_has_keys(
             _generic_schema
         ),
