@@ -77,7 +77,7 @@ _generic_schema = {
             "float",
             "bool",
             "none",
-            "dict",
+            "map",
             "list",
             "str",
             "auto",

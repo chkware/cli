@@ -194,7 +194,7 @@ class AssertionEntryListRunner:
                 assert_item.actual = Cast.to_bool(assert_item.actual)
             elif assert_item.cast_actual_to == "none":
                 assert_item.actual = Cast.to_none(assert_item.actual)
-            elif assert_item.cast_actual_to in ["dict", "list", "str"]:
+            elif assert_item.cast_actual_to in ["map", "list", "str"]:
                 assert_item.actual = Cast.to_hashable(assert_item.actual)
             elif assert_item.cast_actual_to == "auto":
                 assert_item.actual = Cast.to_auto(assert_item.actual)
