@@ -4,6 +4,7 @@ Assertion Functions mod
 import datetime
 import types
 from typing import TypeAlias, Union
+from collections.abc import Sized
 
 # assertion result type; internal use
 _AResult: TypeAlias = Union[ValueError | bool]
@@ -490,7 +491,7 @@ def map_key_count(actual: dict, expected: int, **_: object) -> _AResult:
 
 
 def map_has_keys(actual: dict, expected: list, **_: object) -> _AResult:
-    """Actual is a map key count as expected"""
+    """Actual is a map has same keys as expected"""
 
     if not isinstance(actual, dict):
         return ValueError("actual_not_dict")
@@ -503,7 +504,7 @@ def map_has_keys(actual: dict, expected: list, **_: object) -> _AResult:
 
 
 def map_do_not_has_keys(actual: dict, expected: list, **_: object) -> _AResult:
-    """Actual is a map key count as expected"""
+    """Actual is a map do no have keys as expected"""
 
     if not isinstance(actual, dict):
         return ValueError("actual_not_dict")
@@ -516,7 +517,7 @@ def map_do_not_has_keys(actual: dict, expected: list, **_: object) -> _AResult:
 
 
 def map_exact_keys(actual: dict, expected: list, **_: object) -> _AResult:
-    """Actual is a map key count as expected"""
+    """Actual is a map keys are as expected"""
 
     if not isinstance(actual, dict):
         return ValueError("actual_not_dict")
@@ -525,3 +526,15 @@ def map_exact_keys(actual: dict, expected: list, **_: object) -> _AResult:
         return ValueError("expected_not_list")
 
     return set(actual.keys()) & set(expected) == set(expected) == set(actual.keys())
+
+
+def count(actual: Sized, expected: object, **_: object) -> _AResult:
+    """If actual is countable validate count"""
+
+    if not hasattr(actual, "__len__"):
+        return ValueError("actual_no_len")
+
+    if not isinstance(expected, int):
+        return ValueError("expected_not_int")
+
+    return len(actual) == expected

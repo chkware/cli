@@ -222,8 +222,10 @@ asserts:
   - { type: MapExactKeys, actual: { 'a': 1, 'b': 2 }, expected: [ "a" ] }
   - { type: MapExactKeys, actual: { 'a': 1, 'b': 2 }, expected: "b" }
 
-#  - { type: AssertMapKeyCount, actual: { 'a': 1, 'b': 2 }, expected: 2 }
-#  - { type: AssertCount, actual: "{$_response.body.coin.exp}", expected: 3 }
+  - { type: Count, actual: { 'a': 1, 'b': 2 }, expected: 2 }
+  - { type: Count, actual: { 'a', 'b', 'c', 'd' }, expected: 4 }
+  - { type: Count, actual: 'abcd', expected: 4 }
+  - { type: Count, actual: 1, expected: 1 }
 
 expose:
   - "{{ _asserts_response }}"

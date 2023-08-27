@@ -732,3 +732,21 @@ class TestMapExactKeys:
         ret = asrt.map_exact_keys({"a": 1}, "2")
         assert isinstance(ret, ValueError)
         assert str(ret) == "expected_not_list"
+
+
+class TestCount:
+    @staticmethod
+    def test_pass():
+        assert asrt.count({"a": 1, "b": 2, "c": 3}, 3)
+        assert asrt.count(["a", 1, "b", 2, "c", 3], 6)
+        assert asrt.count("as we speak", 11)
+
+        assert not asrt.count({"a": 1, "b": 2, "c": 3}, 2)
+
+        ret = asrt.count(1, 1)
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "actual_no_len"
+
+        ret = asrt.count({"a": 1}, "1")
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "expected_not_int"
