@@ -218,13 +218,10 @@ asserts:
   - { type: MapDoNotHasKeys, actual: { 'a': 1, 'b': 2 }, expected: [ "c" ] }
   - { type: MapDoNotHasKeys, actual: { 'a': 1, 'b': 2 }, expected: "b" }
 
-#  - { type: AssertMapDoNotHasKeys, actual: { 'a': 1, 'b': 2, 'c': 3 }, expected: [ 'd', 'e', 'f' ] }
-#  - { type: AssertMapDoNotHasKeys, actual: '{"a": 1, "b": 2, "c": 3}', expected: [ 'd', 'e', 'f' ] }
-#  - { type: AssertMapExactKeys, actual: { 'a': 1, 'b': 2, 'c': 3 }, expected: [ 'a', 'b', 'c' ] }
-#  - { type: AssertMapExactKeys, actual: '{"a": 1, "b": 2, "c": 3}', expected: [ 'a', 'b', 'c' ] }
-#  - { type: AssertMapContains, actual: '{"a": 1, "b": 2, "c": 3}', expected: 1 }
-#  - { type: AssertMapContains, actual: { "a": [ 1, 2 ], "b": [ 1, 3 ], "c": 3 }, expected: [ 1, 2 ] }
-#  - { type: AssertMapContains, actual: { "a": { "foo": 1 }, "b": [ 1, 3 ], "c": 3 }, expected: { "foo": 1 } }
+  - { type: MapExactKeys, actual: "{{ response.map }}", expected: [ "address", "name" ] }
+  - { type: MapExactKeys, actual: { 'a': 1, 'b': 2 }, expected: [ "a" ] }
+  - { type: MapExactKeys, actual: { 'a': 1, 'b': 2 }, expected: "b" }
+
 #  - { type: AssertMapKeyCount, actual: { 'a': 1, 'b': 2 }, expected: 2 }
 #  - { type: AssertCount, actual: "{$_response.body.coin.exp}", expected: 3 }
 

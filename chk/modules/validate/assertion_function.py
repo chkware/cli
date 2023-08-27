@@ -513,3 +513,15 @@ def map_do_not_has_keys(actual: dict, expected: list, **_: object) -> _AResult:
 
     intersection = set(actual.keys()) & set(expected)
     return intersection != set(expected)
+
+
+def map_exact_keys(actual: dict, expected: list, **_: object) -> _AResult:
+    """Actual is a map key count as expected"""
+
+    if not isinstance(actual, dict):
+        return ValueError("actual_not_dict")
+
+    if not isinstance(expected, list):
+        return ValueError("expected_not_list")
+
+    return set(actual.keys()) & set(expected) == set(expected) == set(actual.keys())

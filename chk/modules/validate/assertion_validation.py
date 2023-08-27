@@ -50,6 +50,7 @@ class AssertionEntityType(enum.StrEnum):
     MapKeyCount = "MapKeyCount"
     MapHasKeys = "MapHasKeys"
     MapDoNotHasKeys = "MapDoNotHasKeys"
+    MapExactKeys = "MapExactKeys"
 
 
 _generic_schema = {
@@ -657,6 +658,16 @@ def _get_schema_for_map_do_not_has_keys(_gen_schema: dict) -> dict:
     return _t_gen_schema
 
 
+def _get_schema_for_map_exact_keys(_gen_schema: dict) -> dict:
+    """Get schema for equal"""
+
+    _t_gen_schema = copy.deepcopy(_gen_schema)
+    _t_gen_schema["type"]["allowed"].append(AssertionEntityType.MapExactKeys)
+    _t_gen_schema["expected"]["required"] = True
+
+    return _t_gen_schema
+
+
 # ------------------------------------------------
 # Scheme selector
 # ------------------------------------------------
@@ -746,6 +757,9 @@ def get_schema_map(item: AssertionEntityType | None = None) -> dict:
         AssertionEntityType.MapKeyCount: _get_schema_for_map_key_count(_generic_schema),
         AssertionEntityType.MapHasKeys: _get_schema_for_map_has_keys(_generic_schema),
         AssertionEntityType.MapDoNotHasKeys: _get_schema_for_map_do_not_has_keys(
+            _generic_schema
+        ),
+        AssertionEntityType.MapExactKeys: _get_schema_for_map_exact_keys(
             _generic_schema
         ),
     }
