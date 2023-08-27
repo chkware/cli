@@ -190,6 +190,10 @@ asserts:
   - { type: ListHasIndex, actual: [ 1, 2, 3 ], index: 3 }
   - { type: ListHasIndex, actual: [ 1, "2", 3.0 ], index: 4 }
 
+  - { type: ListDoNotHasIndex, actual: "[1, 2, 3]", index: 2, cast_actual_to: list }
+  - { type: ListDoNotHasIndex, actual: [ 1, 2, 3 ], index: 3 }
+  - { type: ListDoNotHasIndex, actual: [ 1, "2", 3.0 ], index: 4 }
+
 #  - { type: AssertIsMap, actual: "{$_response.body.coin}" }
 #  - { type: AssertIsMap, actual: { 'a': 1, 'b': 2 } }
 #  - { type: AssertMapHasKey, actual: { 'a': 1, 'b': 2 }, expected: 'a' }

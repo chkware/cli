@@ -646,3 +646,20 @@ class TestListHasIndex:
         ret = asrt.list_has_index([1, {"a": 1}, 3], {"index": "1"})
         assert isinstance(ret, ValueError)
         assert str(ret) == "index_not_int"
+
+
+class TestListDoNotHasIndex:
+    @staticmethod
+    def test_pass():
+        ret = asrt.list_do_not_has_index("1972-07-30", {"index": "7"})
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "actual_not_list"
+
+        assert asrt.list_do_not_has_index([1, 2, 3], {"index": 4})
+        assert asrt.list_do_not_has_index([1, 2, 3], {"index": 3})
+        assert not asrt.list_do_not_has_index([1, 2, 3], {"index": 2})
+        assert not asrt.list_do_not_has_index([1, 2, 3], {"index": 1})
+
+        ret = asrt.list_do_not_has_index([1, {"a": 1}, 3], {"index": "1"})
+        assert isinstance(ret, ValueError)
+        assert str(ret) == "index_not_int"

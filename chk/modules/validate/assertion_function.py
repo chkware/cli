@@ -457,3 +457,15 @@ def list_has_index(actual: list, extra_fields: dict, **_: object) -> _AResult:
         return ValueError("index_not_int")
 
     return len(actual) > extra_fields["index"]
+
+
+def list_do_not_has_index(actual: list, extra_fields: dict, **_: object) -> _AResult:
+    """Assert actual date is after expected date"""
+
+    if not isinstance(actual, list):
+        return ValueError("actual_not_list")
+
+    if not isinstance(extra_fields["index"], int):
+        return ValueError("index_not_int")
+
+    return len(actual) <= extra_fields["index"]

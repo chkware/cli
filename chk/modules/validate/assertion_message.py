@@ -186,6 +186,12 @@ _AMessages = {
         "actual_not_list": "actual `{type_actual}({value_actual})` is not a list",
         "index_not_int": "index `{extra_fields[index]}` is not a list",
     },
+    "list_do_not_has_index": {
+        "pass": "index `{extra_fields[index]}` not found in actual `{type_actual}({value_actual})`",
+        "fail": "index `{extra_fields[index]}` found in actual `{type_actual}({value_actual})`",
+        "actual_not_list": "actual `{type_actual}({value_actual})` is not a list",
+        "index_not_int": "index `{extra_fields[index]}` is not a list",
+    },
 }
 
 
