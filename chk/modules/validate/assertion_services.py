@@ -79,6 +79,13 @@ class AssertionEntry:
     def as_dict(self) -> dict:
         """Return dict representation"""
 
+        if self.actual_given == NotImplemented:
+            self.actual_given = ""
+        if self.actual_b4_cast == NotImplemented:
+            self.actual_b4_cast = ""
+        if self.expected == NotImplemented:
+            self.expected = ""
+
         return dataclasses.asdict(self)
 
 

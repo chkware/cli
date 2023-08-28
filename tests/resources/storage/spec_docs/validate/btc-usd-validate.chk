@@ -2,8 +2,21 @@
 version: default:validation:0.7.2
 
 asserts:
-  - {type: Equals, actual: $_data.code, expected: 200, silent: true}
+  - { type: Equal, actual: "{{_data.code}}", expected: 200 }
+  - { type: List, actual: "{{_data.headers}}" }
+  - { type: Str, actual: "{{_data.info}}" }
+  - { type: StrHave, actual: "{{_data.info}}", other: "200 OK" }
+  - { type: Map, actual: "{{_data.body.coin}}" }
+  - { type: Map, actual: "{{_data.body.coin}}" }
+  - { type: List, actual: "{{_data.body.coin.exp}}" }
+  - { type: List, actual: "{{_data.body.coin.exp}}" }
+  - { type: Float, actual: "{{_data.body.coin.price}}" }
+  - { type: Float, actual: "{{_data.body.coin.price}}" }
+  - { type: MapHasKeys, actual: "{{_data.body.coin}}", expected: ["price", "priceBtc", "priceChange1d", "priceChange1h", "priceChange1w"] }
 
 expose:
-  - $_asserts_response
-  - $_data
+  - "{{_asserts_response}}"
+  - "{{_data}}"
+
+
+#pipenv run python -m chk validate -nf tests/resources/storage/spec_docs/validate/btc-usd-validate.chk -D "$(pipenv run python -m chk fetch -nf tests/resources/storage/spec_docs/fetch/bitcoin-usd.chk)"
