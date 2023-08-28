@@ -240,22 +240,35 @@ class AssertionEntryListRunner:
                 "extra_fields": assert_item.extra_fields,
             }
 
+        def _prepare_message() -> str:
+            if isinstance(asrt_resp, ValueError):
+                return get_assert_msg_for(f"{asrt_fn_name}.{str(asrt_resp)}").format(
+                    **_prepare_message_values()
+                )
+
+            if asrt_resp:
+                message = (
+                    get_assert_msg_for(f"{asrt_fn_name}.pass")
+                    if assert_item.msg_pass == ""
+                    else assert_item.msg_pass
+                )
+            else:
+                message = (
+                    get_assert_msg_for(f"{asrt_fn_name}.fail")
+                    if assert_item.msg_fail == ""
+                    else assert_item.msg_fail
+                )
+
+            return message.format(**_prepare_message_values())
+
         asrt_fn_name = MAP_TYPE_TO_FN[assert_item.assert_type].__name__
 
         if isinstance(asrt_resp, ValueError):
             resp["is_pass"] = False
-            resp["message"] = get_assert_msg_for(
-                f"{asrt_fn_name}.{str(asrt_resp)}"
-            ).format(**_prepare_message_values())
+            resp["message"] = _prepare_message()
         else:
             resp["is_pass"] = asrt_resp
-
-            message = (
-                get_assert_msg_for(f"{asrt_fn_name}.pass")
-                if asrt_resp
-                else get_assert_msg_for(f"{asrt_fn_name}.fail")
-            )
-            resp["message"] = message.format(**_prepare_message_values())
+            resp["message"] = _prepare_message()
 
     @staticmethod
     def _call_assertion_method(
