@@ -89,6 +89,18 @@ _generic_schema = {
             "auto",
         ],
     },
+    "msg_pass": {
+        "required": False,
+        "empty": False,
+        "nullable": False,
+        "type": "string",
+    },
+    "msg_fail": {
+        "required": False,
+        "empty": False,
+        "nullable": False,
+        "type": "string",
+    },
 }
 
 

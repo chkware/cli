@@ -173,6 +173,8 @@ class ValidationDocumentSupport:
             )
 
             _cast_actual_to = each_assert.get("cast_actual_to", "")
+            _msg_pass = each_assert.get("msg_pass", "")
+            _msg_fail = each_assert.get("msg_fail", "")
 
             only = tuple(set(each_assert.keys()) - set(AssertionEntityProperty))
             _extra_fld = {}
@@ -189,6 +191,8 @@ class ValidationDocumentSupport:
                     expected=_expected,
                     cast_actual_to=_cast_actual_to,
                     extra_fields=_extra_fld,
+                    msg_pass=_msg_pass,
+                    msg_fail=_msg_fail,
                 )
             )
 
