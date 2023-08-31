@@ -11,7 +11,6 @@ from collections.abc import Callable
 from chk.infrastructure.document import VersionedDocument
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
 from chk.infrastructure.helper import data_get
-from chk.infrastructure.third_party.symbol_template import get_template_from_str
 
 
 class VariableConfigNode(enum.StrEnum):
@@ -107,24 +106,6 @@ def replace_value_in_traversable(doc: dict | list, var_s: dict) -> dict | list:
         elif isinstance(val, (dict, list)):
             doc[key] = replace_value_in_traversable(doc[key], var_s)
     return doc
-
-
-def replace_value(obj: dict, vals: dict) -> dict:
-    """Replaces all values on a given dict
-
-    Args:
-        obj: dict, target dict
-        vals: dict, value dict
-    Returns:
-        dict: replaced dict
-    """
-
-    obj_s = json.dumps(obj)
-
-    tpl = get_template_from_str(obj_s)
-    repl = tpl.render(**vals)
-
-    return json.loads(repl)
 
 
 class VariableTableManager:
