@@ -7,10 +7,8 @@ from chk.infrastructure.symbol_table import (
     VariableConfigNode,
     Variables,
     VariableTableManager,
-    replace_value,
     ExposeManager,
-    linear_replace,
-    replace_value_in_traversable,
+    replace_value,
 )
 from chk.modules.fetch import HttpDocument
 
@@ -187,7 +185,7 @@ class TestReplaceValue:
 
 class TestReplaceValueInTraversable:
     @staticmethod
-    def test_replace_value_in_traversable_dict_pass():
+    def test_replace_value_dict_pass():
         vals = {
             "va": 1,
             "vb": {"x": "y"},
@@ -202,7 +200,7 @@ class TestReplaceValueInTraversable:
             "d": "a {{ vc.q.x }}",
         }
 
-        assert replace_value_in_traversable(var1, vals) == {
+        assert replace_value(var1, vals) == {
             "a": "a 1",
             "b": "a ['a', 'b']",
             "c": {"p": "1", "q": {"x": "y"}},
@@ -210,7 +208,7 @@ class TestReplaceValueInTraversable:
         }
 
     @staticmethod
-    def test_replace_value_in_traversable_list_pass():
+    def test_replace_value_list_pass():
         vals = {
             "va": 1,
             "vb": {"x": "y"},
@@ -225,7 +223,7 @@ class TestReplaceValueInTraversable:
             "a {{ vc.q.x }}",
         ]
 
-        assert replace_value_in_traversable(var2, vals) == [
+        assert replace_value(var2, vals) == [
             "a 1",
             "a ['a', 'b']",
             {"p": "1", "q": {"x": "y"}},

@@ -60,9 +60,7 @@ class ExposableVariables(UserDict):
     """Holds data for a expose data"""
 
 
-
-
-def replace_value_in_traversable(doc: dict | list, var_s: dict) -> dict | list:
+def replace_value(doc: dict | list, var_s: dict) -> dict | list:
     """
     replace variables with values
     :param doc:
@@ -75,7 +73,7 @@ def replace_value_in_traversable(doc: dict | list, var_s: dict) -> dict | list:
             str_tpl = StrTemplate(val)
             doc[key] = str_tpl.substitute(var_s)
         elif isinstance(val, (dict, list)):
-            doc[key] = replace_value_in_traversable(doc[key], var_s)
+            doc[key] = replace_value(doc[key], var_s)
     return doc
 
 
@@ -194,7 +192,7 @@ class ExposeManager:
     def replace_values(
         expose_doc: list,
         values: dict,
-        replace_callback: Callable = replace_value_in_traversable,
+        replace_callback: Callable = replace_value,
     ) -> list:
         """Replace values on expose document
 
