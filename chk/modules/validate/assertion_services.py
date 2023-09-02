@@ -184,10 +184,8 @@ class AssertionEntryListRunner:
         """
 
         # replace actual value for template
-        if (
-            isinstance(assert_item.actual, str)
-            and "{{" in assert_item.actual
-            and "}}" in assert_item.actual
+        if isinstance(assert_item.actual, str) and StrTemplate.is_tpl(
+            assert_item.actual
         ):
             assert_item.actual_given = assert_item.actual
             str_tpl = StrTemplate(assert_item.actual)
@@ -213,10 +211,8 @@ class AssertionEntryListRunner:
                 assert_item.actual = Cast.to_auto(assert_item.actual)
 
         # replace expected value for template
-        if (
-            isinstance(assert_item.expected, str)
-            and "{{" in assert_item.expected
-            and "}}" in assert_item.expected
+        if isinstance(assert_item.expected, str) and StrTemplate.is_tpl(
+            assert_item.expected
         ):
             str_tpl = StrTemplate(assert_item.expected)
             assert_item.expected = str_tpl.substitute(variable_d)
