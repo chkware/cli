@@ -2,7 +2,6 @@
 Symbol and variable management
 """
 import enum
-import json
 import os
 import re
 from collections import UserDict
@@ -10,7 +9,7 @@ from collections.abc import Callable
 
 from chk.infrastructure.document import VersionedDocument
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
-from chk.infrastructure.helper import data_get
+from chk.infrastructure.helper import data_get, StrTemplate
 
 
 class VariableConfigNode(enum.StrEnum):
@@ -73,7 +72,8 @@ def replace_value_in_traversable(doc: dict | list, var_s: dict) -> dict | list:
 
     for key, val in list(doc.items() if isinstance(doc, dict) else enumerate(doc)):
         if isinstance(val, str):
-            doc[key] = linear_replace(str(val), var_s)
+            str_tpl = StrTemplate(val)
+            doc[key] = str_tpl.substitute(var_s)
         elif isinstance(val, (dict, list)):
             doc[key] = replace_value_in_traversable(doc[key], var_s)
     return doc
