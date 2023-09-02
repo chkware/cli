@@ -472,3 +472,23 @@ class TestReplaceFromStrTemplate:
     def test_replace_pass_when_list(cls):
         v9 = "<% vd %>"
         assert StrTemplate._replace(v9, cls.vals) == ["a", "b"]
+
+
+class TestIsTplFromStrTemplate:
+
+    @staticmethod
+    def test_is_tpl_pass():
+        assert StrTemplate.is_tpl("<% some %>")
+
+    @staticmethod
+    def test_is_tpl_fail():
+        assert not StrTemplate.is_tpl("some time")
+
+    @staticmethod
+    def test_is_tpl_fail_with_only_start_delimiter():
+        assert not StrTemplate.is_tpl("some <% time")
+
+    @staticmethod
+    def test_is_tpl_fail_with_only_end_delimiter():
+        assert not StrTemplate.is_tpl("some time %>")
+
