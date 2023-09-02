@@ -10,9 +10,8 @@ from collections.abc import Callable
 from datetime import datetime
 
 import chk.modules.validate.assertion_function as asrt_f
-from chk.infrastructure.helper import Cast
+from chk.infrastructure.helper import Cast, StrTemplate
 from chk.modules.validate.assertion_message import get_assert_msg_for
-from chk.infrastructure.symbol_table import linear_replace
 from chk.modules.validate.assertion_validation import AssertionEntityType
 
 MAP_TYPE_TO_FN: dict[str, Callable] = {
@@ -191,7 +190,8 @@ class AssertionEntryListRunner:
             and "}}" in assert_item.actual
         ):
             assert_item.actual_given = assert_item.actual
-            assert_item.actual = linear_replace(assert_item.actual, variable_d)
+            str_tpl = StrTemplate(assert_item.actual)
+            assert_item.actual = str_tpl.substitute(variable_d)
 
         # convert actual value type
         if assert_item.cast_actual_to != "" and isinstance(assert_item.actual, str):
@@ -218,7 +218,8 @@ class AssertionEntryListRunner:
             and "{{" in assert_item.expected
             and "}}" in assert_item.expected
         ):
-            assert_item.expected = linear_replace(assert_item.expected, variable_d)
+            str_tpl = StrTemplate(assert_item.expected)
+            assert_item.expected = str_tpl.substitute(variable_d)
 
         return assert_item
 
