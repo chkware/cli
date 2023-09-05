@@ -10,7 +10,6 @@ import pytest
 from chk.infrastructure.helper import (
     dict_set,
     data_set,
-    dict_get,
     data_get,
     is_scalar,
     Cast,
@@ -140,28 +139,6 @@ def test_data_set_pass_when_key_found():
 
     assert data_set(dct, keymap, to_set)
     assert dct["a"][1]["aa"] == to_set
-
-
-def test_dict_get_pass_when_key_found():
-    dct = {"a": {"aa": {"aaa": 1}}}
-    keymap = "a.aa.aaa"
-
-    assert dict_get(dct, keymap) == 1
-
-
-def test_dict_get_pass_return_none_when_key_not_found():
-    dct = {"a": {"aa": {"aaa": 1}}}
-    keymap = "a.aa.aaaa"
-
-    assert not dict_get(dct, keymap)
-
-
-def test_dict_get_fail_for_incompatible_type():
-    dct = {"a": {"aa": {"aaa": 1}}}
-    keymap = "a.aa.aaa.aaaa"
-
-    with pytest.raises(Exception):
-        assert not dict_get(dct, keymap)
 
 
 def test_data_get_pass_when_key_found():
@@ -420,7 +397,6 @@ class TestGetFromStrTemplate:
 
 
 class TestReplaceFromStrTemplate:
-
     vals = {
         "va": 1,
         "vb": {"x": "y"},
@@ -475,7 +451,6 @@ class TestReplaceFromStrTemplate:
 
 
 class TestIsTplFromStrTemplate:
-
     @staticmethod
     def test_is_tpl_pass():
         assert StrTemplate.is_tpl("<% some %>")
@@ -491,4 +466,3 @@ class TestIsTplFromStrTemplate:
     @staticmethod
     def test_is_tpl_fail_with_only_end_delimiter():
         assert not StrTemplate.is_tpl("some time %>")
-
