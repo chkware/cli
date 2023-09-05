@@ -7,10 +7,8 @@ from chk.infrastructure.symbol_table import (
     VariableConfigNode,
     Variables,
     VariableTableManager,
-    replace_value,
     ExposeManager,
-    linear_replace,
-    replace_value_in_traversable,
+    replace_value,
 )
 from chk.modules.fetch import HttpDocument
 
@@ -21,8 +19,8 @@ class TestVariableTableManager:
         document = {
             "version": "default:http:0.7.2",
             "request": {
-                "url": "https://httpbin{{ extension }}/{{ method | lower }}",
-                "method": "{{ method }}",
+                "url": "https://httpbin<% extension %>/<% method | lower %>",
+                "method": "<% method %>",
             },
             VariableConfigNode.VARIABLES: {
                 "method": "GET",
@@ -54,9 +52,9 @@ class TestVariableTableManager:
             VariableConfigNode.VARIABLES: {
                 "var_1": "bar",
                 "var_2": 2,
-                "var_3": "ajax{{var_1}}",
-                "var_4": "ajax {{ Var_1 }}",
-                "var_5": "  {{ var_2 }}",
+                "var_3": "ajax<%var_1%>",
+                "var_4": "ajax <% Var_1 %>",
+                "var_5": "  <% var_2 %>",
             },
         }
 
@@ -89,9 +87,8 @@ class TestVariableTableManager:
             VariableConfigNode.VARIABLES: {
                 "var_1": "bar",
                 "var_2": 2,
-                "var_3": "ajax_{{var_1}}",
-                "var_4": "ajax{{ Var_1|default('_xaja') }}",
-                "var_5": "  {{ var_2 }}",
+                "var_3": "ajax_<%var_1%>",
+                "var_5": "  <% var_2 %>",
             },
         }
 
@@ -106,12 +103,11 @@ class TestVariableTableManager:
             variable_doc, file_ctx.document[VariableConfigNode.VARIABLES]
         )
 
-        assert len(variable_doc.data) == 5
+        assert len(variable_doc.data) == 4
         assert variable_doc.data == {
             "var_1": "bar",
             "var_2": 2,
             "var_3": "ajax_bar",
-            "var_4": "ajax_xaja",
             "var_5": "  2",
         }
 
@@ -126,9 +122,8 @@ class TestVariableTableManager:
             VariableConfigNode.VARIABLES: {
                 "var_1": "bar",
                 "var_2": 2,
-                "var_3": "ajax_{{var_1}}",
-                "var_4": "ajax{{ Var_1|default('_xaja') }}",
-                "var_5": "  {{ var_2 }}",
+                "var_3": "ajax_<%var_1%>",
+                "var_5": "  <% var_2 %>",
             },
         }
 
@@ -150,12 +145,11 @@ class TestVariableTableManager:
             variable_doc, file_ctx.document[VariableConfigNode.VARIABLES]
         )
 
-        assert len(variable_doc.data) == 6
+        assert len(variable_doc.data) == 5
         assert variable_doc.data == {
             "var_1": "bar",
             "var_2": 2,
             "var_3": "ajax_bar",
-            "var_4": "ajax_ccc",
             "var_5": "  2",
             "Var_1": "_ccc",
         }
@@ -167,9 +161,9 @@ class TestReplaceValue:
         document = {
             "version": "default:http:0.7.2",
             "request": {
-                "url": "https://httpbin.org/{{ method|lower }}",
+                "url": "https://httpbin.org/get",
                 "method": "GET",
-                "auth[bearer]": {"token": "{{ token }}"},
+                "auth[bearer]": {"token": "<% token %>"},
             },
         }
 
@@ -187,7 +181,7 @@ class TestReplaceValue:
 
 class TestReplaceValueInTraversable:
     @staticmethod
-    def test_replace_value_in_traversable_dict_pass():
+    def test_replace_value_dict_pass():
         vals = {
             "va": 1,
             "vb": {"x": "y"},
@@ -196,13 +190,13 @@ class TestReplaceValueInTraversable:
         }
 
         var1 = {
-            "a": "a {{ va }}",
-            "b": "a {{ vd }}",
-            "c": "{{ vc }}",
-            "d": "a {{ vc.q.x }}",
+            "a": "a <% va %>",
+            "b": "a <% vd %>",
+            "c": "<% vc %>",
+            "d": "a <% vc.q.x %>",
         }
 
-        assert replace_value_in_traversable(var1, vals) == {
+        assert replace_value(var1, vals) == {
             "a": "a 1",
             "b": "a ['a', 'b']",
             "c": {"p": "1", "q": {"x": "y"}},
@@ -210,7 +204,7 @@ class TestReplaceValueInTraversable:
         }
 
     @staticmethod
-    def test_replace_value_in_traversable_list_pass():
+    def test_replace_value_list_pass():
         vals = {
             "va": 1,
             "vb": {"x": "y"},
@@ -219,13 +213,13 @@ class TestReplaceValueInTraversable:
         }
 
         var2 = [
-            "a {{ va }}",
-            "a {{ vd }}",
-            "{{ vc }}",
-            "a {{ vc.q.x }}",
+            "a <% va %>",
+            "a <% vd %>",
+            "<% vc %>",
+            "a <% vc.q.x %>",
         ]
 
-        assert replace_value_in_traversable(var2, vals) == [
+        assert replace_value(var2, vals) == [
             "a 1",
             "a ['a', 'b']",
             {"p": "1", "q": {"x": "y"}},
@@ -246,7 +240,7 @@ class TestExposeManager:
         }
 
         expose_block = {
-            "expose": ["{{ _response }}", "{{ _response.code }}"],
+            "expose": ["<% _response %>", "<% _response.code %>"],
         }
 
         expose_doc = ExposeManager.get_expose_doc(document | expose_block)
@@ -261,7 +255,7 @@ class TestExposeManager:
 
     @staticmethod
     def test_replace_values_pass():
-        expose_block = ["{{ _response }}", "{{ _response.code }}"]
+        expose_block = ["<% _response %>", "<% _response.code %>"]
         response = {
             "A": "https://httpbin.org/get",
             "_response": {"code": 201},
@@ -304,7 +298,7 @@ class TestExposeManager:
                 "url": "https://httpbin.org/get",
                 "method": "GET",
             },
-            "expose": ["{{ _response }}"],
+            "expose": ["<% _response %>"],
         }
 
         file_ctx = FileContext(filepath_hash="ab12", document=document)
@@ -325,57 +319,3 @@ class TestExposeManager:
         assert len(exposed_data) == 1
         assert isinstance(exposed_data[0], dict)
         assert len(exposed_data[0]) == 2
-
-
-class TestLinearReplace:
-    vals = {
-        "va": 1,
-        "vb": {"x": "y"},
-        "vc": {"p": "1", "q": {"x": "y"}},
-        "vd": ["a", "b"],
-    }
-
-    @classmethod
-    def test_ret_same_when_nothing_to_replace(cls):
-        v1 = "a"  # "a"
-        assert linear_replace(v1, cls.vals) == "a"
-
-    @classmethod
-    def test_pass_when_scalar(cls):
-        v2 = "a {{ va }}"  # "a 1"
-        assert linear_replace(v2, cls.vals) == "a 1"
-
-    @classmethod
-    def test_pass_when_dict_with_str(cls):
-        v3 = "a {{ vb }}"  # "a {'x': 'y'}"
-        assert linear_replace(v3, cls.vals) == "a {'x': 'y'}"
-
-    @classmethod
-    def test_pass_when_list_with_str(cls):
-        v4 = "a {{ vd }}"  # "a ['a', 'b']"
-        assert linear_replace(v4, cls.vals) == "a ['a', 'b']"
-
-    @classmethod
-    def test_pass_when_dict_scalar_value_with_str(cls):
-        v5 = "a {{ vc.p }}"  # "a 1"
-        assert linear_replace(v5, cls.vals) == "a 1"
-
-    @classmethod
-    def test_pass_when_dict_deep_scalar_value_with_str(cls):
-        v6 = "a {{ vc.q.x }}"  # "a y"
-        assert linear_replace(v6, cls.vals) == "a y"
-
-    @classmethod
-    def test_pass_when_dict_deep_scalar_value(cls):
-        v7 = "{{ vc.q.x }}"  # y
-        assert linear_replace(v7, cls.vals) == "y"
-
-    @classmethod
-    def test_pass_when_dict(cls):
-        v8 = "{{ vc }}"  # {'p': '1', 'q': {'x': 'y'}}
-        assert linear_replace(v8, cls.vals) == {"p": "1", "q": {"x": "y"}}
-
-    @classmethod
-    def test_pass_when_list(cls):
-        v9 = "{{ vd }}"
-        assert linear_replace(v9, cls.vals) == ["a", "b"]

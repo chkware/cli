@@ -20,7 +20,7 @@ from chk.infrastructure.symbol_table import (
     EXPOSE_SCHEMA as EXP_SCHEMA,
     Variables,
     VariableTableManager,
-    replace_value_in_traversable,
+    replace_value,
     ExposeManager,
     ExposableVariables,
 )
@@ -142,9 +142,7 @@ class ValidationDocumentSupport:
             if key != ValidationConfigNode.VAR_NODE
         }
 
-        variables[ValidationConfigNode.VAR_NODE] = replace_value_in_traversable(
-            data, tmp_variables
-        )
+        variables[ValidationConfigNode.VAR_NODE] = replace_value(data, tmp_variables)
 
     @staticmethod
     def make_assertion_entry_list(assert_lst: list[dict]) -> list[AssertionEntry]:

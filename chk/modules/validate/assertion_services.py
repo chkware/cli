@@ -10,9 +10,8 @@ from collections.abc import Callable
 from datetime import datetime
 
 import chk.modules.validate.assertion_function as asrt_f
-from chk.infrastructure.helper import Cast
+from chk.infrastructure.helper import Cast, StrTemplate
 from chk.modules.validate.assertion_message import get_assert_msg_for
-from chk.infrastructure.symbol_table import linear_replace
 from chk.modules.validate.assertion_validation import AssertionEntityType
 
 MAP_TYPE_TO_FN: dict[str, Callable] = {
@@ -185,13 +184,12 @@ class AssertionEntryListRunner:
         """
 
         # replace actual value for template
-        if (
-            isinstance(assert_item.actual, str)
-            and "{{" in assert_item.actual
-            and "}}" in assert_item.actual
+        if isinstance(assert_item.actual, str) and StrTemplate.is_tpl(
+            assert_item.actual
         ):
             assert_item.actual_given = assert_item.actual
-            assert_item.actual = linear_replace(assert_item.actual, variable_d)
+            str_tpl = StrTemplate(assert_item.actual)
+            assert_item.actual = str_tpl.substitute(variable_d)
 
         # convert actual value type
         if assert_item.cast_actual_to != "" and isinstance(assert_item.actual, str):
@@ -213,12 +211,11 @@ class AssertionEntryListRunner:
                 assert_item.actual = Cast.to_auto(assert_item.actual)
 
         # replace expected value for template
-        if (
-            isinstance(assert_item.expected, str)
-            and "{{" in assert_item.expected
-            and "}}" in assert_item.expected
+        if isinstance(assert_item.expected, str) and StrTemplate.is_tpl(
+            assert_item.expected
         ):
-            assert_item.expected = linear_replace(assert_item.expected, variable_d)
+            str_tpl = StrTemplate(assert_item.expected)
+            assert_item.expected = str_tpl.substitute(variable_d)
 
         return assert_item
 

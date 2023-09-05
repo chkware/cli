@@ -23,11 +23,11 @@ class TestValidationDocument:
                 "asserts": [
                     {
                         "type": "Equal",
-                        "actual": "{{ _data.roll }}",
+                        "actual": "<% _data.roll %>",
                         "expected": 39,
                     }
                 ],
-                "expose": ["$_asserts_response"],
+                "expose": ["<% _asserts_response %>"],
             }
         )
 
@@ -50,7 +50,7 @@ class TestValidationDocument:
                 "asserts": [
                     {
                         "type": "Equal",
-                        "actual": "{{ _data.roll }}",
+                        "actual": "<% _data.roll %>",
                         "expected": 39,
                     }
                 ],
@@ -60,7 +60,7 @@ class TestValidationDocument:
                     "class": "Nursery",
                     "year": 2023,
                 },
-                "expose": ["$_asserts_response"],
+                "expose": ["<% _asserts_response %>"],
             }
         )
 
@@ -86,7 +86,7 @@ class TestValidationDocument:
                     "class": "Nursery",
                     "year": 2023,
                 },
-                "expose": ["$_asserts_response"],
+                "expose": ["<% _asserts_response %>"],
             }
         )
 
@@ -101,7 +101,7 @@ class TestValidationDocument:
                 "asserts": [
                     {
                         "type": "Equal",
-                        "actual": "{{ _data.roll }}",
+                        "actual": "<% _data.roll %>",
                         "expected": 39,
                     }
                 ],
@@ -111,7 +111,7 @@ class TestValidationDocument:
                     "class": "Nursery",
                     "year": 2023,
                 },
-                "expose": ["$_asserts_response"],
+                "expose": ["<% _asserts_response %>"],
             }
         )
 
@@ -136,11 +136,11 @@ class TestValidationDocumentSupport:
                 "asserts": [
                     {
                         "type": "Equal",
-                        "actual": "{{ _data.roll }}",
+                        "actual": "<% _data.roll %>",
                         "expected": 39,
                     }
                 ],
-                "expose": ["$_asserts_response"],
+                "expose": ["<% _asserts_response %>"],
             }
         )
 
@@ -165,12 +165,12 @@ class TestValidationDocumentSupport:
                 "asserts": [
                     {
                         "type": "Equal",
-                        "actual": "{{ _data.roll }}",
+                        "actual": "<% _data.roll %>",
                         "expected": 39,
                     }
                 ],
                 "data": {"name": "Some Name"},
-                "expose": ["$_asserts_response"],
+                "expose": ["<% _asserts_response %>"],
             }
         )
 
@@ -194,12 +194,12 @@ class TestValidationDocumentSupport:
                 "asserts": [
                     {
                         "type": "Equal",
-                        "actual": "{{ _data.roll }}",
+                        "actual": "<% _data.roll %>",
                         "expected": 39,
                     }
                 ],
                 "data": {"name": "Some Name One"},
-                "expose": ["$_asserts_response"],
+                "expose": ["<% _asserts_response %>"],
             }
         )
 
@@ -226,12 +226,12 @@ class TestValidationDocumentSupport:
                 "asserts": [
                     {
                         "type": "Equal",
-                        "actual": "{{ _data.roll }}",
+                        "actual": "<% _data.roll %>",
                         "expected": 39,
                     }
                 ],
-                "data": {"greet": "Hello {{ name }}"},
-                "expose": ["$_asserts_response"],
+                "data": {"greet": "Hello <% name %>"},
+                "expose": ["<% _asserts_response %>"],
             }
         )
 
@@ -262,17 +262,17 @@ class TestValidationDocumentSupport:
                 "asserts": [
                     {
                         "type": "Equal",
-                        "actual": "{{ _data.roll }}",
+                        "actual": "<% _data.roll %>",
                         "expected": 39,
                     },
                     {
                         "type": "Equal",
-                        "actual": "{{ _data.name }}",
+                        "actual": "<% _data.name %>",
                         "expected": "Some one",
                     },
                 ],
                 "data": {"roll": 39, "name": "Some one"},
-                "expose": ["$_asserts_response"],
+                "expose": ["<% _asserts_response %>"],
             }
         )
 

@@ -143,7 +143,7 @@ class TestHttpDocumentSupport:
                 "version": "default:http:0.7.2",
                 "request": {
                     "url": "https://jsonplaceholder.typicode.com/albums/1",
-                    "method": "{{ method }}",
+                    "method": "<% method %>",
                 },
             }
         )

@@ -2,7 +2,6 @@
 Symbol and variable management
 """
 import enum
-import json
 import os
 import re
 from collections import UserDict
@@ -10,8 +9,7 @@ from collections.abc import Callable
 
 from chk.infrastructure.document import VersionedDocument
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
-from chk.infrastructure.helper import data_get
-from chk.infrastructure.third_party.symbol_template import get_template_from_str
+from chk.infrastructure.helper import data_get, StrTemplate
 
 
 class VariableConfigNode(enum.StrEnum):
@@ -62,38 +60,7 @@ class ExposableVariables(UserDict):
     """Holds data for a expose data"""
 
 
-def linear_replace(container: str, replace_with: dict) -> object:
-    """replace values found in string with typed return"""
-
-    if not isinstance(container, str):
-        return container
-
-    if len(replace_with) == 0:
-        return container
-
-    line_split = re.split(r"({{\s*[a-zA-Z0-9_.]+\s*}})", container)
-
-    if len(line_split) == 1 and container in line_split:
-        return container
-
-    line_strip = [
-        "".join(item.split() if "$" in item else item) for item in line_split if item
-    ]
-
-    for i, item in enumerate(line_strip):
-        if "{{" in item and "}}" in item:
-            value = data_get(replace_with, item.strip(" {}"), None)
-
-            line_strip[i] = value or item
-
-    return (
-        "".join([str(li) for li in line_strip])
-        if len(line_strip) > 1
-        else line_strip.pop()
-    )
-
-
-def replace_value_in_traversable(doc: dict | list, var_s: dict) -> dict | list:
+def replace_value(doc: dict | list, var_s: dict) -> dict | list:
     """
     replace variables with values
     :param doc:
@@ -103,28 +70,11 @@ def replace_value_in_traversable(doc: dict | list, var_s: dict) -> dict | list:
 
     for key, val in list(doc.items() if isinstance(doc, dict) else enumerate(doc)):
         if isinstance(val, str):
-            doc[key] = linear_replace(str(val), var_s)
+            str_tpl = StrTemplate(val)
+            doc[key] = str_tpl.substitute(var_s)
         elif isinstance(val, (dict, list)):
-            doc[key] = replace_value_in_traversable(doc[key], var_s)
+            doc[key] = replace_value(doc[key], var_s)
     return doc
-
-
-def replace_value(obj: dict, vals: dict) -> dict:
-    """Replaces all values on a given dict
-
-    Args:
-        obj: dict, target dict
-        vals: dict, value dict
-    Returns:
-        dict: replaced dict
-    """
-
-    obj_s = json.dumps(obj)
-
-    tpl = get_template_from_str(obj_s)
-    repl = tpl.render(**vals)
-
-    return json.loads(repl)
 
 
 class VariableTableManager:
@@ -165,7 +115,7 @@ class VariableTableManager:
         """
 
         for key, val in document.items():
-            if isinstance(val, str) and re.search(r"{{.*}}|{%.*%}", val):
+            if isinstance(val, str) and StrTemplate.is_tpl(val):
                 continue
 
             variable_doc[key] = val
@@ -196,7 +146,7 @@ class VariableTableManager:
 
         composite_values = {}
         for key, val in document.items():
-            if isinstance(val, str) and re.search(r"{{.*}}|{%.*%}", val):
+            if isinstance(val, str) and StrTemplate.is_tpl(val):
                 composite_values[key] = val
 
         if composite_values:
@@ -242,7 +192,7 @@ class ExposeManager:
     def replace_values(
         expose_doc: list,
         values: dict,
-        replace_callback: Callable = replace_value_in_traversable,
+        replace_callback: Callable = replace_value,
     ) -> list:
         """Replace values on expose document
 

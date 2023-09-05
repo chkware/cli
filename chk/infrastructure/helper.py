@@ -354,3 +354,9 @@ class StrTemplate:
                 return default
 
         return data
+
+    @staticmethod
+    def is_tpl(tpl_str: str) -> bool:
+        """Check given string is templated string or not"""
+
+        return StrTemplate.d_start in tpl_str and StrTemplate.d_end in tpl_str
