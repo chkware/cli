@@ -223,7 +223,7 @@ _AMessages = {
     "count": {
         "pass": "actual `{type_actual}({value_actual})` count is `{value_expected}`",
         "fail": "actual `{type_actual}({value_actual})` count is not `{value_expected}`",
-        "actual_no_len": "no count for actual `{type_actual}({value_actual})`",
+        "actual_no_len": "actual `{type_actual}({value_actual})` is not countable",
         "expected_not_int": "expected `{type_expected}({value_expected})` is not integer",
     },
 }
