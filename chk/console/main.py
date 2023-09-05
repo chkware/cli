@@ -2,8 +2,6 @@
 
 import click
 
-import chk.modules.http.main as http_executor
-import chk.modules.testcase.main as testcase_executor
 import chk.modules.fetch as fetch_executor
 import chk.modules.validate as validate_executor
 
