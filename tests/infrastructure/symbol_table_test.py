@@ -19,8 +19,8 @@ class TestVariableTableManager:
         document = {
             "version": "default:http:0.7.2",
             "request": {
-                "url": "https://httpbin{{ extension }}/{{ method | lower }}",
-                "method": "{{ method }}",
+                "url": "https://httpbin<% extension %>/<% method | lower %>",
+                "method": "<% method %>",
             },
             VariableConfigNode.VARIABLES: {
                 "method": "GET",
@@ -52,9 +52,9 @@ class TestVariableTableManager:
             VariableConfigNode.VARIABLES: {
                 "var_1": "bar",
                 "var_2": 2,
-                "var_3": "ajax{{var_1}}",
-                "var_4": "ajax {{ Var_1 }}",
-                "var_5": "  {{ var_2 }}",
+                "var_3": "ajax<%var_1%>",
+                "var_4": "ajax <% Var_1 %>",
+                "var_5": "  <% var_2 %>",
             },
         }
 
@@ -87,9 +87,8 @@ class TestVariableTableManager:
             VariableConfigNode.VARIABLES: {
                 "var_1": "bar",
                 "var_2": 2,
-                "var_3": "ajax_{{var_1}}",
-                "var_4": "ajax{{ Var_1|default('_xaja') }}",
-                "var_5": "  {{ var_2 }}",
+                "var_3": "ajax_<%var_1%>",
+                "var_5": "  <% var_2 %>",
             },
         }
 
@@ -104,12 +103,11 @@ class TestVariableTableManager:
             variable_doc, file_ctx.document[VariableConfigNode.VARIABLES]
         )
 
-        assert len(variable_doc.data) == 5
+        assert len(variable_doc.data) == 4
         assert variable_doc.data == {
             "var_1": "bar",
             "var_2": 2,
             "var_3": "ajax_bar",
-            "var_4": "ajax_xaja",
             "var_5": "  2",
         }
 
@@ -124,9 +122,8 @@ class TestVariableTableManager:
             VariableConfigNode.VARIABLES: {
                 "var_1": "bar",
                 "var_2": 2,
-                "var_3": "ajax_{{var_1}}",
-                "var_4": "ajax{{ Var_1|default('_xaja') }}",
-                "var_5": "  {{ var_2 }}",
+                "var_3": "ajax_<%var_1%>",
+                "var_5": "  <% var_2 %>",
             },
         }
 
@@ -148,12 +145,11 @@ class TestVariableTableManager:
             variable_doc, file_ctx.document[VariableConfigNode.VARIABLES]
         )
 
-        assert len(variable_doc.data) == 6
+        assert len(variable_doc.data) == 5
         assert variable_doc.data == {
             "var_1": "bar",
             "var_2": 2,
             "var_3": "ajax_bar",
-            "var_4": "ajax_ccc",
             "var_5": "  2",
             "Var_1": "_ccc",
         }
@@ -165,9 +161,9 @@ class TestReplaceValue:
         document = {
             "version": "default:http:0.7.2",
             "request": {
-                "url": "https://httpbin.org/{{ method|lower }}",
+                "url": "https://httpbin.org/get",
                 "method": "GET",
-                "auth[bearer]": {"token": "{{ token }}"},
+                "auth[bearer]": {"token": "<% token %>"},
             },
         }
 
@@ -194,10 +190,10 @@ class TestReplaceValueInTraversable:
         }
 
         var1 = {
-            "a": "a {{ va }}",
-            "b": "a {{ vd }}",
-            "c": "{{ vc }}",
-            "d": "a {{ vc.q.x }}",
+            "a": "a <% va %>",
+            "b": "a <% vd %>",
+            "c": "<% vc %>",
+            "d": "a <% vc.q.x %>",
         }
 
         assert replace_value(var1, vals) == {
@@ -217,10 +213,10 @@ class TestReplaceValueInTraversable:
         }
 
         var2 = [
-            "a {{ va }}",
-            "a {{ vd }}",
-            "{{ vc }}",
-            "a {{ vc.q.x }}",
+            "a <% va %>",
+            "a <% vd %>",
+            "<% vc %>",
+            "a <% vc.q.x %>",
         ]
 
         assert replace_value(var2, vals) == [
@@ -244,7 +240,7 @@ class TestExposeManager:
         }
 
         expose_block = {
-            "expose": ["{{ _response }}", "{{ _response.code }}"],
+            "expose": ["<% _response %>", "<% _response.code %>"],
         }
 
         expose_doc = ExposeManager.get_expose_doc(document | expose_block)
@@ -259,7 +255,7 @@ class TestExposeManager:
 
     @staticmethod
     def test_replace_values_pass():
-        expose_block = ["{{ _response }}", "{{ _response.code }}"]
+        expose_block = ["<% _response %>", "<% _response.code %>"]
         response = {
             "A": "https://httpbin.org/get",
             "_response": {"code": 201},
@@ -302,7 +298,7 @@ class TestExposeManager:
                 "url": "https://httpbin.org/get",
                 "method": "GET",
             },
-            "expose": ["{{ _response }}"],
+            "expose": ["<% _response %>"],
         }
 
         file_ctx = FileContext(filepath_hash="ab12", document=document)

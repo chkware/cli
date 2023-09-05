@@ -28,7 +28,7 @@ def setup_assertion_entry_list_pass_assert():
             "asserts": [
                 {
                     "type": "Equal",
-                    "actual": "{{ _data.roll }}",
+                    "actual": "<% _data.roll %>",
                     "expected": 39,
                 },
             ],
@@ -38,7 +38,7 @@ def setup_assertion_entry_list_pass_assert():
                 "class": "Nursery",
                 "year": 2023,
             },
-            "expose": ["$_asserts_response"],
+            "expose": ["<% _asserts_response %>"],
         }
     )
 
@@ -70,17 +70,17 @@ def setup_assertion_entry_list_many_items_pass_assert():
             "asserts": [
                 {
                     "type": "Equal",
-                    "actual": "{{ _data.roll }}",
+                    "actual": "<% _data.roll %>",
                     "expected": 39,
                 },
                 {
                     "type": "Equal",
-                    "actual": "{{ _data.year }}",
-                    "expected": "{{ _data.year }}",
+                    "actual": "<% _data.year %>",
+                    "expected": "<% _data.year %>",
                 },
                 {
                     "type": "Equal",
-                    "actual": "{{ _data.year }}",
+                    "actual": "<% _data.year %>",
                     "cast_actual_to": "int",
                     "expected": 2023,
                 },
@@ -91,7 +91,7 @@ def setup_assertion_entry_list_many_items_pass_assert():
                 "class": "Nursery",
                 "year": 2023,
             },
-            "expose": ["$_asserts_response"],
+            "expose": ["<% _asserts_response %>"],
         }
     )
 
@@ -187,7 +187,7 @@ def setup_new_single_test_run_result():
     s["assert_used"] = AssertionEntry(
         assert_type="Empty",
         actual="39",
-        actual_given="{{ _data.roll }}",
+        actual_given="<% _data.roll %>",
         expected=39,
     )
 

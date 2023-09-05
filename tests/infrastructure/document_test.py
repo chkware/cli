@@ -19,9 +19,9 @@ class TestVersionedDocumentSupport:
             "variables": {
                 "var_1": "bar",
                 "var_2": 2,
-                "var_3": "ajax{{var_1}}",
-                "var_4": "ajax {{ Var_1 }}",
-                "var_5": "  {{ var_2 }}",
+                "var_3": "ajax<%var_1%>",
+                "var_4": "ajax <% Var_1 %>",
+                "var_5": "  <% var_2 %>",
             },
         }
 
@@ -37,9 +37,9 @@ class TestVersionedDocumentSupport:
             "variables": {
                 "var_1": "bar",
                 "var_2": 2,
-                "var_3": "ajax{{var_1}}",
-                "var_4": "ajax {{ Var_1 }}",
-                "var_5": "  {{ var_2 }}",
+                "var_3": "ajax<%var_1%>",
+                "var_4": "ajax <% Var_1 %>",
+                "var_5": "  <% var_2 %>",
             },
         }
 
