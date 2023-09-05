@@ -9,34 +9,6 @@ from typing import Any
 import click
 
 
-def dict_set(var: dict, keymap: str, value: Any) -> bool:
-    """
-    Set a value of a dictionary by dot notation key and given value
-    If the key do not exist, this function returns False, True otherwise
-    :param var: the dictionary we'll get value for
-    :param keymap: dot separated keys
-    :param value:
-    :return:
-    """
-
-    if len(keymap) == 0 or not var:
-        return False
-
-    keymap_list = keymap.split(".")
-
-    if (km := keymap_list.pop(0)) in var:
-        if len(keymap_list) > 0:
-            if not isinstance(var[km], dict):
-                return False
-
-            return dict_set(var[km], ".".join(keymap_list), value)
-
-        var[km] = value
-        return True
-
-    return False
-
-
 def data_set(data: dict | list, keymap: str, value: Any) -> Any:
     """
     Set a value of a dictionary by dot notation key and given value
