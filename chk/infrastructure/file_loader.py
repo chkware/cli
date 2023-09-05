@@ -1,14 +1,12 @@
 """
 File loader utility
 """
-
+import hashlib
 from typing import NamedTuple
 from pathlib import Path
 
 import json
 import yaml
-
-from chk.infrastructure import mangle
 
 
 class FileLoader:
@@ -83,7 +81,7 @@ class FileContext(NamedTuple):
     def from_file(file: str, **kwarg: dict) -> "FileContext":
         FileLoader.is_file_ok(file)
         absolute_path = str(Path(file).absolute())
-        fpath_hash = mangle.uniq_sha255(absolute_path)
+        fpath_hash = hashlib.sha256(absolute_path.encode("utf-8")).hexdigest()
         document = FileLoader.load_yaml(absolute_path)
 
         return FileContext(
