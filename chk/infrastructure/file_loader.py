@@ -11,35 +11,6 @@ import yaml
 from chk.infrastructure import exception, mangle
 
 
-class ChkFileLoader:
-    """Loader for CHK files"""
-
-    @staticmethod
-    def to_dict(file_name: str) -> dict:
-        """read yml data"""
-        with open(file_name, "r", encoding="UTF-8") as yaml_file:
-            try:
-                return yaml.safe_load(yaml_file)
-            except Exception as ex:
-                yaml_file.close()
-                raise SystemExit(
-                    exception.err_message("fatal.V0003", {"file_name": file_name})
-                ) from ex
-
-    @staticmethod
-    def is_file_ok(file_name: str) -> bool:
-        """Check if chk file exists, extension is okay"""
-
-        if Path(file_name).is_file() and Path(file_name).suffix == ".chk":
-            return True
-
-        raise SystemExit(exception.err_message("fatal.V0002"))
-
-    @staticmethod
-    def get_mangled_name(file_name: str) -> tuple[str, str]:
-        return mangle.filename(file_name), mangle.uniq_sha255(file_name)
-
-
 class FileLoader:
     """File loader utility"""
 
