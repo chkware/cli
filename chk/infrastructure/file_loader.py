@@ -8,7 +8,7 @@ from pathlib import Path
 import json
 import yaml
 
-from chk.infrastructure import exception, mangle
+from chk.infrastructure import mangle
 
 
 class FileLoader:
