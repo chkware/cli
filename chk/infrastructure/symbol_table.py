@@ -115,7 +115,7 @@ class VariableTableManager:
         """
 
         for key, val in document.items():
-            if isinstance(val, str) and re.search(r"{{.*}}|{%.*%}", val):
+            if isinstance(val, str) and StrTemplate.is_tpl(val):
                 continue
 
             variable_doc[key] = val
@@ -146,7 +146,7 @@ class VariableTableManager:
 
         composite_values = {}
         for key, val in document.items():
-            if isinstance(val, str) and re.search(r"{{.*}}|{%.*%}", val):
+            if isinstance(val, str) and StrTemplate.is_tpl(val):
                 composite_values[key] = val
 
         if composite_values:
