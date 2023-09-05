@@ -17,8 +17,8 @@ data:
   code: 200
 
 asserts:
-  - { type: Equal, actual: "{{ response.int }}", expected: 200 }
-  - { type: Equal, actual: "{{ response.float }}", expected: 200.23 }
+  - { type: Equal, actual: <% response.int %>, expected: 200 }
+  - { type: Equal, actual: <% response.float %>, expected: 200.23 }
   - { type: Equal, actual: "[ 1, 2, 3 ]", expected: [ 1, 2, 3 ], cast_actual_to: list }
   - { type: Equal, actual: "{'a': 1, 'c': 3, 'b': 2}", expected: { 'a': 1, 'c': 3, 'b': 2 }, cast_actual_to: map }
   - { type: Equal, actual: "False", expected: False, cast_actual_to: bool }
@@ -126,9 +126,9 @@ asserts:
   - { type: FloatLessOrEqual, actual: "12.23", other: 15.7, cast_actual_to: float }
   - { type: FloatLessOrEqual, actual: "16.56", other: 15, cast_actual_to: float }
 
-  - { type: Str, actual: "{{ response.string1}}" }
-  - { type: Str, actual: "{{ response.string2 }}" }
-  - { type: Str, actual: "{{ response.string3 }}" }
+  - { type: Str, actual: <% response.string1%> }
+  - { type: Str, actual: <% response.string2 %> }
+  - { type: Str, actual: <% response.string3 %> }
   - { type: Str, actual: 23 }
   - { type: Str, actual: ~ }
 
@@ -198,27 +198,27 @@ asserts:
   - { type: ListDoNotHasIndex, actual: [ 1, 2, 3 ], index: 3 }
   - { type: ListDoNotHasIndex, actual: [ 1, "2", 3.0 ], index: 4 }
 
-  - { type: Map, actual: "{{ response.map }}", cast_actual_to: map }
+  - { type: Map, actual: <% response.map %>, cast_actual_to: map }
   - { type: Map, actual: "{ 'a': 1, 'b': 2 }", cast_actual_to: map }
   - { type: Map, actual: { 'a': 1, 'b': 2 } }
   - { type: Map, actual: [ 'a', 1, 'b', 2 ] }
 
-  - { type: MapKeyCount, actual: "{{ response.map }}", expected: 2, cast_actual_to: map }
+  - { type: MapKeyCount, actual: <% response.map %>, expected: 2, cast_actual_to: map }
   - { type: MapKeyCount, actual: { 'a': 1, 'b': 2 }, expected: 3, cast_actual_to: map }
 
-  - { type: MapHasKeys, actual: "{{ response.map }}", expected: [ "address", "name" ] }
+  - { type: MapHasKeys, actual: <% response.map %>, expected: [ "address", "name" ] }
   - { type: MapHasKeys, actual: { 'a': 1, 'b': 2 }, expected: [ "b" ] }
   - { type: MapHasKeys, actual: { 'a': 1, 'b': 2 }, expected: "b" }
 
-  - { type: MapHasKeys, actual: "{{ response.map }}", expected: [ "address", "name" ] }
+  - { type: MapHasKeys, actual: <% response.map %>, expected: [ "address", "name" ] }
   - { type: MapHasKeys, actual: { 'a': 1, 'b': 2 }, expected: [ "b" ] }
   - { type: MapHasKeys, actual: { 'a': 1, 'b': 2 }, expected: "b" }
 
-  - { type: MapDoNotHasKeys, actual: "{{ response.map }}", expected: [ "address", "name" ] }
+  - { type: MapDoNotHasKeys, actual: <% response.map %>, expected: [ "address", "name" ] }
   - { type: MapDoNotHasKeys, actual: { 'a': 1, 'b': 2 }, expected: [ "c" ] }
   - { type: MapDoNotHasKeys, actual: { 'a': 1, 'b': 2 }, expected: "b" }
 
-  - { type: MapExactKeys, actual: "{{ response.map }}", expected: [ "address", "name" ] }
+  - { type: MapExactKeys, actual: <% response.map %>, expected: [ "address", "name" ] }
   - { type: MapExactKeys, actual: { 'a': 1, 'b': 2 }, expected: [ "a" ] }
   - { type: MapExactKeys, actual: { 'a': 1, 'b': 2 }, expected: "b" }
 
@@ -226,6 +226,7 @@ asserts:
   - { type: Count, actual: { 'a', 'b', 'c', 'd' }, expected: 4 }
   - { type: Count, actual: 'abcd', expected: 4 }
   - { type: Count, actual: 1, expected: 1 }
+  - { type: Count, actual: 1, expected: 1, msg_fail: '`{type_actual}({value_actual})` is not countable.' }
 
 expose:
-  - "{{ _asserts_response }}"
+  - <% _asserts_response %>

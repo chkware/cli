@@ -6,4 +6,4 @@ request:
   method: GET
 
 expose:
-  - "{{ _response }}"
+  - <% _response %>

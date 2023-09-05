@@ -2,9 +2,9 @@
 version: default:validation:0.7.2
 
 asserts:
-  - { type: Equal, actual: "{{ _data.roll }}", expected: 39 }
-  - { type: Equal, actual: "{{ _data.year }}", expected: 2023 }
+  - { type: Equal, actual: <% _data.roll %>, expected: 39 }
+  - { type: Equal, actual: <% _data.year %>, expected: 2023 }
 
 expose:
-  - "{{ _asserts_response }}"
-  - "{{ _data }}"
+  - <% _asserts_response %>
+  - <% _data %>
