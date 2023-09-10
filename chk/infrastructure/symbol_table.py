@@ -3,7 +3,6 @@ Symbol and variable management
 """
 import enum
 import os
-import re
 from collections import UserDict
 from collections.abc import Callable
 
