@@ -472,12 +472,17 @@ class HttpDocumentSupport:
                 dump=exec_ctx.options["dump"],
             )
         else:
-            formatter(
-                json.dumps(display_item_list)
+            _to_display = (
+                display_item_list
                 if len(display_item_list) > 1
-                else json.dumps(display_item_list.pop()),
-                dump=exec_ctx.options["dump"],
+                else display_item_list.pop()
             )
+
+            _to_display = (
+                _to_display if isinstance(_to_display, str) else json.dumps(_to_display)
+            )
+
+            formatter(_to_display, dump=exec_ctx.options["dump"])
 
 
 def execute(
