@@ -341,12 +341,16 @@ class ApiResponseDict(UserDict):
         body = None
 
         try:
-            if "headers" in resp and "Content-Type" in resp["headers"]:
-                content_type = resp["headers"]["Content-Type"]
+            if "headers" in resp:
+                content_type = ""
+                if "Content-Type" in resp["headers"]:
+                    content_type = resp["headers"]["Content-Type"]
+                elif "content-type" in resp["headers"]:
+                    content_type = resp["headers"]["content-type"]
 
-                if "application/json" in content_type:
+                if content_type and "application/json" in content_type:
                     body = json.loads(resp["body"])
-                elif "application/xml" in content_type:
+                elif content_type and "application/xml" in content_type:
                     body = xmltodict.parse(parseString(resp["body"]).toxml())
 
             if not body:
@@ -468,12 +472,17 @@ class HttpDocumentSupport:
                 dump=exec_ctx.options["dump"],
             )
         else:
-            formatter(
-                json.dumps(display_item_list)
+            _to_display = (
+                display_item_list
                 if len(display_item_list) > 1
-                else json.dumps(display_item_list.pop()),
-                dump=exec_ctx.options["dump"],
+                else display_item_list.pop()
             )
+
+            _to_display = (
+                _to_display if isinstance(_to_display, str) else json.dumps(_to_display)
+            )
+
+            formatter(_to_display, dump=exec_ctx.options["dump"])
 
 
 def execute(

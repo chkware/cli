@@ -60,7 +60,7 @@ def chk(ctx: click.Context) -> None:
 
     \b
     Low-code API quality testing, and automation toolbox.
-    Version 0.4.3, supported version strings: 0.7.2
+    Version 0.5.0, supported version strings: 0.7.2
     """
     ctx.ensure_object(dict)
 
