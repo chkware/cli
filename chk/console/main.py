@@ -10,23 +10,18 @@ import chk.modules.fetch as fetch_executor
 import chk.modules.validate as validate_executor
 
 from chk.infrastructure.file_loader import ExecuteContext, FileContext, FileLoader
+from chk.infrastructure.typing_extras import JsonDecodingError
 
 
-def load_variables_as_dict(json_str: str, expect_msg: str) -> dict:
-    """Reads a json string and converts to dict while doing validation
-
-    Args:
-        json_str: str
-        expect_msg: str
-    Returns:
-        dict containing json_str
-    """
+def load_variables_as_dict(json_str: str, **kwargs: typing.Any) -> dict:
+    """Reads a json string and converts  and returns the dict while doing validation"""
 
     if json_str:
         try:
             return FileLoader.load_json_from_str(json_str)
-        except Exception:
-            raise click.UsageError(expect_msg)
+        except JsonDecodingError as err:
+            message = kwargs.get("except_msg") or "JSON loading error."
+            raise click.UsageError(str(message)) from err
 
     return {}
 
@@ -141,7 +136,7 @@ def validate(file: str, no_format: bool, variables: str, data: str) -> None:
             ),
             "data": load_variables_as_dict(
                 data,
-                "-D, --data accept values as JSON object",
+                except_msg="-D, --data accept values as JSON object",
             ),
         },
     )
