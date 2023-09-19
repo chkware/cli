@@ -1,5 +1,0 @@
-request:
-  url: https://reqres.in/api/users/1
-  method: GET
-
-# version: 'default:http:0.7.2'

@@ -1,5 +1,0 @@
-version: 'default:testcase:0.7.2'
-
-request:
-  method: GET
-  url: https://ghttpbin.org/get
