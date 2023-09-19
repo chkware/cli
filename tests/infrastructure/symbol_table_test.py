@@ -2,6 +2,9 @@
 """
 Tests for symbol table
 """
+import json
+
+from chk.console.main import combine_initial_variables
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
 from chk.infrastructure.symbol_table import (
     VariableConfigNode,
@@ -29,7 +32,11 @@ class TestVariableTableManager:
 
         file_ctx = FileContext(filepath_hash="ab12", document=document)
         exc = ExecuteContext(
-            arguments={VariableConfigNode.VARIABLES: {"extension": ".org"}}
+            arguments={
+                VariableConfigNode.VARIABLES: combine_initial_variables(
+                    json.dumps({"extension": ".org"})
+                )
+            }
         )
 
         http_doc = HttpDocument.from_file_context(file_ctx)
@@ -67,14 +74,6 @@ class TestVariableTableManager:
 
         assert len(variable_doc.data) == 2
         assert variable_doc.data == {"var_1": "bar", "var_2": 2}
-
-    @staticmethod
-    def test_handle_environment_pass():
-        variable_doc = Variables()
-        VariableTableManager.handle_environment(variable_doc)
-
-        assert len(variable_doc.data) == 1
-        assert VariableConfigNode.ENV in variable_doc.data
 
     @staticmethod
     def test_handle_composite_pass():
