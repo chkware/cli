@@ -1,30 +1,38 @@
 """Commands"""
 
+import typing
+from os import environ
+
 import click
+from dotenv import load_dotenv
 
 import chk.modules.fetch as fetch_executor
 import chk.modules.validate as validate_executor
 
 from chk.infrastructure.file_loader import ExecuteContext, FileContext, FileLoader
+from chk.infrastructure.typing_extras import JsonDecodingError
 
 
-def load_variables_as_dict(json_str: str, expect_msg: str) -> dict:
-    """Reads a json string and converts to dict while doing validation
-
-    Args:
-        json_str: str
-        expect_msg: str
-    Returns:
-        dict containing json_str
-    """
+def load_variables_as_dict(json_str: str, **kwargs: typing.Any) -> dict:
+    """Reads a json string and converts  and returns the dict while doing validation"""
 
     if json_str:
         try:
             return FileLoader.load_json_from_str(json_str)
-        except Exception:
-            raise click.UsageError(expect_msg)
+        except JsonDecodingError as err:
+            message = kwargs.get("except_msg") or "JSON loading error."
+            raise click.UsageError(str(message)) from err
 
     return {}
+
+
+def combine_initial_variables(external_vars: str, **kwargs: typing.Any) -> dict:
+    """Reads a json string and converts to dict, and combines with env and dotenv
+    variables"""
+
+    load_dotenv()
+
+    return load_variables_as_dict(external_vars, **kwargs) | {"_ENV": dict(environ)}
 
 
 def after_hook(resp: object) -> None:
@@ -88,9 +96,9 @@ def fetch(file: str, no_format: bool, variables: str) -> None:
             "format": not no_format,
         },
         {
-            "variables": load_variables_as_dict(
+            "variables": combine_initial_variables(
                 variables,
-                "-V, --variables accept values as JSON object",
+                except_msg="-V, --variables accept values as JSON object",
             )
         },
     )
@@ -122,13 +130,13 @@ def validate(file: str, no_format: bool, variables: str, data: str) -> None:
             "format": not no_format,
         },
         {
-            "variables": load_variables_as_dict(
+            "variables": combine_initial_variables(
                 variables,
-                "-V, --variables accept values as JSON object",
+                except_msg="-V, --variables accept values as JSON object",
             ),
             "data": load_variables_as_dict(
                 data,
-                "-D, --data accept values as JSON object",
+                except_msg="-D, --data accept values as JSON object",
             ),
         },
     )

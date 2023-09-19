@@ -11,6 +11,7 @@ cerberus = "*"
 defusedxml = "*"
 xmltodict = "*"
 jinja2 = "*"
+python-dotenv = "*"
 
 [dev-packages]
 pytest = "*"
@@ -20,6 +21,7 @@ flake8 = "*"
 black = {extras = ["d"], version = "*"}
 var-dump = "*"
 types-pyyaml = "*"
+types-requests = "*"
 
 [requires]
 python_version = "3.11"

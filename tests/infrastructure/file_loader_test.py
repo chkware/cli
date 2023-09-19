@@ -12,6 +12,7 @@ from chk.infrastructure.file_loader import (
     PathFrom,
     FileLoader,
 )
+from chk.infrastructure.typing_extras import JsonDecodingError
 
 
 class TestFileContext:
@@ -165,7 +166,7 @@ class TestFileLoaderLoadJson:
     def test_fail_invalid_file(self):
         file_name = FILE_PATH + "UserNotOk.json"
 
-        with pytest.raises(RuntimeError):
+        with pytest.raises(JsonDecodingError, match="JSON loading error."):
             FileLoader.load_json(file_name)
 
 
@@ -184,5 +185,5 @@ class TestFileLoaderLoadJsonFromStr:
         file_name = FILE_PATH + "UserNotOk.json"
 
         with open(file_name, "r", encoding="UTF-8") as json_file_content:
-            with pytest.raises(RuntimeError):
+            with pytest.raises(JsonDecodingError, match="JSON loading error."):
                 FileLoader.load_json_from_str(json_file_content.read())

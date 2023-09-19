@@ -8,6 +8,8 @@ from pathlib import Path
 import json
 import yaml
 
+from chk.infrastructure.typing_extras import JsonDecodingError
+
 
 class FileLoader:
     """File loader utility"""
@@ -21,6 +23,7 @@ class FileLoader:
         :raises FileNotFoundError When file not found
         :raises LookupError When file extension do not match
         """
+
         if not allowed_list:
             allowed_list = [".chk"]
 
@@ -65,7 +68,7 @@ class FileLoader:
         try:
             return json.loads(expected_json)
         except ValueError as ex:
-            raise RuntimeError("JSON loading error.") from ex
+            raise JsonDecodingError("JSON loading error.") from ex
 
 
 class FileContext(NamedTuple):

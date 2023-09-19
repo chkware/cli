@@ -1,3 +1,0 @@
-request:
-  url: https://reqres.in/api/users/1
-  method: GET

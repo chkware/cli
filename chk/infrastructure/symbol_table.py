@@ -2,7 +2,6 @@
 Symbol and variable management
 """
 import enum
-import os
 from collections import UserDict
 from collections.abc import Callable
 
@@ -94,8 +93,6 @@ class VariableTableManager:
         # make file contexts out od tuple
         file_ctx = FileContext(*document.context)
 
-        VariableTableManager.handle_environment(variable_doc)
-
         if variables := data_get(file_ctx.document, VariableConfigNode.VARIABLES):
             VariableTableManager.handle_absolute(variable_doc, variables)
 
@@ -118,16 +115,6 @@ class VariableTableManager:
                 continue
 
             variable_doc[key] = val
-
-    @staticmethod
-    def handle_environment(variable_doc: Variables) -> None:
-        """Handles environment variables and values
-
-        Args:
-            variable_doc: VariableDocument to add values to
-        """
-
-        variable_doc[VariableConfigNode.ENV] = dict(os.environ)
 
     @staticmethod
     def handle_composite(

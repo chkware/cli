@@ -1,8 +1,0 @@
-version: 'default:http:0.7.2'
-
-request:
-  method: GET
-  url: https://httpbin.org/get
-  url_params:
-    foo: bar
-    flex: version-05
