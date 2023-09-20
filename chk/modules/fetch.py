@@ -256,8 +256,8 @@ class HttpRequestArgCompiler:
                 if val.startswith("file://"):
                     val = unquote(urlparse(val).path)
 
-                    # @TODO update; this is going to leaking memory
-                    files[key] = open(val, "rb")
+                    with open(val, mode="rb") as f_data:
+                        files[key] = f_data
                 else:
                     non_files[key] = val
 
