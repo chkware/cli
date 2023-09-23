@@ -4,6 +4,7 @@ Fetch module
 import dataclasses
 import enum
 import json
+import pathlib
 
 from collections import UserDict, abc
 from urllib.parse import unquote, urlparse
@@ -26,7 +27,11 @@ from chk.infrastructure.symbol_table import (
     ExposableVariables,
 )
 
-from chk.infrastructure.third_party.http_fetcher import ApiResponse, fetch
+from chk.infrastructure.third_party.http_fetcher import (
+    ApiResponse,
+    fetch,
+    BearerAuthentication,
+)
 from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
 
 VERSION_SCOPE = ["http"]
@@ -57,20 +62,20 @@ class RequestConfigNode(enum.StrEnum):
     PARAMS = "url_params"
 
     # Basic
-    AUTH_BA = "auth[basic]"
+    AUTH_BA = "auth .scm=basic"
     AUTH_BA_USR = "username"
     AUTH_BA_PAS = "password"
 
     # Bearer
-    AUTH_BE = "auth[bearer]"
+    AUTH_BE = "auth .scm=bearer"
     AUTH_BE_TOK = "token"
 
     # Body
-    BODY_FRM = "body[form]"
-    BODY_FRM_DAT = "body[form-data]"
-    BODY_JSN = "body[json]"
-    BODY_XML = "body[xml]"
-    BODY_TXT = "body[text]"
+    BODY_FRM = "body .enc=form"
+    BODY_FRM_DAT = "body .enc=form-data"
+    BODY_JSN = "body .enc=json"
+    BODY_XML = "body .enc=xml"
+    BODY_TXT = "body .enc=text"
 
 
 SCHEMA = {
@@ -238,8 +243,8 @@ class HttpRequestArgCompiler:
 
         # handle bearer auth
         if (tag_be := request_data.get(RequestConfigNode.AUTH_BE)) is not None:
-            request_arg["headers"]["authorization"] = "Bearer " + tag_be.get(
-                RequestConfigNode.AUTH_BE_TOK
+            request_arg["auth"] = BearerAuthentication(
+                tag_be.get(RequestConfigNode.AUTH_BE_TOK)
             )
 
     @staticmethod
@@ -248,31 +253,49 @@ class HttpRequestArgCompiler:
         if (body := request_data.get(RequestConfigNode.BODY_FRM)) is not None:
             request_arg["data"] = dict(body)
         elif (body := request_data.get(RequestConfigNode.BODY_FRM_DAT)) is not None:
-            non_files = {}
+            data = {}
             files = {}
 
-            for body_i in dict(body).items():
-                (key, val) = body_i
-                if val.startswith("file://"):
-                    val = unquote(urlparse(val).path)
+            for key, val in dict(body).items():
+                if isinstance(val, str) and val.startswith("file://"):
+                    path_parsed = urlparse(val)
+                    path = unquote(path_parsed.path)
+                    netloc = unquote(path_parsed.netloc)
 
-                    # @TODO update; this is going to leaking memory
-                    files[key] = open(val, "rb")
+                    filepath = pathlib.Path(f"{netloc}{path}")
+                    if not filepath.expanduser().exists():
+                        raise FileNotFoundError(f"path `{val}` do not exists")
+
+                    files[key] = str(filepath.expanduser().resolve())
                 else:
-                    non_files[key] = val
+                    data[key] = val
 
-            request_arg["data"] = non_files
+            request_arg["data"] = data
             request_arg["files"] = files
 
         elif (body := request_data.get(RequestConfigNode.BODY_JSN)) is not None:
             request_arg["json"] = dict(body)
         elif (body := request_data.get(RequestConfigNode.BODY_XML)) is not None:
-            if request_arg["headers"].get("content-type") is None:
+            if "headers" not in request_arg:
+                request_arg["headers"] = {}
+
+            if (
+                "content-type" not in request_arg["headers"]
+                and "Content-Type" not in request_arg["headers"]
+            ):
                 request_arg["headers"]["content-type"] = "application/xml"
+
             request_arg["data"] = body
         elif (body := request_data.get(RequestConfigNode.BODY_TXT)) is not None:
-            if request_arg["headers"].get("content-type") is None:
+            if "headers" not in request_arg:
+                request_arg["headers"] = {}
+
+            if (
+                "content-type" not in request_arg["headers"]
+                and "Content-Type" not in request_arg["headers"]
+            ):
                 request_arg["headers"]["content-type"] = "text/plain"
+
             request_arg["data"] = str(body)
 
     @staticmethod

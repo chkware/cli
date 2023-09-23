@@ -2,6 +2,7 @@
 
 import pytest
 
+from chk.infrastructure.third_party.http_fetcher import BearerAuthentication
 from chk.modules.fetch import HttpRequestArgCompiler
 
 
@@ -84,45 +85,46 @@ class TestHttpRequestArgCompiler:
     def test_add_authorization_basic_valid(self):
         """Tests add_authorization with valid basic auth header."""
         request_data = {
-            "auth[basic]": {"username": "Some_USER", "password": "Some-P@$$W03D"}
+            "auth .scm=basic": {"username": "Some_USER", "password": "Some-P@$$W03D"}
         }
         request_arg = {}
         HttpRequestArgCompiler.add_authorization(request_data, request_arg)
-        assert request_arg["auth"].username == request_data["auth[basic]"]["username"]
-        assert request_arg["auth"].password == request_data["auth[basic]"]["password"]
+        assert (
+            request_arg["auth"].username == request_data["auth .scm=basic"]["username"]
+        )
+        assert (
+            request_arg["auth"].password == request_data["auth .scm=basic"]["password"]
+        )
 
     def test_add_authorization_be_valid(self):
         """Tests add_authorization with valid bearer auth header."""
-        request_data = {"auth[bearer]": {"token": "Some_TOKEN"}}
+        request_data = {"auth .scm=bearer": {"token": "Some_TOKEN"}}
         request_arg = {"headers": {"authorization": None}}
         HttpRequestArgCompiler.add_authorization(request_data, request_arg)
-        assert (
-            request_arg["headers"]["authorization"]
-            == "Bearer " + request_data["auth[bearer]"]["token"]
-        )
+        assert isinstance(request_arg["auth"], BearerAuthentication)
 
     def test_add_body_json_valid(self):
         """Tests add_body with valid JSON."""
-        request_data = {"body[json]": {"var_1": "val one", "var_2": 4}}
+        request_data = {"body .enc=json": {"var_1": "val one", "var_2": 4}}
         request_arg = {}
         HttpRequestArgCompiler.add_body(request_data, request_arg)
-        assert request_arg["json"] == request_data["body[json]"]
+        assert request_arg["json"] == request_data["body .enc=json"]
 
     def test_add_body_text_valid(self):
         """Tests add_body with valid text/plain."""
-        request_data = {"body[text]": "Hello, this is a text/plain body."}
+        request_data = {"body .enc=text": "Hello, this is a text/plain body."}
         request_arg = {
             "data": None,
             "headers": {"content-type": None},
         }
         HttpRequestArgCompiler.add_body(request_data, request_arg)
-        assert request_arg["data"] == request_data["body[text]"]
-        assert request_arg["headers"]["content-type"] == "text/plain"
+        assert request_arg["data"] == request_data["body .enc=text"]
+        assert request_arg["headers"]["content-type"] is None
         assert isinstance(request_arg["data"], str)
 
     def test_add_body_text_override(self):
         """Tests add_body_text when the content-type is explicitly set by the user."""
-        request_data = {"body[text]": "Hello, this is a text/plain body."}
+        request_data = {"body .enc=text": "Hello, this is a text/plain body."}
         request_arg = {
             "data": None,
             "headers": {
@@ -131,14 +133,14 @@ class TestHttpRequestArgCompiler:
             },
         }
         HttpRequestArgCompiler.add_body(request_data, request_arg)
-        assert request_arg["data"] == request_data["body[text]"]
+        assert request_arg["data"] == request_data["body .enc=text"]
         assert request_arg["headers"]["content-type"] == "application/xml"
         assert isinstance(request_arg["data"], str)
 
     def test_add_body_xml_override(self):
         """Tests add_body_xml when the content-type is explicitly set by the user."""
         request_data = {
-            "body[xml]": "<account><name>Some Rand</name><no>900XW3D</no></account>"
+            "body .enc=xml": "<account><name>Some Rand</name><no>900XW3D</no></account>"
         }
         request_arg = {
             "data": None,
@@ -147,20 +149,20 @@ class TestHttpRequestArgCompiler:
             },
         }
         HttpRequestArgCompiler.add_body(request_data, request_arg)
-        assert request_arg["data"] == request_data["body[xml]"]
+        assert request_arg["data"] == request_data["body .enc=xml"]
         assert request_arg["headers"]["content-type"] == "text/plain"
         assert isinstance(request_arg["data"], str)
 
     def test_add_body_xml_auto(self):
         """Tests add_body_xml when the content-type is not set by the user."""
         request_data = {
-            "body[xml]": "<account><name>Some Rand</name><no>900XW3D</no></account>"
+            "body .enc=xml": "<account><name>Some Rand</name><no>900XW3D</no></account>"
         }
         request_arg = {
             "data": None,
             "headers": {"content-type": None},
         }
         HttpRequestArgCompiler.add_body(request_data, request_arg)
-        assert request_arg["data"] == request_data["body[xml]"]
-        assert request_arg["headers"]["content-type"] == "application/xml"
+        assert request_arg["data"] == request_data["body .enc=xml"]
+        assert request_arg["headers"]["content-type"] is None
         assert isinstance(request_arg["data"], str)

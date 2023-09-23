@@ -1,0 +1,18 @@
+---
+version: default:http:0.7.2
+
+request:
+  url: https://httpbin.org/post
+  method: POST
+
+  body .enc=xml: |
+    <?xml version="1.0"?>
+    <person>
+      <name>Some One</name>
+      <address>
+        <street>2 Hathway</street>
+        <city>Temple</city>
+      </address>
+    </person>
+expose:
+  - <% _response %>
