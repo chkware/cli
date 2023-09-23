@@ -2,6 +2,7 @@
 
 import pytest
 
+from chk.infrastructure.third_party.http_fetcher import BearerAuthentication
 from chk.modules.fetch import HttpRequestArgCompiler
 
 
@@ -100,10 +101,7 @@ class TestHttpRequestArgCompiler:
         request_data = {"auth .scm=bearer": {"token": "Some_TOKEN"}}
         request_arg = {"headers": {"authorization": None}}
         HttpRequestArgCompiler.add_authorization(request_data, request_arg)
-        assert (
-            request_arg["headers"]["authorization"]
-            == "Bearer " + request_data["auth[bearer]"]["token"]
-        )
+        assert isinstance(request_arg["auth"], BearerAuthentication)
 
     def test_add_body_json_valid(self):
         """Tests add_body with valid JSON."""
