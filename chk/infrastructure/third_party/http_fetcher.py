@@ -56,6 +56,21 @@ class ApiResponse(UserDict):
         )
 
 
+class BearerAuthentication(requests.auth.AuthBase):
+    """Authentication: Bearer ... support"""
+
+    def __init__(self, token: str) -> None:
+        """Construct BearerAuthentication"""
+
+        self.token = token
+
+    def __call__(self, r: requests.PreparedRequest) -> requests.PreparedRequest:
+        """Add the actual header on call"""
+
+        r.headers["authorization"] = "Bearer " + self.token
+        return r
+
+
 def fetch(params: dict) -> ApiResponse:
     """Fetch an external resource
 

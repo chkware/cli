@@ -27,7 +27,11 @@ from chk.infrastructure.symbol_table import (
     ExposableVariables,
 )
 
-from chk.infrastructure.third_party.http_fetcher import ApiResponse, fetch
+from chk.infrastructure.third_party.http_fetcher import (
+    ApiResponse,
+    fetch,
+    BearerAuthentication,
+)
 from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
 
 VERSION_SCOPE = ["http"]
@@ -239,8 +243,8 @@ class HttpRequestArgCompiler:
 
         # handle bearer auth
         if (tag_be := request_data.get(RequestConfigNode.AUTH_BE)) is not None:
-            request_arg["headers"]["authorization"] = "Bearer " + tag_be.get(
-                RequestConfigNode.AUTH_BE_TOK
+            request_arg["auth"] = BearerAuthentication(
+                tag_be.get(RequestConfigNode.AUTH_BE_TOK)
             )
 
     @staticmethod
