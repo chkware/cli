@@ -1,0 +1,12 @@
+---
+version: default:http:0.7.2
+
+request:
+  url: https://httpbin.org/get
+  method: GET
+
+  auth .scm=bearer:
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+expose:
+  - <% _response %>
