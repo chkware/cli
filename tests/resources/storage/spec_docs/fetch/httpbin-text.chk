@@ -1,0 +1,14 @@
+---
+version: default:http:0.7.2
+
+request:
+  url: https://httpbin.org/post
+  method: POST
+
+  body .enc=text: |
+    some_var_int=1
+    some_var_text="Text here"
+    some_var_bool=true
+
+expose:
+  - <% _response %>
