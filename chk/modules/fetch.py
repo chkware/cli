@@ -66,11 +66,11 @@ class RequestConfigNode(enum.StrEnum):
     AUTH_BE_TOK = "token"
 
     # Body
-    BODY_FRM = "body[form]"
-    BODY_FRM_DAT = "body[form-data]"
-    BODY_JSN = "body[json]"
-    BODY_XML = "body[xml]"
-    BODY_TXT = "body[text]"
+    BODY_FRM = "body .enc=form"
+    BODY_FRM_DAT = "body .enc=form-data"
+    BODY_JSN = "body .enc=json"
+    BODY_XML = "body .enc=xml"
+    BODY_TXT = "body .enc=text"
 
 
 SCHEMA = {
