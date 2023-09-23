@@ -57,12 +57,12 @@ class RequestConfigNode(enum.StrEnum):
     PARAMS = "url_params"
 
     # Basic
-    AUTH_BA = "auth[basic]"
+    AUTH_BA = "auth .scm=basic"
     AUTH_BA_USR = "username"
     AUTH_BA_PAS = "password"
 
     # Bearer
-    AUTH_BE = "auth[bearer]"
+    AUTH_BE = "auth .scm=bearer"
     AUTH_BE_TOK = "token"
 
     # Body
