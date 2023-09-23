@@ -4,6 +4,7 @@ Fetch module
 import dataclasses
 import enum
 import json
+import pathlib
 
 from collections import UserDict, abc
 from urllib.parse import unquote, urlparse
@@ -248,20 +249,24 @@ class HttpRequestArgCompiler:
         if (body := request_data.get(RequestConfigNode.BODY_FRM)) is not None:
             request_arg["data"] = dict(body)
         elif (body := request_data.get(RequestConfigNode.BODY_FRM_DAT)) is not None:
-            non_files = {}
+            data = {}
             files = {}
 
-            for body_i in dict(body).items():
-                (key, val) = body_i
-                if val.startswith("file://"):
-                    val = unquote(urlparse(val).path)
+            for key, val in dict(body).items():
+                if isinstance(val, str) and val.startswith("file://"):
+                    path_parsed = urlparse(val)
+                    path = unquote(path_parsed.path)
+                    netloc = unquote(path_parsed.netloc)
 
-                    with open(val, mode="rb") as f_data:
-                        files[key] = f_data
+                    filepath = pathlib.Path(f"{netloc}{path}")
+                    if not filepath.expanduser().exists():
+                        raise FileNotFoundError(f"path `{val}` do not exists")
+
+                    files[key] = str(filepath.expanduser().resolve())
                 else:
-                    non_files[key] = val
+                    data[key] = val
 
-            request_arg["data"] = non_files
+            request_arg["data"] = data
             request_arg["files"] = files
 
         elif (body := request_data.get(RequestConfigNode.BODY_JSN)) is not None:
