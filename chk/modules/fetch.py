@@ -279,13 +279,23 @@ class HttpRequestArgCompiler:
             if "headers" not in request_arg:
                 request_arg["headers"] = {}
 
-            request_arg["headers"]["content-type"] = "application/xml"
+            if (
+                "content-type" not in request_arg["headers"]
+                and "Content-Type" not in request_arg["headers"]
+            ):
+                request_arg["headers"]["content-type"] = "application/xml"
+
             request_arg["data"] = body
         elif (body := request_data.get(RequestConfigNode.BODY_TXT)) is not None:
             if "headers" not in request_arg:
                 request_arg["headers"] = {}
 
-            request_arg["headers"]["content-type"] = "text/plain"
+            if (
+                "content-type" not in request_arg["headers"]
+                and "Content-Type" not in request_arg["headers"]
+            ):
+                request_arg["headers"]["content-type"] = "text/plain"
+
             request_arg["data"] = str(body)
 
     @staticmethod

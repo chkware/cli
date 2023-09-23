@@ -119,7 +119,7 @@ class TestHttpRequestArgCompiler:
         }
         HttpRequestArgCompiler.add_body(request_data, request_arg)
         assert request_arg["data"] == request_data["body .enc=text"]
-        assert request_arg["headers"]["content-type"] == "text/plain"
+        assert request_arg["headers"]["content-type"] is None
         assert isinstance(request_arg["data"], str)
 
     def test_add_body_text_override(self):
@@ -164,5 +164,5 @@ class TestHttpRequestArgCompiler:
         }
         HttpRequestArgCompiler.add_body(request_data, request_arg)
         assert request_arg["data"] == request_data["body .enc=xml"]
-        assert request_arg["headers"]["content-type"] == "application/xml"
+        assert request_arg["headers"]["content-type"] is None
         assert isinstance(request_arg["data"], str)
