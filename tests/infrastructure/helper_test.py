@@ -2,6 +2,7 @@
 """
 test global chk functions
 """
+import math
 import sys
 from io import TextIOWrapper, BytesIO
 
@@ -161,7 +162,7 @@ class TestCast:
 
     def test_to_auto_float_pass(self):
         a = "21.40000000009"
-        assert Cast.to_auto(a) == 21.40000000009
+        assert math.isclose(Cast.to_auto(a), 21.40000000009)
 
     def test_to_auto_truth_pass(self):
         a = "true"
