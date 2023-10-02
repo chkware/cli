@@ -7,7 +7,8 @@ from collections.abc import Callable
 
 from chk.infrastructure.document import VersionedDocument
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
-from chk.infrastructure.helper import data_get, StrTemplate
+from chk.infrastructure.helper import data_get
+from chk.infrastructure.templating import StrTemplate
 
 
 class VariableConfigNode(enum.StrEnum):
