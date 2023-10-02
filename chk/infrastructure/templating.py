@@ -25,6 +25,7 @@ class StrTemplate:
             raise ValueError("Only string allowed in template.")
 
         self.template = templated_string
+        # (<%\s*[\'\"\(\)|a-zA-Z0-9_.]+\s*%>)
 
     def substitute(
         self, mapping: dict | None = None, /, **keywords: dict
