@@ -10,7 +10,6 @@ requests = "*"
 cerberus = "*"
 defusedxml = "*"
 xmltodict = "*"
-jinja2 = "*"
 python-dotenv = "*"
 
 [dev-packages]
