@@ -23,6 +23,7 @@ types-pyyaml = "*"
 types-requests = "*"
 pytest-cov = "*"
 coveralls = "*"
+icecream = "*"
 
 [requires]
 python_version = "3.11"
