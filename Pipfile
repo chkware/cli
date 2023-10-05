@@ -19,7 +19,6 @@ mypy = "*"
 pylint = "*"
 flake8 = "*"
 black = {extras = ["d"], version = "*"}
-var-dump = "*"
 types-pyyaml = "*"
 types-requests = "*"
 pytest-cov = "*"
