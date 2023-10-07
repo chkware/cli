@@ -1,0 +1,15 @@
+version: default:workflow:0.8.0
+id: simpleBtcWf
+
+tasks:
+  - name: Fetch some content from URL
+    uses: fetch
+    file: ../fetch/bitcoin-usd.chk
+#    variables: { "var": 2 }
+
+  - name: Validate the content is okay
+    uses: validate
+    file: ../validate/btc-usd-validate.chk
+#    variables: { "var": 2 }
+#    arguments:
+#      data: <% _tasks.0._expose.0 %>
