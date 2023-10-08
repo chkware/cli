@@ -1,9 +1,7 @@
 """
 Domain logics for workflow module
 """
-
-import typing
-from os.path import splitext
+import pathlib
 
 from pydantic import BaseModel, Field
 
@@ -30,7 +28,7 @@ class WorkflowDocument(VersionedDocument):
         if not (version_str := data_get(ctx.document, "version")):
             raise RuntimeError("`version:` not found.")
 
-        id_str = data_get(ctx.document, "id", splitext(ctx.filepath)[0])
+        id_str = data_get(ctx.document, "id", pathlib.Path(ctx.filepath).stem)
 
         if not (tasks_dct := data_get(ctx.document, "tasks")):
             raise RuntimeError("`tasks:` not found.")
