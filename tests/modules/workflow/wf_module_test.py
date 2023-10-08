@@ -3,7 +3,6 @@
 Workflow module test
 """
 
-from chk.infrastructure.file_loader import ExecuteContext
 from chk.modules.workflow import execute
 
 from tests import load_chk_file, load_file_ctx_for_file, get_exec_ctx, SPEC_DIR
