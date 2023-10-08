@@ -15,7 +15,7 @@ class TestWorkflowDocument:
         file_ctx = load_file_ctx_for_file(filepath)
 
         wfdoc = WorkflowDocument.from_file_context(file_ctx)
-        wfdoc.id == "simpleBtcWf"
+        assert wfdoc.id == "simpleBtcWf"
 
     @staticmethod
     def test_from_file_context_pass_noid(load_chk_file, load_file_ctx_for_file):
@@ -25,4 +25,4 @@ class TestWorkflowDocument:
         del file_ctx.document["id"] # remove document id
 
         wfdoc = WorkflowDocument.from_file_context(file_ctx)
-        wfdoc.id == "simple-btc-wf" # check if document id defaults to file name
+        assert wfdoc.id == "simple-btc-wf" # check if document id defaults to file name
