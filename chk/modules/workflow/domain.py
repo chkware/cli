@@ -2,7 +2,6 @@
 Domain logics for workflow module
 """
 import pathlib
-import typing
 
 from pydantic import BaseModel, Field
 
