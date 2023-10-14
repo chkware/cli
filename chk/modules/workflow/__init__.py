@@ -7,8 +7,7 @@ from collections import abc
 from icecream import ic
 
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
-from chk.infrastructure.version import DocumentVersionMaker
-from chk.modules.workflow.domain import WorkflowDocument
+from chk.infrastructure.symbol_table import Variables, VariableTableManager
 
 VERSION_SCOPE = ["workflow"]
 
@@ -27,6 +26,8 @@ def execute(
     wflow_doc = WorkflowDocument.from_file_context(ctx)
     ic(wflow_doc)
 
+    variable_doc = Variables()
+    VariableTableManager.handle(variable_doc, wflow_doc, exec_ctx)
     # DocumentVersionMaker.verify_if_allowed(
     #     DocumentVersionMaker.from_dict(wflow_doc.as_dict), VERSION_SCOPE
     # )

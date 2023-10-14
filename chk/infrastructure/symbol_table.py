@@ -5,7 +5,7 @@ import enum
 from collections import UserDict
 from collections.abc import Callable
 
-from chk.infrastructure.document import VersionedDocument
+from chk.infrastructure.document import VersionedDocument, VersionedDocumentV2
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
 from chk.infrastructure.helper import data_get
 from chk.infrastructure.templating import StrTemplate
@@ -81,7 +81,9 @@ class VariableTableManager:
 
     @staticmethod
     def handle(
-        variable_doc: Variables, document: VersionedDocument, exec_ctx: ExecuteContext
+        variable_doc: Variables,
+        document: VersionedDocument | VersionedDocumentV2,
+        exec_ctx: ExecuteContext,
     ) -> None:
         """Handles variable handling
 
