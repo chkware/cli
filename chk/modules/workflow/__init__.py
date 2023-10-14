@@ -8,6 +8,7 @@ from icecream import ic
 
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
 from chk.infrastructure.symbol_table import Variables, VariableTableManager
+from chk.modules.workflow.domain import WorkflowDocument, WorkflowDocumentSupport
 
 VERSION_SCOPE = ["workflow"]
 
@@ -28,6 +29,10 @@ def execute(
 
     variable_doc = Variables()
     VariableTableManager.handle(variable_doc, wflow_doc, exec_ctx)
+
+    service = WorkflowDocumentSupport()
+    service.process_task_template(wflow_doc, variable_doc)
+
     # DocumentVersionMaker.verify_if_allowed(
     #     DocumentVersionMaker.from_dict(wflow_doc.as_dict), VERSION_SCOPE
     # )

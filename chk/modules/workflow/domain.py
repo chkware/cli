@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 from chk.infrastructure.document import VersionedDocumentV2 as VersionedDocument
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import data_get
+from chk.infrastructure.symbol_table import Variables
 from chk.modules.workflow.entities import ChkwareTask, ChkwareValidateTask
 
 VERSION_SCOPE = ["workflow"]
@@ -66,3 +67,9 @@ class WorkflowDocument(VersionedDocument):
 
 class WorkflowDocumentSupport:
     """Workflow document support"""
+
+    @classmethod
+    def process_task_template(
+        cls, document: WorkflowDocument, variables: Variables
+    ) -> None:
+        ...
