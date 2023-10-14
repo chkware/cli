@@ -5,16 +5,12 @@ import pathlib
 
 from pydantic import BaseModel, Field
 
+from chk.infrastructure.document import VersionedDocumentV2 as VersionedDocument
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import data_get
 from chk.modules.workflow.entities import ChkwareTask, ChkwareValidateTask
 
 VERSION_SCOPE = ["workflow"]
-
-
-class VersionedDocument(BaseModel):
-    context: tuple = Field(default_factory=tuple)
-    version: str = Field(default_factory=str)
 
 
 class ParsedTask(BaseModel):
