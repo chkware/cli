@@ -6,6 +6,16 @@ import typing
 from pydantic import BaseModel, Field, ConfigDict
 
 
+class ParsedTask(BaseModel):
+    """Parsed tasks"""
+
+    name: str
+    uses: str
+    file: str
+    variables: dict = Field(default_factory=dict)
+    arguments: dict = Field(default=None)
+
+
 class ChkwareTask(BaseModel):
     """Chkware task"""
 

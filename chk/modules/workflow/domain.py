@@ -14,16 +14,6 @@ from chk.modules.workflow.entities import ChkwareTask, ChkwareValidateTask
 VERSION_SCOPE = ["workflow"]
 
 
-class ParsedTask(BaseModel):
-    """Parsed tasks"""
-
-    name: str
-    uses: str
-    file: str
-    variables: dict = Field(default_factory=dict)
-    arguments: dict = Field(default=None)
-
-
 class WorkflowDocument(VersionedDocument):
     """WorkflowDocument"""
 
