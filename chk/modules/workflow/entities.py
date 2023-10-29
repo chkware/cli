@@ -36,6 +36,14 @@ class ChkwareTask(BaseModel):
 
         return ChkwareTask(**data)
 
+    @staticmethod
+    def from_parsed_task(task: ParsedTask) -> ChkwareTask:
+        """Create new instance from ParsedTask"""
+
+        return ChkwareTask(
+            name=task.name, uses=task.uses, file=task.file, variables=task.variables
+        )
+
 
 class ChkwareValidateTask(ChkwareTask):
     """Chkware validation task"""
@@ -59,3 +67,9 @@ class ChkwareValidateTask(ChkwareTask):
             raise AttributeError("ChkwareValidateTask:from_dict Empty data given")
 
         return ChkwareValidateTask(**data)
+
+    @staticmethod
+    def from_parsed_task(task: ParsedTask) -> ChkwareValidateTask:
+        """Create new instance from ParsedTask"""
+
+        return ChkwareValidateTask.from_dict(task.model_dump())

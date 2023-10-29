@@ -11,7 +11,9 @@ from chk.modules.workflow.entities import ChkwareTask, ChkwareValidateTask
 class TestChkwareTask:
     @staticmethod
     def test_from_dict_pass():
-        task = ChkwareTask.from_dict({"uses": "fetch", "file": "file.chk"})
+        task = ChkwareTask.from_dict(
+            {"name": "Sample fetch", "uses": "fetch", "file": "file.chk"}
+        )
 
         assert task.uses == "fetch"
         assert task.file == "file.chk"
@@ -21,7 +23,11 @@ class TestChkwareValidateTask:
     @staticmethod
     def test_from_dict_pass():
         task = ChkwareValidateTask.from_dict(
-            {"uses": "validate", "file": "validate-file-1.chk"}
+            {
+                "name": "Sample validate",
+                "uses": "validate",
+                "file": "validate-file-1.chk",
+            }
         )
 
         assert task.uses == "validate"
@@ -30,6 +36,7 @@ class TestChkwareValidateTask:
 
         task = ChkwareValidateTask.from_dict(
             {
+                "name": "Sample validate - 2",
                 "uses": "validate",
                 "file": "validate-file.chk",
                 "arguments": {"data": {"some": 12, "data": [1, "a"]}},
@@ -43,6 +50,7 @@ class TestChkwareValidateTask:
         with pytest.raises(ValidationError):
             ChkwareValidateTask.from_dict(
                 {
+                    "name": "Sample validate - 3",
                     "uses": "validate",
                     "file": "validate-file.chk",
                     "arguments": {
@@ -55,6 +63,7 @@ class TestChkwareValidateTask:
         with pytest.raises(ValidationError):
             ChkwareValidateTask.from_dict(
                 {
+                    "name": "Sample validate - 4",
                     "uses": "validate",
                     "file": "validate-file.chk",
                     "other_data": 1,
