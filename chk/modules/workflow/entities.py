@@ -1,6 +1,7 @@
 """
 Entities for workflow
 """
+from __future__ import annotations
 import typing
 
 from pydantic import BaseModel, Field, ConfigDict
@@ -26,7 +27,7 @@ class ChkwareTask(BaseModel):
     variables: dict = Field(default_factory=dict)
 
     @staticmethod
-    def from_dict(data: dict) -> "ChkwareTask":
+    def from_dict(data: dict) -> ChkwareTask:
         """constractor"""
 
         if not data:
@@ -50,7 +51,7 @@ class ChkwareValidateTask(ChkwareTask):
     arguments: typing.Optional[ChkwareTaskDataArgument] = Field(default=None)
 
     @staticmethod
-    def from_dict(data: dict) -> "ChkwareValidateTask":
+    def from_dict(data: dict) -> ChkwareValidateTask:
         """constractor"""
 
         if not data:

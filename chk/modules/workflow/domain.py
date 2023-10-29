@@ -1,6 +1,7 @@
 """
 Domain logics for workflow module
 """
+from __future__ import annotations
 import pathlib
 
 from pydantic import BaseModel, Field
@@ -21,7 +22,7 @@ class WorkflowDocument(VersionedDocument):
     tasks: list[ChkwareTask | ChkwareValidateTask]
 
     @staticmethod
-    def from_file_context(ctx: FileContext) -> "WorkflowDocument":
+    def from_file_context(ctx: FileContext) -> WorkflowDocument:
         """Create a WorkflowDocument from FileContext"""
 
         if not (version_str := data_get(ctx.document, "version")):
