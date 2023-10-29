@@ -4,13 +4,13 @@ Domain logics for workflow module
 from __future__ import annotations
 import pathlib
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from chk.infrastructure.document import VersionedDocumentV2 as VersionedDocument
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.helper import data_get
 from chk.infrastructure.symbol_table import Variables
-from chk.modules.workflow.entities import ChkwareTask, ChkwareValidateTask
+from chk.modules.workflow.entities import ChkwareTask, ChkwareValidateTask, ParsedTask
 
 VERSION_SCOPE = ["workflow"]
 
@@ -45,11 +45,9 @@ class WorkflowDocument(VersionedDocument):
 
             match parsed_task.uses:
                 case "fetch":
-                    tasks.append(ChkwareTask.from_dict(parsed_task.model_dump()))
+                    tasks.append(ChkwareTask.from_parsed_task(parsed_task))
                 case "validate":
-                    tasks.append(
-                        ChkwareValidateTask.from_dict(parsed_task.model_dump())
-                    )
+                    tasks.append(ChkwareValidateTask.from_parsed_task(parsed_task))
 
         return WorkflowDocument(
             context=tuple(ctx), version=version_str, id=id_str, tasks=tasks
