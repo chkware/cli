@@ -22,6 +22,7 @@ class ChkwareTask(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
+    name: str
     uses: str
     file: str
     variables: dict = Field(default_factory=dict)
