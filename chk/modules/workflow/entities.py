@@ -1,14 +1,15 @@
 """
 Entities for workflow
 """
-import enum
 import typing
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class ChkwareTask(BaseModel):
     """Chkware task"""
+
+    model_config = ConfigDict(extra="forbid")
 
     uses: str
     file: str
@@ -30,7 +31,11 @@ class ChkwareValidateTask(ChkwareTask):
     class ChkwareTaskDataArgument(BaseModel):
         """Chkware task data argument"""
 
+        model_config = ConfigDict(extra="forbid")
+
         data: dict
+
+    model_config = ConfigDict(extra="forbid")
 
     arguments: typing.Optional[ChkwareTaskDataArgument] = Field(default=None)
 
