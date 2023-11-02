@@ -5,6 +5,8 @@ import enum
 from collections import UserDict
 from collections.abc import Callable
 
+from pydantic import BaseModel, ConfigDict
+
 from chk.infrastructure.document import VersionedDocument, VersionedDocumentV2
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
 from chk.infrastructure.helper import data_get
@@ -57,6 +59,17 @@ class Variables(UserDict):
 
 class ExposableVariables(UserDict):
     """Holds data for a expose data"""
+
+
+class ExecResponse(BaseModel):
+    """ExecResponse"""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    file_ctx: FileContext
+    exec_ctx: ExecuteContext
+    variables_exec: ExposableVariables
+    variables: Variables
 
 
 def replace_value(doc: dict | list, var_s: dict) -> dict | list:
