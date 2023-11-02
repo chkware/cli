@@ -25,6 +25,7 @@ from chk.infrastructure.symbol_table import (
     EXPOSE_SCHEMA as EXP_SCHEMA,
     ExposeManager,
     ExposableVariables,
+    ExecResponse,
 )
 
 from chk.infrastructure.third_party.http_fetcher import (
@@ -508,18 +509,10 @@ class HttpDocumentSupport:
             formatter(_to_display, dump=exec_ctx.options["dump"])
 
 
-def execute(
-    ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...
-) -> None:
-    """Run a http document
+def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
+    """Call a http document"""
 
-    Args:
-        ctx: FileContext object to handle
-        exec_ctx: ExecuteContext
-        cb: Callable
-    """
-
-    http_doc = HttpDocument.from_file_context(ctx)
+    http_doc = HttpDocument.from_file_context(file_ctx)
 
     DocumentVersionMaker.verify_if_allowed(
         DocumentVersionMaker.from_dict(http_doc.as_dict), VERSION_SCOPE
@@ -536,9 +529,32 @@ def execute(
     response = HttpDocumentSupport.execute_request(http_doc)
     output_data = ExposableVariables({"_response": response.data})
 
-    exposed_data = ExposeManager.get_exposed_replaced_data(
-        http_doc, {**variable_doc.data, **output_data.data}
+    return ExecResponse(
+        file_ctx=file_ctx,
+        exec_ctx=exec_ctx,
+        variables_exec=output_data,
+        variables=variable_doc,
     )
 
-    cb({ctx.filepath_hash: output_data.data})
+
+def execute(
+    ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...
+) -> None:
+    """Call with a http document
+
+    Args:
+        ctx: FileContext object to handle
+        exec_ctx: ExecuteContext
+        cb: Callable
+    """
+
+    exec_response = call(file_ctx=ctx, exec_ctx=exec_ctx)
+
+    http_doc = HttpDocument.from_file_context(exec_response.file_ctx)
+    exposed_data = ExposeManager.get_exposed_replaced_data(
+        http_doc,
+        {**exec_response.variables.data, **exec_response.variables_exec.data},
+    )
+
+    cb({ctx.filepath_hash: exec_response.variables_exec.data})
     HttpDocumentSupport.display(exposed_data, exec_ctx)
