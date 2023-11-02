@@ -2,6 +2,7 @@
 Symbol and variable management
 """
 import enum
+import typing
 from collections import UserDict
 from collections.abc import Callable
 
@@ -70,6 +71,16 @@ class ExecResponse(BaseModel):
     exec_ctx: ExecuteContext
     variables_exec: ExposableVariables
     variables: Variables
+
+
+@typing.overload
+def replace_value(doc: dict, var_s: dict) -> dict:
+    ...
+
+
+@typing.overload
+def replace_value(doc: list, var_s: dict) -> list:
+    ...
 
 
 def replace_value(doc: dict | list, var_s: dict) -> dict | list:
