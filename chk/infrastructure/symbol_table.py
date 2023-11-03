@@ -2,10 +2,12 @@
 Symbol and variable management
 """
 import enum
+import os
 import typing
 from collections import UserDict
 from collections.abc import Callable
 
+from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict
 
 from chk.infrastructure.document import VersionedDocument, VersionedDocumentV2
@@ -105,6 +107,7 @@ class VariableTableManager:
 
     @classmethod
     def handle(
+        cls,
         variable_doc: Variables,
         document: VersionedDocument | VersionedDocumentV2,
         exec_ctx: ExecuteContext,
@@ -116,8 +119,10 @@ class VariableTableManager:
             document: VersionedDocument of document data
             exec_ctx: ExecuteContext; passed ExecuteContext
         """
+        # load environment variables
+        cls.handle_environment(variable_doc)
 
-        # make file contexts out od tuple
+        # make file contexts out of tuple
         file_ctx = FileContext(*document.context)
 
         if variables := data_get(file_ctx.document, VariableConfigNode.VARIABLES):
@@ -185,6 +190,17 @@ class VariableTableManager:
 
         for key, val in ext_vars.items():
             variable_doc[key] = val
+
+    @classmethod
+    def handle_environment(cls, variable_doc: Variables) -> None:
+        """Handle variables passed from external context
+
+        Args:
+            variable_doc: Variables; Variable store
+            exec_ctx: ExecuteContext; passed external context
+        """
+        load_dotenv()
+        variable_doc["_ENV"] = dict(os.environ)
 
 
 class ExposeManager:
