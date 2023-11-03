@@ -29,6 +29,7 @@ class WorkflowDocument(VersionedDocument):
 
     model_config = ConfigDict(extra="forbid")
 
+    name: str = Field(default_factory=str)
     id: str = Field(default_factory=str)
     tasks: list[ChkwareTask | ChkwareValidateTask]
 
@@ -36,11 +37,26 @@ class WorkflowDocument(VersionedDocument):
     def from_file_context(ctx: FileContext) -> WorkflowDocument:
         """Create a WorkflowDocument from FileContext"""
 
+        # version
         if not (version_str := data_get(ctx.document, "version")):
             raise RuntimeError("`version:` not found.")
 
-        id_str = data_get(ctx.document, "id", pathlib.Path(ctx.filepath).stem)
+        # id, name
+        if name_str := data_get(ctx.document, "name"):
+            name_str = str(name_str).strip()
 
+        if id_str := data_get(ctx.document, "id"):
+            id_str = slugify(str(id_str).strip())
+        else:
+            id_str = (
+                slugify(name_str)
+                if name_str and len(name_str) > 0
+                else pathlib.Path(ctx.filepath).stem,
+            )
+        if not name_str:
+            name_str = id_str
+
+        # tasks
         if not (tasks_lst := data_get(ctx.document, "tasks")):
             raise RuntimeError("`tasks:` not found.")
 
@@ -61,7 +77,11 @@ class WorkflowDocument(VersionedDocument):
                     tasks.append(ChkwareValidateTask.from_parsed_task(parsed_task))
 
         return WorkflowDocument(
-            context=tuple(ctx), version=version_str, id=id_str, tasks=tasks
+            context=tuple(ctx),
+            version=version_str,
+            name=name_str,
+            id=id_str,
+            tasks=tasks,
         )
 
 def execute(
