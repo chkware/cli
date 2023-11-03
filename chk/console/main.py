@@ -1,10 +1,8 @@
 """Commands"""
 
 import typing
-from os import environ
 
 import click
-from dotenv import load_dotenv
 
 import chk.modules.fetch as fetch_executor
 import chk.modules.validate as validate_executor
@@ -30,9 +28,7 @@ def combine_initial_variables(external_vars: str, **kwargs: typing.Any) -> dict:
     """Reads a json string and converts to dict, and combines with env and dotenv
     variables"""
 
-    load_dotenv()
-
-    return load_variables_as_dict(external_vars, **kwargs) | {"_ENV": dict(environ)}
+    return load_variables_as_dict(external_vars, **kwargs)
 
 
 def after_hook(resp: object) -> None:
