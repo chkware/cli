@@ -1,5 +1,7 @@
 version: default:workflow:0.8.0
-id: simpleBtcWf
+
+name: simple Btc workflow
+id: simple Btc workflow 1
 
 tasks:
   - name: Fetch some content from URL
