@@ -2,9 +2,18 @@
 Entities for workflow
 """
 from __future__ import annotations
+
+import enum
 import typing
 
 from pydantic import BaseModel, Field, ConfigDict
+
+
+class WorkflowUses(enum.StrEnum):
+    """Types of Workflow Uses"""
+
+    fetch = enum.auto()
+    validate = enum.auto()
 
 
 class ParsedTask(BaseModel):
