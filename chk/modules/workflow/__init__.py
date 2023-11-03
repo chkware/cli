@@ -10,14 +10,15 @@ from pydantic import Field, ConfigDict
 from icecream import ic
 
 from chk.infrastructure.document import VersionedDocumentV2 as VersionedDocument
+from chk.modules import validate, fetch
 from chk.modules.workflow.entities import (
     ChkwareTask,
     ChkwareValidateTask,
     ParsedTask,
     WorkflowUses,
 )
-from chk.infrastructure.file_loader import FileContext, ExecuteContext
-from chk.infrastructure.helper import data_get
+from chk.infrastructure.file_loader import FileContext, ExecuteContext, PathFrom
+from chk.infrastructure.helper import data_get, formatter, slugify
 from chk.infrastructure.symbol_table import Variables, VariableTableManager
 
 
@@ -83,6 +84,56 @@ class WorkflowDocument(VersionedDocument):
             id=id_str,
             tasks=tasks,
         )
+
+
+class WorkflowDocumentSupport:
+    """Workflow document support"""
+
+    @classmethod
+    def process_task_template(
+        cls, document: WorkflowDocument, variables: Variables
+    ) -> None:
+        ic(document)
+        formatter(f"\n\nExecuting: {document.name}")
+
+        # fixme: for lenth of above string, repeat
+        formatter("-" * 10)
+
+        for task in document.tasks:
+            fcx = FileContext(*document.context)
+            file_path = PathFrom(pathlib.Path(fcx.filepath))
+            file_ctx: FileContext = FileContext.from_file(file_path.absolute(task.file))
+
+            del fcx, file_path
+
+            execution_ctx = ExecuteContext(
+                {"dump": True, "format": True},
+                # {
+                #     "variables": combine_initial_variables(
+                #         variables,
+                #         except_msg="-V, --variables accept values as JSON object",
+                #     ),
+                #     "data": load_variables_as_dict(
+                #         data,
+                #         except_msg="-D, --data accept values as JSON object",
+                #     ),
+                # },
+            )
+
+            match task.uses:
+                case WorkflowUses.fetch.value:
+                    formatter(f"\nTask: {task.name}")
+                    exec_resp = fetch.call(file_ctx, execution_ctx)
+
+                    __method = data_get(exec_resp.file_ctx.document, "request.method")
+                    __url = data_get(exec_resp.file_ctx.document, "request.url")
+
+                    formatter(f"\n{__method} {__url}")
+
+                case WorkflowUses.validate.value:
+                    print(WorkflowUses.validate.value)
+                    # validate.execute(file_ctx, execution_ctx)
+
 
 def execute(
     ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...
