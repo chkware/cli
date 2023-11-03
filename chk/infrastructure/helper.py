@@ -2,6 +2,7 @@
 Helper functions module
 """
 import ast
+import re
 from collections.abc import Callable
 from typing import Any
 
@@ -175,3 +176,16 @@ def formatter(message: object, cb: Callable = str, dump: bool = True) -> str:
         click.echo(printable)
 
     return printable
+
+
+def slugify(string: str) -> str:
+    """Make slug out of string"""
+
+    if not isinstance(string, str):
+        raise TypeError("slugify: only string value supported.")
+
+    string = string.lower().strip()
+    string = re.sub(r"[^\w\s-]", "", string)
+    string = re.sub(r"[\s_-]+", "-", string)
+    string = re.sub(r"^-+|-+$", "", string)
+    return string
