@@ -103,7 +103,7 @@ def replace_value(doc: dict | list, var_s: dict) -> dict | list:
 class VariableTableManager:
     """VariableTableManager"""
 
-    @staticmethod
+    @classmethod
     def handle(
         variable_doc: Variables,
         document: VersionedDocument | VersionedDocumentV2,
@@ -121,15 +121,15 @@ class VariableTableManager:
         file_ctx = FileContext(*document.context)
 
         if variables := data_get(file_ctx.document, VariableConfigNode.VARIABLES):
-            VariableTableManager.handle_absolute(variable_doc, variables)
+            cls.handle_absolute(variable_doc, variables)
 
-        VariableTableManager.handle_execute_context(variable_doc, exec_ctx)
+        cls.handle_execute_context(variable_doc, exec_ctx)
 
         if variables:
-            VariableTableManager.handle_composite(variable_doc, variables)
+            cls.handle_composite(variable_doc, variables)
 
-    @staticmethod
-    def handle_absolute(variable_doc: Variables, document: dict) -> None:
+    @classmethod
+    def handle_absolute(cls, variable_doc: Variables, document: dict) -> None:
         """Handles absolute variables and values from document
 
         Args:
@@ -143,8 +143,9 @@ class VariableTableManager:
 
             variable_doc[key] = val
 
-    @staticmethod
+    @classmethod
     def handle_composite(
+        cls,
         variable_doc: Variables,
         document: dict,
         replace_callback: Callable = replace_value,
@@ -169,9 +170,9 @@ class VariableTableManager:
             for key, val in replaced_values.items():
                 variable_doc[key] = val
 
-    @staticmethod
+    @classmethod
     def handle_execute_context(
-        variable_doc: Variables, exec_ctx: ExecuteContext
+        cls, variable_doc: Variables, exec_ctx: ExecuteContext
     ) -> None:
         """Handle variables passed from external context
 
