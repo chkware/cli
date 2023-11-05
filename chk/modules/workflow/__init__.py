@@ -94,11 +94,8 @@ class WorkflowDocumentSupport:
     def process_task_template(
         cls, document: WorkflowDocument, variables: Variables
     ) -> None:
-        ic(document)
         formatter(f"\n\nExecuting: {document.name}")
-
-        # fixme: for lenth of above string, repeat
-        formatter("-" * 10)
+        formatter("-" * len(f"Executing: {document.name}"))
 
         for task in document.tasks:
             fcx = FileContext(*document.context)
@@ -120,20 +117,28 @@ class WorkflowDocumentSupport:
                 #     ),
                 # },
             )
+            formatter(f"\nTask: {task.name}")
 
             match task.uses:
                 case WorkflowUses.fetch.value:
-                    formatter(f"\nTask: {task.name}")
                     exec_resp = fetch.call(file_ctx, execution_ctx)
 
                     __method = data_get(exec_resp.file_ctx.document, "request.method")
                     __url = data_get(exec_resp.file_ctx.document, "request.url")
 
-                    formatter(f"\n{__method} {__url}")
+                    formatter(f"-> {__method} {__url}")
 
                 case WorkflowUses.validate.value:
-                    print(WorkflowUses.validate.value)
-                    # validate.execute(file_ctx, execution_ctx)
+                    exec_resp = validate.call(file_ctx, execution_ctx)
+
+                    __count_all = data_get(
+                        exec_resp.variables_exec.data, "_asserts_response.count_all"
+                    )
+                    __count_fail = data_get(
+                        exec_resp.variables_exec.data, "_asserts_response.count_fail"
+                    )
+
+                    formatter(f"-> Total tests: {__count_all}, Failed: {__count_fail}")
 
 
 def execute(
