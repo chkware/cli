@@ -197,7 +197,6 @@ class VariableTableManager:
 
         Args:
             variable_doc: Variables; Variable store
-            exec_ctx: ExecuteContext; passed external context
         """
         load_dotenv()
         variable_doc["_ENV"] = dict(os.environ)
