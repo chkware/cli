@@ -1,6 +1,7 @@
 """
 Fetch module
 """
+from __future__ import annotations
 import dataclasses
 import enum
 import json
@@ -318,7 +319,7 @@ class HttpDocument(VersionedDocument):
     request: dict = dataclasses.field(default_factory=dict)
 
     @staticmethod
-    def from_file_context(ctx: FileContext) -> "HttpDocument":
+    def from_file_context(ctx: FileContext) -> HttpDocument:
         """Create a HttpDocument from FileContext
         :param ctx: FileContext to create the HttpDocument from
         """
@@ -349,7 +350,7 @@ class ApiResponseDict(UserDict):
     body_as_dict: dict
 
     @staticmethod
-    def from_api_response(resp: ApiResponse) -> "ApiResponseDict":
+    def from_api_response(resp: ApiResponse) -> ApiResponseDict:
         """Create JsonApiResponse from ApiResponse
 
         Args:
