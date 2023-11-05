@@ -17,7 +17,7 @@ class TestWorkflowDocument:
         file_ctx = load_file_ctx_for_file(filepath)
 
         wfdoc = WorkflowDocument.from_file_context(file_ctx)
-        assert wfdoc.id == "simpleBtcWf"
+        assert wfdoc.id == "simple-btc-workflow-1"
 
         assert isinstance(wfdoc.tasks, list)
         assert all(isinstance(i, ChkwareTask) for i in wfdoc.tasks)
@@ -28,9 +28,10 @@ class TestWorkflowDocument:
         file_ctx = load_file_ctx_for_file(filepath)
 
         del file_ctx.document["id"]  # remove document id
-
         wfdoc = WorkflowDocument.from_file_context(file_ctx)
-        assert wfdoc.id == "simple-btc-wf"  # check if document id defaults to file name
+
+        # check if document id defaults to file name
+        assert wfdoc.id == "simple-btc-workflow"
 
         assert isinstance(wfdoc.tasks, list)
         assert all(isinstance(i, ChkwareTask) for i in wfdoc.tasks)
