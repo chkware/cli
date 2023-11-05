@@ -1,11 +1,10 @@
 """
 Validate module
 """
-
+from __future__ import annotations
 import dataclasses
 import enum
 import json
-import operator
 from collections import abc
 
 import cerberus
@@ -75,7 +74,7 @@ class ValidationDocument(VersionedDocument):
     asserts: list = dataclasses.field(default_factory=list)
 
     @staticmethod
-    def from_file_context(ctx: FileContext) -> "ValidationDocument":
+    def from_file_context(ctx: FileContext) -> ValidationDocument:
         """Create a ValidationDocument from FileContext
         :param ctx: FileContext to create the ValidationDocument from
         """
