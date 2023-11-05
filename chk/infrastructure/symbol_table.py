@@ -8,7 +8,7 @@ from collections import UserDict
 from collections.abc import Callable
 
 from dotenv import load_dotenv
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from chk.infrastructure.document import VersionedDocument, VersionedDocumentV2
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
@@ -73,6 +73,7 @@ class ExecResponse(BaseModel):
     exec_ctx: ExecuteContext
     variables_exec: ExposableVariables
     variables: Variables
+    extra: object = Field(default=None)
 
 
 @typing.overload
