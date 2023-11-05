@@ -52,8 +52,9 @@ class WorkflowDocument(VersionedDocument):
             id_str = (
                 slugify(name_str)
                 if name_str and len(name_str) > 0
-                else pathlib.Path(ctx.filepath).stem,
+                else pathlib.Path(ctx.filepath).stem
             )
+
         if not name_str:
             name_str = id_str
 
