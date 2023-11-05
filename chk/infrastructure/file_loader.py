@@ -1,6 +1,7 @@
 """
 File loader utility
 """
+from __future__ import annotations
 import hashlib
 from typing import NamedTuple
 from pathlib import Path
@@ -81,7 +82,7 @@ class FileContext(NamedTuple):
     filepath_hash: str = ""
 
     @staticmethod
-    def from_file(file: str, **kwarg: dict) -> "FileContext":
+    def from_file(file: str, **kwarg: dict) -> FileContext:
         FileLoader.is_file_ok(file)
         absolute_path = str(Path(file).absolute())
         fpath_hash = hashlib.sha256(absolute_path.encode("utf-8")).hexdigest()
