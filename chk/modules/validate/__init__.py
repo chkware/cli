@@ -1,11 +1,10 @@
 """
 Validate module
 """
-
+from __future__ import annotations
 import dataclasses
 import enum
 import json
-import operator
 from collections import abc
 
 import cerberus
@@ -23,6 +22,7 @@ from chk.infrastructure.symbol_table import (
     replace_value,
     ExposeManager,
     ExposableVariables,
+    ExecResponse,
 )
 from chk.modules.validate.assertion_services import (
     AssertionEntry,
@@ -75,7 +75,7 @@ class ValidationDocument(VersionedDocument):
     asserts: list = dataclasses.field(default_factory=list)
 
     @staticmethod
-    def from_file_context(ctx: FileContext) -> "ValidationDocument":
+    def from_file_context(ctx: FileContext) -> ValidationDocument:
         """Create a ValidationDocument from FileContext
         :param ctx: FileContext to create the ValidationDocument from
         """
@@ -235,18 +235,10 @@ class ValidationDocumentSupport:
             )
 
 
-def execute(
-    ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...
-) -> None:
-    """Run a validation document
+def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
+    """Call a validation document"""
 
-    Args:
-        ctx: FileContext object to handle
-        exec_ctx: ExecuteContext
-        cb: Callable
-    """
-
-    validate_doc = ValidationDocument.from_file_context(ctx)
+    validate_doc = ValidationDocument.from_file_context(file_ctx)
 
     DocumentVersionMaker.verify_if_allowed(
         DocumentVersionMaker.from_dict(validate_doc.as_dict), VERSION_SCOPE
@@ -268,20 +260,43 @@ def execute(
     )
 
     test_run_result = AssertionEntryListRunner.test_run(assert_list, variable_doc.data)
-
-    exposed_data = ExposeManager.get_exposed_replaced_data(
-        validate_doc,
-        {**variable_doc.data, **{"_asserts_response": test_run_result}},
-    )
-    ValidationDocumentSupport.display(exposed_data, exec_ctx)
-
-    cb(
+    output_data = ExposableVariables(
         {
-            ctx.filepath_hash: ExposableVariables(
-                {
-                    "_asserts_response": test_run_result.as_dict,
-                    "_data": variable_doc["_data"],
-                }
-            ).data
+            "_asserts_response": test_run_result.as_dict,
+            "_data": variable_doc["_data"],
         }
     )
+
+    return ExecResponse(
+        file_ctx=file_ctx,
+        exec_ctx=exec_ctx,
+        variables_exec=output_data,
+        variables=variable_doc,
+        extra=test_run_result,
+    )
+
+
+def execute(
+    ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...
+) -> None:
+    """Run a validation document
+
+    Args:
+        ctx: FileContext object to handle
+        exec_ctx: ExecuteContext
+        cb: Callable
+    """
+
+    exec_response = call(file_ctx=ctx, exec_ctx=exec_ctx)
+
+    validate_doc = ValidationDocument.from_file_context(ctx)
+    exposed_data = ExposeManager.get_exposed_replaced_data(
+        validate_doc,
+        {
+            **exec_response.variables.data,
+            **{"_asserts_response": exec_response.extra},
+        },
+    )
+
+    cb({ctx.filepath_hash: exec_response.variables_exec.data})
+    ValidationDocumentSupport.display(exposed_data, exec_ctx)
