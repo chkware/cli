@@ -187,5 +187,5 @@ def slugify(string: str) -> str:
     string = string.lower().strip()
     string = re.sub(r"[^\w\s-]", "", string)
     string = re.sub(r"[\s_-]+", "-", string)
-    string = re.sub(r"^-+|-+$", "", string)
+    string = re.sub(r"-{2,}", "", string)
     return string
