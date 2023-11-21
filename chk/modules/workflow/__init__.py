@@ -106,16 +106,15 @@ class WorkflowDocumentSupport:
 
             execution_ctx = ExecuteContext(
                 {"dump": True, "format": True},
-                # {
-                #     "variables": combine_initial_variables(
-                #         variables,
-                #         except_msg="-V, --variables accept values as JSON object",
-                #     ),
-                #     "data": load_variables_as_dict(
-                #         data,
-                #         except_msg="-D, --data accept values as JSON object",
-                #     ),
-                # },
+                {
+                    # "variables": combine_initial_variables(
+                    #     variables,
+                    #     except_msg="-V, --variables accept values as JSON object",
+                    # ),
+                    "data": task.arguments.data
+                    if isinstance(task, ChkwareValidateTask) and task.arguments
+                    else {},
+                },
             )
             formatter(f"\nTask: {task.name}")
 
