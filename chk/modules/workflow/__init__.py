@@ -91,6 +91,15 @@ class WorkflowDocumentSupport:
     """Workflow document support"""
 
     @classmethod
+    def _prepare_validate_task_argument_data_(cls, task: ChkwareTask) -> dict:
+        """Prepare data for ChkwareValidateTask.arguments.data"""
+
+        if isinstance(task, ChkwareValidateTask) and task.arguments:
+            return task.arguments.data
+
+        return {}
+
+    @classmethod
     def process_task_template(
         cls, document: WorkflowDocument, variables: Variables
     ) -> None:
@@ -111,9 +120,6 @@ class WorkflowDocumentSupport:
                     #     variables,
                     #     except_msg="-V, --variables accept values as JSON object",
                     # ),
-                    "data": task.arguments.data
-                    if isinstance(task, ChkwareValidateTask) and task.arguments
-                    else {},
                 },
             )
             formatter(f"\nTask: {task.name}")
@@ -128,6 +134,10 @@ class WorkflowDocumentSupport:
                     formatter(f"-> {__method} {__url}")
 
                 case WorkflowUses.validate.value:
+                    execution_ctx.arguments[
+                        "data"
+                    ] = cls._prepare_validate_task_argument_data_(task)
+
                     exec_resp = validate.call(file_ctx, execution_ctx)
 
                     __count_all = data_get(
