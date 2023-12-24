@@ -53,8 +53,9 @@ def test_data_set_fail_when_keymap_deep_dict_but_var_is_list():
     keymap = "a.aa.aaa"
 
     with pytest.raises(Exception):
-        assert data_set(dct, keymap, to_set)
-        assert dct["a"]["aa"]["aaa"] == to_set
+        data_set(dct, keymap, to_set)
+
+    assert isinstance(dct, list)
 
 
 def test_data_set_pass_when_keymap_deep_dict_or_list_mixed():
