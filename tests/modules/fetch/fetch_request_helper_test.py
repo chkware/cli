@@ -24,10 +24,7 @@ class TestHttpRequestArgCompiler:
         }
         request_arg = {}
         with pytest.raises(KeyError):
-            assert (
-                HttpRequestArgCompiler.add_url_and_method(request_data, request_arg)
-                is False
-            )
+            HttpRequestArgCompiler.add_url_and_method(request_data, request_arg)
 
     def test_add_method_invalid(self):
         """Tests add_url_and_method with valid url invalid method."""
@@ -41,20 +38,14 @@ class TestHttpRequestArgCompiler:
         request_data = {"url": "ws://httpbin.org/post", "method": "POST"}
         request_arg = {}
         with pytest.raises(ValueError):
-            assert (
-                HttpRequestArgCompiler.add_url_and_method(request_data, request_arg)
-                is False
-            )
+            HttpRequestArgCompiler.add_url_and_method(request_data, request_arg)
 
     def test_add_url_empty(self):
         """Tests add_url_and_method with empty url."""
         request_data = {"url": "", "method": "POST"}
         request_arg = {}
         with pytest.raises(ValueError):
-            assert (
-                HttpRequestArgCompiler.add_url_and_method(request_data, request_arg)
-                is False
-            )
+            HttpRequestArgCompiler.add_url_and_method(request_data, request_arg)
 
     def test_add_query_string_valid(self):
         """Tests _add_query_string with valid param."""
