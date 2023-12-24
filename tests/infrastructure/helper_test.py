@@ -55,6 +55,8 @@ def test_data_set_fail_when_keymap_deep_dict_but_var_is_list():
     with pytest.raises(Exception):
         data_set(dct, keymap, to_set)
 
+    assert isinstance(dct, list)
+
 
 def test_data_set_pass_when_keymap_deep_dict_or_list_mixed():
     dct = {}
@@ -89,7 +91,7 @@ def test_data_set_fail_when_incompatible_type_found():
     keymap = "a.0.aa"
 
     with pytest.raises(Exception):
-        data_set(dct, keymap, to_set)
+        assert data_set(dct, keymap, to_set)
 
 
 def test_data_set_pass_when_key_found():
