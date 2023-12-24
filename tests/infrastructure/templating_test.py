@@ -38,7 +38,7 @@ class TestStrTemplate:
         tpl = StrTemplate("Hello <% name")
 
         with pytest.raises(ValueError):
-            assert tpl.substitute("name")
+            tpl.substitute("name")
 
     @staticmethod
     def test_substitute_pass_with_scaler():
