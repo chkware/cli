@@ -96,6 +96,18 @@ class FileContext(NamedTuple):
             arguments=kwarg["arguments"] if "arguments" in kwarg else {},
         )
 
+    @property
+    def filepath_as_path(self) -> Path:
+        """Get filepath as Path"""
+
+        return Path(self.filepath)
+
+    @property
+    def filepath_base_as_path(self) -> Path:
+        """Get filepath parent or base as Path"""
+
+        return Path(self.filepath).absolute().parent
+
 
 class PathFrom:
     """Utility to expand to full path"""
