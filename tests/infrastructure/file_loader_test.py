@@ -125,7 +125,7 @@ class TestPathFrom:
     @staticmethod
     def test_absolute_pass():
         ctx = FileContext.from_file(tests.RES_DIR + "bitcoin-usd.chk")
-        p = PathFrom(Path(ctx.filepath))
+        p = PathFrom(ctx.filepath_base_as_path)
 
         path_1 = "tests/resources/storage/sample_config/bitcoin-usd-testcase-data.chk"
         path_2 = "tests/resources/storage/sample_config/some-folder/bitcoin-usd-testcase-data.chk"
@@ -145,6 +145,19 @@ class TestPathFrom:
         assert path_3 in p.absolute("../some-folder/../bitcoin-usd-testcase-data.chk")
         assert path_4 in p.absolute("../some-folder/./bitcoin-usd-testcase-data.chk")
         assert path_2 in p.absolute("./some-folder////bitcoin-usd-testcase-data.chk")
+
+    @staticmethod
+    def test_new_from_file():
+        p = PathFrom(Path(tests.RES_DIR + "bitcoin-usd.chk"))
+
+        assert str(p.base).endswith("/sample_config")
+        assert not str(p.base).endswith("bitcoin-usd.chk")
+
+    @staticmethod
+    def test_new_from_dir():
+        p = PathFrom(Path(tests.RES_DIR))
+
+        assert str(p.base).endswith("/sample_config")
 
 
 FILE_PATH = "tests/resources/storage/sample_config/"
