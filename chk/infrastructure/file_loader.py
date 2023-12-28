@@ -113,7 +113,7 @@ class PathFrom:
     """Utility to expand to full path"""
 
     def __init__(self, base: Path):
-        self.base = base.absolute().parent
+        self.base = base.absolute().parent if base.is_file() else base.absolute()
 
     def absolute(self, target: str) -> str:
         """Find absolute in comparison to base URL"""
