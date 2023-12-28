@@ -53,7 +53,7 @@ def after_hook(resp: object) -> None:
 
 
 # root command
-@click.group
+@click.group()
 @click.pass_context
 def chk(ctx: click.Context) -> None:
     """\b
