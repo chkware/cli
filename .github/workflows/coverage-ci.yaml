@@ -23,14 +23,10 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: |
-          pip install -r requirements-dev.txt
-          pip install -U pytest-cov coverage-lcov
+        run: pip install -r requirements-dev.txt && pip install -U pytest-cov coverage-lcov
 
       - name: Run tests
-        run: |
-          python -m pytest --cov=./chk --cov-report xml
-          coverage-lcov
+        run: python -m pytest --cov=./chk --cov-report xml && coverage-lcov
 
       - name: Coveralls github action
         uses: coverallsapp/github-action@v1
