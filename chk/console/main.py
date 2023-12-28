@@ -53,7 +53,7 @@ def after_hook(resp: object) -> None:
 
 
 # root command
-@click.group
+@click.group()
 @click.pass_context
 def chk(ctx: click.Context) -> None:
     """\b
@@ -74,7 +74,7 @@ def chk(ctx: click.Context) -> None:
 
 
 # run fetch sub-command
-@chk.command
+@chk.command()
 @click.argument("file", type=click.Path(exists=True))
 @click.option(
     "-nf", "--no-format", is_flag=True, help="No formatting to show the output"
@@ -107,7 +107,7 @@ def fetch(file: str, no_format: bool, variables: str) -> None:
 
 
 # run validate sub-command
-@chk.command
+@chk.command()
 @click.argument("file", type=click.Path(exists=True))
 @click.option(
     "-nf", "--no-format", is_flag=True, help="No formatting to show the output"

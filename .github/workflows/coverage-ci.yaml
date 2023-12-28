@@ -14,26 +14,22 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Python 3.11.0
-        uses: actions/setup-python@v4
+      - name: Set up Python 3.11.7
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11.0'
+          python-version: '3.11.7'
           cache: 'pip'
 
       - name: Install dependencies
-        run: |
-          pip install -r requirements-dev.txt
-          pip install -U pytest-cov coverage-lcov
+        run: pip install -r requirements-dev.txt && pip install -U pytest-cov coverage-lcov
 
       - name: Run tests
-        run: |
-          python -m pytest --cov=./chk --cov-report xml
-          coverage-lcov
+        run: python -m pytest --cov=./chk --cov-report xml && coverage-lcov
 
       - name: Coveralls github action
-        uses: coverallsapp/github-action@v1
+        uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: lcov.info
