@@ -34,7 +34,6 @@ class TestCombineInitialVariables:
         dct = combine_initial_variables(external_vars)
 
         assert isinstance(dct, dict)
-        assert "_ENV" in dct
 
     @staticmethod
     def test_fail_for_invalid_json():

@@ -2,10 +2,15 @@
 Symbol and variable management
 """
 import enum
+import os
+import typing
 from collections import UserDict
 from collections.abc import Callable
 
-from chk.infrastructure.document import VersionedDocument
+from dotenv import load_dotenv
+from pydantic import BaseModel, ConfigDict, Field
+
+from chk.infrastructure.document import VersionedDocument, VersionedDocumentV2
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
 from chk.infrastructure.helper import data_get
 from chk.infrastructure.templating import StrTemplate
@@ -59,6 +64,28 @@ class ExposableVariables(UserDict):
     """Holds data for a expose data"""
 
 
+class ExecResponse(BaseModel):
+    """ExecResponse"""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    file_ctx: FileContext
+    exec_ctx: ExecuteContext
+    variables_exec: ExposableVariables
+    variables: Variables
+    extra: object = Field(default=None)
+
+
+@typing.overload
+def replace_value(doc: dict, var_s: dict) -> dict:
+    ...
+
+
+@typing.overload
+def replace_value(doc: list, var_s: dict) -> list:
+    ...
+
+
 def replace_value(doc: dict | list, var_s: dict) -> dict | list:
     """
     replace variables with values
@@ -79,9 +106,12 @@ def replace_value(doc: dict | list, var_s: dict) -> dict | list:
 class VariableTableManager:
     """VariableTableManager"""
 
-    @staticmethod
+    @classmethod
     def handle(
-        variable_doc: Variables, document: VersionedDocument, exec_ctx: ExecuteContext
+        cls,
+        variable_doc: Variables,
+        document: VersionedDocument | VersionedDocumentV2,
+        exec_ctx: ExecuteContext,
     ) -> None:
         """Handles variable handling
 
@@ -90,20 +120,22 @@ class VariableTableManager:
             document: VersionedDocument of document data
             exec_ctx: ExecuteContext; passed ExecuteContext
         """
+        # load environment variables
+        cls.handle_environment(variable_doc)
 
-        # make file contexts out od tuple
+        # make file contexts out of tuple
         file_ctx = FileContext(*document.context)
 
         if variables := data_get(file_ctx.document, VariableConfigNode.VARIABLES):
-            VariableTableManager.handle_absolute(variable_doc, variables)
+            cls.handle_absolute(variable_doc, variables)
 
-        VariableTableManager.handle_execute_context(variable_doc, exec_ctx)
+        cls.handle_execute_context(variable_doc, exec_ctx)
 
         if variables:
-            VariableTableManager.handle_composite(variable_doc, variables)
+            cls.handle_composite(variable_doc, variables)
 
-    @staticmethod
-    def handle_absolute(variable_doc: Variables, document: dict) -> None:
+    @classmethod
+    def handle_absolute(cls, variable_doc: Variables, document: dict) -> None:
         """Handles absolute variables and values from document
 
         Args:
@@ -117,8 +149,9 @@ class VariableTableManager:
 
             variable_doc[key] = val
 
-    @staticmethod
+    @classmethod
     def handle_composite(
+        cls,
         variable_doc: Variables,
         document: dict,
         replace_callback: Callable = replace_value,
@@ -143,9 +176,9 @@ class VariableTableManager:
             for key, val in replaced_values.items():
                 variable_doc[key] = val
 
-    @staticmethod
+    @classmethod
     def handle_execute_context(
-        variable_doc: Variables, exec_ctx: ExecuteContext
+        cls, variable_doc: Variables, exec_ctx: ExecuteContext
     ) -> None:
         """Handle variables passed from external context
 
@@ -158,6 +191,16 @@ class VariableTableManager:
 
         for key, val in ext_vars.items():
             variable_doc[key] = val
+
+    @classmethod
+    def handle_environment(cls, variable_doc: Variables) -> None:
+        """Handle variables passed from external context
+
+        Args:
+            variable_doc: Variables; Variable store
+        """
+        load_dotenv()
+        variable_doc["_ENV"] = dict(os.environ)
 
 
 class ExposeManager:

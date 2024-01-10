@@ -4,6 +4,7 @@ Base document and utility
 import dataclasses
 
 import cerberus
+from pydantic import BaseModel, Field
 
 from chk.infrastructure.file_loader import FileContext
 
@@ -16,6 +17,15 @@ class VersionedDocument:
 
     context: tuple = dataclasses.field(default_factory=tuple)
     version: str = dataclasses.field(default_factory=str)
+
+
+class VersionedDocumentV2(BaseModel):
+    """
+    versioned document entity
+    """
+
+    context: tuple = Field(default_factory=tuple)
+    version: str = Field(default_factory=str)
 
 
 class VersionedDocumentSupport:
