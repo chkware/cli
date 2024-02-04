@@ -108,7 +108,7 @@ class WorkflowDocumentSupport:
 
         for task in document.tasks:
             fcx = FileContext(*document.context)
-            file_path = PathFrom(pathlib.Path(fcx.filepath))
+            file_path = PathFrom(fcx.filepath_as_path)
             file_ctx: FileContext = FileContext.from_file(file_path.absolute(task.file))
 
             del fcx, file_path
