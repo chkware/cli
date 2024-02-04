@@ -3,10 +3,13 @@ Entities for workflow
 """
 from __future__ import annotations
 
+import abc
 import enum
 import typing
 
 from pydantic import BaseModel, Field, ConfigDict
+
+from chk.infrastructure.symbol_table import ExecResponse
 
 
 class WorkflowUses(enum.StrEnum):
@@ -24,6 +27,18 @@ class ParsedTask(BaseModel):
     file: str
     variables: dict = Field(default_factory=dict)
     arguments: dict = Field(default=None)
+
+
+class RunnableTask(abc.ABC):
+    """RunnableTask"""
+
+    @abc.abstractmethod
+    def prepare(self) -> None:
+        """prepare the task to be processed"""
+
+    @abc.abstractmethod
+    def process(self) -> ExecResponse:
+        """process the task"""
 
 
 class ChkwareTask(BaseModel):
