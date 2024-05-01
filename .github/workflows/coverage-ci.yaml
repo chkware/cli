@@ -16,10 +16,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.11.7
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11.7'
+          python-version: '3.11'
           cache: 'pip'
 
       - name: Install dependencies
@@ -28,7 +28,7 @@ jobs:
       - name: Run tests
         run: python -m pytest --cov=./chk --cov-report xml && coverage-lcov
 
-      - name: Coveralls github action
+      - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
