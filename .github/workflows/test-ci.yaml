@@ -16,19 +16,18 @@ jobs:
           - ubuntu-20.04
           - windows-latest
           - windows-2019
-        py_ver: [3.11.0]
     
     runs-on: ${{ matrix.os }}
     if: ${{ ! github.event.pull_request.draft }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.py_ver }}
-        uses: actions/setup-python@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
         with:
-          python-version: '${{ matrix.py_ver }}'
+          python-version: '3.11'
           cache: 'pip'
 
       - name: Install dependencies
