@@ -590,13 +590,6 @@
             ],
             "version": "==2.4.1"
         },
-        "asttokens": {
-            "hashes": [
-                "sha256:051ed49c3dcae8913ea7cd08e46a606dba30b79993209636c4875bc1d637bc24",
-                "sha256:b03869718ba9a6eb027e134bfdf69f38a236d681c83c160d510768af11254ba0"
-            ],
-            "version": "==2.4.1"
-        },
         "attrs": {
             "hashes": [
                 "sha256:5cfb1b9148b5b086569baec03f20d7b6bf3bcacc9a42bebf87ffaaca362f6346",
