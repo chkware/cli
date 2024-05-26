@@ -1,6 +1,7 @@
 """
 Entities for workflow
 """
+
 from __future__ import annotations
 
 import enum
@@ -70,7 +71,7 @@ class ChkwareValidateTask(ChkwareTask):
 
     @staticmethod
     def from_dict(data: dict) -> ChkwareValidateTask:
-        """constractor"""
+        """constructor"""
 
         if not data:
             raise AttributeError("ChkwareValidateTask:from_dict Empty data given")
