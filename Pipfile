@@ -22,6 +22,8 @@ black = {extras = ["d"], version = "*"}
 var-dump = "*"
 types-pyyaml = "*"
 types-requests = "*"
+pytest-cov = "*"
+coverage-lcov = "*"
 
 [requires]
 python_version = "3.11"

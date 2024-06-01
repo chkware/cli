@@ -23,7 +23,7 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: pip install -r requirements-dev.txt && pip install -U pytest-cov coverage-lcov
+        run: pip install -r requirements-dev.txt
 
       - name: Run tests
         run: python -m pytest --cov=./chk --cov-report xml && coverage-lcov
