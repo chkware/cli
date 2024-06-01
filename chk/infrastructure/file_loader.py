@@ -96,12 +96,24 @@ class FileContext(NamedTuple):
             arguments=kwarg["arguments"] if "arguments" in kwarg else {},
         )
 
+    @property
+    def filepath_as_path(self) -> Path:
+        """Get filepath as Path"""
+
+        return Path(self.filepath)
+
+    @property
+    def filepath_base_as_path(self) -> Path:
+        """Get filepath parent or base as Path"""
+
+        return Path(self.filepath).absolute().parent
+
 
 class PathFrom:
     """Utility to expand to full path"""
 
     def __init__(self, base: Path):
-        self.base = base.absolute().parent
+        self.base = base.absolute().parent if base.is_file() else base.absolute()
 
     def absolute(self, target: str) -> str:
         """Find absolute in comparison to base URL"""

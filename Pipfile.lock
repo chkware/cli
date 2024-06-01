@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f8c6919125a2785629423933df305e4dbc6c5ccf65b6284fd305a499effbfe4e"
+            "sha256": "71707dd179bf543fe34998fcfe0053bd975b1fc820294e8951fe76b682c3bc35"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -154,6 +154,10 @@
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
             "version": "==0.7.1"
         },
+        "hence": {
+            "git": "git+https://github.com/0hsn/hence.git",
+            "ref": "f84ede4ef9b6957d6748b25ac22b16e0b793a4f4"
+        },
         "idna": {
             "hashes": [
                 "sha256:028ff3aadf0609c1fd278d8ea3089299412a7a8b9bd005dd08b9f8285bcb5cfc",
@@ -161,6 +165,10 @@
             ],
             "markers": "python_version >= '3.5'",
             "version": "==3.7"
+        },
+        "paradag": {
+            "git": "git+https://github.com/0hsn/paradag.git",
+            "ref": "38b0a0acf9cde9c56271262eba0b9f3d70db5313"
         },
         "pydantic": {
             "hashes": [
@@ -1126,13 +1134,6 @@
             ],
             "markers": "python_version >= '3.8'",
             "version": "==2.2.1"
-        },
-        "var-dump": {
-            "hashes": [
-                "sha256:9031944c174f8ce971b71a047fc56a81dfa1ce05d354fff3a16d781391d020ae"
-            ],
-            "index": "pypi",
-            "version": "==1.2"
         },
         "yarl": {
             "hashes": [
