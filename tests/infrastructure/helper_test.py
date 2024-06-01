@@ -14,6 +14,7 @@ from chk.infrastructure.helper import (
     is_scalar,
     Cast,
     formatter,
+    slugify,
 )
 
 
@@ -276,3 +277,30 @@ def test_formatter_pass_print_with_cb_dict():
 
     # assert
     assert out == "Hello, I am Some One. I am 43 years old.\n"
+
+
+class TestSlugify:
+    @staticmethod
+    def test_slugify_pass():
+        a = "Some one goes here"
+        assert slugify(a) == "some-one-goes-here"
+
+        a = "Some ONE GOES HERE"
+        assert slugify(a) == "some-one-goes-here"
+
+        a = "So'me ONE GO_ES HERE"
+        assert slugify(a) == "some-one-go-es-here"
+
+    @staticmethod
+    def test_slugify_fail():
+        a = {}
+        with pytest.raises(TypeError):
+            slugify(a)
+
+        a = []
+        with pytest.raises(TypeError):
+            slugify(a)
+
+        a = 1
+        with pytest.raises(TypeError):
+            slugify(a)

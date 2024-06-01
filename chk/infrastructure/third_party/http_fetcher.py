@@ -1,7 +1,7 @@
 """
 Driver to handle requests library (https://pypi.org/project/requests/)
 """
-
+from __future__ import annotations
 from collections import UserDict
 
 import requests
@@ -37,7 +37,7 @@ class ApiResponse(UserDict):
         return presentation
 
     @staticmethod
-    def from_response(response: requests.Response) -> "ApiResponse":
+    def from_response(response: requests.Response) -> ApiResponse:
         """Create a ApiResponse object from requests.Response object
 
         Args:

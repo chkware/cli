@@ -10,8 +10,8 @@ requests = "*"
 cerberus = "*"
 defusedxml = "*"
 xmltodict = "*"
-jinja2 = "*"
 python-dotenv = "*"
+pydantic = "*"
 
 [dev-packages]
 pytest = "*"
@@ -24,6 +24,7 @@ types-pyyaml = "*"
 types-requests = "*"
 pytest-cov = "*"
 coveralls = "*"
+icecream = "*"
 
 [requires]
 python_version = "3.11"
