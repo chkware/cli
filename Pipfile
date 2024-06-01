@@ -23,7 +23,7 @@ var-dump = "*"
 types-pyyaml = "*"
 types-requests = "*"
 pytest-cov = "*"
-coverage-lcov = "*"
+coveralls = "*"
 
 [requires]
 python_version = "3.11"

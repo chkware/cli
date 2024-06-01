@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ ! github.event.pull_request.draft }}
 
+    env:
+      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -25,11 +29,8 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
 
-      - name: Run tests
-        run: python -m pytest --cov=./chk --cov-report xml && coverage-lcov
+      - name: Run tests and generate .coverage
+        run: python -m pytest --cov=./chk
 
-      - name: Coveralls GitHub Action
-        uses: coverallsapp/github-action@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: lcov.info
+      - name: Upload to coveralls.io
+        run: coveralls
