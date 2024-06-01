@@ -24,6 +24,7 @@ types-pyyaml = "*"
 types-requests = "*"
 pytest-cov = "*"
 coverage-lcov = "*"
+toml = "*"
 
 [requires]
 python_version = "3.11"
