@@ -12,7 +12,7 @@ defusedxml = "*"
 xmltodict = "*"
 python-dotenv = "*"
 pydantic = "*"
-hence = {ref = "v0.8.0", git = "git+https://github.com/0hsn/hence.git"}
+hence = {ref = "v0.9.0", git = "git+https://github.com/0hsn/hence.git"}
 
 [dev-packages]
 pytest = "*"
