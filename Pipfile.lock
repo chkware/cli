@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "71707dd179bf543fe34998fcfe0053bd975b1fc820294e8951fe76b682c3bc35"
+            "sha256": "9065a327209818ac6ead9bc336a6ee0f36f9d4bda41ea7bad25e18f85b5fc804"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -156,7 +156,7 @@
         },
         "hence": {
             "git": "git+https://github.com/0hsn/hence.git",
-            "ref": "f84ede4ef9b6957d6748b25ac22b16e0b793a4f4"
+            "ref": "b7f5eb96ec69391e16e797a389f7a465e1958fd3"
         },
         "idna": {
             "hashes": [
@@ -167,8 +167,11 @@
             "version": "==3.7"
         },
         "paradag": {
-            "git": "git+https://github.com/0hsn/paradag.git",
-            "ref": "38b0a0acf9cde9c56271262eba0b9f3d70db5313"
+            "hashes": [
+                "sha256:3d2977892de62bd111c517c25f4c75750259c94c9711a190094b942723697ab7",
+                "sha256:dbd57185a1553970877c452aedf961912eb7825a9a25e8a71010e84660710c42"
+            ],
+            "version": "==1.2.0"
         },
         "pydantic": {
             "hashes": [
