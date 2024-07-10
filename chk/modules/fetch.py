@@ -10,6 +10,7 @@ import pathlib
 from collections import UserDict, abc
 from urllib.parse import unquote, urlparse
 
+from pydantic import BaseModel, Field
 from requests.auth import HTTPBasicAuth
 
 from defusedxml.minidom import parseString
@@ -201,6 +202,16 @@ def allowed_url(value: str) -> bool:
         raise ValueError("Invalid `url` scheme. http and https allowed")
 
     return True
+
+
+class FetchTask(BaseModel):
+    """Parsed FetchTask"""
+
+    name: str
+    uses: str
+    file: str
+    variables: dict = Field(default_factory=dict)
+    arguments: dict = Field(default_factory=dict)
 
 
 class HttpRequestArgCompiler:
