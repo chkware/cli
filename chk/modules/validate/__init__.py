@@ -9,6 +9,7 @@ import json
 from collections import abc
 
 import cerberus
+from hence import task
 
 from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
@@ -29,6 +30,7 @@ from chk.modules.validate.assertion_services import (
     AssertionEntry,
     AssertionEntryListRunner,
     AllTestRunResult,
+    ValidationTask,
     MAP_TYPE_TO_FN,
 )
 from chk.modules.validate.assertion_validation import (
@@ -305,3 +307,21 @@ def execute(
 
     cb({ctx.filepath_hash: exec_response.variables_exec.data})
     ValidationDocumentSupport.display(exposed_data, exec_ctx)
+
+
+@task(title="Validate task")
+def task_validation(**kwargs: dict) -> ExecResponse:
+    """Task impl"""
+
+    if not (doc := kwargs.get("task", {})):
+        raise ValueError("Wrong task format given.")
+
+    _task = ValidationTask(**doc)
+
+    return call(
+        FileContext.from_file(_task.file),
+        ExecuteContext(
+            options={"dump": True, "format": True},
+            arguments=_task.arguments | {"variables": _task.variables},
+        ),
+    )
