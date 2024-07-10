@@ -9,6 +9,8 @@ from collections import UserDict
 from collections.abc import Callable
 from datetime import datetime
 
+from pydantic import BaseModel, Field
+
 import chk.modules.validate.assertion_function as asrt_f
 from chk.infrastructure.helper import Cast
 from chk.infrastructure.templating import StrTemplate
@@ -327,3 +329,13 @@ class AssertionEntryListRunner:
         test_run_result["results"] = results
 
         return test_run_result
+
+
+class ValidationTask(BaseModel):
+    """Parsed FetchTask"""
+
+    name: str
+    uses: str
+    file: str
+    variables: dict = Field(default_factory=dict)
+    arguments: dict = Field(default_factory=dict)
