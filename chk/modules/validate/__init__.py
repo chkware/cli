@@ -1,6 +1,7 @@
 """
 Validate module
 """
+
 from __future__ import annotations
 import dataclasses
 import enum
@@ -221,16 +222,20 @@ class ValidationDocumentSupport:
 
         if exec_ctx.options["format"]:
             formatter(
-                "\n---\n".join([str(item) for item in display_item_list])
-                if len(display_item_list) > 1
-                else display_item_list.pop(),
+                (
+                    "\n---\n".join([str(item) for item in display_item_list])
+                    if len(display_item_list) > 1
+                    else display_item_list.pop()
+                ),
                 dump=exec_ctx.options["dump"],
             )
         else:
             formatter(
-                json.dumps(display_item_list)
-                if len(display_item_list) > 1
-                else json.dumps(display_item_list.pop()),
+                (
+                    json.dumps(display_item_list)
+                    if len(display_item_list) > 1
+                    else json.dumps(display_item_list.pop())
+                ),
                 dump=exec_ctx.options["dump"],
             )
 
