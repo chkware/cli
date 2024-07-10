@@ -9,8 +9,8 @@ import tests
 
 from chk.infrastructure.file_loader import (
     FileContext,
-    PathFrom,
     FileLoader,
+    generate_abs_path,
 )
 from chk.infrastructure.typing_extras import JsonDecodingError
 
@@ -119,13 +119,13 @@ class TestFileContext:
         assert isinstance(ctx.filepath_base_as_path, Path)
 
 
-class TestPathFrom:
+class TestGenerateAbsPath:
     """Test PathResolver"""
 
     @staticmethod
-    def test_absolute_pass():
+    def test_generate_abs_path_pass():
         ctx = FileContext.from_file(tests.RES_DIR + "bitcoin-usd.chk")
-        p = PathFrom(ctx.filepath_base_as_path)
+        p_base = ctx.filepath
 
         path_1 = "tests/resources/storage/sample_config/bitcoin-usd-testcase-data.chk"
         path_2 = "tests/resources/storage/sample_config/some-folder/bitcoin-usd-testcase-data.chk"
@@ -138,26 +138,23 @@ class TestPathFrom:
             path_3 = path_3.replace("/", "\\")
             path_4 = path_4.replace("/", "\\")
 
-        assert path_1 in p.absolute("./bitcoin-usd-testcase-data.chk")
-        assert path_2 in p.absolute("./some-folder/bitcoin-usd-testcase-data.chk")
-        assert path_3 in p.absolute("./../bitcoin-usd-testcase-data.chk")
-        assert path_1 in p.absolute("./some-folder/../bitcoin-usd-testcase-data.chk")
-        assert path_3 in p.absolute("../some-folder/../bitcoin-usd-testcase-data.chk")
-        assert path_4 in p.absolute("../some-folder/./bitcoin-usd-testcase-data.chk")
-        assert path_2 in p.absolute("./some-folder////bitcoin-usd-testcase-data.chk")
-
-    @staticmethod
-    def test_new_from_file():
-        p = PathFrom(Path(tests.RES_DIR + "bitcoin-usd.chk"))
-
-        assert str(p.base).endswith("/sample_config")
-        assert not str(p.base).endswith("bitcoin-usd.chk")
-
-    @staticmethod
-    def test_new_from_dir():
-        p = PathFrom(Path(tests.RES_DIR))
-
-        assert str(p.base).endswith("/sample_config")
+        assert path_1 in generate_abs_path(p_base, "./bitcoin-usd-testcase-data.chk")
+        assert path_2 in generate_abs_path(
+            p_base, "./some-folder/bitcoin-usd-testcase-data.chk"
+        )
+        assert path_3 in generate_abs_path(p_base, "./../bitcoin-usd-testcase-data.chk")
+        assert path_1 in generate_abs_path(
+            p_base, "./some-folder/../bitcoin-usd-testcase-data.chk"
+        )
+        assert path_3 in generate_abs_path(
+            p_base, "../some-folder/../bitcoin-usd-testcase-data.chk"
+        )
+        assert path_4 in generate_abs_path(
+            p_base, "../some-folder/./bitcoin-usd-testcase-data.chk"
+        )
+        assert path_2 in generate_abs_path(
+            p_base, "./some-folder////bitcoin-usd-testcase-data.chk"
+        )
 
 
 FILE_PATH = "tests/resources/storage/sample_config/"
