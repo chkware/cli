@@ -6,18 +6,24 @@ from __future__ import annotations
 from collections import abc
 import pathlib
 
+from hence import run_tasks, hence_config
 from pydantic import Field, ConfigDict
 from icecream import ic
 
 from chk.infrastructure.document import VersionedDocumentV2 as VersionedDocument
-from chk.modules import validate, fetch
+from chk.modules.fetch import task_fetch
+from chk.modules.validate import task_validation
 from chk.modules.workflow.entities import (
     ChkwareTask,
     ChkwareValidateTask,
     ParsedTask,
     WorkflowUses,
 )
-from chk.infrastructure.file_loader import FileContext, ExecuteContext, PathFrom
+from chk.infrastructure.file_loader import (
+    FileContext,
+    ExecuteContext,
+    generate_abs_path,
+)
 from chk.infrastructure.helper import data_get, formatter, slugify
 from chk.infrastructure.symbol_table import Variables, VariableTableManager
 
@@ -38,11 +44,13 @@ class WorkflowDocument(VersionedDocument):
     def from_file_context(ctx: FileContext) -> WorkflowDocument:
         """Create a WorkflowDocument from FileContext"""
 
+        # @TODO this should to VersionDoc
         # version
         if not (version_str := data_get(ctx.document, "version")):
             raise RuntimeError("`version:` not found.")
 
         # id, name
+        # @TODO Name and ID processing should have separate func
         if name_str := data_get(ctx.document, "name"):
             name_str = str(name_str).strip()
 
@@ -67,6 +75,7 @@ class WorkflowDocument(VersionedDocument):
 
         tasks = []
         for task in tasks_lst:
+            # @TODO can this be done in ParsedTask class
             if not isinstance(task, dict):
                 raise RuntimeError("`tasks.*.item` should be map.")
 
@@ -106,12 +115,13 @@ class WorkflowDocumentSupport:
         formatter(f"\n\nExecuting: {document.name}")
         formatter("-" * len(f"Executing: {document.name}"))
 
-        for task in document.tasks:
-            fcx = FileContext(*document.context)
-            file_path = PathFrom(pathlib.Path(fcx.filepath))
-            file_ctx: FileContext = FileContext.from_file(file_path.absolute(task.file))
+        base_filepath: str = FileContext(*document.context).filepath
+        task_executable_lst = []
 
-            del fcx, file_path
+        for task in document.tasks:
+            ic(task)
+            _task_d = task.model_dump()
+            _task_d["file"] = generate_abs_path(base_filepath, task.file)
 
             execution_ctx = ExecuteContext(
                 {"dump": True, "format": True},
@@ -122,32 +132,22 @@ class WorkflowDocumentSupport:
                     # ),
                 },
             )
+            ic(_task_d)
+            _task_params = {
+                "task": _task_d,
+                "execution_context": execution_ctx,
+            }
+
             formatter(f"\nTask: {task.name}")
 
             match task.uses:
                 case WorkflowUses.fetch.value:
-                    exec_resp = fetch.call(file_ctx, execution_ctx)
-
-                    __method = data_get(exec_resp.file_ctx.document, "request.method")
-                    __url = data_get(exec_resp.file_ctx.document, "request.url")
-
-                    formatter(f"-> {__method} {__url}")
-
+                    task_executable_lst.append((task_fetch, _task_params))
                 case WorkflowUses.validate.value:
-                    execution_ctx.arguments[
-                        "data"
-                    ] = cls._prepare_validate_task_argument_data_(task)
+                    task_executable_lst.append((task_validation, _task_params))
 
-                    exec_resp = validate.call(file_ctx, execution_ctx)
-
-                    __count_all = data_get(
-                        exec_resp.variables_exec.data, "_asserts_response.count_all"
-                    )
-                    __count_fail = data_get(
-                        exec_resp.variables_exec.data, "_asserts_response.count_fail"
-                    )
-
-                    formatter(f"-> Total tests: {__count_all}, Failed: {__count_fail}")
+        run_tasks(task_executable_lst)
+        ic(hence_config.context)
 
 
 def execute(
