@@ -11,6 +11,7 @@ import pathlib
 from collections import UserDict, abc
 from urllib.parse import unquote, urlparse
 
+from hence import task
 from pydantic import BaseModel, Field
 from requests.auth import HTTPBasicAuth
 
@@ -573,3 +574,21 @@ def execute(
 
     cb({ctx.filepath_hash: exec_response.variables_exec.data})
     HttpDocumentSupport.display(exposed_data, exec_ctx)
+
+
+@task(title="Fetch task")
+def task_fetch(**kwargs: dict) -> ExecResponse:
+    """Task impl"""
+
+    if not (doc := kwargs.get("task", {})):
+        raise ValueError("Wrong task format given.")
+
+    _task = FetchTask(**doc)
+
+    return call(
+        FileContext.from_file(_task.file),
+        ExecuteContext(
+            options={"dump": True, "format": True},
+            arguments=_task.arguments | {"variables": _task.variables},
+        ),
+    )
