@@ -156,7 +156,7 @@
         },
         "hence": {
             "git": "git+https://github.com/0hsn/hence.git",
-            "ref": "b7f5eb96ec69391e16e797a389f7a465e1958fd3"
+            "ref": "46e443b2ad0d16cb872c64db086bc8976cdf8dd7"
         },
         "idna": {
             "hashes": [
