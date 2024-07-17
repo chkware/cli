@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "9065a327209818ac6ead9bc336a6ee0f36f9d4bda41ea7bad25e18f85b5fc804"
+            "sha256": "c3a689b8e1cc9bd9980e5afbbfe511da59ac2577d1a6329a3585e9368f73e8e4"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -156,7 +156,7 @@
         },
         "hence": {
             "git": "git+https://github.com/0hsn/hence.git",
-            "ref": "46e443b2ad0d16cb872c64db086bc8976cdf8dd7"
+            "ref": "c671a79907c2fed46e89323fd411825d8697d416"
         },
         "idna": {
             "hashes": [
@@ -165,6 +165,14 @@
             ],
             "markers": "python_version >= '3.5'",
             "version": "==3.7"
+        },
+        "immutabledict": {
+            "hashes": [
+                "sha256:d728b2c2410d698d95e6200237feb50a695584d20289ad3379a439aa3d90baba",
+                "sha256:e003fd81aad2377a5a758bf7e1086cf3b70b63e9a5cc2f46bce8d0a2b4727c5f"
+            ],
+            "markers": "python_version >= '3.8' and python_version < '4.0'",
+            "version": "==4.2.0"
         },
         "paradag": {
             "hashes": [
