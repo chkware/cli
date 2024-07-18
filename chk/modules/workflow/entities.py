@@ -17,16 +17,6 @@ class WorkflowUses(enum.StrEnum):
     validate = enum.auto()
 
 
-class ParsedTask(BaseModel):
-    """Parsed tasks"""
-
-    name: str
-    uses: str
-    file: str
-    variables: dict = Field(default_factory=dict)
-    arguments: dict = Field(default_factory=dict)
-
-
 class ChkwareTask(BaseModel):
     """Chkware task"""
 
@@ -45,14 +35,6 @@ class ChkwareTask(BaseModel):
             raise AttributeError("ChkwareTask:from_dict Empty data given")
 
         return ChkwareTask(**data)
-
-    @staticmethod
-    def from_parsed_task(task: ParsedTask) -> ChkwareTask:
-        """Create new instance from ParsedTask"""
-
-        return ChkwareTask(
-            name=task.name, uses=task.uses, file=task.file, variables=task.variables
-        )
 
 
 class ChkwareValidateTask(ChkwareTask):
@@ -77,8 +59,3 @@ class ChkwareValidateTask(ChkwareTask):
             raise AttributeError("ChkwareValidateTask:from_dict Empty data given")
 
         return ChkwareValidateTask(**data)
-
-    @staticmethod
-    def from_parsed_task(task: ParsedTask) -> ChkwareValidateTask:
-        """Create new instance from ParsedTask"""
-        return ChkwareValidateTask.from_dict(task.model_dump())
