@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import enum
 import typing
+from uuid import uuid4
 
 from pydantic import BaseModel, Field, ConfigDict
 
@@ -25,6 +26,7 @@ class ChkwareTask(BaseModel):
     name: str
     uses: str
     file: str
+    run_id: str = Field(default_factory=lambda: str(uuid4()))
     variables: dict = Field(default_factory=dict)
 
     @staticmethod
