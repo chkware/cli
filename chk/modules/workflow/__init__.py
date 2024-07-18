@@ -16,7 +16,6 @@ from chk.modules.validate import task_validation
 from chk.modules.workflow.entities import (
     ChkwareTask,
     ChkwareValidateTask,
-    ParsedTask,
     WorkflowUses,
 )
 from chk.infrastructure.file_loader import (
@@ -79,13 +78,13 @@ class WorkflowDocument(VersionedDocument):
             if not isinstance(task, dict):
                 raise RuntimeError("`tasks.*.item` should be map.")
 
-            parsed_task = ParsedTask(**task)
-
-            match parsed_task.uses:
-                case "fetch":
-                    tasks.append(ChkwareTask.from_parsed_task(parsed_task))
-                case "validate":
-                    tasks.append(ChkwareValidateTask.from_parsed_task(parsed_task))
+            if "uses" in task:
+                if task["uses"] == "fetch":
+                    tasks.append(ChkwareTask.from_dict(task))
+                elif task["uses"] == "validate":
+                    tasks.append(ChkwareValidateTask.from_dict(task))
+            else:
+                raise RuntimeError("Malformed task item found.")
 
         return WorkflowDocument(
             context=tuple(ctx),
