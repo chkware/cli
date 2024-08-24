@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c3a689b8e1cc9bd9980e5afbbfe511da59ac2577d1a6329a3585e9368f73e8e4"
+            "sha256": "69851935505471f0311c54705c6803b90f0ee6c22ffabd4380e260282e0b16b8"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -156,23 +156,15 @@
         },
         "hence": {
             "git": "git+https://github.com/0hsn/hence.git",
-            "ref": "c671a79907c2fed46e89323fd411825d8697d416"
+            "ref": "c0697edf97bc67b563302223cdbd162d7144a69f"
         },
         "idna": {
             "hashes": [
-                "sha256:028ff3aadf0609c1fd278d8ea3089299412a7a8b9bd005dd08b9f8285bcb5cfc",
-                "sha256:82fee1fc78add43492d3a1898bfa6d8a904cc97d8427f683ed8e798d07761aa0"
+                "sha256:050b4e5baadcd44d760cedbd2b8e639f2ff89bbc7a5730fcc662954303377aac",
+                "sha256:d838c2c0ed6fced7693d5e8ab8e734d5f8fda53a039c0164afb0b82e771e3603"
             ],
-            "markers": "python_version >= '3.5'",
-            "version": "==3.7"
-        },
-        "immutabledict": {
-            "hashes": [
-                "sha256:d728b2c2410d698d95e6200237feb50a695584d20289ad3379a439aa3d90baba",
-                "sha256:e003fd81aad2377a5a758bf7e1086cf3b70b63e9a5cc2f46bce8d0a2b4727c5f"
-            ],
-            "markers": "python_version >= '3.8' and python_version < '4.0'",
-            "version": "==4.2.0"
+            "markers": "python_version >= '3.6'",
+            "version": "==3.8"
         },
         "paradag": {
             "hashes": [
@@ -891,11 +883,11 @@
         },
         "idna": {
             "hashes": [
-                "sha256:028ff3aadf0609c1fd278d8ea3089299412a7a8b9bd005dd08b9f8285bcb5cfc",
-                "sha256:82fee1fc78add43492d3a1898bfa6d8a904cc97d8427f683ed8e798d07761aa0"
+                "sha256:050b4e5baadcd44d760cedbd2b8e639f2ff89bbc7a5730fcc662954303377aac",
+                "sha256:d838c2c0ed6fced7693d5e8ab8e734d5f8fda53a039c0164afb0b82e771e3603"
             ],
-            "markers": "python_version >= '3.5'",
-            "version": "==3.7"
+            "markers": "python_version >= '3.6'",
+            "version": "==3.8"
         },
         "iniconfig": {
             "hashes": [
