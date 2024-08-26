@@ -576,7 +576,7 @@ def execute(
     HttpDocumentSupport.display(exposed_data, exec_ctx)
 
 
-@task(title="Fetch task")
+@task(title="Fetch work :: {fn_task_key}")
 def task_fetch(**kwargs: dict) -> ExecResponse:
     """Task impl"""
 
