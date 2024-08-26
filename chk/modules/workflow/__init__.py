@@ -5,8 +5,9 @@ Workflow module
 from __future__ import annotations
 from collections import abc
 import pathlib
+from uuid import uuid4
 
-from hence import run_tasks, hence_config
+from hence import run_tasks, _context, Utils
 from pydantic import Field, ConfigDict
 from icecream import ic
 
@@ -132,21 +133,53 @@ class WorkflowDocumentSupport:
                 },
             )
             ic(_task_d)
-            _task_params = {
-                "task": _task_d,
-                "execution_context": execution_ctx,
-            }
 
-            formatter(f"\nTask: {task.name}")
+            formatter(f"\nTask: {_task_d['name']}")
 
-            match task.uses:
+            _task_params = {"task": _task_d, "execution_context": execution_ctx}
+            match _task_d["uses"]:
                 case WorkflowUses.fetch.value:
-                    task_executable_lst.append((task_fetch, _task_params))
+                    task_executable_lst.append(
+                        (task_fetch, _task_params)
+                    )
                 case WorkflowUses.validate.value:
-                    task_executable_lst.append((task_validation, _task_params))
+                    task_executable_lst.append(
+                        (task_validation, _task_params)
+                    )
 
-        run_tasks(task_executable_lst)
-        ic(hence_config.context)
+        task_executable_keys = run_tasks(task_executable_lst, str(uuid4()))
+        # ic(task_executable_keys)
+        # ic(_context.context.get())
+
+        for tx_key in task_executable_keys:
+            f_task_ = Utils.get_task(tx_key)
+            ic(f_task_.result)
+
+        # match task.uses:
+        #     case WorkflowUses.fetch.value:
+        #         task_executable_lst.append((task_fetch, {"file": target_file_path, "execution_context": execution_ctx}))
+        #         exec_resp = fetch.call(file_ctx, execution_ctx)
+        #
+        #         __method = data_get(exec_resp.file_ctx.document, "request.method")
+        #         __url = data_get(exec_resp.file_ctx.document, "request.url")
+        #
+        #         formatter(f"-> {__method} {__url}")
+        #
+        #     case WorkflowUses.validate.value:
+        #         execution_ctx.arguments["data"] = (
+        #             cls._prepare_validate_task_argument_data_(task)
+        #         )
+        #
+        #         exec_resp = validate.call(file_ctx, execution_ctx)
+        #
+        #         __count_all = data_get(
+        #             exec_resp.variables_exec.data, "_asserts_response.count_all"
+        #         )
+        #         __count_fail = data_get(
+        #             exec_resp.variables_exec.data, "_asserts_response.count_fail"
+        #         )
+        #
+        #         formatter(f"-> Total tests: {__count_all}, Failed: {__count_fail}")
 
 
 def execute(
