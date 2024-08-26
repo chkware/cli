@@ -309,7 +309,7 @@ def execute(
     ValidationDocumentSupport.display(exposed_data, exec_ctx)
 
 
-@task(title="Validate task")
+@task(title="Validate task :: {fn_task_key}")
 def task_validation(**kwargs: dict) -> ExecResponse:
     """Task impl"""
 
