@@ -25,8 +25,11 @@ from chk.infrastructure.file_loader import (
     generate_abs_path,
 )
 from chk.infrastructure.helper import data_get, formatter, slugify
-from chk.infrastructure.symbol_table import Variables, VariableTableManager
-
+from chk.infrastructure.symbol_table import (
+    Variables,
+    VariableTableManager,
+    ExecResponse,
+)
 
 VERSION_SCOPE = ["workflow"]
 
@@ -113,13 +116,13 @@ class WorkflowDocumentSupport:
         cls, document: WorkflowDocument, variables: Variables
     ) -> None:
         formatter(f"\n\nExecuting: {document.name}")
-        formatter("-" * len(f"Executing: {document.name}"))
+        formatter("-" * 5)
 
         base_filepath: str = FileContext(*document.context).filepath
         task_executable_lst = []
 
         for task in document.tasks:
-            ic(task)
+            # @TODO should be done in ChkwareTask calls
             _task_d = task.model_dump()
             _task_d["file"] = generate_abs_path(base_filepath, task.file)
 
@@ -132,54 +135,44 @@ class WorkflowDocumentSupport:
                     # ),
                 },
             )
-            ic(_task_d)
-
-            formatter(f"\nTask: {_task_d['name']}")
 
             _task_params = {"task": _task_d, "execution_context": execution_ctx}
             match _task_d["uses"]:
                 case WorkflowUses.fetch.value:
-                    task_executable_lst.append(
-                        (task_fetch, _task_params)
-                    )
+                    task_executable_lst.append((task_fetch, _task_params))
                 case WorkflowUses.validate.value:
-                    task_executable_lst.append(
-                        (task_validation, _task_params)
-                    )
+                    task_executable_lst.append((task_validation, _task_params))
 
         task_executable_keys = run_tasks(task_executable_lst, str(uuid4()))
-        # ic(task_executable_keys)
-        # ic(_context.context.get())
 
         for tx_key in task_executable_keys:
-            f_task_ = Utils.get_task(tx_key)
-            ic(f_task_.result)
+            seq_id, _ = tx_key.split(".", 1)
+            formatter(f"\nTask: {document.tasks[int(seq_id)].name}")
 
-        # match task.uses:
-        #     case WorkflowUses.fetch.value:
-        #         task_executable_lst.append((task_fetch, {"file": target_file_path, "execution_context": execution_ctx}))
-        #         exec_resp = fetch.call(file_ctx, execution_ctx)
-        #
-        #         __method = data_get(exec_resp.file_ctx.document, "request.method")
-        #         __url = data_get(exec_resp.file_ctx.document, "request.url")
-        #
-        #         formatter(f"-> {__method} {__url}")
-        #
-        #     case WorkflowUses.validate.value:
-        #         execution_ctx.arguments["data"] = (
-        #             cls._prepare_validate_task_argument_data_(task)
-        #         )
-        #
-        #         exec_resp = validate.call(file_ctx, execution_ctx)
-        #
-        #         __count_all = data_get(
-        #             exec_resp.variables_exec.data, "_asserts_response.count_all"
-        #         )
-        #         __count_fail = data_get(
-        #             exec_resp.variables_exec.data, "_asserts_response.count_fail"
-        #         )
-        #
-        #         formatter(f"-> Total tests: {__count_all}, Failed: {__count_fail}")
+            _task_res: ExecResponse = Utils.get_task(tx_key).result
+            __doc_version: str = data_get(_task_res.file_ctx.document, "version", "")
+
+            if __doc_version.startswith("default:http"):
+                formatter(
+                    "-> %s %s"
+                    % (
+                        data_get(_task_res.file_ctx.document, "request.method"),
+                        data_get(_task_res.file_ctx.document, "request.url"),
+                    )
+                )
+            elif __doc_version.startswith("default:validation"):
+                formatter(
+                    "-> Total tests: %s, Failed: %s"
+                    % (
+                        data_get(
+                            _task_res.variables_exec.data, "_asserts_response.count_all"
+                        ),
+                        data_get(
+                            _task_res.variables_exec.data,
+                            "_asserts_response.count_fail",
+                        ),
+                    )
+                )
 
 
 def execute(
