@@ -31,7 +31,7 @@ def combine_initial_variables(external_vars: str, **kwargs: typing.Any) -> dict:
     return load_variables_as_dict(external_vars, **kwargs)
 
 
-def after_hook(resp: object) -> None:
+def after_hook(resp: dict) -> None:
     """Saves custom data from commands to global context bus
 
     Args:

@@ -5,22 +5,31 @@ Workflow module
 from __future__ import annotations
 from collections import abc
 import pathlib
+from uuid import uuid4
 
+from hence import run_tasks, _context, Utils
 from pydantic import Field, ConfigDict
 from icecream import ic
 
 from chk.infrastructure.document import VersionedDocumentV2 as VersionedDocument
-from chk.modules import validate, fetch
+from chk.modules.fetch import task_fetch
+from chk.modules.validate import task_validation
 from chk.modules.workflow.entities import (
     ChkwareTask,
     ChkwareValidateTask,
-    ParsedTask,
     WorkflowUses,
 )
-from chk.infrastructure.file_loader import FileContext, ExecuteContext, PathFrom
+from chk.infrastructure.file_loader import (
+    FileContext,
+    ExecuteContext,
+    generate_abs_path,
+)
 from chk.infrastructure.helper import data_get, formatter, slugify
-from chk.infrastructure.symbol_table import Variables, VariableTableManager
-
+from chk.infrastructure.symbol_table import (
+    Variables,
+    VariableTableManager,
+    ExecResponse,
+)
 
 VERSION_SCOPE = ["workflow"]
 
@@ -38,11 +47,13 @@ class WorkflowDocument(VersionedDocument):
     def from_file_context(ctx: FileContext) -> WorkflowDocument:
         """Create a WorkflowDocument from FileContext"""
 
+        # @TODO this should to VersionDoc
         # version
         if not (version_str := data_get(ctx.document, "version")):
             raise RuntimeError("`version:` not found.")
 
         # id, name
+        # @TODO Name and ID processing should have separate func
         if name_str := data_get(ctx.document, "name"):
             name_str = str(name_str).strip()
 
@@ -67,16 +78,17 @@ class WorkflowDocument(VersionedDocument):
 
         tasks = []
         for task in tasks_lst:
+            # @TODO can this be done in ParsedTask class
             if not isinstance(task, dict):
                 raise RuntimeError("`tasks.*.item` should be map.")
 
-            parsed_task = ParsedTask(**task)
-
-            match parsed_task.uses:
-                case "fetch":
-                    tasks.append(ChkwareTask.from_parsed_task(parsed_task))
-                case "validate":
-                    tasks.append(ChkwareValidateTask.from_parsed_task(parsed_task))
+            if "uses" in task:
+                if task["uses"] == "fetch":
+                    tasks.append(ChkwareTask.from_dict(task))
+                elif task["uses"] == "validate":
+                    tasks.append(ChkwareValidateTask.from_dict(task))
+            else:
+                raise RuntimeError("Malformed task item found.")
 
         return WorkflowDocument(
             context=tuple(ctx),
@@ -104,14 +116,15 @@ class WorkflowDocumentSupport:
         cls, document: WorkflowDocument, variables: Variables
     ) -> None:
         formatter(f"\n\nExecuting: {document.name}")
-        formatter("-" * len(f"Executing: {document.name}"))
+        formatter("-" * 5)
+
+        base_filepath: str = FileContext(*document.context).filepath
+        task_executable_lst = []
 
         for task in document.tasks:
-            fcx = FileContext(*document.context)
-            file_path = PathFrom(pathlib.Path(fcx.filepath))
-            file_ctx: FileContext = FileContext.from_file(file_path.absolute(task.file))
-
-            del fcx, file_path
+            # @TODO should be done in ChkwareTask calls
+            _task_d = task.model_dump()
+            _task_d["file"] = generate_abs_path(base_filepath, task.file)
 
             execution_ctx = ExecuteContext(
                 {"dump": True, "format": True},
@@ -122,32 +135,44 @@ class WorkflowDocumentSupport:
                     # ),
                 },
             )
-            formatter(f"\nTask: {task.name}")
 
-            match task.uses:
+            _task_params = {"task": _task_d, "execution_context": execution_ctx}
+            match _task_d["uses"]:
                 case WorkflowUses.fetch.value:
-                    exec_resp = fetch.call(file_ctx, execution_ctx)
-
-                    __method = data_get(exec_resp.file_ctx.document, "request.method")
-                    __url = data_get(exec_resp.file_ctx.document, "request.url")
-
-                    formatter(f"-> {__method} {__url}")
-
+                    task_executable_lst.append((task_fetch, _task_params))
                 case WorkflowUses.validate.value:
-                    execution_ctx.arguments[
-                        "data"
-                    ] = cls._prepare_validate_task_argument_data_(task)
+                    task_executable_lst.append((task_validation, _task_params))
 
-                    exec_resp = validate.call(file_ctx, execution_ctx)
+        task_executable_keys = run_tasks(task_executable_lst, str(uuid4()))
 
-                    __count_all = data_get(
-                        exec_resp.variables_exec.data, "_asserts_response.count_all"
+        for tx_key in task_executable_keys:
+            seq_id, _ = tx_key.split(".", 1)
+            formatter(f"\nTask: {document.tasks[int(seq_id)].name}")
+
+            _task_res: ExecResponse = Utils.get_task(tx_key).result
+            __doc_version: str = data_get(_task_res.file_ctx.document, "version", "")
+
+            if __doc_version.startswith("default:http"):
+                formatter(
+                    "-> %s %s"
+                    % (
+                        data_get(_task_res.file_ctx.document, "request.method"),
+                        data_get(_task_res.file_ctx.document, "request.url"),
                     )
-                    __count_fail = data_get(
-                        exec_resp.variables_exec.data, "_asserts_response.count_fail"
+                )
+            elif __doc_version.startswith("default:validation"):
+                formatter(
+                    "-> Total tests: %s, Failed: %s"
+                    % (
+                        data_get(
+                            _task_res.variables_exec.data, "_asserts_response.count_all"
+                        ),
+                        data_get(
+                            _task_res.variables_exec.data,
+                            "_asserts_response.count_fail",
+                        ),
                     )
-
-                    formatter(f"-> Total tests: {__count_all}, Failed: {__count_fail}")
+                )
 
 
 def execute(

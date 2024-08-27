@@ -12,6 +12,7 @@ defusedxml = "*"
 xmltodict = "*"
 python-dotenv = "*"
 pydantic = "*"
+hence = {ref = "v0.10.1", git = "git+https://github.com/0hsn/hence.git"}
 
 [dev-packages]
 pytest = "*"
@@ -19,7 +20,6 @@ mypy = "*"
 pylint = "*"
 flake8 = "*"
 black = {extras = ["d"], version = "*"}
-var-dump = "*"
 types-pyyaml = "*"
 types-requests = "*"
 pytest-cov = "*"

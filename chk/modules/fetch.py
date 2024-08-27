@@ -1,6 +1,7 @@
 """
 Fetch module
 """
+
 from __future__ import annotations
 import dataclasses
 import enum
@@ -10,6 +11,8 @@ import pathlib
 from collections import UserDict, abc
 from urllib.parse import unquote, urlparse
 
+from hence import task
+from pydantic import BaseModel, Field
 from requests.auth import HTTPBasicAuth
 
 from defusedxml.minidom import parseString
@@ -201,6 +204,16 @@ def allowed_url(value: str) -> bool:
         raise ValueError("Invalid `url` scheme. http and https allowed")
 
     return True
+
+
+class FetchTask(BaseModel):
+    """Parsed FetchTask"""
+
+    name: str
+    uses: str
+    file: str
+    variables: dict = Field(default_factory=dict)
+    arguments: dict = Field(default_factory=dict)
 
 
 class HttpRequestArgCompiler:
@@ -486,14 +499,16 @@ class HttpDocumentSupport:
 
         if exec_ctx.options["format"]:
             formatter(
-                "\n---\n".join(
-                    [
-                        item if isinstance(item, str) else str(item)
-                        for item in display_item_list
-                    ]
-                )
-                if len(display_item_list) > 1
-                else display_item_list.pop(),
+                (
+                    "\n---\n".join(
+                        [
+                            item if isinstance(item, str) else str(item)
+                            for item in display_item_list
+                        ]
+                    )
+                    if len(display_item_list) > 1
+                    else display_item_list.pop()
+                ),
                 dump=exec_ctx.options["dump"],
             )
         else:
@@ -559,3 +574,21 @@ def execute(
 
     cb({ctx.filepath_hash: exec_response.variables_exec.data})
     HttpDocumentSupport.display(exposed_data, exec_ctx)
+
+
+@task(title="Fetch work :: {fn_task_key}")
+def task_fetch(**kwargs: dict) -> ExecResponse:
+    """Task impl"""
+
+    if not (doc := kwargs.get("task", {})):
+        raise ValueError("Wrong task format given.")
+
+    _task = FetchTask(**doc)
+
+    return call(
+        FileContext.from_file(_task.file),
+        ExecuteContext(
+            options={"dump": True, "format": True},
+            arguments=_task.arguments | {"variables": _task.variables},
+        ),
+    )

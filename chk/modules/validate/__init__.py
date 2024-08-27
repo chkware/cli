@@ -1,6 +1,7 @@
 """
 Validate module
 """
+
 from __future__ import annotations
 import dataclasses
 import enum
@@ -8,6 +9,7 @@ import json
 from collections import abc
 
 import cerberus
+from hence import task
 
 from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
@@ -28,6 +30,7 @@ from chk.modules.validate.assertion_services import (
     AssertionEntry,
     AssertionEntryListRunner,
     AllTestRunResult,
+    ValidationTask,
     MAP_TYPE_TO_FN,
 )
 from chk.modules.validate.assertion_validation import (
@@ -221,16 +224,20 @@ class ValidationDocumentSupport:
 
         if exec_ctx.options["format"]:
             formatter(
-                "\n---\n".join([str(item) for item in display_item_list])
-                if len(display_item_list) > 1
-                else display_item_list.pop(),
+                (
+                    "\n---\n".join([str(item) for item in display_item_list])
+                    if len(display_item_list) > 1
+                    else display_item_list.pop()
+                ),
                 dump=exec_ctx.options["dump"],
             )
         else:
             formatter(
-                json.dumps(display_item_list)
-                if len(display_item_list) > 1
-                else json.dumps(display_item_list.pop()),
+                (
+                    json.dumps(display_item_list)
+                    if len(display_item_list) > 1
+                    else json.dumps(display_item_list.pop())
+                ),
                 dump=exec_ctx.options["dump"],
             )
 
@@ -300,3 +307,21 @@ def execute(
 
     cb({ctx.filepath_hash: exec_response.variables_exec.data})
     ValidationDocumentSupport.display(exposed_data, exec_ctx)
+
+
+@task(title="Validate task :: {fn_task_key}")
+def task_validation(**kwargs: dict) -> ExecResponse:
+    """Task impl"""
+
+    if not (doc := kwargs.get("task", {})):
+        raise ValueError("Wrong task format given.")
+
+    _task = ValidationTask(**doc)
+
+    return call(
+        FileContext.from_file(_task.file),
+        ExecuteContext(
+            options={"dump": True, "format": True},
+            arguments=_task.arguments | {"variables": _task.variables},
+        ),
+    )
