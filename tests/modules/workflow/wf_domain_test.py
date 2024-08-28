@@ -40,7 +40,8 @@ class TestWorkflowDocument:
 class TestWorkflowDocumentSupport:
     @staticmethod
     def test_process_task_template_pass(load_chk_file, load_file_ctx_for_file):
-        filepath = f"{SPEC_DIR}workflow/simple-btc-wf.chk"
+        # filepath = f"{SPEC_DIR}workflow/simple-btc-wf.chk"
+        filepath = f"{SPEC_DIR}workflow_cases/simple/coinstats-usd-workflow.chk"
         file_ctx = load_file_ctx_for_file(filepath)
 
         wfdoc = WorkflowDocument.from_file_context(file_ctx)

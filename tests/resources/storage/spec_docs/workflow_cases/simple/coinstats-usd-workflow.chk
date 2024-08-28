@@ -11,6 +11,3 @@ tasks:
   - name: Validate the content is okay
     uses: validate
     file: ./coinstats-usd-validate.chk
-#    variables: { "var": 2 }
-#    arguments:
-#      data: <% _tasks.0._expose.0 %>
