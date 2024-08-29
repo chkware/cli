@@ -175,18 +175,10 @@ class WorkflowDocumentSupport:
                 )
 
 
-def execute(
-    ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...
-) -> None:
-    """Run a workflow document
+def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
+    """Call a workflow document"""
 
-    Args:
-        ctx: FileContext object to handle
-        exec_ctx: ExecuteContext
-        cb: Callable
-    """
-
-    wflow_doc = WorkflowDocument.from_file_context(ctx)
+    wflow_doc = WorkflowDocument.from_file_context(file_ctx)
     ic(wflow_doc)
 
     variable_doc = Variables()
@@ -202,3 +194,25 @@ def execute(
     # VersionedDocumentSupport.validate_with_schema(
     #     HttpDocumentSupport.build_schema(), http_doc
     # )
+
+    return ExecResponse(
+        file_ctx=file_ctx,
+        exec_ctx=exec_ctx,
+        variables_exec={},
+        variables=variable_doc,
+        extra={},
+    )
+
+
+def execute(
+    ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...
+) -> None:
+    """Run a workflow document
+
+    Args:
+        ctx: FileContext object to handle
+        exec_ctx: ExecuteContext
+        cb: Callable
+    """
+
+    _ = call(file_ctx=ctx, exec_ctx=exec_ctx)
