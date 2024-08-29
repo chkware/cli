@@ -1,8 +1,13 @@
 ---
 version: default:http:0.7.2
 
+variables:
+  convertCurrency: USD
+
 request:
-  url: https://openapiv1.coinstats.app/coins/bitcoin?currency=USD
+  url: "https://openapiv1.coinstats.app/coins/bitcoin"
+  url_params:
+    currency: <% convertCurrency %>
   method: GET
   headers:
     "X-API-KEY": <% _ENV.COINSTATS_API_KEY %>
