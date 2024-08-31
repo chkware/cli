@@ -28,14 +28,8 @@ class ChkwareTask(BaseModel):
     file: str
     variables: dict = Field(default_factory=dict)
 
-    @staticmethod
-    def from_dict(data: dict) -> ChkwareTask:
-        """constractor"""
-
-        if not data:
-            raise AttributeError("ChkwareTask:from_dict Empty data given")
-
-        return ChkwareTask(**data)
+    def __init__(self, **kwargs: dict) -> None:
+        super().__init__(**kwargs)
 
 
 class ChkwareValidateTask(ChkwareTask):
@@ -52,11 +46,5 @@ class ChkwareValidateTask(ChkwareTask):
 
     arguments: ChkwareTaskDataArgument = Field(default_factory=ChkwareTaskDataArgument)
 
-    @staticmethod
-    def from_dict(data: dict) -> ChkwareValidateTask:
-        """constructor"""
-
-        if not data:
-            raise AttributeError("ChkwareValidateTask:from_dict Empty data given")
-
-        return ChkwareValidateTask(**data)
+    def __init__(self, **kwargs: dict) -> None:
+        super().__init__(**kwargs)
