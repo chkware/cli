@@ -77,6 +77,8 @@ class WorkflowDocument(VersionedDocument):
             raise RuntimeError("`tasks:` is not list.")
 
         tasks = []
+        base_fpath: str = ctx.filepath
+
         for task in tasks_lst:
             # @TODO can this be done in ParsedTask class
             if not isinstance(task, dict):
@@ -84,9 +86,9 @@ class WorkflowDocument(VersionedDocument):
 
             if "uses" in task:
                 if task["uses"] == "fetch":
-                    tasks.append(ChkwareTask(**task))
+                    tasks.append(ChkwareTask(base_fpath, **task))
                 elif task["uses"] == "validate":
-                    tasks.append(ChkwareValidateTask(**task))
+                    tasks.append(ChkwareValidateTask(base_fpath, **task))
             else:
                 raise RuntimeError("Malformed task item found.")
 
@@ -118,13 +120,11 @@ class WorkflowDocumentSupport:
         formatter(f"\n\nExecuting: {document.name}")
         formatter("-" * 5)
 
-        base_filepath: str = FileContext(*document.context).filepath
         task_executable_lst = []
 
         for task in document.tasks:
             # @TODO should be done in ChkwareTask calls
             _task_d = task.model_dump()
-            _task_d["file"] = generate_abs_path(base_filepath, task.file)
 
             execution_ctx = ExecuteContext(
                 {"dump": True, "format": True},
@@ -198,7 +198,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     return ExecResponse(
         file_ctx=file_ctx,
         exec_ctx=exec_ctx,
-        variables_exec={},
+        variables_exec=ExposableVariables({}),
         variables=variable_doc,
         extra={},
     )

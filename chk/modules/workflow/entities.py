@@ -5,10 +5,9 @@ Entities for workflow
 from __future__ import annotations
 
 import enum
-import typing
-from uuid import uuid4
-
 from pydantic import BaseModel, Field, ConfigDict
+
+from chk.infrastructure.file_loader import generate_abs_path
 
 
 class WorkflowUses(enum.StrEnum):
@@ -28,7 +27,12 @@ class ChkwareTask(BaseModel):
     file: str
     variables: dict = Field(default_factory=dict)
 
-    def __init__(self, **kwargs: dict) -> None:
+    def __init__(self, basepath: str, /, **kwargs: dict) -> None:
+        """Constructor"""
+
+        if isinstance(kwargs["file"], str) and len(kwargs["file"]) != 0:
+            kwargs["file"] = generate_abs_path(basepath, kwargs["file"])
+
         super().__init__(**kwargs)
 
 
@@ -46,5 +50,7 @@ class ChkwareValidateTask(ChkwareTask):
 
     arguments: ChkwareTaskDataArgument = Field(default_factory=ChkwareTaskDataArgument)
 
-    def __init__(self, **kwargs: dict) -> None:
-        super().__init__(**kwargs)
+    def __init__(self, basepath: str, /, **kwargs: dict) -> None:
+        """Constructor"""
+
+        super().__init__(basepath, **kwargs)
