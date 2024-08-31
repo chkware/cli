@@ -84,9 +84,9 @@ class WorkflowDocument(VersionedDocument):
 
             if "uses" in task:
                 if task["uses"] == "fetch":
-                    tasks.append(ChkwareTask.from_dict(task))
+                    tasks.append(ChkwareTask(**task))
                 elif task["uses"] == "validate":
-                    tasks.append(ChkwareValidateTask.from_dict(task))
+                    tasks.append(ChkwareValidateTask(**task))
             else:
                 raise RuntimeError("Malformed task item found.")
 
