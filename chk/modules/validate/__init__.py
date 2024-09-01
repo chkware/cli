@@ -91,6 +91,8 @@ class ValidationDocument(VersionedDocument):
 
         _data = data_get(ctx.document, ValidationConfigNode.DATA, {})
 
+        # @TODO keep `context`, `version` as object
+        # @TODO implement __repr__ for WorkflowDocument
         return ValidationDocument(
             context=tuple(ctx),
             version=_version,
