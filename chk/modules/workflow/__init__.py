@@ -92,6 +92,8 @@ class WorkflowDocument(VersionedDocument):
             else:
                 raise RuntimeError("Malformed task item found.")
 
+        # @TODO keep `context`, `version` as object
+        # @TODO implement __repr__ for WorkflowDocument
         return WorkflowDocument(
             context=tuple(ctx),
             version=version_str,

@@ -343,6 +343,8 @@ class HttpDocument(VersionedDocument):
         if not (request_dct := data_get(ctx.document, "request")):
             raise RuntimeError("`request:` not found.")
 
+        # @TODO keep `context`, `version` as object
+        # @TODO implement __repr__ for WorkflowDocument
         return HttpDocument(
             context=tuple(ctx),
             version=version_str,
