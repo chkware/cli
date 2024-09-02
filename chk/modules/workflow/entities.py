@@ -30,7 +30,11 @@ class ChkwareTask(BaseModel):
     def __init__(self, basepath: str, /, **kwargs: dict) -> None:
         """Constructor"""
 
-        if isinstance(kwargs["file"], str) and len(kwargs["file"]) != 0:
+        if (
+            "file" in kwargs
+            and isinstance(kwargs["file"], str)
+            and len(kwargs["file"]) != 0
+        ):
             kwargs["file"] = generate_abs_path(basepath, kwargs["file"])
 
         super().__init__(**kwargs)
