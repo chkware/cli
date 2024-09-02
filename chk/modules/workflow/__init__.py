@@ -76,22 +76,6 @@ class WorkflowDocument(VersionedDocument):
         if not isinstance(tasks_lst, list):
             raise RuntimeError("`tasks:` is not list.")
 
-        tasks = []
-        base_fpath: str = ctx.filepath
-
-        for task in tasks_lst:
-            # @TODO can this be done in ParsedTask class
-            if not isinstance(task, dict):
-                raise RuntimeError("`tasks.*.item` should be map.")
-
-            if "uses" in task:
-                if task["uses"] == "fetch":
-                    tasks.append(ChkwareTask(base_fpath, **task))
-                elif task["uses"] == "validate":
-                    tasks.append(ChkwareValidateTask(base_fpath, **task))
-            else:
-                raise RuntimeError("Malformed task item found.")
-
         # @TODO keep `context`, `version` as object
         # @TODO implement __repr__ for WorkflowDocument
         return WorkflowDocument(
@@ -114,6 +98,32 @@ class WorkflowDocumentSupport:
             return task.arguments.data
 
         return {}
+
+    @classmethod
+    def make_task(cls, task_d_: dict, /, **kwargs) -> ChkwareTask:
+        """validate task data"""
+        if "base_file_path" not in kwargs:
+            raise ValueError("`base_file_path` not passed.")
+
+        if "uses" not in task_d_:
+            raise RuntimeError("Malformed task item found.")
+
+        if task_d_["uses"] not in (
+            WorkflowUses.fetch.value,
+            WorkflowUses.validate.value,
+        ):
+            raise RuntimeError("task.uses unsupported.")
+
+        base_file_path = str(kwargs["base_file_path"])
+
+        return (
+            ChkwareTask(base_file_path, **task_d_)
+            if task_d_["uses"] == "fetch"
+            else ChkwareValidateTask(base_file_path, **task_d_)
+        )
+
+    @classmethod
+    def exectute_tasks(cls, task_list: list[ChkwareTask]): ...
 
     @classmethod
     def process_task_template(
