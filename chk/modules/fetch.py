@@ -11,7 +11,6 @@ import pathlib
 from collections import UserDict, abc
 from urllib.parse import unquote, urlparse
 
-from hence import task
 from pydantic import BaseModel, Field
 from requests.auth import HTTPBasicAuth
 
@@ -578,7 +577,6 @@ def execute(
     HttpDocumentSupport.display(exposed_data, exec_ctx)
 
 
-@task(title="Fetch work :: {fn_task_key}")
 def task_fetch(**kwargs: dict) -> ExecResponse:
     """Task impl"""
 

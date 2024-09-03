@@ -7,7 +7,6 @@ from collections import abc
 import pathlib
 from uuid import uuid4
 
-from hence import run_tasks, _context, Utils
 from pydantic import Field, ConfigDict
 from icecream import ic
 
@@ -155,13 +154,11 @@ class WorkflowDocumentSupport:
                 case WorkflowUses.validate.value:
                     task_executable_lst.append((task_validation, _task_params))
 
-        task_executable_keys = run_tasks(task_executable_lst, str(uuid4()))
 
         for tx_key in task_executable_keys:
             seq_id, _ = tx_key.split(".", 1)
             formatter(f"\nTask: {document.tasks[int(seq_id)].name}")
 
-            _task_res: ExecResponse = Utils.get_task(tx_key).result
             __doc_version: str = data_get(_task_res.file_ctx.document, "version", "")
 
             if __doc_version.startswith("default:http"):
