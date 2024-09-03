@@ -9,7 +9,6 @@ import json
 from collections import abc
 
 import cerberus
-from hence import task
 
 from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
 from chk.infrastructure.file_loader import FileContext, ExecuteContext
@@ -311,7 +310,6 @@ def execute(
     ValidationDocumentSupport.display(exposed_data, exec_ctx)
 
 
-@task(title="Validate task :: {fn_task_key}")
 def task_validation(**kwargs: dict) -> ExecResponse:
     """Task impl"""
 
