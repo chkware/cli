@@ -5,9 +5,29 @@ Entities for workflow
 from __future__ import annotations
 
 import enum
+from typing import NamedTuple
+
 from pydantic import BaseModel, Field, ConfigDict
 
-from chk.infrastructure.file_loader import generate_abs_path
+from chk.infrastructure.file_loader import generate_abs_path, ExecuteContext
+
+
+class WorkflowConfigNode(enum.StrEnum):
+    """WorkflowConfigNode"""
+
+    NODE = "_steps"
+
+
+class TaskExecParam(NamedTuple):
+    """TaskExecParams"""
+
+    task: ChkwareTask
+    exec_ctx: ExecuteContext
+
+    def asdict(self) -> dict:
+        """Convert to dict"""
+
+        return {"task": self.task.model_dump(), "execution_context": self.exec_ctx}
 
 
 class WorkflowUses(enum.StrEnum):
