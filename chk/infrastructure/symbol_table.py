@@ -1,6 +1,7 @@
 """
 Symbol and variable management
 """
+
 import enum
 import os
 import typing
@@ -77,13 +78,11 @@ class ExecResponse(BaseModel):
 
 
 @typing.overload
-def replace_value(doc: dict, var_s: dict) -> dict:
-    ...
+def replace_value(doc: dict, var_s: dict) -> dict: ...
 
 
 @typing.overload
-def replace_value(doc: list, var_s: dict) -> list:
-    ...
+def replace_value(doc: list, var_s: dict) -> list: ...
 
 
 def replace_value(doc: dict | list, var_s: dict) -> dict | list:
