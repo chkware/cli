@@ -238,7 +238,9 @@ class ExposeManager:
         return replace_callback(expose_doc, values)
 
     @staticmethod
-    def get_exposed_replaced_data(document: VersionedDocument, store: dict) -> list:
+    def get_exposed_replaced_data(
+        document: VersionedDocument | VersionedDocumentV2, store: dict
+    ) -> list:
         """Get expose doc from a `VersionedDocument`, and prepare it from the
             value of `Variables`, and `store`, and return
 
