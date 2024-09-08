@@ -5,30 +5,39 @@ Workflow module
 from __future__ import annotations
 from collections import abc
 import pathlib
+from collections.abc import Callable
 from uuid import uuid4
 
 from pydantic import Field, ConfigDict
 from icecream import ic
 
-from chk.infrastructure.document import VersionedDocumentV2 as VersionedDocument
+from chk.infrastructure.document import (
+    VersionedDocumentV2 as VersionedDocument,
+    VersionedDocumentSupport,
+)
+from chk.infrastructure.version import DocumentVersionMaker
 from chk.modules.fetch import task_fetch
 from chk.modules.validate import task_validation
 from chk.modules.workflow.entities import (
     ChkwareTask,
     ChkwareValidateTask,
     WorkflowUses,
+    TaskExecParam,
+    WorkflowConfigNode,
 )
 from chk.infrastructure.file_loader import (
     FileContext,
     ExecuteContext,
-    generate_abs_path,
 )
 from chk.infrastructure.helper import data_get, formatter, slugify
 from chk.infrastructure.symbol_table import (
     Variables,
     VariableTableManager,
     ExecResponse,
+    replace_value,
+    ExposeManager,
 )
+from chk.modules.workflow.services import ChkwareTaskSupport
 
 VERSION_SCOPE = ["workflow"]
 
@@ -40,16 +49,15 @@ class WorkflowDocument(VersionedDocument):
 
     name: str = Field(default_factory=str)
     id: str = Field(default_factory=str)
-    tasks: list[ChkwareTask | ChkwareValidateTask]
+    tasks: list[dict] = Field(default="")
 
     @staticmethod
     def from_file_context(ctx: FileContext) -> WorkflowDocument:
         """Create a WorkflowDocument from FileContext"""
 
-        # @TODO this should to VersionDoc
         # version
-        if not (version_str := data_get(ctx.document, "version")):
-            raise RuntimeError("`version:` not found.")
+        doc_ver = DocumentVersionMaker.from_dict(ctx.document)
+        DocumentVersionMaker.verify_if_allowed(doc_ver, VERSION_SCOPE)
 
         # id, name
         # @TODO Name and ID processing should have separate func
@@ -79,10 +87,10 @@ class WorkflowDocument(VersionedDocument):
         # @TODO implement __repr__ for WorkflowDocument
         return WorkflowDocument(
             context=tuple(ctx),
-            version=version_str,
+            version=str(doc_ver),
             name=name_str,
             id=id_str,
-            tasks=tasks,
+            tasks=tasks_lst,
         )
 
 
@@ -99,43 +107,31 @@ class WorkflowDocumentSupport:
         return {}
 
     @classmethod
-    def make_task(cls, task_d_: dict, /, **kwargs) -> ChkwareTask:
-        """validate task data"""
-        if "base_file_path" not in kwargs:
-            raise ValueError("`base_file_path` not passed.")
+    def set_step_template(cls, variables: Variables) -> None:
+        """sets data or template"""
 
-        if "uses" not in task_d_:
-            raise RuntimeError("Malformed task item found.")
-
-        if task_d_["uses"] not in (
-            WorkflowUses.fetch.value,
-            WorkflowUses.validate.value,
-        ):
-            raise RuntimeError("task.uses unsupported.")
-
-        base_file_path = str(kwargs["base_file_path"])
-
-        return (
-            ChkwareTask(base_file_path, **task_d_)
-            if task_d_["uses"] == "fetch"
-            else ChkwareValidateTask(base_file_path, **task_d_)
-        )
-
-    @classmethod
-    def exectute_tasks(cls, task_list: list[ChkwareTask]): ...
+        # @TODO implement data set functionality with validation for variables
+        variables[WorkflowConfigNode.NODE.value] = []
 
     @classmethod
     def process_task_template(
         cls, document: WorkflowDocument, variables: Variables
     ) -> None:
+        """Process task block of document"""
+
         formatter(f"\n\nExecuting: {document.name}")
         formatter("-" * 5)
 
-        task_executable_lst = []
+        base_fpath: str = FileContext(*document.context).filepath
 
         for task in document.tasks:
-            # @TODO should be done in ChkwareTask calls
-            _task_d = task.model_dump()
+            if not isinstance(task, dict):
+                raise RuntimeError("`tasks.*.item` should be map.")
+
+            # replace values in tasks
+            task_d_: dict = replace_value(task, variables.data)
+            # ic(task_d_)
+            task_o_ = ChkwareTaskSupport.make_task(task_d_, base_file_path=base_fpath)
 
             execution_ctx = ExecuteContext(
                 {"dump": True, "format": True},
@@ -147,69 +143,86 @@ class WorkflowDocumentSupport:
                 },
             )
 
-            _task_params = {"task": _task_d, "execution_context": execution_ctx}
-            match _task_d["uses"]:
+            match task_o_.uses:
                 case WorkflowUses.fetch.value:
-                    task_executable_lst.append((task_fetch, _task_params))
+                    cls.execute_tasks(
+                        task_fetch,
+                        TaskExecParam(task=task_o_, exec_ctx=execution_ctx),
+                        variables,
+                    )
                 case WorkflowUses.validate.value:
-                    task_executable_lst.append((task_validation, _task_params))
-
-
-        for tx_key in task_executable_keys:
-            seq_id, _ = tx_key.split(".", 1)
-            formatter(f"\nTask: {document.tasks[int(seq_id)].name}")
-
-            __doc_version: str = data_get(_task_res.file_ctx.document, "version", "")
-
-            if __doc_version.startswith("default:http"):
-                formatter(
-                    "-> %s %s"
-                    % (
-                        data_get(_task_res.file_ctx.document, "request.method"),
-                        data_get(_task_res.file_ctx.document, "request.url"),
+                    cls.execute_tasks(
+                        task_validation,
+                        TaskExecParam(task=task_o_, exec_ctx=execution_ctx),
+                        variables,
                     )
+
+    @classmethod
+    def execute_tasks(
+        cls, task_fn: Callable, task_params: TaskExecParam, variables: Variables
+    ) -> ExecResponse:
+        """execute_tasks"""
+
+        formatter(f"\nTask: {task_params.task.name}")
+
+        _task_res: ExecResponse = task_fn(**task_params.asdict())
+        variables[WorkflowConfigNode.NODE.value].append(_task_res.variables_exec.data)
+
+        # TODO move the display logic to service
+        # @SECTION display
+        __doc_version: str = data_get(_task_res.file_ctx.document, "version", "")
+
+        if __doc_version.startswith("default:http"):
+            formatter(
+                "-> %s %s"
+                % (
+                    data_get(_task_res.file_ctx.document, "request.method"),
+                    data_get(_task_res.file_ctx.document, "request.url"),
                 )
-            elif __doc_version.startswith("default:validation"):
-                formatter(
-                    "-> Total tests: %s, Failed: %s"
-                    % (
-                        data_get(
-                            _task_res.variables_exec.data, "_asserts_response.count_all"
-                        ),
-                        data_get(
-                            _task_res.variables_exec.data,
-                            "_asserts_response.count_fail",
-                        ),
-                    )
+            )
+        elif __doc_version.startswith("default:validation"):
+            formatter(
+                "-> Total tests: %s, Failed: %s"
+                % (
+                    data_get(
+                        _task_res.variables_exec.data,
+                        "_asserts_response.count_all",
+                    ),
+                    data_get(
+                        _task_res.variables_exec.data,
+                        "_asserts_response.count_fail",
+                    ),
                 )
+            )
+        # @SECTION display end
+
+        return _task_res
+
+    @classmethod
+    def display(cls, exposed_data: list, exec_ctx: ExecuteContext) -> None: ...
 
 
 def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     """Call a workflow document"""
 
     wflow_doc = WorkflowDocument.from_file_context(file_ctx)
-    ic(wflow_doc)
 
     variable_doc = Variables()
     VariableTableManager.handle(variable_doc, wflow_doc, exec_ctx)
 
     service = WorkflowDocumentSupport()
+    # @TODO make sure the document do not call self making it repeating
+    service.set_step_template(variable_doc)
     service.process_task_template(wflow_doc, variable_doc)
 
-    # DocumentVersionMaker.verify_if_allowed(
-    #     DocumentVersionMaker.from_dict(wflow_doc.as_dict), VERSION_SCOPE
-    # )
+    output_data = Variables({"_steps": variable_doc[WorkflowConfigNode.NODE.value]})
 
-    # VersionedDocumentSupport.validate_with_schema(
-    #     HttpDocumentSupport.build_schema(), http_doc
-    # )
-
+    # TODO also send failed_details (fail code, message, stacktrace, etc)
     return ExecResponse(
         file_ctx=file_ctx,
         exec_ctx=exec_ctx,
-        variables_exec=ExposableVariables({}),
+        variables_exec=output_data,
         variables=variable_doc,
-        extra={},
     )
 
 
@@ -224,4 +237,12 @@ def execute(
         cb: Callable
     """
 
-    _ = call(file_ctx=ctx, exec_ctx=exec_ctx)
+    exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
+
+    wf_doc = WorkflowDocument.from_file_context(ctx)
+    exposed_data = ExposeManager.get_exposed_replaced_data(
+        wf_doc, {**dict(exr.variables), **dict(exr.variables_exec)}
+    )
+
+    cb({ctx.filepath_hash: exr.variables_exec.data})
+    WorkflowDocumentSupport.display(exposed_data, exec_ctx)
