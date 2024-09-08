@@ -68,9 +68,11 @@ class ExecResponse(BaseModel):
 
     file_ctx: FileContext
     exec_ctx: ExecuteContext
-    variables_exec: ExposableVariables
     variables: Variables
+    variables_exec: Variables
+    variables_disp: Variables = Field(default_factory=Variables)
     extra: object = Field(default=None)
+    exception: Exception | None = Field(default=None)
 
 
 @typing.overload
