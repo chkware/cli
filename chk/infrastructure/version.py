@@ -14,12 +14,18 @@ VERSION_FORMAT_REGEX = r"^([A-Za-z0-9-\.:]+){3}$"
 VERSION_STORE = {
     "http": [
         "0.7.2",
+        "0.8.0",
     ],
     "testcase": [
         "0.7.2",
+        "0.8.0",
     ],
     "validation": [
         "0.7.2",
+        "0.8.0",
+    ],
+    "workflow": [
+        "0.8.0",
     ],
 }
 
@@ -107,6 +113,11 @@ class DocumentVersion:
             raise ValueError("Invalid doc_type_ver in version string")
 
         return True
+
+    def __str__(self) -> str:
+        """str dunder"""
+
+        return self.original_version_str
 
 
 class DocumentVersionMaker:
