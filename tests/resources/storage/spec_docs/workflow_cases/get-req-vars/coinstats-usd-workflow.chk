@@ -21,4 +21,4 @@ tasks:
       vdata: <% _steps.0._response %>
 
 expose:
-  - <% _steps.0 %>
+  - <% _steps %>
