@@ -22,7 +22,6 @@ from chk.infrastructure.symbol_table import (
     VariableTableManager,
     replace_value,
     ExposeManager,
-    ExposableVariables,
     ExecResponse,
 )
 from chk.modules.validate.assertion_services import (
@@ -268,7 +267,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     )
 
     test_run_result = AssertionEntryListRunner.test_run(assert_list, variable_doc.data)
-    output_data = ExposableVariables(
+    output_data = Variables(
         {
             "_asserts_response": test_run_result.as_dict,
             "_data": variable_doc["_data"],

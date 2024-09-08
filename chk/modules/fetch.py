@@ -27,7 +27,6 @@ from chk.infrastructure.symbol_table import (
     VARIABLE_SCHEMA as VAR_SCHEMA,
     EXPOSE_SCHEMA as EXP_SCHEMA,
     ExposeManager,
-    ExposableVariables,
     ExecResponse,
 )
 
@@ -544,7 +543,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     HttpDocumentSupport.process_request_template(http_doc, variable_doc)
 
     response = HttpDocumentSupport.execute_request(http_doc)
-    output_data = ExposableVariables({"_response": response.data})
+    output_data = Variables({"_response": response.data})
 
     return ExecResponse(
         file_ctx=file_ctx,
