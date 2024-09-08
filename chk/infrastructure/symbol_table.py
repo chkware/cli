@@ -61,10 +61,6 @@ class Variables(UserDict):
     """Holds data for a variable"""
 
 
-class ExposableVariables(UserDict):
-    """Holds data for a expose data"""
-
-
 class ExecResponse(BaseModel):
     """ExecResponse"""
 
