@@ -7,9 +7,9 @@ from __future__ import annotations
 import enum
 from typing import NamedTuple
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
-from chk.infrastructure.file_loader import generate_abs_path, ExecuteContext
+from chk.infrastructure.file_loader import ExecuteContext, generate_abs_path
 
 
 class WorkflowConfigNode(enum.StrEnum):

@@ -3,17 +3,24 @@ Workflow module
 """
 
 from __future__ import annotations
-from collections import abc
-import pathlib
-from collections.abc import Callable
-from uuid import uuid4
 
-from pydantic import Field, ConfigDict
-from icecream import ic
+import pathlib
+from collections import abc
+from collections.abc import Callable
+
+from pydantic import ConfigDict, Field
 
 from chk.infrastructure.document import (
     VersionedDocumentV2 as VersionedDocument,
-    VersionedDocumentSupport,
+)
+from chk.infrastructure.file_loader import ExecuteContext, FileContext
+from chk.infrastructure.helper import data_get, slugify
+from chk.infrastructure.symbol_table import (
+    ExecResponse,
+    ExposeManager,
+    VariableTableManager,
+    Variables,
+    replace_value,
 )
 from chk.infrastructure.version import DocumentVersionMaker
 from chk.modules.fetch import task_fetch
@@ -21,23 +28,11 @@ from chk.modules.validate import task_validation
 from chk.modules.workflow.entities import (
     ChkwareTask,
     ChkwareValidateTask,
-    WorkflowUses,
     TaskExecParam,
     WorkflowConfigNode,
+    WorkflowUses,
 )
-from chk.infrastructure.file_loader import (
-    FileContext,
-    ExecuteContext,
-)
-from chk.infrastructure.helper import data_get, formatter, slugify
-from chk.infrastructure.symbol_table import (
-    Variables,
-    VariableTableManager,
-    ExecResponse,
-    replace_value,
-    ExposeManager,
-)
-from chk.modules.workflow.services import ChkwareTaskSupport
+from chk.modules.workflow.services import ChkwareTaskSupport, WorkflowPresenter
 
 VERSION_SCOPE = ["workflow"]
 
