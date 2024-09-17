@@ -183,16 +183,22 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     service = WorkflowDocumentSupport()
     # @TODO make sure the document do not call self making it repeating
     service.set_step_template(variable_doc)
-    service.process_task_template(wflow_doc, variable_doc)
+    exec_responses = service.process_task_template(wflow_doc, variable_doc)
 
     output_data = Variables({"_steps": variable_doc[WorkflowConfigNode.NODE.value]})
+
+    exposed_data = ExposeManager.get_exposed_replaced_data(
+        wflow_doc, {**variable_doc.data, **output_data.data}
+    )
 
     # TODO also send failed_details (fail code, message, stacktrace, etc)
     return ExecResponse(
         file_ctx=file_ctx,
         exec_ctx=exec_ctx,
-        variables_exec=output_data,
         variables=variable_doc,
+        variables_exec=output_data,
+        extra=exec_responses,
+        exposed=exposed_data,
     )
 
 
@@ -209,10 +215,5 @@ def execute(
 
     exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
 
-    wf_doc = WorkflowDocument.from_file_context(ctx)
-    exposed_data = ExposeManager.get_exposed_replaced_data(
-        wf_doc, {**dict(exr.variables), **dict(exr.variables_exec)}
-    )
-
     cb({ctx.filepath_hash: exr.variables_exec.data})
-    WorkflowDocumentSupport.display(exposed_data, exec_ctx)
+    WorkflowDocumentSupport.display(exr, exec_ctx)

@@ -70,9 +70,9 @@ class ExecResponse(BaseModel):
     exec_ctx: ExecuteContext
     variables: Variables
     variables_exec: Variables
-    variables_disp: Variables = Field(default_factory=Variables)
     extra: object = Field(default=None)
     exception: Exception | None = Field(default=None)
+    exposed: list[typing.Any] = Field(default_factory=list)
 
 
 @typing.overload
