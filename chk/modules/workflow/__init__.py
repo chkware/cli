@@ -158,43 +158,18 @@ class WorkflowDocumentSupport:
     ) -> ExecResponse:
         """execute_tasks"""
 
-        formatter(f"\nTask: {task_params.task.name}")
-
         _task_res: ExecResponse = task_fn(**task_params.asdict())
         variables[WorkflowConfigNode.NODE.value].append(_task_res.variables_exec.data)
-
-        # TODO move the display logic to service
-        # @SECTION display
-        __doc_version: str = data_get(_task_res.file_ctx.document, "version", "")
-
-        if __doc_version.startswith("default:http"):
-            formatter(
-                "-> %s %s"
-                % (
-                    data_get(_task_res.file_ctx.document, "request.method"),
-                    data_get(_task_res.file_ctx.document, "request.url"),
-                )
-            )
-        elif __doc_version.startswith("default:validation"):
-            formatter(
-                "-> Total tests: %s, Failed: %s"
-                % (
-                    data_get(
-                        _task_res.variables_exec.data,
-                        "_asserts_response.count_all",
-                    ),
-                    data_get(
-                        _task_res.variables_exec.data,
-                        "_asserts_response.count_fail",
-                    ),
-                )
-            )
-        # @SECTION display end
 
         return _task_res
 
     @classmethod
-    def display(cls, exposed_data: list, exec_ctx: ExecuteContext) -> None: ...
+    def display(cls, ex_resp: ExecResponse, exec_ctx: ExecuteContext) -> None:
+        wfp = WorkflowPresenter(ex_resp.variables_exec)
+        if exec_ctx.options["format"]:
+            wfp.print()
+        else:
+            wfp.printjson()
 
 
 def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
