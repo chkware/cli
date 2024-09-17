@@ -111,13 +111,11 @@ class WorkflowDocumentSupport:
     @classmethod
     def process_task_template(
         cls, document: WorkflowDocument, variables: Variables
-    ) -> None:
+    ) -> list[ExecResponse]:
         """Process task block of document"""
 
-        formatter(f"\n\nExecuting: {document.name}")
-        formatter("-" * 5)
-
         base_fpath: str = FileContext(*document.context).filepath
+        exec_responses: list[ExecResponse] = []
 
         for task in document.tasks:
             if not isinstance(task, dict):
@@ -125,7 +123,6 @@ class WorkflowDocumentSupport:
 
             # replace values in tasks
             task_d_: dict = replace_value(task, variables.data)
-            # ic(task_d_)
             task_o_ = ChkwareTaskSupport.make_task(task_d_, base_file_path=base_fpath)
 
             execution_ctx = ExecuteContext(
@@ -140,17 +137,23 @@ class WorkflowDocumentSupport:
 
             match task_o_.uses:
                 case WorkflowUses.fetch.value:
-                    cls.execute_tasks(
+                    _r = cls.execute_tasks(
                         task_fetch,
                         TaskExecParam(task=task_o_, exec_ctx=execution_ctx),
                         variables,
                     )
+
+                    exec_responses.append(_r)
                 case WorkflowUses.validate.value:
-                    cls.execute_tasks(
+                    _r = cls.execute_tasks(
                         task_validation,
                         TaskExecParam(task=task_o_, exec_ctx=execution_ctx),
                         variables,
                     )
+
+                    exec_responses.append(_r)
+
+        return exec_responses
 
     @classmethod
     def execute_tasks(
