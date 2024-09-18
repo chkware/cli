@@ -135,23 +135,17 @@ class WorkflowDocumentSupport:
                 },
             )
 
+            task_fn = None
+
             match task_o_.uses:
                 case WorkflowUses.fetch.value:
-                    _r = cls.execute_tasks(
-                        task_fetch,
-                        TaskExecParam(task=task_o_, exec_ctx=execution_ctx),
-                        variables,
-                    )
-
-                    exec_responses.append(_r)
+                    task_fn = task_fetch
                 case WorkflowUses.validate.value:
-                    _r = cls.execute_tasks(
-                        task_validation,
-                        TaskExecParam(task=task_o_, exec_ctx=execution_ctx),
-                        variables,
-                    )
+                    task_fn = task_validation
 
-                    exec_responses.append(_r)
+            if task_fn:
+                te_param = TaskExecParam(task=task_o_, exec_ctx=execution_ctx)
+                exec_responses.append(cls.execute_tasks(task_fn, te_param, variables))
 
         return exec_responses
 
