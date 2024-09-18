@@ -274,12 +274,21 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         }
     )
 
+    exposed_data = ExposeManager.get_exposed_replaced_data(
+        validate_doc,
+        {
+            **validate_doc.data,
+            **{"_asserts_response": test_run_result},
+        },
+    )
+
     return ExecResponse(
         file_ctx=file_ctx,
         exec_ctx=exec_ctx,
         variables_exec=output_data,
         variables=variable_doc,
         extra=test_run_result,
+        exposed=exposed_data,
     )
 
 
@@ -296,17 +305,8 @@ def execute(
 
     exec_response = call(file_ctx=ctx, exec_ctx=exec_ctx)
 
-    validate_doc = ValidationDocument.from_file_context(ctx)
-    exposed_data = ExposeManager.get_exposed_replaced_data(
-        validate_doc,
-        {
-            **exec_response.variables.data,
-            **{"_asserts_response": exec_response.extra},
-        },
-    )
-
     cb({ctx.filepath_hash: exec_response.variables_exec.data})
-    ValidationDocumentSupport.display(exposed_data, exec_ctx)
+    ValidationDocumentSupport.display(exec_response.exposed, exec_ctx)
 
 
 def task_validation(**kwargs: dict) -> ExecResponse:
