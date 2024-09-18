@@ -2,8 +2,11 @@
 Workflow services module
 """
 
+import typing
+
 from chk.infrastructure.helper import formatter
 from chk.infrastructure.symbol_table import Variables
+from chk.infrastructure.view import PresentationBuilder
 from chk.modules.workflow import ChkwareTask, ChkwareValidateTask, WorkflowUses
 
 
@@ -35,17 +38,10 @@ class ChkwareTaskSupport:
         )
 
 
-class WorkflowPresenter:
+class WorkflowPresenter(PresentationBuilder):
     """WorkflowPresenter"""
 
-    __slots__ = ("data",)
-
-    def __init__(self, var: Variables):
-        """Construct"""
-
-        self.data: Variables = var
-
-    def print(self) -> None:
+    def dump_fmt(self) -> None:
         """print to screen"""
 
         if "document" in self.data and "name" in self.data["document"]:
@@ -72,4 +68,7 @@ class WorkflowPresenter:
                     f"-> Total tests: {one_exposed_data['asserts_count_all']}, Failed: {one_exposed_data['asserts_count_fail']}"
                 )
 
-    def printjson(self) -> None: ...
+    def dump_json(self) -> str:
+        """print json"""
+
+        pass
