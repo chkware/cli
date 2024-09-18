@@ -3,37 +3,35 @@ Fetch module
 """
 
 from __future__ import annotations
+
 import dataclasses
 import enum
 import json
 import pathlib
-
 from collections import UserDict, abc
 from urllib.parse import unquote, urlparse
 
+import xmltodict
+from defusedxml.minidom import parseString
 from pydantic import BaseModel, Field
 from requests.auth import HTTPBasicAuth
-
-from defusedxml.minidom import parseString
-import xmltodict
 
 from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import data_get, formatter
 from chk.infrastructure.symbol_table import (
+    EXPOSE_SCHEMA as EXP_SCHEMA,
+    ExecResponse,
+    ExposeManager,
+    VARIABLE_SCHEMA as VAR_SCHEMA,
     VariableTableManager,
     Variables,
     replace_value,
-    VARIABLE_SCHEMA as VAR_SCHEMA,
-    EXPOSE_SCHEMA as EXP_SCHEMA,
-    ExposeManager,
-    ExecResponse,
 )
-
 from chk.infrastructure.third_party.http_fetcher import (
     ApiResponse,
-    fetch,
     BearerAuthentication,
+    fetch,
 )
 from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
 
