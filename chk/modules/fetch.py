@@ -551,12 +551,18 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
 
     output_data = Variables({"_response": response.data})
 
+    exposed_data = ExposeManager.get_exposed_replaced_data(
+        http_doc,
+        {**variable_doc.data, **output_data.data},
+    )
+
     return ExecResponse(
         file_ctx=file_ctx,
         exec_ctx=exec_ctx,
         variables_exec=output_data,
         variables=variable_doc,
         exception=r_exception,
+        exposed=exposed_data,
         report={"is_success": r_exception is None},
     )
 
@@ -572,16 +578,12 @@ def execute(
         cb: Callable
     """
 
-    exec_response = call(file_ctx=ctx, exec_ctx=exec_ctx)
+    exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
+    if exr.exception is not None:
+        raise exr.exception
 
-    http_doc = HttpDocument.from_file_context(exec_response.file_ctx)
-    exposed_data = ExposeManager.get_exposed_replaced_data(
-        http_doc,
-        {**exec_response.variables.data, **exec_response.variables_exec.data},
-    )
-
-    cb({ctx.filepath_hash: exec_response.variables_exec.data})
-    HttpDocumentSupport.display(exposed_data, exec_ctx)
+    cb({ctx.filepath_hash: exr.variables_exec.data})
+    HttpDocumentSupport.display(exr.exposed, exec_ctx)
 
 
 def task_fetch(**kwargs: dict) -> ExecResponse:

@@ -73,6 +73,7 @@ class ExecResponse(BaseModel):
     extra: object = Field(default=None)
     exception: Exception | None = Field(default=None)
     exposed: list[typing.Any] = Field(default_factory=list)
+    report: dict = Field(default_factory=dict)
 
 
 @typing.overload
