@@ -526,6 +526,8 @@ class HttpDocumentSupport:
 def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     """Call a http document"""
 
+    r_exception: Exception | None = None
+
     http_doc = HttpDocument.from_file_context(file_ctx)
 
     DocumentVersionMaker.verify_if_allowed(
@@ -540,7 +542,13 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
     HttpDocumentSupport.process_request_template(http_doc, variable_doc)
 
-    response = HttpDocumentSupport.execute_request(http_doc)
+    response = ApiResponse()
+
+    try:
+        response = HttpDocumentSupport.execute_request(http_doc)
+    except Exception as ex:
+        r_exception = ex
+
     output_data = Variables({"_response": response.data})
 
     return ExecResponse(
@@ -548,6 +556,8 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         exec_ctx=exec_ctx,
         variables_exec=output_data,
         variables=variable_doc,
+        exception=r_exception,
+        report={"is_success": r_exception is None},
     )
 
 
