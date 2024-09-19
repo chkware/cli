@@ -292,6 +292,11 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         variables=variable_doc,
         extra=test_run_result,
         exposed=exposed_data,
+        report={
+            "is_success": test_run_result["count_fail"] == 0,
+            "count_all": test_run_result["count_all"],
+            "count_fail": test_run_result["count_fail"],
+        },
     )
 
 
