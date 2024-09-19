@@ -278,7 +278,10 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         validate_doc,
         {
             **validate_doc.data,
-            **{"_asserts_response": test_run_result},
+            **{
+                "_asserts_response": test_run_result,
+                "_data": variable_doc["_data"],
+            },
         },
     )
 
