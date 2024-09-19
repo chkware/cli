@@ -78,3 +78,12 @@ class ChkwareValidateTask(ChkwareTask):
         """Constructor"""
 
         super().__init__(basepath, **kwargs)
+
+
+class StepResult(BaseModel):
+    """StepResult"""
+
+    name: str
+    uses: str
+    is_success: bool
+    others: dict = Field(default_factory=dict)

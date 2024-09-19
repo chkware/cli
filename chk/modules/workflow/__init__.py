@@ -28,6 +28,7 @@ from chk.modules.validate import task_validation
 from chk.modules.workflow.entities import (
     ChkwareTask,
     ChkwareValidateTask,
+    StepResult,
     TaskExecParam,
     WorkflowConfigNode,
     WorkflowUses,
@@ -116,6 +117,7 @@ class WorkflowDocumentSupport:
 
         base_fpath: str = FileContext(*document.context).filepath
         exec_responses: list[ExecResponse] = []
+        exec_report: list[StepResult] = []
 
         for task in document.tasks:
             if not isinstance(task, dict):
@@ -145,15 +147,19 @@ class WorkflowDocumentSupport:
 
             if task_fn:
                 te_param = TaskExecParam(task=task_o_, exec_ctx=execution_ctx)
-                exec_responses.append(cls.execute_tasks(task_fn, te_param, variables))
+                task_resp: ExecResponse = cls.execute_task(task_fn, te_param, variables)
+                exec_report.append(
+                    StepResult(name=task_o_.name, uses=task_o_.uses, **task_resp.report)
+                )
+                exec_responses.append(task_resp)
 
         return exec_responses
 
     @classmethod
-    def execute_tasks(
+    def execute_task(
         cls, task_fn: Callable, task_params: TaskExecParam, variables: Variables
     ) -> ExecResponse:
-        """execute_tasks"""
+        """execute_task"""
 
         _task_res: ExecResponse = task_fn(**task_params.asdict())
         variables[WorkflowConfigNode.NODE.value].append(_task_res.variables_exec.data)
