@@ -23,6 +23,7 @@ from chk.infrastructure.symbol_table import (
     replace_value,
 )
 from chk.infrastructure.version import DocumentVersionMaker
+from chk.infrastructure.view import PresentationBuilder
 from chk.modules.fetch import task_fetch
 from chk.modules.validate import task_validation
 from chk.modules.workflow.entities import (
@@ -112,7 +113,7 @@ class WorkflowDocumentSupport:
     @classmethod
     def process_task_template(
         cls, document: WorkflowDocument, variables: Variables
-    ) -> list[ExecResponse]:
+    ) -> tuple[list[ExecResponse], list[StepResult]]:
         """Process task block of document"""
 
         base_fpath: str = FileContext(*document.context).filepath
@@ -148,12 +149,18 @@ class WorkflowDocumentSupport:
             if task_fn:
                 te_param = TaskExecParam(task=task_o_, exec_ctx=execution_ctx)
                 task_resp: ExecResponse = cls.execute_task(task_fn, te_param, variables)
+
                 exec_report.append(
-                    StepResult(name=task_o_.name, uses=task_o_.uses, **task_resp.report)
+                    StepResult(
+                        name=task_o_.name,
+                        uses=task_o_.uses,
+                        is_success=task_resp.report.pop("is_success"),
+                        others=task_resp.report,
+                    )
                 )
                 exec_responses.append(task_resp)
 
-        return exec_responses
+        return exec_responses, exec_report
 
     @classmethod
     def execute_task(
@@ -166,13 +173,21 @@ class WorkflowDocumentSupport:
 
         return _task_res
 
+    # @classmethod
+    # def prepare_step_results(cls, ) -> dict:
+
     @classmethod
-    def display(cls, ex_resp: ExecResponse, exec_ctx: ExecuteContext) -> None:
-        wfp = WorkflowPresenter(ex_resp.variables_exec)
+    def display(
+        cls,
+        ex_resp: ExecResponse,
+        exec_ctx: ExecuteContext,
+        presenter: type[PresentationBuilder],
+    ) -> None:
+        wfp = presenter(data=ex_resp)
         if exec_ctx.options["format"]:
-            wfp.print()
+            wfp.dump_fmt()
         else:
-            wfp.printjson()
+            wfp.dump_json()
 
 
 def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
@@ -186,7 +201,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     service = WorkflowDocumentSupport()
     # @TODO make sure the document do not call self making it repeating
     service.set_step_template(variable_doc)
-    exec_responses = service.process_task_template(wflow_doc, variable_doc)
+    exec_responses, exec_report = service.process_task_template(wflow_doc, variable_doc)
 
     output_data = Variables({"_steps": variable_doc[WorkflowConfigNode.NODE.value]})
 
@@ -200,7 +215,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         exec_ctx=exec_ctx,
         variables=variable_doc,
         variables_exec=output_data,
-        extra=exec_responses,
+        extra=(exec_responses, exec_report),
         exposed=exposed_data,
     )
 
@@ -219,4 +234,4 @@ def execute(
     exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
 
     cb({ctx.filepath_hash: exr.variables_exec.data})
-    WorkflowDocumentSupport.display(exr, exec_ctx)
+    WorkflowDocumentSupport.display(exr, exec_ctx, WorkflowPresenter)
