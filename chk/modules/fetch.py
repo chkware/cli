@@ -556,6 +556,10 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         {**variable_doc.data, **output_data.data},
     )
 
+    # TODO: instead if sending specific report items, and making presentable in other
+    #       module, we should prepare and long and short form of presentable that can be
+    #       loaded via other module
+
     return ExecResponse(
         file_ctx=file_ctx,
         exec_ctx=exec_ctx,
@@ -563,7 +567,11 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         variables=variable_doc,
         exception=r_exception,
         exposed=exposed_data,
-        report={"is_success": r_exception is None},
+        report={
+            "is_success": r_exception is None,
+            "request_method": file_ctx.document["request"]['method'],
+            "request_url": file_ctx.document["request"]['url'],
+        },
     )
 
 
