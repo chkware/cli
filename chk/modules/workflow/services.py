@@ -2,12 +2,15 @@
 Workflow services module
 """
 
-import typing
+from __future__ import annotations
 
-from chk.infrastructure.helper import formatter
-from chk.infrastructure.symbol_table import Variables
 from chk.infrastructure.view import PresentationBuilder
-from chk.modules.workflow import ChkwareTask, ChkwareValidateTask, WorkflowUses
+from chk.modules.workflow import (
+    ChkwareTask,
+    ChkwareValidateTask,
+    StepResult,
+    WorkflowUses,
+)
 
 
 class ChkwareTaskSupport:
@@ -41,34 +44,76 @@ class ChkwareTaskSupport:
 class WorkflowPresenter(PresentationBuilder):
     """WorkflowPresenter"""
 
-    def dump_fmt(self) -> None:
+    def _prepare_dump_data(self) -> dict:
+        """prepare dump data"""
+
+        _, exec_report = self.data.extra
+        _document = self.data.file_ctx.document
+
+        r_dump = {}
+
+        if _document and "name" in _document:
+            r_dump["name"] = _document["name"]
+
+        if exec_report:
+            r_dump["step_count"] = len(exec_report)
+            r_dump["step_failed"] = len(
+                [item for item in exec_report if not item.is_success]
+            )
+
+        r_dump["tasks"] = []
+
+        for item in exec_report:
+            item: StepResult  # type: ignore
+
+            response_task_dump = {
+                "name": item.name,
+                "uses": item.uses,
+                "is_success": item.is_success,
+                "fetch_request_method": (
+                    item.others["request_method"]
+                    if "request_method" in item.others
+                    else ""
+                ),
+                "fetch_request_url": (
+                    item.others["request_url"] if "request_url" in item.others else ""
+                ),
+                "validate_asserts_count_all": (
+                    item.others["count_all"] if "count_all" in item.others else ""
+                ),
+                "validate_asserts_count_fail": (
+                    item.others["count_fail"] if "count_fail" in item.others else ""
+                ),
+            }
+
+            r_dump["tasks"].append(response_task_dump)
+        return r_dump
+
+    def dump_fmt(self) -> str:
         """print to screen"""
 
-        if "document" in self.data and "name" in self.data["document"]:
-            formatter(f"\n\nWorkflow: {self.data['document']['name']}")
-            formatter(
-                f"Steps total: {self.data['document']['step_count']}, "
-                f"failed: {self.data['document']['step_failed']}"
-            )
-            formatter("-" * 5)
+        dump_dct: dict = self._prepare_dump_data()
 
-        exposed_data: list[dict] = []
+        _computed_str = f"\n\nWorkflow: {dump_dct.get('name', '')}\n"
+        _computed_str += f"Steps total: {dump_dct.get('step_count', '')}, "
+        _computed_str += f"failed: {dump_dct.get('step_failed', '')}\n"
+        _computed_str += "------\n"
 
-        if "steps" in self.data:
-            exposed_data = self.data["steps"]
+        tasks = dump_dct.get("tasks", [])
 
-        for one_exposed_data in exposed_data:
-            formatter(f"\nTask: {one_exposed_data['name']}")
-            if one_exposed_data["uses"] == "fetch":
-                formatter(
-                    f"-> {one_exposed_data['request_method']} {one_exposed_data['request_url']}"
+        for one_task in tasks:
+            _computed_str += "\n\n"
+            _computed_str += "+ " if one_task["is_success"] else "- "
+            _computed_str += f"Task: {one_task['name']}\n"
+            if one_task["uses"] == "fetch":
+                _computed_str += f">> {one_task['fetch_request_method']} {one_task['fetch_request_url']}"
+            elif one_task["uses"] == "validate":
+                _computed_str += (
+                    f">> Total tests: {one_task['validate_asserts_count_all']}, "
                 )
-            elif one_exposed_data["uses"] == "validate":
-                formatter(
-                    f"-> Total tests: {one_exposed_data['asserts_count_all']}, Failed: {one_exposed_data['asserts_count_fail']}"
-                )
+                _computed_str += f"Failed: {one_task['validate_asserts_count_fail']}"
+
+        return _computed_str
 
     def dump_json(self) -> str:
         """print json"""
-
-        pass
