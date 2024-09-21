@@ -4,6 +4,8 @@ Workflow services module
 
 from __future__ import annotations
 
+import json
+
 from chk.infrastructure.view import PresentationBuilder
 from chk.modules.workflow import (
     ChkwareTask,
@@ -17,7 +19,7 @@ class ChkwareTaskSupport:
     """ChkwareTaskSupport"""
 
     @classmethod
-    def make_task(cls, task_d_: dict, /, **kwargs) -> ChkwareTask:
+    def make_task(cls, task_d_: dict, /, **kwargs: dict) -> ChkwareTask:
         """validate task data"""
 
         if "base_file_path" not in kwargs:
@@ -90,7 +92,7 @@ class WorkflowPresenter(PresentationBuilder):
         return r_dump
 
     def dump_fmt(self) -> str:
-        """print to screen"""
+        """return formatted string representation"""
 
         dump_dct: dict = self._prepare_dump_data()
 
@@ -116,4 +118,6 @@ class WorkflowPresenter(PresentationBuilder):
         return _computed_str
 
     def dump_json(self) -> str:
-        """print json"""
+        """return json representation"""
+
+        return json.dumps(self._prepare_dump_data())

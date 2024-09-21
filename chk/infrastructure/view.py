@@ -12,7 +12,7 @@ class PresentationBuilder(BaseModel, abc.ABC):
     data: typing.Any
 
     @abc.abstractmethod
-    def dump_fmt(self) -> None:
+    def dump_fmt(self) -> str:
         """Signature to dump formatted string"""
 
         raise NotImplementedError("Signature to dump formatted string")

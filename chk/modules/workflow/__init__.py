@@ -14,7 +14,7 @@ from chk.infrastructure.document import (
     VersionedDocumentV2 as VersionedDocument,
 )
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
-from chk.infrastructure.helper import data_get, slugify
+from chk.infrastructure.helper import data_get, formatter, slugify
 from chk.infrastructure.symbol_table import (
     ExecResponse,
     ExposeManager,
@@ -185,9 +185,9 @@ class WorkflowDocumentSupport:
     ) -> None:
         wfp = presenter(data=ex_resp)
         if exec_ctx.options["format"]:
-            wfp.dump_fmt()
+            formatter(wfp.dump_fmt(), dump=exec_ctx.options["dump"])
         else:
-            wfp.dump_json()
+            formatter(wfp.dump_json(), dump=exec_ctx.options["dump"])
 
 
 def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
