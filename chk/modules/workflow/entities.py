@@ -83,7 +83,7 @@ class ChkwareValidateTask(ChkwareTask):
 class StepResult(BaseModel):
     """StepResult"""
 
-    name: str
-    uses: str
+    task: ChkwareTask | ChkwareValidateTask
     is_success: bool
     others: dict = Field(default_factory=dict)
+    exposed: list | dict = Field(default_factory=list)

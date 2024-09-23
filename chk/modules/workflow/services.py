@@ -49,7 +49,7 @@ class WorkflowPresenter(PresentationBuilder):
     def _prepare_dump_data(self) -> dict:
         """prepare dump data"""
 
-        _, exec_report = self.data.extra
+        exec_report = self.data.extra
         _document = self.data.file_ctx.document
 
         r_dump = {}
@@ -69,8 +69,8 @@ class WorkflowPresenter(PresentationBuilder):
             item: StepResult  # type: ignore
 
             response_task_dump = {
-                "name": item.name,
-                "uses": item.uses,
+                "name": item.task.name,
+                "uses": item.task.uses,
                 "is_success": item.is_success,
                 "fetch_request_method": (
                     item.others["request_method"]
