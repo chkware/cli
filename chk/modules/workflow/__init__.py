@@ -113,11 +113,10 @@ class WorkflowDocumentSupport:
     @classmethod
     def process_task_template(
         cls, document: WorkflowDocument, variables: Variables
-    ) -> tuple[list[ExecResponse], list[StepResult]]:
+    ) -> list:
         """Process task block of document"""
 
         base_fpath: str = FileContext(*document.context).filepath
-        exec_responses: list[ExecResponse] = []
         exec_report: list[StepResult] = []
 
         for task in document.tasks:
@@ -126,7 +125,9 @@ class WorkflowDocumentSupport:
 
             # replace values in tasks
             task_d_: dict = replace_value(task, variables.data)
-            task_o_ = ChkwareTaskSupport.make_task(task_d_, base_file_path=base_fpath)
+            task_o_ = ChkwareTaskSupport.make_task(
+                task_d_, **dict(base_file_path=base_fpath)
+            )
 
             execution_ctx = ExecuteContext(
                 {"dump": True, "format": True},
@@ -152,15 +153,14 @@ class WorkflowDocumentSupport:
 
                 exec_report.append(
                     StepResult(
-                        name=task_o_.name,
-                        uses=task_o_.uses,
+                        task=task_o_,
                         is_success=task_resp.report.pop("is_success"),
                         others=task_resp.report,
+                        exposed=task_resp.exposed,
                     )
                 )
-                exec_responses.append(task_resp)
 
-        return exec_responses, exec_report
+        return exec_report
 
     @classmethod
     def execute_task(
@@ -201,11 +201,12 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     service = WorkflowDocumentSupport()
     # @TODO make sure the document do not call self making it repeating
     service.set_step_template(variable_doc)
-    exec_responses, exec_report = service.process_task_template(wflow_doc, variable_doc)
+    exec_report = service.process_task_template(wflow_doc, variable_doc)
 
+    # output_data = Variables()
     output_data = Variables({"_steps": variable_doc[WorkflowConfigNode.NODE.value]})
 
-    exposed_data = ExposeManager.get_exposed_replaced_data(
+    exposed_data: dict = ExposeManager.get_exposed_replaced_data_v2(
         wflow_doc, {**variable_doc.data, **output_data.data}
     )
 
@@ -215,7 +216,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         exec_ctx=exec_ctx,
         variables=variable_doc,
         variables_exec=output_data,
-        extra=(exec_responses, exec_report),
+        extra=exec_report,
         exposed=exposed_data,
     )
 
