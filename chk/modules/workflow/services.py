@@ -6,11 +6,13 @@ from __future__ import annotations
 
 import json
 
+from chk.infrastructure.helper import Cast
 from chk.infrastructure.view import PresentationBuilder
 from chk.modules.workflow import (
     ChkwareTask,
     ChkwareValidateTask,
     StepResult,
+    WorkflowConfigNode,
     WorkflowUses,
 )
 
@@ -94,6 +96,25 @@ class WorkflowPresenter(PresentationBuilder):
     def dump_fmt(self) -> str:
         """return formatted string representation"""
 
+        exposed_fmt_str = []
+
+        for key in self.data.exposed:
+            _t_key = str(key).replace("%>", "").replace("<%", "").strip()
+            _t_marker = str(WorkflowConfigNode.NODE)
+            _str_to_append = ""
+
+            if _t_marker in _t_key and len(_t_key) == len(_t_marker):
+                _str_to_append = self._prepare_dump_str_for_steps()
+            else:
+                _str_to_append = json.dumps(self.data.exposed[key])
+
+            exposed_fmt_str.append(_str_to_append)
+
+        return "\n------\n".join(exposed_fmt_str)
+
+    def _prepare_dump_str_for_steps(self) -> str:
+        """prepare dump str for steps"""
+
         dump_dct: dict = self._prepare_dump_data()
 
         _computed_str = f"\n\nWorkflow: {dump_dct.get('name', '')}\n"
@@ -104,7 +125,6 @@ class WorkflowPresenter(PresentationBuilder):
         tasks = dump_dct.get("tasks", [])
 
         for one_task in tasks:
-            _computed_str += "\n\n"
             _computed_str += "+ " if one_task["is_success"] else "- "
             _computed_str += f"Task: {one_task['name']}\n"
             if one_task["uses"] == "fetch":
@@ -119,5 +139,18 @@ class WorkflowPresenter(PresentationBuilder):
 
     def dump_json(self) -> str:
         """return json representation"""
+        exposed_fmt_str = []
 
-        return json.dumps(self._prepare_dump_data())
+        for key in self.data.exposed:
+            _t_key = str(key).replace("%>", "").replace("<%", "").strip()
+            _t_marker = str(WorkflowConfigNode.NODE)
+            _to_append = {}
+
+            if _t_marker in _t_key and len(_t_key) == len(_t_marker):
+                _to_append = self._prepare_dump_data()
+            else:
+                _to_append = Cast.try_dict(self.data.exposed[key])
+
+            exposed_fmt_str.append(_to_append)
+
+        return json.dumps(exposed_fmt_str)
