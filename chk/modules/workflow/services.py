@@ -110,21 +110,21 @@ class WorkflowPresenter(PresentationBuilder):
 
             exposed_fmt_str.append(_str_to_append)
 
-        return "\n------\n".join(exposed_fmt_str)
+        return "\n======\n".join(exposed_fmt_str)
 
     def _prepare_dump_str_for_steps(self) -> str:
         """prepare dump str for steps"""
 
         dump_dct: dict = self._prepare_dump_data()
 
-        _computed_str = f"\n\nWorkflow: {dump_dct.get('name', '')}\n"
-        _computed_str += f"Steps total: {dump_dct.get('step_count', '')}, "
-        _computed_str += f"failed: {dump_dct.get('step_failed', '')}\n"
-        _computed_str += "------\n"
+        _computed_str = f"\n\nWorkflow: {dump_dct.get('name', '')}"
+        _computed_str += f"\nSteps total: {dump_dct.get('step_count', '')}, "
+        _computed_str += f"failed: {dump_dct.get('step_failed', '')}"
 
         tasks = dump_dct.get("tasks", [])
 
         for one_task in tasks:
+            _computed_str += "\n------\n"
             _computed_str += "+ " if one_task["is_success"] else "- "
             _computed_str += f"Task: {one_task['name']}\n"
             if one_task["uses"] == "fetch":
