@@ -156,7 +156,7 @@ class TestValidationDocumentSupport:
         variables = Variables()
         ValidationDocumentSupport.set_data_template(doc, variables, exec_ctx)
 
-        assert bool(variables[ValidationConfigNode.VAR_NODE])
+        assert bool(variables[ValidationConfigNode.VAR_NODE.value])
 
     def test_set_data_template_pass_when_set_from_doc(self):
         ctx = FileContext(
@@ -185,7 +185,7 @@ class TestValidationDocumentSupport:
         variables = Variables()
         ValidationDocumentSupport.set_data_template(doc, variables, exec_ctx)
 
-        assert bool(variables[ValidationConfigNode.VAR_NODE])
+        assert bool(variables[ValidationConfigNode.VAR_NODE.value])
 
     def test_set_data_template_pass_exec_ctx_prioritise(self):
         ctx = FileContext(
@@ -215,8 +215,8 @@ class TestValidationDocumentSupport:
         variables = Variables()
         ValidationDocumentSupport.set_data_template(doc, variables, exec_ctx)
 
-        assert bool(variables[ValidationConfigNode.VAR_NODE])
-        assert variables[ValidationConfigNode.VAR_NODE].get("name") == "Some Name Two"
+        assert bool(variables[ValidationConfigNode.VAR_NODE.value])
+        assert variables[ValidationConfigNode.VAR_NODE.value].get("name") == "Some Name Two"
 
     @staticmethod
     def test_process_data_template_pass():
@@ -251,8 +251,8 @@ class TestValidationDocumentSupport:
         ValidationDocumentSupport.set_data_template(doc, variables, exec_ctx)
         ValidationDocumentSupport.process_data_template(variables)
 
-        assert bool(variables[ValidationConfigNode.VAR_NODE])
-        assert variables[ValidationConfigNode.VAR_NODE].get("greet") == "Hello Somebody"
+        assert bool(variables[ValidationConfigNode.VAR_NODE.value])
+        assert variables[ValidationConfigNode.VAR_NODE.value].get("greet") == "Hello Somebody"
 
     @staticmethod
     def test_make_assertion_entry_list_pass():
