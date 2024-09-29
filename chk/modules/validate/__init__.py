@@ -133,19 +133,19 @@ class ValidationDocumentSupport:
         """sets data or template"""
 
         data = data_get(exec_ctx.arguments, "data", {})
-        variables[ValidationConfigNode.VAR_NODE] = data if data else validate_doc.data
+        variables[ValidationConfigNode.VAR_NODE.value] = data if data else validate_doc.data
 
     @staticmethod
     def process_data_template(variables: Variables) -> None:
         """process data or template before assertion"""
-        data = variables[ValidationConfigNode.VAR_NODE]
+        data = variables[ValidationConfigNode.VAR_NODE.value]
         tmp_variables = {
             key: val
             for key, val in variables.data.items()
-            if key != ValidationConfigNode.VAR_NODE
+            if key != ValidationConfigNode.VAR_NODE.value
         }
 
-        variables[ValidationConfigNode.VAR_NODE] = replace_value(data, tmp_variables)
+        variables[ValidationConfigNode.VAR_NODE.value] = replace_value(data, tmp_variables)
 
     @staticmethod
     def make_assertion_entry_list(assert_lst: list[dict]) -> list[AssertionEntry]:
@@ -277,13 +277,25 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     exposed_data = ExposeManager.get_exposed_replaced_data(
         validate_doc,
         {
-            **validate_doc.data,
+            **variable_doc.data,
             **{
                 "_asserts_response": test_run_result,
-                "_data": variable_doc["_data"],
+                # "_data": variable_doc["_data"],
             },
         },
     )
+
+    import icecream
+    
+    # icecream.ic(exposed_data)
+    icecream.ic(variable_doc.data)
+    # icecream.ic({
+    #         **variable_doc.data,
+    #         **{
+    #             "_asserts_response": test_run_result,
+    #             "_data": variable_doc["_data"],
+    #         },
+    #     })
 
     return ExecResponse(
         file_ctx=file_ctx,
