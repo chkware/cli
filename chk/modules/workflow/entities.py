@@ -24,7 +24,7 @@ class TaskExecParam(NamedTuple):
     task: ChkwareTask
     exec_ctx: ExecuteContext
 
-    def asdict(self) -> dict:
+    def as_dict(self) -> dict:
         """Convert to dict"""
 
         return {"task": self.task.model_dump(), "execution_context": self.exec_ctx}
