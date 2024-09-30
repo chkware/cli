@@ -3,37 +3,37 @@ Validate module
 """
 
 from __future__ import annotations
+
 import dataclasses
 import enum
 import json
-from collections import abc
 
 import cerberus
+from collections import abc
 
 from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
-from chk.infrastructure.file_loader import FileContext, ExecuteContext
+from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import data_get, formatter
-from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
-
 from chk.infrastructure.symbol_table import (
-    VARIABLE_SCHEMA as VAR_SCHEMA,
     EXPOSE_SCHEMA as EXP_SCHEMA,
-    Variables,
-    VariableTableManager,
-    replace_value,
-    ExposeManager,
     ExecResponse,
+    ExposeManager,
+    VARIABLE_SCHEMA as VAR_SCHEMA,
+    VariableTableManager,
+    Variables,
+    replace_value,
 )
+from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
 from chk.modules.validate.assertion_services import (
+    AllTestRunResult,
     AssertionEntry,
     AssertionEntryListRunner,
-    AllTestRunResult,
-    ValidationTask,
     MAP_TYPE_TO_FN,
+    ValidationTask,
 )
 from chk.modules.validate.assertion_validation import (
-    get_schema_map,
     AssertionEntityProperty,
+    get_schema_map,
 )
 
 VERSION_SCOPE = ["validation"]
@@ -133,7 +133,9 @@ class ValidationDocumentSupport:
         """sets data or template"""
 
         data = data_get(exec_ctx.arguments, "data", {})
-        variables[ValidationConfigNode.VAR_NODE.value] = data if data else validate_doc.data
+        variables[ValidationConfigNode.VAR_NODE.value] = (
+            data if data else validate_doc.data
+        )
 
     @staticmethod
     def process_data_template(variables: Variables) -> None:
@@ -145,7 +147,9 @@ class ValidationDocumentSupport:
             if key != ValidationConfigNode.VAR_NODE.value
         }
 
-        variables[ValidationConfigNode.VAR_NODE.value] = replace_value(data, tmp_variables)
+        variables[ValidationConfigNode.VAR_NODE.value] = replace_value(
+            data, tmp_variables
+        )
 
     @staticmethod
     def make_assertion_entry_list(assert_lst: list[dict]) -> list[AssertionEntry]:
@@ -278,24 +282,9 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         validate_doc,
         {
             **variable_doc.data,
-            **{
-                "_asserts_response": test_run_result,
-                # "_data": variable_doc["_data"],
-            },
+            **{"_asserts_response": test_run_result},
         },
     )
-
-    import icecream
-    
-    # icecream.ic(exposed_data)
-    icecream.ic(variable_doc.data)
-    # icecream.ic({
-    #         **variable_doc.data,
-    #         **{
-    #             "_asserts_response": test_run_result,
-    #             "_data": variable_doc["_data"],
-    #         },
-    #     })
 
     return ExecResponse(
         file_ctx=file_ctx,
