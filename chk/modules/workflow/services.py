@@ -98,7 +98,7 @@ class WorkflowPresenter(PresentationBuilder):
 
         exposed_fmt_str = []
 
-        for key in self.data.exposed:
+        for key, value in self.data.exposed.items():
             _t_key = str(key).replace("%>", "").replace("<%", "").strip()
             _t_marker = str(WorkflowConfigNode.NODE)
             _str_to_append = ""
@@ -106,8 +106,15 @@ class WorkflowPresenter(PresentationBuilder):
             if _t_marker in _t_key and len(_t_key) == len(_t_marker):
                 _str_to_append = self._prepare_dump_str_for_steps()
             else:
-                _str_to_append = json.dumps(self.data.exposed[key])
+                _value = []
 
+                for item in value:
+                    if hasattr(item, "as_dict"):
+                        _value.append(item.as_dict)
+                    else:
+                        _value.append(item)
+
+                _str_to_append = json.dumps(_value)
             exposed_fmt_str.append(_str_to_append)
 
         return "\n======\n".join(exposed_fmt_str)
@@ -141,7 +148,7 @@ class WorkflowPresenter(PresentationBuilder):
         """return json representation"""
         exposed_fmt_str = []
 
-        for key in self.data.exposed:
+        for key, value in self.data.exposed.items():
             _t_key = str(key).replace("%>", "").replace("<%", "").strip()
             _t_marker = str(WorkflowConfigNode.NODE)
             _to_append = {}
@@ -149,7 +156,15 @@ class WorkflowPresenter(PresentationBuilder):
             if _t_marker in _t_key and len(_t_key) == len(_t_marker):
                 _to_append = self._prepare_dump_data()
             else:
-                _to_append = Cast.try_dict(self.data.exposed[key])
+                _value = []
+
+                for item in value:
+                    if hasattr(item, "as_dict"):
+                        _value.append(item.as_dict)
+                    else:
+                        _value.append(item)
+
+                _to_append = Cast.try_dict(_value)
 
             exposed_fmt_str.append(_to_append)
 
