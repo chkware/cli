@@ -280,6 +280,10 @@ class ExposeManager:
         if expose_doc := ExposeManager.get_expose_doc(file_ctx.document):
 
             exposed_doc_t = copy.copy(expose_doc)
+            exposed_doc_t = [
+                str(key).replace("%>", "").replace("<%", "").strip()
+                for key in exposed_doc_t
+            ]
 
             expose_val = ExposeManager.replace_values(expose_doc, store)
             return dict(zip(exposed_doc_t, expose_val))
