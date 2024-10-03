@@ -4,7 +4,6 @@ Fetch module
 
 from __future__ import annotations
 
-import dataclasses
 import enum
 import json
 import pathlib
@@ -16,7 +15,10 @@ from defusedxml.minidom import parseString
 from pydantic import BaseModel, Field
 from requests.auth import HTTPBasicAuth
 
-from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
+from chk.infrastructure.document import (
+    VersionedDocumentSupport,
+    VersionedDocumentV2,
+)
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import data_get, formatter
 from chk.infrastructure.symbol_table import (
@@ -319,13 +321,12 @@ class HttpRequestArgCompiler:
         HttpRequestArgCompiler.add_body(request_data, request_arg)
 
 
-@dataclasses.dataclass(slots=True)
-class HttpDocument(VersionedDocument):
+class HttpDocument(VersionedDocumentV2, BaseModel):
     """
     Http document entity
     """
 
-    request: dict = dataclasses.field(default_factory=dict)
+    request: dict = Field(default_factory=dict)
 
     @staticmethod
     def from_file_context(ctx: FileContext) -> HttpDocument:
@@ -346,12 +347,6 @@ class HttpDocument(VersionedDocument):
             version=version_str,
             request=request_dct,
         )
-
-    @property
-    def as_dict(self) -> dict:
-        """Return a dict of the data"""
-
-        return dataclasses.asdict(self)
 
 
 class ApiResponseDict(UserDict):
@@ -531,7 +526,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     http_doc = HttpDocument.from_file_context(file_ctx)
 
     DocumentVersionMaker.verify_if_allowed(
-        DocumentVersionMaker.from_dict(http_doc.as_dict), VERSION_SCOPE
+        DocumentVersionMaker.from_dict(http_doc.model_dump()), VERSION_SCOPE
     )
 
     VersionedDocumentSupport.validate_with_schema(
