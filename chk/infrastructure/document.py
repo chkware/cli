@@ -1,6 +1,7 @@
 """
 Base document and utility
 """
+
 import dataclasses
 
 import cerberus
@@ -32,7 +33,9 @@ class VersionedDocumentSupport:
     """DocumentVersionSupport"""
 
     @staticmethod
-    def validate_with_schema(schema: dict, doc: VersionedDocument) -> bool:
+    def validate_with_schema(
+        schema: dict, doc: VersionedDocument | VersionedDocumentV2
+    ) -> bool:
         """Validate a document with given schema
 
         Args:
