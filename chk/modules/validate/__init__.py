@@ -4,7 +4,6 @@ Validate module
 
 from __future__ import annotations
 
-import dataclasses
 import enum
 import json
 from collections import abc
@@ -100,12 +99,6 @@ class ValidationDocument(VersionedDocumentV2, BaseModel):
             asserts=_asserts,
             data=_data,
         )
-
-    @property
-    def as_dict(self) -> dict:
-        """Return a dict of the data"""
-
-        return dataclasses.asdict(self)
 
 
 class ValidationDocumentSupport:
@@ -255,7 +248,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     validate_doc = ValidationDocument.from_file_context(file_ctx)
 
     DocumentVersionMaker.verify_if_allowed(
-        DocumentVersionMaker.from_dict(validate_doc.as_dict), VERSION_SCOPE
+        DocumentVersionMaker.from_dict(validate_doc.model_dump()), VERSION_SCOPE
     )
 
     VersionedDocumentSupport.validate_with_schema(
