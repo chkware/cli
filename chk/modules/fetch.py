@@ -546,7 +546,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
 
     output_data = Variables({"_response": response.data})
 
-    exposed_data = ExposeManager.get_exposed_replaced_data(
+    exposed_data = ExposeManager.get_exposed_replaced_data_v2(
         http_doc,
         {**variable_doc.data, **output_data.data},
     )
@@ -564,8 +564,8 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         exposed=exposed_data,
         report={
             "is_success": r_exception is None,
-            "request_method": file_ctx.document["request"]['method'],
-            "request_url": file_ctx.document["request"]['url'],
+            "request_method": file_ctx.document["request"]["method"],
+            "request_url": file_ctx.document["request"]["url"],
         },
     )
 
