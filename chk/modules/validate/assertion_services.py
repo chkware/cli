@@ -65,7 +65,9 @@ MAP_TYPE_TO_FN: dict[str, Callable] = {
 
 @dataclasses.dataclass
 class AssertionEntry:
-    """AssertionEntry holds one assertion operation"""
+    """AssertionEntry holds one assertion operation
+    TODO: implement __iter__ for this class
+    """
 
     assert_type: str
     actual: typing.Any
@@ -123,6 +125,7 @@ class SingleTestRunResult(UserDict):
 
 class AllTestRunResult(UserDict):
     """Result of a test run
+    TODO: implement __iter__ for this class
 
     keys: id, time_start, time_end, count_all, results, count_fail
     """
