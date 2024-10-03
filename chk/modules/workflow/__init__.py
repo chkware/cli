@@ -8,10 +8,10 @@ import pathlib
 from collections import abc
 from collections.abc import Callable
 
-from pydantic import ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from chk.infrastructure.document import (
-    VersionedDocumentV2 as VersionedDocument,
+    VersionedDocumentV2,
 )
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import data_get, formatter, slugify
@@ -39,7 +39,7 @@ from chk.modules.workflow.services import ChkwareTaskSupport, WorkflowPresenter
 VERSION_SCOPE = ["workflow"]
 
 
-class WorkflowDocument(VersionedDocument):
+class WorkflowDocument(VersionedDocumentV2, BaseModel):
     """WorkflowDocument"""
 
     model_config = ConfigDict(extra="forbid")

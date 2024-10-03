@@ -7,11 +7,15 @@ from __future__ import annotations
 import dataclasses
 import enum
 import json
-
-import cerberus
 from collections import abc
 
-from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
+import cerberus
+from pydantic import BaseModel, Field
+
+from chk.infrastructure.document import (
+    VersionedDocumentSupport,
+    VersionedDocumentV2,
+)
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import data_get, formatter
 from chk.infrastructure.symbol_table import (
@@ -66,14 +70,13 @@ ASSERTS_SCHEMA = {
 }
 
 
-@dataclasses.dataclass(slots=True)
-class ValidationDocument(VersionedDocument):
+class ValidationDocument(VersionedDocumentV2, BaseModel):
     """
     Http document entity
     """
 
-    data: dict = dataclasses.field(default_factory=dict)
-    asserts: list = dataclasses.field(default_factory=list)
+    data: dict = Field(default_factory=dict)
+    asserts: list = Field(default_factory=list)
 
     @staticmethod
     def from_file_context(ctx: FileContext) -> ValidationDocument:
