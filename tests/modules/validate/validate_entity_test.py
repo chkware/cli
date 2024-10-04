@@ -117,8 +117,8 @@ class TestValidationDocument:
 
         doc = ValidationDocument.from_file_context(ctx)
 
-        assert isinstance(doc.as_dict, dict)
-        assert len(doc.as_dict) == 4
+        assert isinstance(doc.model_dump(), dict)
+        assert len(doc.model_dump()) == 4
 
 
 class TestValidationDocumentSupport:
@@ -216,7 +216,10 @@ class TestValidationDocumentSupport:
         ValidationDocumentSupport.set_data_template(doc, variables, exec_ctx)
 
         assert bool(variables[ValidationConfigNode.VAR_NODE.value])
-        assert variables[ValidationConfigNode.VAR_NODE.value].get("name") == "Some Name Two"
+        assert (
+            variables[ValidationConfigNode.VAR_NODE.value].get("name")
+            == "Some Name Two"
+        )
 
     @staticmethod
     def test_process_data_template_pass():
@@ -252,7 +255,10 @@ class TestValidationDocumentSupport:
         ValidationDocumentSupport.process_data_template(variables)
 
         assert bool(variables[ValidationConfigNode.VAR_NODE.value])
-        assert variables[ValidationConfigNode.VAR_NODE.value].get("greet") == "Hello Somebody"
+        assert (
+            variables[ValidationConfigNode.VAR_NODE.value].get("greet")
+            == "Hello Somebody"
+        )
 
     @staticmethod
     def test_make_assertion_entry_list_pass():
