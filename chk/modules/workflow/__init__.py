@@ -170,9 +170,6 @@ class WorkflowDocumentSupport:
 
         return _task_res
 
-    # @classmethod
-    # def prepare_step_results(cls, ) -> dict:
-
     @classmethod
     def display(
         cls,
