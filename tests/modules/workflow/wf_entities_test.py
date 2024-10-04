@@ -9,7 +9,17 @@ from pydantic import ValidationError
 
 from chk.modules.workflow.entities import ChkwareTask, ChkwareValidateTask
 
-fp = f"{Path.cwd()}/tests/resources/storage/spec_docs/workflow_cases/simple"
+fp_p = (
+    Path.cwd()
+    / "tests"
+    / "resources"
+    / "storage"
+    / "spec_docs"
+    / "workflow_cases"
+    / "simple"
+)
+
+fp = str(fp_p)
 
 
 class TestChkwareTask:
