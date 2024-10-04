@@ -4,12 +4,14 @@ Workflow module
 
 from __future__ import annotations
 
+import json
 import pathlib
 from collections import abc
 from collections.abc import Callable
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from chk.console.main import combine_initial_variables
 from chk.infrastructure.document import (
     VersionedDocumentV2,
 )
@@ -131,12 +133,7 @@ class WorkflowDocumentSupport:
 
             execution_ctx = ExecuteContext(
                 {"dump": True, "format": True},
-                {
-                    # "variables": combine_initial_variables(
-                    #     variables,
-                    #     except_msg="-V, --variables accept values as JSON object",
-                    # ),
-                },
+                {"variables": combine_initial_variables(json.dumps(task_o_.variables))},
             )
 
             task_fn = None
