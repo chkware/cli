@@ -22,3 +22,4 @@ tasks:
 
 expose:
   - <% _steps %>
+  - <% _steps.1.vdata.body %>
