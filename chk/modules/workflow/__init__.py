@@ -197,11 +197,10 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     service.set_step_template(variable_doc)
     exec_report = service.process_task_template(wflow_doc, variable_doc)
 
-    # output_data = Variables()
     output_data = Variables({"_steps": variable_doc[WorkflowConfigNode.NODE.value]})
 
     exposed_data: dict = ExposeManager.get_exposed_replaced_data_v2(
-        wflow_doc, {**variable_doc.data, **output_data.data}
+        wflow_doc, variable_doc.data
     )
 
     # TODO also send failed_details (fail code, message, stacktrace, etc)
