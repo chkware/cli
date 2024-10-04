@@ -136,7 +136,7 @@ def generate_abs_path(base_: str, target_: str) -> str:
         if part == "..":
             to_path = to_path.parent
         else:
-            to_path = Path(str(to_path) + "/" + part)
+            to_path = to_path / part
 
     return str(to_path)
 
