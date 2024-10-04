@@ -2,12 +2,14 @@
 """
 Testing Entities for workflow
 """
+from pathlib import Path
+
 import pytest
 from pydantic import ValidationError
 
 from chk.modules.workflow.entities import ChkwareTask, ChkwareValidateTask
 
-fp = "/Users/mlbdmba21/Works/chkware/cli/tests/resources/storage/spec_docs/workflow_cases/simple"
+fp = f"{Path.cwd()}/tests/resources/storage/spec_docs/workflow_cases/simple"
 
 
 class TestChkwareTask:
