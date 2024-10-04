@@ -3,54 +3,60 @@ Workflow module
 """
 
 from __future__ import annotations
-from collections import abc
+
+import json
 import pathlib
-from uuid import uuid4
+from collections import abc
+from collections.abc import Callable
 
-from hence import run_tasks, _context, Utils
-from pydantic import Field, ConfigDict
-from icecream import ic
+from pydantic import BaseModel, ConfigDict, Field
 
-from chk.infrastructure.document import VersionedDocumentV2 as VersionedDocument
+from chk.console.main import combine_initial_variables
+from chk.infrastructure.document import (
+    VersionedDocumentV2,
+)
+from chk.infrastructure.file_loader import ExecuteContext, FileContext
+from chk.infrastructure.helper import data_get, formatter, slugify
+from chk.infrastructure.symbol_table import (
+    ExecResponse,
+    ExposeManager,
+    VariableTableManager,
+    Variables,
+    replace_value,
+)
+from chk.infrastructure.version import DocumentVersionMaker
+from chk.infrastructure.view import PresentationBuilder
 from chk.modules.fetch import task_fetch
 from chk.modules.validate import task_validation
 from chk.modules.workflow.entities import (
     ChkwareTask,
     ChkwareValidateTask,
+    StepResult,
+    TaskExecParam,
+    WorkflowConfigNode,
     WorkflowUses,
 )
-from chk.infrastructure.file_loader import (
-    FileContext,
-    ExecuteContext,
-    generate_abs_path,
-)
-from chk.infrastructure.helper import data_get, formatter, slugify
-from chk.infrastructure.symbol_table import (
-    Variables,
-    VariableTableManager,
-    ExecResponse,
-)
+from chk.modules.workflow.services import ChkwareTaskSupport, WorkflowPresenter
 
 VERSION_SCOPE = ["workflow"]
 
 
-class WorkflowDocument(VersionedDocument):
+class WorkflowDocument(VersionedDocumentV2, BaseModel):
     """WorkflowDocument"""
 
     model_config = ConfigDict(extra="forbid")
 
     name: str = Field(default_factory=str)
     id: str = Field(default_factory=str)
-    tasks: list[ChkwareTask | ChkwareValidateTask]
+    tasks: list[dict] = Field(default="")
 
     @staticmethod
     def from_file_context(ctx: FileContext) -> WorkflowDocument:
         """Create a WorkflowDocument from FileContext"""
 
-        # @TODO this should to VersionDoc
         # version
-        if not (version_str := data_get(ctx.document, "version")):
-            raise RuntimeError("`version:` not found.")
+        doc_ver = DocumentVersionMaker.from_dict(ctx.document)
+        DocumentVersionMaker.verify_if_allowed(doc_ver, VERSION_SCOPE)
 
         # id, name
         # @TODO Name and ID processing should have separate func
@@ -76,26 +82,14 @@ class WorkflowDocument(VersionedDocument):
         if not isinstance(tasks_lst, list):
             raise RuntimeError("`tasks:` is not list.")
 
-        tasks = []
-        for task in tasks_lst:
-            # @TODO can this be done in ParsedTask class
-            if not isinstance(task, dict):
-                raise RuntimeError("`tasks.*.item` should be map.")
-
-            if "uses" in task:
-                if task["uses"] == "fetch":
-                    tasks.append(ChkwareTask.from_dict(task))
-                elif task["uses"] == "validate":
-                    tasks.append(ChkwareValidateTask.from_dict(task))
-            else:
-                raise RuntimeError("Malformed task item found.")
-
+        # @TODO keep `context`, `version` as object
+        # @TODO implement __repr__ for WorkflowDocument
         return WorkflowDocument(
             context=tuple(ctx),
-            version=version_str,
+            version=str(doc_ver),
             name=name_str,
             id=id_str,
-            tasks=tasks,
+            tasks=tasks_lst,
         )
 
 
@@ -112,67 +106,112 @@ class WorkflowDocumentSupport:
         return {}
 
     @classmethod
+    def set_step_template(cls, variables: Variables) -> None:
+        """sets data or template"""
+
+        # @TODO implement data set functionality with validation for variables
+        variables[WorkflowConfigNode.NODE.value] = []
+
+    @classmethod
     def process_task_template(
         cls, document: WorkflowDocument, variables: Variables
-    ) -> None:
-        formatter(f"\n\nExecuting: {document.name}")
-        formatter("-" * 5)
+    ) -> list:
+        """Process task block of document"""
 
-        base_filepath: str = FileContext(*document.context).filepath
-        task_executable_lst = []
+        base_fpath: str = FileContext(*document.context).filepath
+        exec_report: list[StepResult] = []
 
         for task in document.tasks:
-            # @TODO should be done in ChkwareTask calls
-            _task_d = task.model_dump()
-            _task_d["file"] = generate_abs_path(base_filepath, task.file)
+            if not isinstance(task, dict):
+                raise RuntimeError("`tasks.*.item` should be map.")
+
+            # replace values in tasks
+            task_d_: dict = replace_value(task, variables.data)
+            task_o_ = ChkwareTaskSupport.make_task(
+                task_d_, **dict(base_file_path=base_fpath)
+            )
 
             execution_ctx = ExecuteContext(
                 {"dump": True, "format": True},
-                {
-                    # "variables": combine_initial_variables(
-                    #     variables,
-                    #     except_msg="-V, --variables accept values as JSON object",
-                    # ),
-                },
+                {"variables": combine_initial_variables(json.dumps(task_o_.variables))},
             )
 
-            _task_params = {"task": _task_d, "execution_context": execution_ctx}
-            match _task_d["uses"]:
+            task_fn = None
+
+            match task_o_.uses:
                 case WorkflowUses.fetch.value:
-                    task_executable_lst.append((task_fetch, _task_params))
+                    task_fn = task_fetch
                 case WorkflowUses.validate.value:
-                    task_executable_lst.append((task_validation, _task_params))
+                    task_fn = task_validation
 
-        task_executable_keys = run_tasks(task_executable_lst, str(uuid4()))
+            if task_fn:
+                te_param = TaskExecParam(task=task_o_, exec_ctx=execution_ctx)
+                task_resp: ExecResponse = cls.execute_task(task_fn, te_param, variables)
 
-        for tx_key in task_executable_keys:
-            seq_id, _ = tx_key.split(".", 1)
-            formatter(f"\nTask: {document.tasks[int(seq_id)].name}")
-
-            _task_res: ExecResponse = Utils.get_task(tx_key).result
-            __doc_version: str = data_get(_task_res.file_ctx.document, "version", "")
-
-            if __doc_version.startswith("default:http"):
-                formatter(
-                    "-> %s %s"
-                    % (
-                        data_get(_task_res.file_ctx.document, "request.method"),
-                        data_get(_task_res.file_ctx.document, "request.url"),
+                exec_report.append(
+                    StepResult(
+                        task=task_o_,
+                        is_success=task_resp.report.pop("is_success"),
+                        others=task_resp.report,
+                        exposed=task_resp.exposed,
                     )
                 )
-            elif __doc_version.startswith("default:validation"):
-                formatter(
-                    "-> Total tests: %s, Failed: %s"
-                    % (
-                        data_get(
-                            _task_res.variables_exec.data, "_asserts_response.count_all"
-                        ),
-                        data_get(
-                            _task_res.variables_exec.data,
-                            "_asserts_response.count_fail",
-                        ),
-                    )
-                )
+
+        return exec_report
+
+    @classmethod
+    def execute_task(
+        cls, task_fn: Callable, task_params: TaskExecParam, variables: Variables
+    ) -> ExecResponse:
+        """execute_task"""
+
+        _task_res: ExecResponse = task_fn(**task_params.as_dict())
+        variables[WorkflowConfigNode.NODE.value].append(_task_res.exposed)
+
+        return _task_res
+
+    @classmethod
+    def display(
+        cls,
+        ex_resp: ExecResponse,
+        exec_ctx: ExecuteContext,
+        presenter: type[PresentationBuilder],
+    ) -> None:
+        wfp = presenter(data=ex_resp)
+        if exec_ctx.options["format"]:
+            formatter(wfp.dump_fmt(), dump=exec_ctx.options["dump"])
+        else:
+            formatter(wfp.dump_json(), dump=exec_ctx.options["dump"])
+
+
+def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
+    """Call a workflow document"""
+
+    wflow_doc = WorkflowDocument.from_file_context(file_ctx)
+
+    variable_doc = Variables()
+    VariableTableManager.handle(variable_doc, wflow_doc, exec_ctx)
+
+    service = WorkflowDocumentSupport()
+    # @TODO make sure the document do not call self making it repeating
+    service.set_step_template(variable_doc)
+    exec_report = service.process_task_template(wflow_doc, variable_doc)
+
+    output_data = Variables({"_steps": variable_doc[WorkflowConfigNode.NODE.value]})
+
+    exposed_data: dict = ExposeManager.get_exposed_replaced_data_v2(
+        wflow_doc, variable_doc.data
+    )
+
+    # TODO also send failed_details (fail code, message, stacktrace, etc)
+    return ExecResponse(
+        file_ctx=file_ctx,
+        exec_ctx=exec_ctx,
+        variables=variable_doc,
+        variables_exec=output_data,
+        extra=exec_report,
+        exposed=exposed_data,
+    )
 
 
 def execute(
@@ -186,19 +225,7 @@ def execute(
         cb: Callable
     """
 
-    wflow_doc = WorkflowDocument.from_file_context(ctx)
-    ic(wflow_doc)
+    exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
 
-    variable_doc = Variables()
-    VariableTableManager.handle(variable_doc, wflow_doc, exec_ctx)
-
-    service = WorkflowDocumentSupport()
-    service.process_task_template(wflow_doc, variable_doc)
-
-    # DocumentVersionMaker.verify_if_allowed(
-    #     DocumentVersionMaker.from_dict(wflow_doc.as_dict), VERSION_SCOPE
-    # )
-
-    # VersionedDocumentSupport.validate_with_schema(
-    #     HttpDocumentSupport.build_schema(), http_doc
-    # )
+    cb({ctx.filepath_hash: exr.variables_exec.data})
+    WorkflowDocumentSupport.display(exr, exec_ctx, WorkflowPresenter)

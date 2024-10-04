@@ -5,10 +5,29 @@ Entities for workflow
 from __future__ import annotations
 
 import enum
-import typing
-from uuid import uuid4
+from typing import NamedTuple
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
+
+from chk.infrastructure.file_loader import ExecuteContext, generate_abs_path
+
+
+class WorkflowConfigNode(enum.StrEnum):
+    """WorkflowConfigNode"""
+
+    NODE = "_steps"
+
+
+class TaskExecParam(NamedTuple):
+    """TaskExecParams"""
+
+    task: ChkwareTask
+    exec_ctx: ExecuteContext
+
+    def as_dict(self) -> dict:
+        """Convert to dict"""
+
+        return {"task": self.task.model_dump(), "execution_context": self.exec_ctx}
 
 
 class WorkflowUses(enum.StrEnum):
@@ -28,14 +47,17 @@ class ChkwareTask(BaseModel):
     file: str
     variables: dict = Field(default_factory=dict)
 
-    @staticmethod
-    def from_dict(data: dict) -> ChkwareTask:
-        """constractor"""
+    def __init__(self, basepath: str, /, **kwargs: dict) -> None:
+        """Constructor"""
 
-        if not data:
-            raise AttributeError("ChkwareTask:from_dict Empty data given")
+        if (
+            "file" in kwargs
+            and isinstance(kwargs["file"], str)
+            and len(kwargs["file"]) != 0
+        ):
+            kwargs["file"] = generate_abs_path(basepath, kwargs["file"])
 
-        return ChkwareTask(**data)
+        super().__init__(**kwargs)
 
 
 class ChkwareValidateTask(ChkwareTask):
@@ -52,11 +74,16 @@ class ChkwareValidateTask(ChkwareTask):
 
     arguments: ChkwareTaskDataArgument = Field(default_factory=ChkwareTaskDataArgument)
 
-    @staticmethod
-    def from_dict(data: dict) -> ChkwareValidateTask:
-        """constructor"""
+    def __init__(self, basepath: str, /, **kwargs: dict) -> None:
+        """Constructor"""
 
-        if not data:
-            raise AttributeError("ChkwareValidateTask:from_dict Empty data given")
+        super().__init__(basepath, **kwargs)
 
-        return ChkwareValidateTask(**data)
+
+class StepResult(BaseModel):
+    """StepResult"""
+
+    task: ChkwareTask | ChkwareValidateTask
+    is_success: bool
+    others: dict = Field(default_factory=dict)
+    exposed: list | dict = Field(default_factory=list)

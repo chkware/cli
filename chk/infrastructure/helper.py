@@ -1,6 +1,7 @@
 """
 Helper functions module
 """
+
 import ast
 import re
 from collections.abc import Callable
@@ -157,6 +158,16 @@ class Cast:
             var = Cast.to_hashable(var)  # type: ignore
 
         return var
+
+    @staticmethod
+    def try_dict(to_dict: Any, say_exception: bool = False) -> dict | Any:
+        try:
+            return dict(to_dict)
+        except ValueError as ex:
+            if say_exception:
+                raise ex
+            else:
+                return to_dict
 
 
 def formatter(message: object, cb: Callable = str, dump: bool = True) -> str:

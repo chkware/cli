@@ -3,39 +3,40 @@ Validate module
 """
 
 from __future__ import annotations
-import dataclasses
+
 import enum
 import json
 from collections import abc
 
 import cerberus
-from hence import task
+from pydantic import BaseModel, Field
 
-from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
-from chk.infrastructure.file_loader import FileContext, ExecuteContext
-from chk.infrastructure.helper import data_get, formatter
-from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
-
-from chk.infrastructure.symbol_table import (
-    VARIABLE_SCHEMA as VAR_SCHEMA,
-    EXPOSE_SCHEMA as EXP_SCHEMA,
-    Variables,
-    VariableTableManager,
-    replace_value,
-    ExposeManager,
-    ExposableVariables,
-    ExecResponse,
+from chk.infrastructure.document import (
+    VersionedDocumentSupport,
+    VersionedDocumentV2,
 )
+from chk.infrastructure.file_loader import ExecuteContext, FileContext
+from chk.infrastructure.helper import data_get, formatter
+from chk.infrastructure.symbol_table import (
+    EXPOSE_SCHEMA as EXP_SCHEMA,
+    ExecResponse,
+    ExposeManager,
+    VARIABLE_SCHEMA as VAR_SCHEMA,
+    VariableTableManager,
+    Variables,
+    replace_value,
+)
+from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
 from chk.modules.validate.assertion_services import (
+    AllTestRunResult,
     AssertionEntry,
     AssertionEntryListRunner,
-    AllTestRunResult,
-    ValidationTask,
     MAP_TYPE_TO_FN,
+    ValidationTask,
 )
 from chk.modules.validate.assertion_validation import (
-    get_schema_map,
     AssertionEntityProperty,
+    get_schema_map,
 )
 
 VERSION_SCOPE = ["validation"]
@@ -68,14 +69,13 @@ ASSERTS_SCHEMA = {
 }
 
 
-@dataclasses.dataclass(slots=True)
-class ValidationDocument(VersionedDocument):
+class ValidationDocument(VersionedDocumentV2, BaseModel):
     """
     Http document entity
     """
 
-    data: dict = dataclasses.field(default_factory=dict)
-    asserts: list = dataclasses.field(default_factory=list)
+    data: dict = Field(default_factory=dict)
+    asserts: list = Field(default_factory=list)
 
     @staticmethod
     def from_file_context(ctx: FileContext) -> ValidationDocument:
@@ -91,18 +91,14 @@ class ValidationDocument(VersionedDocument):
 
         _data = data_get(ctx.document, ValidationConfigNode.DATA, {})
 
+        # @TODO keep `context`, `version` as object
+        # @TODO implement __repr__ for WorkflowDocument
         return ValidationDocument(
             context=tuple(ctx),
             version=_version,
             asserts=_asserts,
             data=_data,
         )
-
-    @property
-    def as_dict(self) -> dict:
-        """Return a dict of the data"""
-
-        return dataclasses.asdict(self)
 
 
 class ValidationDocumentSupport:
@@ -133,19 +129,23 @@ class ValidationDocumentSupport:
         """sets data or template"""
 
         data = data_get(exec_ctx.arguments, "data", {})
-        variables[ValidationConfigNode.VAR_NODE] = data if data else validate_doc.data
+        variables[ValidationConfigNode.VAR_NODE.value] = (
+            data if data else validate_doc.data
+        )
 
     @staticmethod
     def process_data_template(variables: Variables) -> None:
         """process data or template before assertion"""
-        data = variables[ValidationConfigNode.VAR_NODE]
+        data = variables[ValidationConfigNode.VAR_NODE.value]
         tmp_variables = {
             key: val
             for key, val in variables.data.items()
-            if key != ValidationConfigNode.VAR_NODE
+            if key != ValidationConfigNode.VAR_NODE.value
         }
 
-        variables[ValidationConfigNode.VAR_NODE] = replace_value(data, tmp_variables)
+        variables[ValidationConfigNode.VAR_NODE.value] = replace_value(
+            data, tmp_variables
+        )
 
     @staticmethod
     def make_assertion_entry_list(assert_lst: list[dict]) -> list[AssertionEntry]:
@@ -248,7 +248,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     validate_doc = ValidationDocument.from_file_context(file_ctx)
 
     DocumentVersionMaker.verify_if_allowed(
-        DocumentVersionMaker.from_dict(validate_doc.as_dict), VERSION_SCOPE
+        DocumentVersionMaker.from_dict(validate_doc.model_dump()), VERSION_SCOPE
     )
 
     VersionedDocumentSupport.validate_with_schema(
@@ -267,11 +267,19 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     )
 
     test_run_result = AssertionEntryListRunner.test_run(assert_list, variable_doc.data)
-    output_data = ExposableVariables(
+    output_data = Variables(
         {
             "_asserts_response": test_run_result.as_dict,
             "_data": variable_doc["_data"],
         }
+    )
+
+    exposed_data = ExposeManager.get_exposed_replaced_data_v2(
+        validate_doc,
+        {
+            **variable_doc.data,
+            **{"_asserts_response": test_run_result.as_dict},
+        },
     )
 
     return ExecResponse(
@@ -280,6 +288,12 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         variables_exec=output_data,
         variables=variable_doc,
         extra=test_run_result,
+        exposed=exposed_data,
+        report={
+            "is_success": test_run_result["count_fail"] == 0,
+            "count_all": test_run_result["count_all"],
+            "count_fail": test_run_result["count_fail"],
+        },
     )
 
 
@@ -296,20 +310,10 @@ def execute(
 
     exec_response = call(file_ctx=ctx, exec_ctx=exec_ctx)
 
-    validate_doc = ValidationDocument.from_file_context(ctx)
-    exposed_data = ExposeManager.get_exposed_replaced_data(
-        validate_doc,
-        {
-            **exec_response.variables.data,
-            **{"_asserts_response": exec_response.extra},
-        },
-    )
-
     cb({ctx.filepath_hash: exec_response.variables_exec.data})
-    ValidationDocumentSupport.display(exposed_data, exec_ctx)
+    ValidationDocumentSupport.display(exec_response.exposed, exec_ctx)
 
 
-@task(title="Validate task :: {fn_task_key}")
 def task_validation(**kwargs: dict) -> ExecResponse:
     """Task impl"""
 

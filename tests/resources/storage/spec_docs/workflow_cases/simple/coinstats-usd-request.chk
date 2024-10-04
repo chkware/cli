@@ -1,0 +1,11 @@
+---
+version: default:http:0.7.2
+
+request:
+  url: https://openapiv1.coinstats.app/coins/bitcoin?currency=USD
+  method: GET
+  headers:
+    "X-API-KEY": <% _ENV.COINSTATS_API_KEY %>
+
+expose:
+  - <% _response %>

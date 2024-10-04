@@ -1,6 +1,8 @@
 """
 Symbol and variable management
 """
+
+import copy
 import enum
 import os
 import typing
@@ -11,7 +13,7 @@ from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict, Field
 
 from chk.infrastructure.document import VersionedDocument, VersionedDocumentV2
-from chk.infrastructure.file_loader import FileContext, ExecuteContext
+from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import data_get
 from chk.infrastructure.templating import StrTemplate
 
@@ -60,10 +62,6 @@ class Variables(UserDict):
     """Holds data for a variable"""
 
 
-class ExposableVariables(UserDict):
-    """Holds data for a expose data"""
-
-
 class ExecResponse(BaseModel):
     """ExecResponse"""
 
@@ -71,19 +69,20 @@ class ExecResponse(BaseModel):
 
     file_ctx: FileContext
     exec_ctx: ExecuteContext
-    variables_exec: ExposableVariables
     variables: Variables
+    variables_exec: Variables
     extra: object = Field(default=None)
+    exception: Exception | None = Field(default=None)
+    exposed: list | dict = Field(default_factory=list)
+    report: dict = Field(default_factory=dict)
 
 
 @typing.overload
-def replace_value(doc: dict, var_s: dict) -> dict:
-    ...
+def replace_value(doc: dict, var_s: dict) -> dict: ...
 
 
 @typing.overload
-def replace_value(doc: list, var_s: dict) -> list:
-    ...
+def replace_value(doc: list, var_s: dict) -> list: ...
 
 
 def replace_value(doc: dict | list, var_s: dict) -> dict | list:
@@ -239,7 +238,9 @@ class ExposeManager:
         return replace_callback(expose_doc, values)
 
     @staticmethod
-    def get_exposed_replaced_data(document: VersionedDocument, store: dict) -> list:
+    def get_exposed_replaced_data(
+        document: VersionedDocument | VersionedDocumentV2, store: dict
+    ) -> list:
         """Get expose doc from a `VersionedDocument`, and prepare it from the
             value of `Variables`, and `store`, and return
 
@@ -257,3 +258,34 @@ class ExposeManager:
             return ExposeManager.replace_values(expose_doc, store)
 
         return []
+
+    @staticmethod
+    def get_exposed_replaced_data_v2(
+        document: VersionedDocumentV2, store: dict
+    ) -> dict:
+        """
+        Get expose doc from a `VersionedDocument`, and prepare it from the
+            value of `Variables`, and `store`, and return
+
+        Args:
+            document: VersionedDocument to get expose definition from it
+            store: dict to use as value store
+
+        Returns:
+            dict: list of expose data
+        """
+
+        file_ctx = FileContext(*document.context)
+
+        if expose_doc := ExposeManager.get_expose_doc(file_ctx.document):
+
+            exposed_doc_t = copy.copy(expose_doc)
+            exposed_doc_t = [
+                str(key).replace("%>", "").replace("<%", "").strip()
+                for key in exposed_doc_t
+            ]
+
+            expose_val = ExposeManager.replace_values(expose_doc, store)
+            return dict(zip(exposed_doc_t, expose_val))
+
+        return {}

@@ -3,11 +3,12 @@ File loader utility
 """
 
 from __future__ import annotations
-import hashlib
-from typing import NamedTuple
-from pathlib import Path
 
+import hashlib
 import json
+from pathlib import Path
+from typing import NamedTuple
+
 import yaml
 
 from chk.infrastructure.typing_extras import JsonDecodingError
@@ -110,7 +111,6 @@ class FileContext(NamedTuple):
         return Path(self.filepath).absolute().parent
 
 
-# @TODO Need testing
 def generate_abs_path(base_: str, target_: str) -> str:
     """Generate absolute path in comparison to base path
     Args:
@@ -136,7 +136,7 @@ def generate_abs_path(base_: str, target_: str) -> str:
         if part == "..":
             to_path = to_path.parent
         else:
-            to_path = Path(str(to_path) + "/" + part)
+            to_path = to_path / part
 
     return str(to_path)
 

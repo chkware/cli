@@ -3,39 +3,37 @@ Fetch module
 """
 
 from __future__ import annotations
-import dataclasses
+
 import enum
 import json
 import pathlib
-
 from collections import UserDict, abc
 from urllib.parse import unquote, urlparse
 
-from hence import task
+import xmltodict
+from defusedxml.minidom import parseString
 from pydantic import BaseModel, Field
 from requests.auth import HTTPBasicAuth
 
-from defusedxml.minidom import parseString
-import xmltodict
-
-from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
+from chk.infrastructure.document import (
+    VersionedDocumentSupport,
+    VersionedDocumentV2,
+)
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import data_get, formatter
 from chk.infrastructure.symbol_table import (
+    EXPOSE_SCHEMA as EXP_SCHEMA,
+    ExecResponse,
+    ExposeManager,
+    VARIABLE_SCHEMA as VAR_SCHEMA,
     VariableTableManager,
     Variables,
     replace_value,
-    VARIABLE_SCHEMA as VAR_SCHEMA,
-    EXPOSE_SCHEMA as EXP_SCHEMA,
-    ExposeManager,
-    ExposableVariables,
-    ExecResponse,
 )
-
 from chk.infrastructure.third_party.http_fetcher import (
     ApiResponse,
-    fetch,
     BearerAuthentication,
+    fetch,
 )
 from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
 
@@ -323,13 +321,12 @@ class HttpRequestArgCompiler:
         HttpRequestArgCompiler.add_body(request_data, request_arg)
 
 
-@dataclasses.dataclass(slots=True)
-class HttpDocument(VersionedDocument):
+class HttpDocument(VersionedDocumentV2, BaseModel):
     """
     Http document entity
     """
 
-    request: dict = dataclasses.field(default_factory=dict)
+    request: dict = Field(default_factory=dict)
 
     @staticmethod
     def from_file_context(ctx: FileContext) -> HttpDocument:
@@ -343,17 +340,13 @@ class HttpDocument(VersionedDocument):
         if not (request_dct := data_get(ctx.document, "request")):
             raise RuntimeError("`request:` not found.")
 
+        # @TODO keep `context`, `version` as object
+        # @TODO implement __repr__ for WorkflowDocument
         return HttpDocument(
             context=tuple(ctx),
             version=version_str,
             request=request_dct,
         )
-
-    @property
-    def as_dict(self) -> dict:
-        """Return a dict of the data"""
-
-        return dataclasses.asdict(self)
 
 
 class ApiResponseDict(UserDict):
@@ -528,10 +521,12 @@ class HttpDocumentSupport:
 def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     """Call a http document"""
 
+    r_exception: Exception | None = None
+
     http_doc = HttpDocument.from_file_context(file_ctx)
 
     DocumentVersionMaker.verify_if_allowed(
-        DocumentVersionMaker.from_dict(http_doc.as_dict), VERSION_SCOPE
+        DocumentVersionMaker.from_dict(http_doc.model_dump()), VERSION_SCOPE
     )
 
     VersionedDocumentSupport.validate_with_schema(
@@ -542,14 +537,36 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
     HttpDocumentSupport.process_request_template(http_doc, variable_doc)
 
-    response = HttpDocumentSupport.execute_request(http_doc)
-    output_data = ExposableVariables({"_response": response.data})
+    response = ApiResponse()
+
+    try:
+        response = HttpDocumentSupport.execute_request(http_doc)
+    except Exception as ex:
+        r_exception = ex
+
+    output_data = Variables({"_response": response.data})
+
+    exposed_data = ExposeManager.get_exposed_replaced_data_v2(
+        http_doc,
+        {**variable_doc.data, **output_data.data},
+    )
+
+    # TODO: instead if sending specific report items, and making presentable in other
+    #       module, we should prepare and long and short form of presentable that can be
+    #       loaded via other module
 
     return ExecResponse(
         file_ctx=file_ctx,
         exec_ctx=exec_ctx,
         variables_exec=output_data,
         variables=variable_doc,
+        exception=r_exception,
+        exposed=exposed_data,
+        report={
+            "is_success": r_exception is None,
+            "request_method": file_ctx.document["request"]["method"],
+            "request_url": file_ctx.document["request"]["url"],
+        },
     )
 
 
@@ -564,19 +581,14 @@ def execute(
         cb: Callable
     """
 
-    exec_response = call(file_ctx=ctx, exec_ctx=exec_ctx)
+    exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
+    if exr.exception is not None:
+        raise exr.exception
 
-    http_doc = HttpDocument.from_file_context(exec_response.file_ctx)
-    exposed_data = ExposeManager.get_exposed_replaced_data(
-        http_doc,
-        {**exec_response.variables.data, **exec_response.variables_exec.data},
-    )
-
-    cb({ctx.filepath_hash: exec_response.variables_exec.data})
-    HttpDocumentSupport.display(exposed_data, exec_ctx)
+    cb({ctx.filepath_hash: exr.variables_exec.data})
+    HttpDocumentSupport.display(exr.exposed, exec_ctx)
 
 
-@task(title="Fetch work :: {fn_task_key}")
 def task_fetch(**kwargs: dict) -> ExecResponse:
     """Task impl"""
 
