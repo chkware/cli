@@ -36,7 +36,7 @@ class TestChkwareTask:
         )
 
         assert task.uses == "fetch"
-        assert task.file == f"{fp}/coinstats-usd-validate.chk"
+        assert task.file == str(fp_p / "coinstats-usd-validate.chk")
 
 
 class TestChkwareValidateTask:
@@ -52,7 +52,7 @@ class TestChkwareValidateTask:
         )
 
         assert task.uses == "validate"
-        assert task.file == f"{fp}/coinstats-usd-validate.chk"
+        assert task.file == str(fp_p / "coinstats-usd-validate.chk")
         assert isinstance(task.arguments, ChkwareValidateTask.ChkwareTaskDataArgument)
 
         task = ChkwareValidateTask(
