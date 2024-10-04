@@ -165,9 +165,8 @@ class WorkflowDocumentSupport:
     ) -> ExecResponse:
         """execute_task"""
 
-        _task_res: ExecResponse = task_fn(**task_params.asdict())
-        variables[WorkflowConfigNode.NODE.value].append(_task_res.variables_exec.data)
         _task_res: ExecResponse = task_fn(**task_params.as_dict())
+        variables[WorkflowConfigNode.NODE.value].append(_task_res.exposed)
 
         return _task_res
 
