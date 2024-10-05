@@ -546,7 +546,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
 
     output_data = Variables({"_response": response.data})
 
-    exposed_data = ExposeManager.get_exposed_replaced_data_v2(
+    exposed_data = ExposeManager.get_exposed_replaced_data(
         http_doc,
         {**variable_doc.data, **output_data.data},
     )

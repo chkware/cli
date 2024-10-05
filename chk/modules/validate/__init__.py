@@ -274,7 +274,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         }
     )
 
-    exposed_data = ExposeManager.get_exposed_replaced_data_v2(
+    exposed_data = ExposeManager.get_exposed_replaced_data(
         validate_doc,
         {
             **variable_doc.data,
