@@ -5,12 +5,12 @@ Tests for symbol table
 import json
 
 from chk.console.main import combine_initial_variables
-from chk.infrastructure.file_loader import FileContext, ExecuteContext
+from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.symbol_table import (
-    VariableConfigNode,
-    Variables,
-    VariableTableManager,
     ExposeManager,
+    VariableConfigNode,
+    VariableTableManager,
+    Variables,
     replace_value,
 )
 from chk.modules.fetch import HttpDocument
@@ -276,9 +276,6 @@ class TestExposeManager:
         }
 
         file_ctx = FileContext(filepath_hash="ab12", document=document)
-        exec_ctx = ExecuteContext(
-            arguments={VariableConfigNode.VARIABLES: {"extension": ".org"}}
-        )
 
         http_doc = HttpDocument.from_file_context(file_ctx)
 
@@ -286,7 +283,7 @@ class TestExposeManager:
             http_doc, {"a": 1, "b": 2}
         )
 
-        assert isinstance(exposed_data, list)
+        assert isinstance(exposed_data, dict)
         assert len(exposed_data) == 0
 
     @staticmethod
@@ -314,7 +311,7 @@ class TestExposeManager:
             http_doc, {**variable_doc.data, **{"_response": {"a": 1, "b": 2}}}
         )
 
-        assert isinstance(exposed_data, list)
+        assert isinstance(exposed_data, dict)
         assert len(exposed_data) == 1
-        assert isinstance(exposed_data[0], dict)
-        assert len(exposed_data[0]) == 2
+        assert isinstance(exposed_data["_response"], dict)
+        assert len(exposed_data["_response"]) == 2
