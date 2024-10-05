@@ -199,7 +199,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
 
     output_data = Variables({"_steps": variable_doc[WorkflowConfigNode.NODE.value]})
 
-    exposed_data: dict = ExposeManager.get_exposed_replaced_data_v2(
+    exposed_data: dict = ExposeManager.get_exposed_replaced_data(
         wflow_doc, variable_doc.data
     )
 
