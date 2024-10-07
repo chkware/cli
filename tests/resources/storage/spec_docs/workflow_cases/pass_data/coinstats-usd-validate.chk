@@ -1,9 +1,6 @@
 ---
 version: default:validation:0.7.2
 
-variables:
-  vdata: ~
-
 asserts:
   - { type: Equal, actual: <% vdata.code %>, expected: 200, msg_pass: 'Response was successful with code `{type_actual}({value_actual})`', cast_actual_to: int }
   - { type: Map, actual: <% vdata.headers %>, msg_pass: 'Header is a list', msg_fail: 'Header is not a list' }
@@ -16,7 +13,7 @@ asserts:
 
 expose:
   - <% _asserts_response %>
-  - <% vdata %>
+  - <% _data %>
 
 # --- shell command ---
 # pipenv run python -m chk validate -nf tests/resources/storage/spec_docs/validate/btc-usd-validate.chk -D "$(pipenv run python -m chk fetch -nf tests/resources/storage/spec_docs/fetch/bitcoin-usd.chk)"
