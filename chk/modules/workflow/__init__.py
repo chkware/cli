@@ -131,10 +131,14 @@ class WorkflowDocumentSupport:
                 task_d_, **dict(base_file_path=base_fpath)
             )
 
-            execution_ctx = ExecuteContext(
-                {"dump": True, "format": True},
-                {"variables": combine_initial_variables(json.dumps(task_o_.variables))},
-            )
+            exctx_args = {
+                "variables": combine_initial_variables(json.dumps(task_o_.variables))
+            }
+
+            if isinstance(task_o_, ChkwareValidateTask):
+                exctx_args["arguments"] = task_o_.arguments.model_dump_json()
+
+            execution_ctx = ExecuteContext({"dump": True, "format": True}, exctx_args)
 
             task_fn = None
 
