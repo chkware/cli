@@ -148,3 +148,13 @@ class TestRunReport(BaseModel):
                 _display += detail.as_fmt_str()
 
         return _display
+
+
+class ValidationTask(BaseModel):
+    """Parsed FetchTask"""
+
+    name: str
+    uses: str
+    file: str
+    variables: dict = Field(default_factory=dict)
+    arguments: dict = Field(default_factory=dict)
