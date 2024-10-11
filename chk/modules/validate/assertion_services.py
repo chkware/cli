@@ -190,11 +190,6 @@ class AssertionEntryListRunner:
 
             run_report.add_run_detail(resp)
 
-class ValidationTask(BaseModel):
-    """Parsed FetchTask"""
+        run_report.time_end = datetime.now()
 
-    name: str
-    uses: str
-    file: str
-    variables: dict = Field(default_factory=dict)
-    arguments: dict = Field(default_factory=dict)
+        return run_report
