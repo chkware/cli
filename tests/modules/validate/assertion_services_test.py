@@ -168,14 +168,13 @@ class TestAssertionEntryListRunner:
         assert_resp = AssertionEntryListRunner._call_assertion_method(assert_list[0])
         assert_item = assert_list[0]
 
-        resp = SingleTestRunResult(assert_used=assert_item)
-        AssertionEntryListRunner._prepare_test_run_result(
-            resp, assert_item, assert_resp
+        resp = AssertionEntryListRunner._prepare_test_run_result(
+            assert_item, assert_resp
         )
 
-        assert resp["assert_used"] == assert_item
-        assert not resp["is_pass"]
-        assert resp["message"]
+        assert resp.assert_entry == assert_item
+        assert not resp.is_pass
+        assert resp.message
 
 
 @pytest.fixture

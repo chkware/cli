@@ -2,8 +2,6 @@
 Assertion services
 """
 
-import dataclasses
-import typing
 import uuid
 from collections import UserDict
 from collections.abc import Callable
@@ -61,36 +59,6 @@ MAP_TYPE_TO_FN: dict[str, Callable] = {
     AssertionEntityType.MapExactKeys: asrt_f.map_exact_keys,
     AssertionEntityType.Count: asrt_f.count,
 }
-
-
-@dataclasses.dataclass
-class AssertionEntry:
-    """AssertionEntry holds one assertion operation
-    TODO: implement __iter__ for this class
-    """
-
-    assert_type: str
-    actual: typing.Any
-    expected: typing.Any
-    msg_pass: str = dataclasses.field(default_factory=str)
-    msg_fail: str = dataclasses.field(default_factory=str)
-    cast_actual_to: str = dataclasses.field(default_factory=str)
-    actual_given: typing.Any = dataclasses.field(default=NotImplemented)
-    actual_b4_cast: typing.Any = dataclasses.field(default=NotImplemented)
-    extra_fields: dict = dataclasses.field(default_factory=dict)
-
-    @property
-    def as_dict(self) -> dict:
-        """Return dict representation"""
-
-        if self.actual_given == NotImplemented:
-            self.actual_given = ""
-        if self.actual_b4_cast == NotImplemented:
-            self.actual_b4_cast = ""
-        if self.expected == NotImplemented:
-            self.expected = ""
-
-        return dataclasses.asdict(self)
 
 
 class SingleTestRunResult(UserDict):
