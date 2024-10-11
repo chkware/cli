@@ -27,16 +27,18 @@ from chk.infrastructure.symbol_table import (
     replace_value,
 )
 from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
+from chk.infrastructure.view import PresentationService
 from chk.modules.validate.assertion_services import (
     AssertionEntry,
     AssertionEntryListRunner,
     MAP_TYPE_TO_FN,
-    ValidationTask,
 )
 from chk.modules.validate.assertion_validation import (
     AssertionEntityProperty,
     get_schema_map,
 )
+from chk.modules.validate.entities import ValidationTask
+from chk.modules.validate.services import ValidatePresenter
 
 VERSION_SCOPE = ["validation"]
 
@@ -199,20 +201,20 @@ class ValidationDocumentSupport:
         return new_assertion_lst
 
     @staticmethod
-    def display(expose_list: list, exec_ctx: ExecuteContext) -> None:
+    def display(exposed: dict, exec_ctx: ExecuteContext) -> None:
         """Displays the response based on the command response format
 
         Args:
-            expose_list: list
+            exposed: list
             exec_ctx: ExecuteContext
         """
 
-        if not expose_list:
+        if not exposed:
             return
 
         display_item_list: list[object] = []
 
-        for expose_item in expose_list:
+        for _, expose_item in exposed.items():
             if isinstance(expose_item, AllTestRunResult):
                 if exec_ctx.options["format"]:
                     display_item_list.append(expose_item.as_fmt_str)
@@ -224,7 +226,7 @@ class ValidationDocumentSupport:
         if exec_ctx.options["format"]:
             formatter(
                 (
-                    "\n---\n".join([str(item) for item in display_item_list])
+                    "\n======\n".join([str(item) for item in display_item_list])
                     if len(display_item_list) > 1
                     else display_item_list.pop()
                 ),
@@ -268,7 +270,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     test_run_result = AssertionEntryListRunner.test_run(assert_list, variable_doc.data)
     output_data = Variables(
         {
-            "_asserts_response": test_run_result.as_dict,
+            "_asserts_response": test_run_result,
             "_data": variable_doc["_data"],
         }
     )
@@ -277,7 +279,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         validate_doc,
         {
             **variable_doc.data,
-            **{"_asserts_response": dict(test_run_result)},
+            **{"_asserts_response": test_run_result},
         },
     )
 
@@ -307,10 +309,10 @@ def execute(
         cb: Callable
     """
 
-    exec_response = call(file_ctx=ctx, exec_ctx=exec_ctx)
+    exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
 
-    cb({ctx.filepath_hash: exec_response.variables_exec.data})
-    ValidationDocumentSupport.display(exec_response.exposed, exec_ctx)
+    cb({ctx.filepath_hash: exr.variables_exec.data})
+    PresentationService.display(exr, exec_ctx, ValidatePresenter)
 
 
 def task_validation(**kwargs: dict) -> ExecResponse:
