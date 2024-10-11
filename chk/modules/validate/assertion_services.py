@@ -2,18 +2,15 @@
 Assertion services
 """
 
-import uuid
-from collections import UserDict
 from collections.abc import Callable
 from datetime import datetime
-
-from pydantic import BaseModel, Field
 
 import chk.modules.validate.assertion_function as asrt_f
 from chk.infrastructure.helper import Cast
 from chk.infrastructure.templating import StrTemplate
 from chk.modules.validate.assertion_message import get_assert_msg_for
 from chk.modules.validate.assertion_validation import AssertionEntityType
+from chk.modules.validate.entities import AssertionEntry, TestRunDetail, TestRunReport
 
 MAP_TYPE_TO_FN: dict[str, Callable] = {
     AssertionEntityType.Accepted: asrt_f.accepted,
@@ -115,26 +112,15 @@ class AssertionEntryListRunner:
 
     @staticmethod
     def _prepare_test_run_result(
-        resp: SingleTestRunResult,
         assert_item: AssertionEntry,
         asrt_resp: ValueError | bool,
-    ) -> None:
-        def _prepare_message_values() -> dict:
-            return {
-                "assert_type": assert_item.assert_type,
-                "type_actual": assert_item.actual.__class__.__name__,
-                "type_expected": assert_item.expected.__class__.__name__,
-                "value_actual": assert_item.actual,
-                "value_expected": assert_item.expected,
-                "value_actual_given": assert_item.actual_given,
-                "value_actual_b4_cast": assert_item.actual_b4_cast,
-                "extra_fields": assert_item.extra_fields,
-            }
-
+    ) -> TestRunDetail:
         def _prepare_message() -> str:
+            asrt_fn_name = MAP_TYPE_TO_FN[assert_item.assert_type].__name__
+
             if isinstance(asrt_resp, ValueError):
                 return get_assert_msg_for(f"{asrt_fn_name}.{str(asrt_resp)}").format(
-                    **_prepare_message_values()
+                    **detail.get_message_values()
                 )
 
             if asrt_resp:
@@ -150,16 +136,18 @@ class AssertionEntryListRunner:
                     else assert_item.msg_fail
                 )
 
-            return message.format(**_prepare_message_values())
+            return message.format(**detail.get_message_values())
 
-        asrt_fn_name = MAP_TYPE_TO_FN[assert_item.assert_type].__name__
+        detail = TestRunDetail(assert_entry=assert_item)
 
         if isinstance(asrt_resp, ValueError):
-            resp["is_pass"] = False
-            resp["message"] = _prepare_message()
+            detail.is_pass = False
+            detail.message = _prepare_message()
         else:
-            resp["is_pass"] = asrt_resp
-            resp["message"] = _prepare_message()
+            detail.is_pass = asrt_resp
+            detail.message = _prepare_message()
+
+        return detail
 
     @staticmethod
     def _call_assertion_method(
@@ -177,9 +165,7 @@ class AssertionEntryListRunner:
         return asrt_fn(**assert_item.as_dict)
 
     @staticmethod
-    def test_run(
-        assert_list: list[AssertionEntry], variables: dict
-    ) -> AllTestRunResult:
+    def test_run(assert_list: list[AssertionEntry], variables: dict) -> TestRunReport:
         """Run the tests
 
         Args:
@@ -187,40 +173,22 @@ class AssertionEntryListRunner:
             variables: dict
 
         Returns:
-            AllTestRunResult: Test run result
+            TestRunReport: Test run report
         """
 
-        test_run_result = AllTestRunResult(
-            id=str(uuid.uuid4()),
-            time_start=datetime.now(),
-            count_all=len(assert_list),
-            count_fail=0,
-        )
-
-        results: list[SingleTestRunResult] = []
+        run_report = TestRunReport(count_all=len(assert_list))
 
         for assert_item in assert_list:
             assert_item = AssertionEntryListRunner._replace_assertion_values(
                 assert_item, variables
             )
 
-            resp = SingleTestRunResult(assert_used=assert_item)
-            asrt_resp = AssertionEntryListRunner._call_assertion_method(assert_item)
-
-            AssertionEntryListRunner._prepare_test_run_result(
-                resp, assert_item, asrt_resp
+            resp: TestRunDetail = AssertionEntryListRunner._prepare_test_run_result(
+                assert_item,
+                AssertionEntryListRunner._call_assertion_method(assert_item),
             )
 
-            if resp["is_pass"] is False:
-                test_run_result["count_fail"] += 1
-
-            results.append(resp)
-
-        test_run_result["time_end"] = datetime.now()
-        test_run_result["results"] = results
-
-        return test_run_result
-
+            run_report.add_run_detail(resp)
 
 class ValidationTask(BaseModel):
     """Parsed FetchTask"""

@@ -28,7 +28,6 @@ from chk.infrastructure.symbol_table import (
 )
 from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
 from chk.modules.validate.assertion_services import (
-    AllTestRunResult,
     AssertionEntry,
     AssertionEntryListRunner,
     MAP_TYPE_TO_FN,
@@ -278,7 +277,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         validate_doc,
         {
             **variable_doc.data,
-            **{"_asserts_response": test_run_result.as_dict},
+            **{"_asserts_response": dict(test_run_result)},
         },
     )
 
@@ -290,9 +289,9 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         extra=test_run_result,
         exposed=exposed_data,
         report={
-            "is_success": test_run_result["count_fail"] == 0,
-            "count_all": test_run_result["count_all"],
-            "count_fail": test_run_result["count_fail"],
+            "is_success": test_run_result.count_fail == 0,
+            "count_all": test_run_result.count_all,
+            "count_fail": test_run_result.count_fail,
         },
     )
 

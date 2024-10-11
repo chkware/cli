@@ -16,6 +16,7 @@ from chk.modules.validate.assertion_services import (
     AssertionEntryListRunner,
     AssertionEntry,
 )
+from chk.modules.validate.entities import TestRunReport
 
 
 @pytest.fixture
@@ -119,7 +120,7 @@ class TestAssertionEntryListRunner:
         assert_list, variables = setup_assertion_entry_list_pass_assert
         test_run_result = AssertionEntryListRunner.test_run(assert_list, variables.data)
 
-        assert isinstance(test_run_result, AllTestRunResult)
+        assert isinstance(test_run_result, TestRunReport)
 
     @staticmethod
     def test__replace_assertion_values_pass(setup_assertion_entry_list_pass_assert):
