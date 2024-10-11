@@ -5,7 +5,6 @@ Validate module
 from __future__ import annotations
 
 import enum
-import json
 from collections import abc
 
 import cerberus
@@ -16,7 +15,7 @@ from chk.infrastructure.document import (
     VersionedDocumentV2,
 )
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
-from chk.infrastructure.helper import data_get, formatter
+from chk.infrastructure.helper import data_get
 from chk.infrastructure.symbol_table import (
     EXPOSE_SCHEMA as EXP_SCHEMA,
     ExecResponse,
@@ -199,48 +198,6 @@ class ValidationDocumentSupport:
             )
 
         return new_assertion_lst
-
-    @staticmethod
-    def display(exposed: dict, exec_ctx: ExecuteContext) -> None:
-        """Displays the response based on the command response format
-
-        Args:
-            exposed: list
-            exec_ctx: ExecuteContext
-        """
-
-        if not exposed:
-            return
-
-        display_item_list: list[object] = []
-
-        for _, expose_item in exposed.items():
-            if isinstance(expose_item, AllTestRunResult):
-                if exec_ctx.options["format"]:
-                    display_item_list.append(expose_item.as_fmt_str)
-                else:
-                    display_item_list.append(expose_item.as_dict)
-            else:
-                display_item_list.append(expose_item)
-
-        if exec_ctx.options["format"]:
-            formatter(
-                (
-                    "\n======\n".join([str(item) for item in display_item_list])
-                    if len(display_item_list) > 1
-                    else display_item_list.pop()
-                ),
-                dump=exec_ctx.options["dump"],
-            )
-        else:
-            formatter(
-                (
-                    json.dumps(display_item_list)
-                    if len(display_item_list) > 1
-                    else json.dumps(display_item_list.pop())
-                ),
-                dump=exec_ctx.options["dump"],
-            )
 
 
 def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
