@@ -10,7 +10,7 @@ from chk.infrastructure.helper import Cast
 from chk.infrastructure.templating import StrTemplate
 from chk.modules.validate.assertion_message import get_assert_msg_for
 from chk.modules.validate.assertion_validation import AssertionEntityType
-from chk.modules.validate.entities import AssertionEntry, TestRunDetail, TestRunReport
+from chk.modules.validate.entities import AssertionEntry, RunDetail, TestRunReport
 
 MAP_TYPE_TO_FN: dict[str, Callable] = {
     AssertionEntityType.Accepted: asrt_f.accepted,
@@ -114,7 +114,7 @@ class AssertionEntryListRunner:
     def _prepare_test_run_result(
         assert_item: AssertionEntry,
         asrt_resp: ValueError | bool,
-    ) -> TestRunDetail:
+    ) -> RunDetail:
         def _prepare_message() -> str:
             asrt_fn_name = MAP_TYPE_TO_FN[assert_item.assert_type].__name__
 
@@ -138,7 +138,7 @@ class AssertionEntryListRunner:
 
             return message.format(**detail.get_message_values())
 
-        detail = TestRunDetail(assert_entry=assert_item)
+        detail = RunDetail(assert_entry=assert_item)
 
         if isinstance(asrt_resp, ValueError):
             detail.is_pass = False
@@ -183,7 +183,7 @@ class AssertionEntryListRunner:
                 assert_item, variables
             )
 
-            resp: TestRunDetail = AssertionEntryListRunner._prepare_test_run_result(
+            resp: RunDetail = AssertionEntryListRunner._prepare_test_run_result(
                 assert_item,
                 AssertionEntryListRunner._call_assertion_method(assert_item),
             )

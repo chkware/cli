@@ -10,8 +10,8 @@ from pydantic import BaseModel, Field, UUID4
 
 
 class AssertionEntry(BaseModel):
-    """AssertionEntry holds one assertion operation
-    TODO: implement __iter__ for this class
+    """
+    AssertionEntry holds one assertion operation
     """
 
     assert_type: str
@@ -53,8 +53,8 @@ class AssertionEntry(BaseModel):
         return self.model_dump()
 
 
-class TestRunDetail(BaseModel):
-    """TestRunDetail stores one single run result"""
+class RunDetail(BaseModel):
+    """RunDetail stores one single run result"""
 
     assert_entry: AssertionEntry = Field(default=NotImplemented)
     is_pass: bool = Field(default=False)
@@ -102,7 +102,7 @@ class TestRunReport(BaseModel):
     time_end: datetime = Field(default_factory=datetime.now)
     count_all: int = Field(default=0)
     count_fail: int = Field(default=0)
-    details: list[TestRunDetail] = Field(default_factory=list)
+    details: list[RunDetail] = Field(default_factory=list)
 
     def __iter__(self):
         """Implement __iter__"""
@@ -114,11 +114,11 @@ class TestRunReport(BaseModel):
         yield "count_fail", self.count_fail
         yield "details", [detail.model_dump() for detail in self.details]
 
-    def add_run_detail(self, run_dtl: TestRunDetail) -> None:
-        """Append a TestRunDetail"""
+    def add_run_detail(self, run_dtl: RunDetail) -> None:
+        """Append a RunDetail"""
 
-        if not isinstance(run_dtl, TestRunDetail):
-            raise TypeError("TestRunDetail expected.")
+        if not isinstance(run_dtl, RunDetail):
+            raise TypeError("RunDetail expected.")
 
         self.details.append(run_dtl)
 
