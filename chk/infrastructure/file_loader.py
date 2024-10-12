@@ -28,7 +28,7 @@ class FileLoader:
         """
 
         if not allowed_list:
-            allowed_list = [".chk"]
+            allowed_list = [".chk", ".yaml", ".yal"]
 
         if not Path(file_name).is_file():
             raise FileNotFoundError("File not found")
