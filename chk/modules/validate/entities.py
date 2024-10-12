@@ -39,19 +39,6 @@ class AssertionEntry(BaseModel):
         )
         yield "extra_fields", self.extra_fields
 
-    @property
-    def as_dict(self) -> dict:
-        """Return dict representation"""
-
-        if self.actual_given == NotImplemented:
-            self.actual_given = ""
-        if self.actual_b4_cast == NotImplemented:
-            self.actual_b4_cast = ""
-        if self.expected == NotImplemented:
-            self.expected = ""
-
-        return self.model_dump()
-
 
 class RunDetail(BaseModel):
     """RunDetail stores one single run result"""
