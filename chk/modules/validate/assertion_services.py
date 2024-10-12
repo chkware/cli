@@ -10,7 +10,7 @@ from chk.infrastructure.helper import Cast
 from chk.infrastructure.templating import StrTemplate
 from chk.modules.validate.assertion_message import get_assert_msg_for
 from chk.modules.validate.assertion_validation import AssertionEntityType
-from chk.modules.validate.entities import AssertionEntry, RunDetail, TestRunReport
+from chk.modules.validate.entities import AssertionEntry, RunDetail, RunReport
 
 MAP_TYPE_TO_FN: dict[str, Callable] = {
     AssertionEntityType.Accepted: asrt_f.accepted,
@@ -165,7 +165,7 @@ class AssertionEntryListRunner:
         return asrt_fn(**assert_item.as_dict)
 
     @staticmethod
-    def test_run(assert_list: list[AssertionEntry], variables: dict) -> TestRunReport:
+    def test_run(assert_list: list[AssertionEntry], variables: dict) -> RunReport:
         """Run the tests
 
         Args:
@@ -173,10 +173,10 @@ class AssertionEntryListRunner:
             variables: dict
 
         Returns:
-            TestRunReport: Test run report
+            RunReport: Test run report
         """
 
-        run_report = TestRunReport(count_all=len(assert_list))
+        run_report = RunReport(count_all=len(assert_list))
 
         for assert_item in assert_list:
             assert_item = AssertionEntryListRunner._replace_assertion_values(

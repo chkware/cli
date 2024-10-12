@@ -5,7 +5,7 @@ General validation services
 from json import dumps
 
 from chk.infrastructure.view import PresentationBuilder
-from chk.modules.validate.entities import TestRunReport
+from chk.modules.validate.entities import RunReport
 
 
 class ValidatePresenter(PresentationBuilder):
@@ -16,7 +16,7 @@ class ValidatePresenter(PresentationBuilder):
         display_items: list[str] = []
 
         for key, item in self.data.exposed.items():
-            if key == "_asserts_response" and isinstance(item, TestRunReport):
+            if key == "_asserts_response" and isinstance(item, RunReport):
                 display_items.append(item.as_fmt_str())
             else:
                 display_items.append(dumps(item))
