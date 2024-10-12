@@ -3,20 +3,18 @@
 Test assertion_services
 """
 import copy
-import datetime
 import types
-import uuid
 
 import pytest
 
-from chk.infrastructure.file_loader import FileContext, ExecuteContext
-from chk.infrastructure.symbol_table import Variables, VariableTableManager
+from chk.infrastructure.file_loader import ExecuteContext, FileContext
+from chk.infrastructure.symbol_table import VariableTableManager, Variables
 from chk.modules.validate import ValidationDocument, ValidationDocumentSupport
 from chk.modules.validate.assertion_services import (
-    AssertionEntryListRunner,
     AssertionEntry,
+    AssertionEntryListRunner,
 )
-from chk.modules.validate.entities import TestRunReport
+from chk.modules.validate.entities import RunReport
 
 
 @pytest.fixture
@@ -120,7 +118,7 @@ class TestAssertionEntryListRunner:
         assert_list, variables = setup_assertion_entry_list_pass_assert
         test_run_result = AssertionEntryListRunner.test_run(assert_list, variables.data)
 
-        assert isinstance(test_run_result, TestRunReport)
+        assert isinstance(test_run_result, RunReport)
 
     @staticmethod
     def test__replace_assertion_values_pass(setup_assertion_entry_list_pass_assert):
@@ -180,9 +178,9 @@ class TestAssertionEntry:
     @staticmethod
     def test_create():
         ae = AssertionEntry(
-            "Empty",
-            "10",
-            10,
+            assert_type="Empty",
+            actual="10",
+            expected=10,
         )
 
         assert isinstance(ae, AssertionEntry)
@@ -192,7 +190,11 @@ class TestAssertionEntry:
     @staticmethod
     def test_copy():
         ae = AssertionEntry(
-            "Empty", "10", 10, cast_actual_to="int", extra_fields={"a": 1}
+            assert_type="Empty",
+            actual="10",
+            expected=10,
+            cast_actual_to="int",
+            extra_fields={"a": 1},
         )
 
         ar = copy.copy(ae)
