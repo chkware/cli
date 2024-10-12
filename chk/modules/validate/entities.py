@@ -47,6 +47,13 @@ class RunDetail(BaseModel):
     is_pass: bool = Field(default=False)
     message: str = Field(default_factory=str)
 
+    def __iter__(self):
+        """implement __iter__"""
+
+        yield "assert_entry", dict(self.assert_entry)
+        yield "is_pass", self.is_pass
+        yield "message", self.message
+
     def as_fmt_str(self) -> str:
         """String representation of ApiResponse
 
@@ -95,11 +102,11 @@ class RunReport(BaseModel):
         """Implement __iter__"""
 
         yield "id", str(self.id)
-        yield "time_start", self.time_start.timestamp()
-        yield "time_end", self.time_end.timestamp()
+        yield "time_start", str(self.time_start.timestamp())
+        yield "time_end", str(self.time_end.timestamp())
         yield "count_all", self.count_all
         yield "count_fail", self.count_fail
-        yield "details", [detail.model_dump() for detail in self.details]
+        yield "details", [dict(detail) for detail in self.details]
 
     def add_run_detail(self, run_dtl: RunDetail) -> None:
         """Append a RunDetail"""
