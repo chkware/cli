@@ -94,8 +94,8 @@ class RunDetail(BaseModel):
         }
 
 
-class TestRunReport(BaseModel):
-    """TestRunReport stores overall test run report"""
+class RunReport(BaseModel):
+    """RunReport stores overall test run report"""
 
     id: UUID4 = Field(default_factory=uuid.uuid4)
     time_start: datetime = Field(default_factory=datetime.now)
