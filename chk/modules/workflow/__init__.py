@@ -11,7 +11,6 @@ from collections.abc import Callable
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from chk.console.main import combine_initial_variables
 from chk.infrastructure.document import (
     VersionedDocumentV2,
 )
@@ -131,9 +130,7 @@ class WorkflowDocumentSupport:
                 task_d_, **dict(base_file_path=base_fpath)
             )
 
-            exctx_args = {
-                "variables": combine_initial_variables(json.dumps(task_o_.variables))
-            }
+            exctx_args = {"variables": json.dumps(task_o_.variables)}
 
             if isinstance(task_o_, ChkwareValidateTask):
                 exctx_args["arguments"] = task_o_.arguments.model_dump_json()
