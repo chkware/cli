@@ -162,7 +162,7 @@ class AssertionEntryListRunner:
         """
 
         asrt_fn = MAP_TYPE_TO_FN[assert_item.assert_type]
-        return asrt_fn(**assert_item.as_dict)
+        return asrt_fn(**dict(assert_item))
 
     @staticmethod
     def test_run(assert_list: list[AssertionEntry], variables: dict) -> RunReport:
