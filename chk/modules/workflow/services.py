@@ -5,8 +5,7 @@ Workflow services module
 from __future__ import annotations
 
 import json
-
-from pydantic import BaseModel
+from collections.abc import Iterable
 
 from chk.infrastructure.view import PresentationBuilder
 from chk.modules.workflow import (
@@ -108,7 +107,7 @@ class WorkflowPresenter(PresentationBuilder):
                 #       PresentableExposeTypes for RunReport, ApiResponse, etc
                 if isinstance(value, dict):
                     for _k, _v in value.items():
-                        if isinstance(_v, BaseModel):
+                        if isinstance(_v, Iterable):
                             value[_k] = dict(_v)
 
                 to_append = json.dumps(value)
@@ -155,7 +154,7 @@ class WorkflowPresenter(PresentationBuilder):
             else:
                 if isinstance(value, dict):
                     for _k, _v in value.items():
-                        if isinstance(_v, BaseModel):
+                        if isinstance(_v, Iterable):
                             value[_k] = dict(_v)
 
                 _to_append = value
