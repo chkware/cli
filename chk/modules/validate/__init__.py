@@ -5,7 +5,6 @@ Validate module
 from __future__ import annotations
 
 import enum
-import json
 from collections import abc
 
 import cerberus
@@ -16,7 +15,7 @@ from chk.infrastructure.document import (
     VersionedDocumentV2,
 )
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
-from chk.infrastructure.helper import data_get, formatter
+from chk.infrastructure.helper import data_get
 from chk.infrastructure.symbol_table import (
     EXPOSE_SCHEMA as EXP_SCHEMA,
     ExecResponse,
@@ -27,17 +26,18 @@ from chk.infrastructure.symbol_table import (
     replace_value,
 )
 from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
+from chk.infrastructure.view import PresentationService
 from chk.modules.validate.assertion_services import (
-    AllTestRunResult,
     AssertionEntry,
     AssertionEntryListRunner,
     MAP_TYPE_TO_FN,
-    ValidationTask,
 )
 from chk.modules.validate.assertion_validation import (
     AssertionEntityProperty,
     get_schema_map,
 )
+from chk.modules.validate.entities import ValidationTask
+from chk.modules.validate.services import ValidatePresenter
 
 VERSION_SCOPE = ["validation"]
 
@@ -199,48 +199,6 @@ class ValidationDocumentSupport:
 
         return new_assertion_lst
 
-    @staticmethod
-    def display(expose_list: list, exec_ctx: ExecuteContext) -> None:
-        """Displays the response based on the command response format
-
-        Args:
-            expose_list: list
-            exec_ctx: ExecuteContext
-        """
-
-        if not expose_list:
-            return
-
-        display_item_list: list[object] = []
-
-        for expose_item in expose_list:
-            if isinstance(expose_item, AllTestRunResult):
-                if exec_ctx.options["format"]:
-                    display_item_list.append(expose_item.as_fmt_str)
-                else:
-                    display_item_list.append(expose_item.as_dict)
-            else:
-                display_item_list.append(expose_item)
-
-        if exec_ctx.options["format"]:
-            formatter(
-                (
-                    "\n---\n".join([str(item) for item in display_item_list])
-                    if len(display_item_list) > 1
-                    else display_item_list.pop()
-                ),
-                dump=exec_ctx.options["dump"],
-            )
-        else:
-            formatter(
-                (
-                    json.dumps(display_item_list)
-                    if len(display_item_list) > 1
-                    else json.dumps(display_item_list.pop())
-                ),
-                dump=exec_ctx.options["dump"],
-            )
-
 
 def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     """Call a validation document"""
@@ -269,16 +227,16 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     test_run_result = AssertionEntryListRunner.test_run(assert_list, variable_doc.data)
     output_data = Variables(
         {
-            "_asserts_response": test_run_result.as_dict,
+            "_asserts_response": test_run_result,
             "_data": variable_doc["_data"],
         }
     )
 
-    exposed_data = ExposeManager.get_exposed_replaced_data_v2(
+    exposed_data = ExposeManager.get_exposed_replaced_data(
         validate_doc,
         {
             **variable_doc.data,
-            **{"_asserts_response": test_run_result.as_dict},
+            **{"_asserts_response": test_run_result},
         },
     )
 
@@ -290,9 +248,9 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         extra=test_run_result,
         exposed=exposed_data,
         report={
-            "is_success": test_run_result["count_fail"] == 0,
-            "count_all": test_run_result["count_all"],
-            "count_fail": test_run_result["count_fail"],
+            "is_success": test_run_result.count_fail == 0,
+            "count_all": test_run_result.count_all,
+            "count_fail": test_run_result.count_fail,
         },
     )
 
@@ -308,10 +266,10 @@ def execute(
         cb: Callable
     """
 
-    exec_response = call(file_ctx=ctx, exec_ctx=exec_ctx)
+    exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
 
-    cb({ctx.filepath_hash: exec_response.variables_exec.data})
-    ValidationDocumentSupport.display(exec_response.exposed, exec_ctx)
+    cb({ctx.filepath_hash: exr.variables_exec.data})
+    PresentationService.display(exr, exec_ctx, ValidatePresenter)
 
 
 def task_validation(**kwargs: dict) -> ExecResponse:

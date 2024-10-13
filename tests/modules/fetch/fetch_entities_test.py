@@ -190,7 +190,7 @@ class TestHttpDocumentSupport:
         old_stdout = sys.stdout
         sys.stdout = TextIOWrapper(BytesIO(), sys.stdout.encoding)
 
-        HttpDocumentSupport.display([api_response.data], execution_ctx)
+        HttpDocumentSupport.display({"_response": api_response.data}, execution_ctx)
 
         # get output
         sys.stdout.seek(0)  # jump to the start

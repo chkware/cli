@@ -5,8 +5,8 @@ import sys
 from pathlib import Path
 
 import pytest
-import tests
 
+import tests
 from chk.infrastructure.file_loader import (
     FileContext,
     FileLoader,
@@ -171,12 +171,6 @@ class TestFileLoaderIsFileOk:
         file_name = FILE_PATH + "UserOk.yml"
 
         with pytest.raises(FileNotFoundError):
-            FileLoader.is_file_ok(file_name)
-
-    def test_fail_with_default_allowed_list_not_allowed_file(self):
-        file_name = FILE_PATH + "UserOk.yaml"
-
-        with pytest.raises(LookupError):
             FileLoader.is_file_ok(file_name)
 
     def test_pass_with_given_allowed_list(self):

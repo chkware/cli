@@ -2,20 +2,15 @@
 Assertion services
 """
 
-import dataclasses
-import typing
-import uuid
-from collections import UserDict
 from collections.abc import Callable
 from datetime import datetime
-
-from pydantic import BaseModel, Field
 
 import chk.modules.validate.assertion_function as asrt_f
 from chk.infrastructure.helper import Cast
 from chk.infrastructure.templating import StrTemplate
 from chk.modules.validate.assertion_message import get_assert_msg_for
 from chk.modules.validate.assertion_validation import AssertionEntityType
+from chk.modules.validate.entities import AssertionEntry, RunDetail, RunReport
 
 MAP_TYPE_TO_FN: dict[str, Callable] = {
     AssertionEntityType.Accepted: asrt_f.accepted,
@@ -61,116 +56,6 @@ MAP_TYPE_TO_FN: dict[str, Callable] = {
     AssertionEntityType.MapExactKeys: asrt_f.map_exact_keys,
     AssertionEntityType.Count: asrt_f.count,
 }
-
-
-@dataclasses.dataclass
-class AssertionEntry:
-    """AssertionEntry holds one assertion operation
-    TODO: implement __iter__ for this class
-    """
-
-    assert_type: str
-    actual: typing.Any
-    expected: typing.Any
-    msg_pass: str = dataclasses.field(default_factory=str)
-    msg_fail: str = dataclasses.field(default_factory=str)
-    cast_actual_to: str = dataclasses.field(default_factory=str)
-    actual_given: typing.Any = dataclasses.field(default=NotImplemented)
-    actual_b4_cast: typing.Any = dataclasses.field(default=NotImplemented)
-    extra_fields: dict = dataclasses.field(default_factory=dict)
-
-    @property
-    def as_dict(self) -> dict:
-        """Return dict representation"""
-
-        if self.actual_given == NotImplemented:
-            self.actual_given = ""
-        if self.actual_b4_cast == NotImplemented:
-            self.actual_b4_cast = ""
-        if self.expected == NotImplemented:
-            self.expected = ""
-
-        return dataclasses.asdict(self)
-
-
-class SingleTestRunResult(UserDict):
-    """Result of an assertion run
-
-    keys: is_pass, message, assert_used
-    """
-
-    @property
-    def as_dict(self) -> dict:
-        """Convert SingleTestRunResult to a dict"""
-
-        return {
-            key: value.as_dict if key == "assert_used" else value
-            for key, value in self.items()
-        }
-
-    @property
-    def as_fmt_str(self) -> str:
-        """String representation of ApiResponse
-
-        Returns:
-            str: String representation
-        """
-
-        return (
-            "\n"
-            f"{'+' if self['is_pass'] else '-'} {self['assert_used'].assert_type} "
-            + f"{'PASSED' if self['is_pass'] else 'FAILED'}, {self['message']}"
-        )
-
-
-class AllTestRunResult(UserDict):
-    """Result of a test run
-    TODO: implement __iter__ for this class
-
-    keys: id, time_start, time_end, count_all, results, count_fail
-    """
-
-    @property
-    def as_dict(self) -> dict:
-        """Convert AllTestRunResult to a dict"""
-        _as_dict: dict = {
-            key: value for key, value in self.items() if not key.startswith("time_")
-        }
-
-        _as_dict |= {
-            key: value.timestamp()
-            for key, value in self.items()
-            if key.startswith("time_")
-        }
-
-        if len(self["results"]) > 0:
-            _as_dict["results"] = [
-                test_result.as_dict
-                for test_result in self["results"]
-                if isinstance(test_result, SingleTestRunResult)
-            ]
-
-        return _as_dict
-
-    @property
-    def as_fmt_str(self) -> str:
-        """String representation of ApiResponse
-
-        Returns:
-            str: String representation
-        """
-
-        _display = (
-            f"Test run id: {self['id']}, time taken {self['time_end'] - self['time_start']}\n"
-            + f"Total tests: {self['count_all']}, "
-            + f"Total tests failed: {self['count_fail']}\n"
-        )
-        _display += "\n> Test run result(s):"
-
-        for one_result in self["results"]:
-            _display += one_result.as_fmt_str
-
-        return _display
 
 
 class AssertionEntryListRunner:
@@ -227,26 +112,15 @@ class AssertionEntryListRunner:
 
     @staticmethod
     def _prepare_test_run_result(
-        resp: SingleTestRunResult,
         assert_item: AssertionEntry,
         asrt_resp: ValueError | bool,
-    ) -> None:
-        def _prepare_message_values() -> dict:
-            return {
-                "assert_type": assert_item.assert_type,
-                "type_actual": assert_item.actual.__class__.__name__,
-                "type_expected": assert_item.expected.__class__.__name__,
-                "value_actual": assert_item.actual,
-                "value_expected": assert_item.expected,
-                "value_actual_given": assert_item.actual_given,
-                "value_actual_b4_cast": assert_item.actual_b4_cast,
-                "extra_fields": assert_item.extra_fields,
-            }
-
+    ) -> RunDetail:
         def _prepare_message() -> str:
+            asrt_fn_name = MAP_TYPE_TO_FN[assert_item.assert_type].__name__
+
             if isinstance(asrt_resp, ValueError):
                 return get_assert_msg_for(f"{asrt_fn_name}.{str(asrt_resp)}").format(
-                    **_prepare_message_values()
+                    **detail.get_message_values()
                 )
 
             if asrt_resp:
@@ -262,16 +136,18 @@ class AssertionEntryListRunner:
                     else assert_item.msg_fail
                 )
 
-            return message.format(**_prepare_message_values())
+            return message.format(**detail.get_message_values())
 
-        asrt_fn_name = MAP_TYPE_TO_FN[assert_item.assert_type].__name__
+        detail = RunDetail(assert_entry=assert_item)
 
         if isinstance(asrt_resp, ValueError):
-            resp["is_pass"] = False
-            resp["message"] = _prepare_message()
+            detail.is_pass = False
+            detail.message = _prepare_message()
         else:
-            resp["is_pass"] = asrt_resp
-            resp["message"] = _prepare_message()
+            detail.is_pass = asrt_resp
+            detail.message = _prepare_message()
+
+        return detail
 
     @staticmethod
     def _call_assertion_method(
@@ -286,12 +162,10 @@ class AssertionEntryListRunner:
         """
 
         asrt_fn = MAP_TYPE_TO_FN[assert_item.assert_type]
-        return asrt_fn(**assert_item.as_dict)
+        return asrt_fn(**dict(assert_item))
 
     @staticmethod
-    def test_run(
-        assert_list: list[AssertionEntry], variables: dict
-    ) -> AllTestRunResult:
+    def test_run(assert_list: list[AssertionEntry], variables: dict) -> RunReport:
         """Run the tests
 
         Args:
@@ -299,46 +173,23 @@ class AssertionEntryListRunner:
             variables: dict
 
         Returns:
-            AllTestRunResult: Test run result
+            RunReport: Test run report
         """
 
-        test_run_result = AllTestRunResult(
-            id=str(uuid.uuid4()),
-            time_start=datetime.now(),
-            count_all=len(assert_list),
-            count_fail=0,
-        )
-
-        results: list[SingleTestRunResult] = []
+        run_report = RunReport(count_all=len(assert_list))
 
         for assert_item in assert_list:
             assert_item = AssertionEntryListRunner._replace_assertion_values(
                 assert_item, variables
             )
 
-            resp = SingleTestRunResult(assert_used=assert_item)
-            asrt_resp = AssertionEntryListRunner._call_assertion_method(assert_item)
-
-            AssertionEntryListRunner._prepare_test_run_result(
-                resp, assert_item, asrt_resp
+            resp: RunDetail = AssertionEntryListRunner._prepare_test_run_result(
+                assert_item,
+                AssertionEntryListRunner._call_assertion_method(assert_item),
             )
 
-            if resp["is_pass"] is False:
-                test_run_result["count_fail"] += 1
+            run_report.add_run_detail(resp)
 
-            results.append(resp)
+        run_report.time_end = datetime.now()
 
-        test_run_result["time_end"] = datetime.now()
-        test_run_result["results"] = results
-
-        return test_run_result
-
-
-class ValidationTask(BaseModel):
-    """Parsed FetchTask"""
-
-    name: str
-    uses: str
-    file: str
-    variables: dict = Field(default_factory=dict)
-    arguments: dict = Field(default_factory=dict)
+        return run_report

@@ -455,20 +455,20 @@ class HttpDocumentSupport:
         return {**VER_SCHEMA, **SCHEMA, **VAR_SCHEMA, **EXP_SCHEMA}
 
     @staticmethod
-    def display(expose_list: list, exec_ctx: ExecuteContext) -> None:
+    def display(exposed: dict, exec_ctx: ExecuteContext) -> None:
         """Displays the response based on the command response format
 
         Args:
-            expose_list: list
+            exposed: list
             exec_ctx: ExecuteContext
         """
 
-        if not expose_list:
+        if not exposed:
             return
 
         display_item_list: list[object] = []
 
-        for expose_item in expose_list:
+        for _, expose_item in exposed.items():
             if isinstance(expose_item, (dict, list)):
                 if {"code", "info", "headers", "body"}.issubset(expose_item):
                     resp = ApiResponse(expose_item)
@@ -546,7 +546,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
 
     output_data = Variables({"_response": response.data})
 
-    exposed_data = ExposeManager.get_exposed_replaced_data_v2(
+    exposed_data = ExposeManager.get_exposed_replaced_data(
         http_doc,
         {**variable_doc.data, **output_data.data},
     )

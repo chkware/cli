@@ -5,8 +5,8 @@ Workflow services module
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 
-from chk.infrastructure.helper import Cast
 from chk.infrastructure.view import PresentationBuilder
 from chk.modules.workflow import (
     ChkwareTask,
@@ -103,6 +103,13 @@ class WorkflowPresenter(PresentationBuilder):
             if node in key and len(key) == len(node):
                 to_append = self._prepare_dump_str_for_steps()
             else:
+                # TODO: Need a json.Encoder for specific PresentableExposeTypes
+                #       PresentableExposeTypes for RunReport, ApiResponse, etc
+                if isinstance(value, dict):
+                    for _k, _v in value.items():
+                        if isinstance(_v, Iterable):
+                            value[_k] = dict(_v)
+
                 to_append = json.dumps(value)
 
             exposed_fmt_str.append(to_append)
@@ -145,6 +152,11 @@ class WorkflowPresenter(PresentationBuilder):
             if node in key and len(key) == len(node):
                 _to_append = self._prepare_dump_data()
             else:
+                if isinstance(value, dict):
+                    for _k, _v in value.items():
+                        if isinstance(_v, Iterable):
+                            value[_k] = dict(_v)
+
                 _to_append = value
 
             exposed_fmt_str.append(_to_append)

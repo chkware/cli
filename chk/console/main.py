@@ -6,7 +6,7 @@ import click
 
 import chk.modules.fetch as fetch_executor
 import chk.modules.validate as validate_executor
-
+import chk.modules.workflow as workflow_executor
 from chk.infrastructure.file_loader import ExecuteContext, FileContext, FileLoader
 from chk.infrastructure.typing_extras import JsonDecodingError
 
@@ -112,7 +112,7 @@ def fetch(file: str, no_format: bool, variables: str) -> None:
 @click.option("-D", "--data", type=str, help="Pass data as JSON")
 def validate(file: str, no_format: bool, variables: str, data: str) -> None:
     """\b
-    Command to run Http config files.
+    Command to run Validation specification files.
     FILE: Any .chk file, that has any of the following versions:
 
     \b
@@ -138,3 +138,36 @@ def validate(file: str, no_format: bool, variables: str, data: str) -> None:
     )
 
     validate_executor.execute(ctx, execution_ctx, after_hook)
+
+
+# run validate sub-command
+@chk.command()
+@click.argument("file", type=click.Path(exists=True))
+@click.option(
+    "-nf", "--no-format", is_flag=True, help="No formatting to show the output"
+)
+@click.option("-V", "--variables", type=str, help="Pass variable(s) as JSON object")
+def workflow(file: str, no_format: bool, variables: str) -> None:
+    """\b
+    Command to run Workflow specification files.
+    FILE: Any .chk file, that has any of the following versions:
+
+    \b
+    - default.http.*"""
+
+    ctx: FileContext = FileContext.from_file(file)
+
+    execution_ctx = ExecuteContext(
+        {
+            "dump": True,
+            "format": not no_format,
+        },
+        {
+            "variables": combine_initial_variables(
+                variables,
+                except_msg="-V, --variables accept values as JSON object",
+            ),
+        },
+    )
+
+    workflow_executor.execute(ctx, execution_ctx, after_hook)

@@ -11,12 +11,11 @@ from collections.abc import Callable
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from chk.console.main import combine_initial_variables
 from chk.infrastructure.document import (
     VersionedDocumentV2,
 )
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
-from chk.infrastructure.helper import data_get, formatter, slugify
+from chk.infrastructure.helper import data_get, slugify
 from chk.infrastructure.symbol_table import (
     ExecResponse,
     ExposeManager,
@@ -25,7 +24,7 @@ from chk.infrastructure.symbol_table import (
     replace_value,
 )
 from chk.infrastructure.version import DocumentVersionMaker
-from chk.infrastructure.view import PresentationBuilder
+from chk.infrastructure.view import PresentationService
 from chk.modules.fetch import task_fetch
 from chk.modules.validate import task_validation
 from chk.modules.workflow.entities import (
@@ -131,10 +130,12 @@ class WorkflowDocumentSupport:
                 task_d_, **dict(base_file_path=base_fpath)
             )
 
-            execution_ctx = ExecuteContext(
-                {"dump": True, "format": True},
-                {"variables": combine_initial_variables(json.dumps(task_o_.variables))},
-            )
+            exctx_args = {"variables": json.dumps(task_o_.variables)}
+
+            if isinstance(task_o_, ChkwareValidateTask):
+                exctx_args["arguments"] = task_o_.arguments.model_dump_json()
+
+            execution_ctx = ExecuteContext({"dump": True, "format": True}, exctx_args)
 
             task_fn = None
 
@@ -170,19 +171,6 @@ class WorkflowDocumentSupport:
 
         return _task_res
 
-    @classmethod
-    def display(
-        cls,
-        ex_resp: ExecResponse,
-        exec_ctx: ExecuteContext,
-        presenter: type[PresentationBuilder],
-    ) -> None:
-        wfp = presenter(data=ex_resp)
-        if exec_ctx.options["format"]:
-            formatter(wfp.dump_fmt(), dump=exec_ctx.options["dump"])
-        else:
-            formatter(wfp.dump_json(), dump=exec_ctx.options["dump"])
-
 
 def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     """Call a workflow document"""
@@ -199,7 +187,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
 
     output_data = Variables({"_steps": variable_doc[WorkflowConfigNode.NODE.value]})
 
-    exposed_data: dict = ExposeManager.get_exposed_replaced_data_v2(
+    exposed_data: dict = ExposeManager.get_exposed_replaced_data(
         wflow_doc, variable_doc.data
     )
 
@@ -228,4 +216,4 @@ def execute(
     exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
 
     cb({ctx.filepath_hash: exr.variables_exec.data})
-    WorkflowDocumentSupport.display(exr, exec_ctx, WorkflowPresenter)
+    PresentationService.display(exr, exec_ctx, WorkflowPresenter)
