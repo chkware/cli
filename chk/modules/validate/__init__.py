@@ -220,11 +220,18 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     ValidationDocumentSupport.set_data_template(validate_doc, variable_doc, exec_ctx)
     ValidationDocumentSupport.process_data_template(variable_doc)
 
-    assert_list = ValidationDocumentSupport.make_assertion_entry_list(
-        validate_doc.asserts
-    )
+    r_exception: Exception | None = None
+    try:
+        assert_list = ValidationDocumentSupport.make_assertion_entry_list(
+            validate_doc.asserts
+        )
 
-    test_run_result = AssertionEntryListRunner.test_run(assert_list, variable_doc.data)
+        test_run_result = AssertionEntryListRunner.test_run(
+            assert_list, variable_doc.data
+        )
+    except Exception as ex:
+        r_exception = ex
+
     output_data = Variables(
         {
             "_asserts_response": test_run_result,
@@ -247,6 +254,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         variables=variable_doc,
         extra=test_run_result,
         exposed=exposed_data,
+        exception=r_exception,
         report={
             "is_success": test_run_result.count_fail == 0,
             "count_all": test_run_result.count_all,
@@ -267,6 +275,8 @@ def execute(
     """
 
     exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
+    if exr.exception is not None:
+        raise exr.exception
 
     cb({ctx.filepath_hash: exr.variables_exec.data})
     PresentationService.display(exr, exec_ctx, ValidatePresenter)
