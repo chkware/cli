@@ -183,7 +183,12 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     service = WorkflowDocumentSupport()
     # @TODO make sure the document do not call self making it repeating
     service.set_step_template(variable_doc)
-    exec_report = service.process_task_template(wflow_doc, variable_doc)
+
+    r_exception: Exception | None = None
+    try:
+        exec_report = service.process_task_template(wflow_doc, variable_doc)
+    except Exception as ex:
+        r_exception = ex
 
     output_data = Variables({"_steps": variable_doc[WorkflowConfigNode.NODE.value]})
 
@@ -199,6 +204,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         variables_exec=output_data,
         extra=exec_report,
         exposed=exposed_data,
+        exception=r_exception,
     )
 
 
@@ -214,6 +220,8 @@ def execute(
     """
 
     exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
+    if exr.exception is not None:
+        raise exr.exception
 
     cb({ctx.filepath_hash: exr.variables_exec.data})
     PresentationService.display(exr, exec_ctx, WorkflowPresenter)
