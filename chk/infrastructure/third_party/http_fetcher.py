@@ -1,7 +1,9 @@
 """
 Driver to handle requests library (https://pypi.org/project/requests/)
 """
+
 from __future__ import annotations
+
 from collections import UserDict
 
 import requests
@@ -81,15 +83,4 @@ def fetch(params: dict) -> ApiResponse:
         ApiResponse: a new ApiResponse
     """
 
-    try:
-        return ApiResponse.from_response(requests.request(**params))
-    except requests.ConnectTimeout as err:
-        raise RuntimeError("Connection time out") from err
-    except requests.ConnectionError as err:
-        raise RuntimeError("Connection error") from err
-    except requests.ReadTimeout as err:
-        raise RuntimeError("Read time out") from err
-    except requests.TooManyRedirects as err:
-        raise RuntimeError("Too many redirects") from err
-    except requests.RequestException as err:
-        raise RuntimeError("Request error") from err
+    return ApiResponse.from_response(requests.request(**params))
