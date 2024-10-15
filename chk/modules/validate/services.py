@@ -9,6 +9,27 @@ from chk.modules.validate.entities import RunReport
 
 
 class ValidatePresenter(PresentationBuilder):
+    """ValidatePresenter"""
+
+    def dump_error_json(self) -> str:
+        return dumps(
+            {
+                "error": (
+                    repr(self.data.exception)
+                    if self.data.exception
+                    else "Unspecified error"
+                )
+            }
+        )
+
+    def dump_error_fmt(self) -> str:
+        """dump fmt error str"""
+
+        return (
+            f"Validate error\n------\n{repr(self.data.exception)}"
+            if self.data.exception
+            else "Validate error\n------\nUnspecified error"
+        )
 
     def dump_fmt(self) -> str:
         """dump formatted string"""

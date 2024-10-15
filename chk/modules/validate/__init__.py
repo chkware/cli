@@ -275,8 +275,6 @@ def execute(
     """
 
     exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
-    if exr.exception is not None:
-        raise exr.exception
 
     cb({ctx.filepath_hash: exr.variables_exec.data})
     PresentationService.display(exr, exec_ctx, ValidatePresenter)
