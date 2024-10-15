@@ -48,6 +48,26 @@ class ChkwareTaskSupport:
 class WorkflowPresenter(PresentationBuilder):
     """WorkflowPresenter"""
 
+    def dump_error_json(self) -> str:
+        return json.dumps(
+            {
+                "error": (
+                    repr(self.data.exception)
+                    if self.data.exception
+                    else "Unspecified error"
+                )
+            }
+        )
+
+    def dump_error_fmt(self) -> str:
+        """dump fmt error str"""
+
+        return (
+            f"Workflow error\n------\n{repr(self.data.exception)}"
+            if self.data.exception
+            else "Workflow error\n------\nUnspecified error"
+        )
+
     def _prepare_dump_data(self) -> dict:
         """prepare dump data"""
 
