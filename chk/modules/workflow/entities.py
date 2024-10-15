@@ -83,7 +83,10 @@ class ChkwareValidateTask(ChkwareTask):
 class StepResult(BaseModel):
     """StepResult"""
 
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     task: ChkwareTask | ChkwareValidateTask
     is_success: bool
     others: dict = Field(default_factory=dict)
-    exposed: list | dict = Field(default_factory=list)
+    exposed: dict = Field(default_factory=list)
+    exception: Exception | None = Field(default=None)
