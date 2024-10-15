@@ -155,6 +155,7 @@ class WorkflowDocumentSupport:
                         is_success=task_resp.report.pop("is_success"),
                         others=task_resp.report,
                         exposed=task_resp.exposed,
+                        exception=task_resp.exception
                     )
                 )
 
