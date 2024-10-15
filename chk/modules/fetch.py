@@ -519,6 +519,26 @@ class HttpDocumentSupport:
 class FetchPresenter(PresentationBuilder):
     """FetchPresenter"""
 
+    def dump_error_json(self) -> str:
+        return json.dumps(
+            {
+                "error": (
+                    repr(self.data.exception)
+                    if self.data.exception
+                    else "Unspecified error"
+                )
+            }
+        )
+
+    def dump_error_fmt(self) -> str:
+        """dump fmt error str"""
+
+        return (
+            f"Fetch error\n------\n{repr(self.data.exception)}"
+            if self.data.exception
+            else "Fetch error\n------\nUnspecified error"
+        )
+
     def dump_json(self) -> str:
         """dump json"""
 
@@ -612,8 +632,6 @@ def execute(
     """
 
     exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
-    if exr.exception is not None:
-        raise exr.exception
 
     cb({ctx.filepath_hash: exr.variables_exec.data})
     PresentationService.display(exr, exec_ctx, FetchPresenter)
