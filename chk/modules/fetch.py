@@ -31,11 +31,9 @@ from chk.infrastructure.symbol_table import (
     Variables,
     replace_value,
 )
-
 from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
 
 VERSION_SCOPE = ["http"]
-
 
 
 class ApiResponse(UserDict):
@@ -100,20 +98,6 @@ class BearerAuthentication(requests.auth.AuthBase):
 
         r.headers["authorization"] = "Bearer " + self.token
         return r
-
-
-def fetch(params: dict) -> ApiResponse:
-    """Fetch an external resource
-
-    Args:
-        params (dict): all supported params from requests.request
-
-    Returns:
-        ApiResponse: a new ApiResponse
-    """
-
-    return ApiResponse.from_response(requests.request(**params))
-
 
 
 class HttpMethod(enum.StrEnum):
@@ -507,7 +491,7 @@ class HttpDocumentSupport:
 
         HttpRequestArgCompiler.add_generic_args(http_doc.request, request_args)
 
-        return fetch(request_args)
+        return ApiResponse.from_response(requests.request(**request_args))
 
     @staticmethod
     def process_request_template(http_doc: HttpDocument, variables: Variables) -> None:
