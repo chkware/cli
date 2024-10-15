@@ -152,7 +152,6 @@ class WorkflowDocumentSupport:
             if task_fn:
                 te_param = TaskExecParam(task=task_o_, exec_ctx=execution_ctx)
                 task_resp: ExecResponse = cls.execute_task(task_fn, te_param, variables)
-
                 is_success = task_resp.report.pop("is_success")
 
                 exec_report.append(
@@ -161,7 +160,7 @@ class WorkflowDocumentSupport:
                         is_success=is_success,
                         others=task_resp.report,
                         exposed=task_resp.exposed,
-                        exception=task_resp.exception
+                        exception=task_resp.exception,
                     )
                 )
 
