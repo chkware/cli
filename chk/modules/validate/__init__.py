@@ -229,6 +229,9 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         test_run_result = AssertionEntryListRunner.test_run(
             assert_list, variable_doc.data
         )
+
+        if test_run_result.count_fail != 0:
+            raise SystemError("Validation failed")
     except Exception as ex:
         r_exception = ex
 
