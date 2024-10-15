@@ -205,6 +205,9 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         extra=exec_report,
         exposed=exposed_data,
         exception=r_exception,
+        report={
+            "is_success": r_exception is None,
+        },
     )
 
 
