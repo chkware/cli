@@ -21,7 +21,7 @@ from chk.infrastructure.document import (
     VersionedDocumentV2,
 )
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
-from chk.infrastructure.helper import data_get, formatter
+from chk.infrastructure.helper import data_get
 from chk.infrastructure.symbol_table import (
     EXPOSE_SCHEMA as EXP_SCHEMA,
     ExecResponse,
@@ -514,68 +514,14 @@ class HttpDocumentSupport:
 
         return {**VER_SCHEMA, **SCHEMA, **VAR_SCHEMA, **EXP_SCHEMA}
 
-    @staticmethod
-    def display(exposed: dict, exec_ctx: ExecuteContext) -> None:
-        """Displays the response based on the command response format
 
-        Args:
-            exposed: list
-            exec_ctx: ExecuteContext
-        """
-
-        if not exposed:
-            return
 
         display_item_list: list[object] = []
 
-        for _, expose_item in exposed.items():
-            if isinstance(expose_item, (dict, list)):
-                if {"code", "info", "headers", "body"}.issubset(expose_item):
-                    resp = ApiResponse(expose_item)
 
-                    if exec_ctx.options["format"]:
-                        display_item_list.append(resp.as_fmt_str)
-                    else:
-                        display_item_list.append(
-                            ApiResponseDict.from_api_response(resp).as_dict
-                        )
-                else:
-                    if exec_ctx.options["format"]:
-                        display_item_list.append(json.dumps(expose_item))
-                    else:
-                        display_item_list.append(expose_item)
             else:
-                if exec_ctx.options["format"]:
-                    display_item_list.append(str(expose_item))
-                else:
-                    display_item_list.append(expose_item)
 
-        if exec_ctx.options["format"]:
-            formatter(
-                (
-                    "\n---\n".join(
-                        [
-                            item if isinstance(item, str) else str(item)
-                            for item in display_item_list
-                        ]
-                    )
-                    if len(display_item_list) > 1
-                    else display_item_list.pop()
-                ),
-                dump=exec_ctx.options["dump"],
-            )
-        else:
-            _to_display = (
-                display_item_list
-                if len(display_item_list) > 1
-                else display_item_list.pop()
-            )
 
-            _to_display = (
-                _to_display if isinstance(_to_display, str) else json.dumps(_to_display)
-            )
-
-            formatter(_to_display, dump=exec_ctx.options["dump"])
 
 
 def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
