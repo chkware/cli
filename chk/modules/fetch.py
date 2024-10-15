@@ -32,6 +32,7 @@ from chk.infrastructure.symbol_table import (
     replace_value,
 )
 from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
+from chk.infrastructure.view import PresentationBuilder, PresentationService
 
 VERSION_SCOPE = ["http"]
 
@@ -515,13 +516,36 @@ class HttpDocumentSupport:
         return {**VER_SCHEMA, **SCHEMA, **VAR_SCHEMA, **EXP_SCHEMA}
 
 
+class FetchPresenter(PresentationBuilder):
+    """FetchPresenter"""
 
-        display_item_list: list[object] = []
+    def dump_json(self) -> str:
+        """dump json"""
 
+        displayables: list[object] = []
 
+        for key, expose_item in self.data.exposed.items():
+            if key == RequestConfigNode.LOCAL:
+                resp = ApiResponse(expose_item)
+                displayables.append(ApiResponseDict.from_api_response(resp).as_dict)
             else:
+                displayables.append(expose_item)
 
+        return json.dumps(displayables)
 
+    def dump_fmt(self) -> str:
+        """dump fmt string"""
+
+        displayables: list[str] = []
+
+        for key, expose_item in self.data.exposed.items():
+            if key == RequestConfigNode.LOCAL:
+                resp = ApiResponse(expose_item)
+                displayables.append(resp.as_fmt_str)
+            else:
+                displayables.append(json.dumps(expose_item))
+
+        return "\n======\n".join(displayables)
 
 
 def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
@@ -592,7 +616,7 @@ def execute(
         raise exr.exception
 
     cb({ctx.filepath_hash: exr.variables_exec.data})
-    HttpDocumentSupport.display(exr.exposed, exec_ctx)
+    PresentationService.display(exr, exec_ctx, FetchPresenter)
 
 
 def task_fetch(**kwargs: dict) -> ExecResponse:
