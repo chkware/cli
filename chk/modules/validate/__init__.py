@@ -260,6 +260,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
             "is_success": run_rpt.count_fail == 0,
             "count_all": run_rpt.count_all,
             "count_fail": run_rpt.count_fail,
+            "exceptions": [dtl.message for dtl in run_rpt.details if not dtl.is_pass],
         },
     )
 
