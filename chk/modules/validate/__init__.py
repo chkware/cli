@@ -226,18 +226,16 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
             validate_doc.asserts
         )
 
-        test_run_result = AssertionEntryListRunner.test_run(
-            assert_list, variable_doc.data
-        )
+        run_rpt = AssertionEntryListRunner.test_run(assert_list, variable_doc.data)
 
-        if test_run_result.count_fail != 0:
+        if run_rpt.count_fail != 0:
             raise SystemError("Validation failed")
     except Exception as ex:
         r_exception = ex
 
     output_data = Variables(
         {
-            "_asserts_response": test_run_result,
+            "_asserts_response": run_rpt,
             "_data": variable_doc["_data"],
         }
     )
@@ -246,7 +244,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         validate_doc,
         {
             **variable_doc.data,
-            **{"_asserts_response": test_run_result},
+            **{"_asserts_response": run_rpt},
         },
     )
 
@@ -255,13 +253,13 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         exec_ctx=exec_ctx,
         variables_exec=output_data,
         variables=variable_doc,
-        extra=test_run_result,
+        extra=run_rpt,
         exposed=exposed_data,
         exception=r_exception,
         report={
-            "is_success": test_run_result.count_fail == 0,
-            "count_all": test_run_result.count_all,
-            "count_fail": test_run_result.count_fail,
+            "is_success": run_rpt.count_fail == 0,
+            "count_all": run_rpt.count_all,
+            "count_fail": run_rpt.count_fail,
         },
     )
 
