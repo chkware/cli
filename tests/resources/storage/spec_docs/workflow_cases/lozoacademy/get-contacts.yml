@@ -1,0 +1,9 @@
+---
+version: default:http:0.7.2
+
+request:
+  url: "https://dev-api.lozoacademy.com/api/contact-information"
+  method: GET
+
+expose:
+  - <% _response %>
