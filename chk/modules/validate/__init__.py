@@ -36,7 +36,7 @@ from chk.modules.validate.assertion_validation import (
     AssertionEntityProperty,
     get_schema_map,
 )
-from chk.modules.validate.entities import ValidationTask
+from chk.modules.validate.entities import RunReport, ValidationTask
 from chk.modules.validate.services import ValidatePresenter
 
 VERSION_SCOPE = ["validation"]
@@ -155,7 +155,12 @@ class ValidationDocumentSupport:
             if not (_assert_type := each_assert.get("type", None)):
                 raise RuntimeError("key: `type` not found in one of the asserts.")
 
-            validator = cerberus.Validator(get_schema_map(_assert_type))
+            try:
+                validator = cerberus.Validator(get_schema_map(_assert_type))
+            except KeyError as ex:
+                raise KeyError(
+                    f"`{_assert_type}` key not found. in {repr(each_assert)}"
+                ) from ex
 
             if not validator.validate(each_assert):
                 raise RuntimeError(
@@ -221,6 +226,8 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     ValidationDocumentSupport.process_data_template(variable_doc)
 
     r_exception: Exception | None = None
+    run_rpt = RunReport()
+
     try:
         assert_list = ValidationDocumentSupport.make_assertion_entry_list(
             validate_doc.asserts
