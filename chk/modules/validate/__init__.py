@@ -264,8 +264,8 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         exposed=exposed_data,
         exception=r_exception,
         report={
-            "is_success": run_rpt.count_fail == 0,
-            "count_all": run_rpt.count_all,
+            "is_success": run_rpt.count_fail == 0 and r_exception is None,
+            "count_all": len(validate_doc.asserts),
             "count_fail": run_rpt.count_fail,
             "exceptions": [dtl.message for dtl in run_rpt.details if not dtl.is_pass],
         },
