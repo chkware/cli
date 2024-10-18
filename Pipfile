@@ -12,6 +12,7 @@ defusedxml = "*"
 xmltodict = "*"
 python-dotenv = "*"
 pydantic = "*"
+loguru = "*"
 
 [dev-packages]
 pytest = "*"
