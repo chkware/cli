@@ -10,6 +10,7 @@ import pathlib
 from collections import UserDict, abc
 from urllib.parse import unquote, urlparse
 
+import requests
 import xmltodict
 from defusedxml.minidom import parseString
 from pydantic import BaseModel, Field
@@ -20,7 +21,7 @@ from chk.infrastructure.document import (
     VersionedDocumentV2,
 )
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
-from chk.infrastructure.helper import data_get, formatter
+from chk.infrastructure.helper import data_get
 from chk.infrastructure.symbol_table import (
     EXPOSE_SCHEMA as EXP_SCHEMA,
     ExecResponse,
@@ -30,14 +31,74 @@ from chk.infrastructure.symbol_table import (
     Variables,
     replace_value,
 )
-from chk.infrastructure.third_party.http_fetcher import (
-    ApiResponse,
-    BearerAuthentication,
-    fetch,
-)
 from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
+from chk.infrastructure.view import PresentationBuilder, PresentationService
 
 VERSION_SCOPE = ["http"]
+
+
+class ApiResponse(UserDict):
+    """Represent a response"""
+
+    __slots__ = ("code", "info", "headers", "body")
+
+    code: int
+    info: str
+    headers: dict
+    body: str
+
+    @property
+    def as_fmt_str(self) -> str:
+        """String representation of ApiResponse
+
+        Returns:
+            str: String representation
+        """
+        # set info
+        presentation = f"{self['info']}\r\n\r\n"
+
+        # set headers
+        presentation += "\r\n".join(f"{k}: {v}" for k, v in self["headers"].items())
+        presentation += "\r\n\r\n"
+
+        # set body
+        presentation += self["body"]
+
+        return presentation
+
+    @staticmethod
+    def from_response(response: requests.Response) -> ApiResponse:
+        """Create a ApiResponse object from requests.Response object
+
+        Args:
+            response (requests.Response): _description_
+
+        Returns:
+            ApiResponse: _description_
+        """
+        version = "HTTP/1.0" if response.raw.version == 10 else "HTTP/1.1"
+
+        return ApiResponse(
+            code=response.status_code,
+            info=f"{version} {response.status_code} {response.reason}",
+            headers=dict(response.headers),
+            body=response.text,
+        )
+
+
+class BearerAuthentication(requests.auth.AuthBase):
+    """Authentication: Bearer ... support"""
+
+    def __init__(self, token: str) -> None:
+        """Construct BearerAuthentication"""
+
+        self.token = token
+
+    def __call__(self, r: requests.PreparedRequest) -> requests.PreparedRequest:
+        """Add the actual header on call"""
+
+        r.headers["authorization"] = "Bearer " + self.token
+        return r
 
 
 class HttpMethod(enum.StrEnum):
@@ -431,7 +492,7 @@ class HttpDocumentSupport:
 
         HttpRequestArgCompiler.add_generic_args(http_doc.request, request_args)
 
-        return fetch(request_args)
+        return ApiResponse.from_response(requests.request(**request_args))
 
     @staticmethod
     def process_request_template(http_doc: HttpDocument, variables: Variables) -> None:
@@ -454,68 +515,57 @@ class HttpDocumentSupport:
 
         return {**VER_SCHEMA, **SCHEMA, **VAR_SCHEMA, **EXP_SCHEMA}
 
-    @staticmethod
-    def display(exposed: dict, exec_ctx: ExecuteContext) -> None:
-        """Displays the response based on the command response format
 
-        Args:
-            exposed: list
-            exec_ctx: ExecuteContext
-        """
+class FetchPresenter(PresentationBuilder):
+    """FetchPresenter"""
 
-        if not exposed:
-            return
+    def dump_error_json(self) -> str:
+        return json.dumps(
+            {
+                "error": (
+                    repr(self.data.exception)
+                    if self.data.exception
+                    else "Unspecified error"
+                )
+            }
+        )
 
-        display_item_list: list[object] = []
+    def dump_error_fmt(self) -> str:
+        """dump fmt error str"""
 
-        for _, expose_item in exposed.items():
-            if isinstance(expose_item, (dict, list)):
-                if {"code", "info", "headers", "body"}.issubset(expose_item):
-                    resp = ApiResponse(expose_item)
+        return (
+            f"Fetch error\n------\n{repr(self.data.exception)}"
+            if self.data.exception
+            else "Fetch error\n------\nUnspecified error"
+        )
 
-                    if exec_ctx.options["format"]:
-                        display_item_list.append(resp.as_fmt_str)
-                    else:
-                        display_item_list.append(
-                            ApiResponseDict.from_api_response(resp).as_dict
-                        )
-                else:
-                    if exec_ctx.options["format"]:
-                        display_item_list.append(json.dumps(expose_item))
-                    else:
-                        display_item_list.append(expose_item)
+    def dump_json(self) -> str:
+        """dump json"""
+
+        displayables: list[object] = []
+
+        for key, expose_item in self.data.exposed.items():
+            if key == RequestConfigNode.LOCAL:
+                resp = ApiResponse(expose_item)
+                displayables.append(ApiResponseDict.from_api_response(resp).as_dict)
             else:
-                if exec_ctx.options["format"]:
-                    display_item_list.append(str(expose_item))
-                else:
-                    display_item_list.append(expose_item)
+                displayables.append(expose_item)
 
-        if exec_ctx.options["format"]:
-            formatter(
-                (
-                    "\n---\n".join(
-                        [
-                            item if isinstance(item, str) else str(item)
-                            for item in display_item_list
-                        ]
-                    )
-                    if len(display_item_list) > 1
-                    else display_item_list.pop()
-                ),
-                dump=exec_ctx.options["dump"],
-            )
-        else:
-            _to_display = (
-                display_item_list
-                if len(display_item_list) > 1
-                else display_item_list.pop()
-            )
+        return json.dumps(displayables)
 
-            _to_display = (
-                _to_display if isinstance(_to_display, str) else json.dumps(_to_display)
-            )
+    def dump_fmt(self) -> str:
+        """dump fmt string"""
 
-            formatter(_to_display, dump=exec_ctx.options["dump"])
+        displayables: list[str] = []
+
+        for key, expose_item in self.data.exposed.items():
+            if key == RequestConfigNode.LOCAL:
+                resp = ApiResponse(expose_item)
+                displayables.append(resp.as_fmt_str)
+            else:
+                displayables.append(json.dumps(expose_item))
+
+        return "\n======\n".join(displayables)
 
 
 def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
@@ -582,11 +632,9 @@ def execute(
     """
 
     exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
-    if exr.exception is not None:
-        raise exr.exception
 
     cb({ctx.filepath_hash: exr.variables_exec.data})
-    HttpDocumentSupport.display(exr.exposed, exec_ctx)
+    PresentationService.display(exr, exec_ctx, FetchPresenter)
 
 
 def task_fetch(**kwargs: dict) -> ExecResponse:

@@ -48,6 +48,26 @@ class ChkwareTaskSupport:
 class WorkflowPresenter(PresentationBuilder):
     """WorkflowPresenter"""
 
+    def dump_error_json(self) -> str:
+        return json.dumps(
+            {
+                "error": (
+                    repr(self.data.exception)
+                    if self.data.exception
+                    else "Unspecified error"
+                )
+            }
+        )
+
+    def dump_error_fmt(self) -> str:
+        """dump fmt error str"""
+
+        return (
+            f"Workflow error\n------\n{repr(self.data.exception)}"
+            if self.data.exception
+            else "Workflow error\n------\nUnspecified error"
+        )
+
     def _prepare_dump_data(self) -> dict:
         """prepare dump data"""
 
@@ -60,7 +80,7 @@ class WorkflowPresenter(PresentationBuilder):
             r_dump["name"] = _document["name"]
 
         if exec_report:
-            r_dump["step_count"] = len(exec_report)
+            r_dump["step_count"] = len(_document["tasks"])
             r_dump["step_failed"] = len(
                 [item for item in exec_report if not item.is_success]
             )
@@ -74,21 +94,29 @@ class WorkflowPresenter(PresentationBuilder):
                 "name": item.task.name,
                 "uses": item.task.uses,
                 "is_success": item.is_success,
-                "fetch_request_method": (
+                "exception": repr(item.exception),
+            }
+            if item.task.uses == "fetch":
+
+                response_task_dump["fetch_request_method"] = (
                     item.others["request_method"]
                     if "request_method" in item.others
                     else ""
-                ),
-                "fetch_request_url": (
+                )
+                response_task_dump["fetch_request_url"] = (
                     item.others["request_url"] if "request_url" in item.others else ""
-                ),
-                "validate_asserts_count_all": (
+                )
+
+            if item.task.uses == "validate":
+                response_task_dump["validate_asserts_count_all"] = (
                     item.others["count_all"] if "count_all" in item.others else ""
-                ),
-                "validate_asserts_count_fail": (
+                )
+                response_task_dump["validate_asserts_count_fail"] = (
                     item.others["count_fail"] if "count_fail" in item.others else ""
-                ),
-            }
+                )
+                response_task_dump["validate_asserts_err_messages"] = [
+                    f"      >>> {msg}" for msg in item.others["exceptions"]
+                ]
 
             r_dump["tasks"].append(response_task_dump)
         return r_dump
@@ -129,15 +157,22 @@ class WorkflowPresenter(PresentationBuilder):
 
         for one_task in tasks:
             _computed_str += "\n------\n"
-            _computed_str += "+ " if one_task["is_success"] else "- "
+            _computed_str += "+ [PASS] " if one_task["is_success"] else "- [FAIL] "
             _computed_str += f"Task: {one_task['name']}\n"
             if one_task["uses"] == "fetch":
                 _computed_str += f">> {one_task['fetch_request_method']} {one_task['fetch_request_url']}"
+                if not one_task["is_success"]:
+                    _computed_str += f"\n>> With message: {one_task['exception']}"
             elif one_task["uses"] == "validate":
                 _computed_str += (
                     f">> Total tests: {one_task['validate_asserts_count_all']}, "
                 )
                 _computed_str += f"Failed: {one_task['validate_asserts_count_fail']}"
+                if not one_task["is_success"]:
+                    _computed_str += f"\n>> With message: {one_task['exception']}\n"
+                    _computed_str += "\n".join(
+                        one_task["validate_asserts_err_messages"]
+                    )
 
         return _computed_str
 

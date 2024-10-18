@@ -36,7 +36,7 @@ from chk.modules.validate.assertion_validation import (
     AssertionEntityProperty,
     get_schema_map,
 )
-from chk.modules.validate.entities import ValidationTask
+from chk.modules.validate.entities import RunReport, ValidationTask
 from chk.modules.validate.services import ValidatePresenter
 
 VERSION_SCOPE = ["validation"]
@@ -155,7 +155,12 @@ class ValidationDocumentSupport:
             if not (_assert_type := each_assert.get("type", None)):
                 raise RuntimeError("key: `type` not found in one of the asserts.")
 
-            validator = cerberus.Validator(get_schema_map(_assert_type))
+            try:
+                validator = cerberus.Validator(get_schema_map(_assert_type))
+            except KeyError as ex:
+                raise KeyError(
+                    f"`{_assert_type}` key not found. in {repr(each_assert)}"
+                ) from ex
 
             if not validator.validate(each_assert):
                 raise RuntimeError(
@@ -220,14 +225,24 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     ValidationDocumentSupport.set_data_template(validate_doc, variable_doc, exec_ctx)
     ValidationDocumentSupport.process_data_template(variable_doc)
 
-    assert_list = ValidationDocumentSupport.make_assertion_entry_list(
-        validate_doc.asserts
-    )
+    r_exception: Exception | None = None
+    run_rpt = RunReport()
 
-    test_run_result = AssertionEntryListRunner.test_run(assert_list, variable_doc.data)
+    try:
+        assert_list = ValidationDocumentSupport.make_assertion_entry_list(
+            validate_doc.asserts
+        )
+
+        run_rpt = AssertionEntryListRunner.test_run(assert_list, variable_doc.data)
+
+        if run_rpt.count_fail != 0:
+            raise SystemError("Validation failed")
+    except Exception as ex:
+        r_exception = ex
+
     output_data = Variables(
         {
-            "_asserts_response": test_run_result,
+            "_asserts_response": run_rpt,
             "_data": variable_doc["_data"],
         }
     )
@@ -236,7 +251,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         validate_doc,
         {
             **variable_doc.data,
-            **{"_asserts_response": test_run_result},
+            **{"_asserts_response": run_rpt},
         },
     )
 
@@ -245,12 +260,14 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         exec_ctx=exec_ctx,
         variables_exec=output_data,
         variables=variable_doc,
-        extra=test_run_result,
+        extra=run_rpt,
         exposed=exposed_data,
+        exception=r_exception,
         report={
-            "is_success": test_run_result.count_fail == 0,
-            "count_all": test_run_result.count_all,
-            "count_fail": test_run_result.count_fail,
+            "is_success": run_rpt.count_fail == 0 and r_exception is None,
+            "count_all": len(validate_doc.asserts),
+            "count_fail": run_rpt.count_fail,
+            "exceptions": [dtl.message for dtl in run_rpt.details if not dtl.is_pass],
         },
     )
 

@@ -120,7 +120,11 @@ class WorkflowDocumentSupport:
         base_fpath: str = FileContext(*document.context).filepath
         exec_report: list[StepResult] = []
 
+        is_success = True
         for task in document.tasks:
+            if not is_success:
+                break
+
             if not isinstance(task, dict):
                 raise RuntimeError("`tasks.*.item` should be map.")
 
@@ -148,13 +152,15 @@ class WorkflowDocumentSupport:
             if task_fn:
                 te_param = TaskExecParam(task=task_o_, exec_ctx=execution_ctx)
                 task_resp: ExecResponse = cls.execute_task(task_fn, te_param, variables)
+                is_success = task_resp.report.pop("is_success")
 
                 exec_report.append(
                     StepResult(
                         task=task_o_,
-                        is_success=task_resp.report.pop("is_success"),
+                        is_success=is_success,
                         others=task_resp.report,
                         exposed=task_resp.exposed,
+                        exception=task_resp.exception,
                     )
                 )
 
@@ -183,7 +189,12 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     service = WorkflowDocumentSupport()
     # @TODO make sure the document do not call self making it repeating
     service.set_step_template(variable_doc)
-    exec_report = service.process_task_template(wflow_doc, variable_doc)
+
+    r_exception: Exception | None = None
+    try:
+        exec_report = service.process_task_template(wflow_doc, variable_doc)
+    except Exception as ex:
+        r_exception = ex
 
     output_data = Variables({"_steps": variable_doc[WorkflowConfigNode.NODE.value]})
 
@@ -199,6 +210,10 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         variables_exec=output_data,
         extra=exec_report,
         exposed=exposed_data,
+        exception=r_exception,
+        report={
+            "is_success": r_exception is None,
+        },
     )
 
 
