@@ -2,8 +2,7 @@
 
 import pytest
 
-from chk.infrastructure.third_party.http_fetcher import BearerAuthentication
-from chk.modules.fetch import HttpRequestArgCompiler
+from chk.modules.fetch import BearerAuthentication, HttpRequestArgCompiler
 
 
 class TestHttpRequestArgCompiler:

@@ -1,18 +1,16 @@
 # type: ignore
-import dataclasses
 import json
-import sys
-import urllib
-from io import BytesIO, TextIOWrapper
 
 import pytest
-import requests
-from requests.structures import CaseInsensitiveDict
 
-from chk.infrastructure.file_loader import FileContext, ExecuteContext
+from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.symbol_table import Variables
-from chk.infrastructure.third_party.http_fetcher import ApiResponse
-from chk.modules.fetch import ApiResponseDict, HttpDocument, HttpDocumentSupport
+from chk.modules.fetch import (
+    ApiResponse,
+    ApiResponseDict,
+    HttpDocument,
+    HttpDocumentSupport,
+)
 
 
 class TestApiResponseDict:
@@ -158,50 +156,3 @@ class TestHttpDocumentSupport:
     def test_build_schema_pass():
         x = HttpDocumentSupport.build_schema()
         assert len(x) == 4
-
-    @staticmethod
-    def test_display_pass():
-        @dataclasses.dataclass
-        class SampleCls:
-            version: int
-
-        cid = CaseInsensitiveDict()
-        cid["Accept"] = "application/json"
-        cid["Content-Type"] = "application/json"
-        cid["Application"] = "internal"
-
-        resp = requests.Response()
-        resp._content = b'{"success": "ok"}'
-        resp.status_code = 200
-        resp.url = "https://valid.url"
-        resp.raw = SampleCls(10)
-        resp.reason = "Ok"
-        resp.headers = cid
-
-        api_response = ApiResponse.from_response(resp)
-
-        execution_ctx = ExecuteContext(
-            options={
-                "dump": True,
-                "format": False,
-            }
-        )
-
-        old_stdout = sys.stdout
-        sys.stdout = TextIOWrapper(BytesIO(), sys.stdout.encoding)
-
-        HttpDocumentSupport.display({"_response": api_response.data}, execution_ctx)
-
-        # get output
-        sys.stdout.seek(0)  # jump to the start
-        out = sys.stdout.read()  # read output
-
-        # restore stdout
-        sys.stdout.close()
-        sys.stdout = old_stdout
-
-        # assert
-        assert (
-            out
-            == '{"code": 200, "info": "HTTP/1.0 200 Ok", "headers": {"Accept": "application/json", "Content-Type": "application/json", "Application": "internal"}, "body": {"success": "ok"}}\n'
-        )

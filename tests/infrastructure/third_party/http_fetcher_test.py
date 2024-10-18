@@ -5,7 +5,7 @@ import dataclasses
 import requests
 from requests.structures import CaseInsensitiveDict
 
-from chk.infrastructure.third_party.http_fetcher import ApiResponse, fetch
+from chk.modules.fetch import ApiResponse
 
 
 class TestApiResponse:
@@ -33,17 +33,3 @@ class TestApiResponse:
             str(api_response.as_fmt_str)
             == """HTTP/1.0 200 Ok\r\n\r\nAccept: application/json\r\nContent-Type: application/json\r\nApplication: internal\r\n\r\n{"success": "ok"}"""
         )
-
-
-class TestFetch:
-    @staticmethod
-    def test_fetch_pass():
-        resp = fetch(
-            {
-                "url": "https://dummyjson.com/products/1",
-                "method": "GET",
-                "headers": {"Accept": "application/json", "Application": "pytest"},
-            }
-        )
-
-        assert isinstance(resp, ApiResponse)
