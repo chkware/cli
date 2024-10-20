@@ -1,6 +1,7 @@
 """
 Console service module
 """
+
 from typing import Any
 
 import click
@@ -29,18 +30,7 @@ def combine_initial_variables(external_vars: str, **kwargs: Any) -> dict:
     return load_variables_as_dict(external_vars, **kwargs)
 
 
-def after_hook(resp: dict) -> None:
-    """Saves custom data from commands to global context bus
+def after_hook(*args, **kwargs):
+    """Run any function after implementation. Default pass"""
 
-    Args:
-        resp: object
-    """
-
-    if curr_ctx := click.get_current_context():
-        if curr_ctx.parent:
-            if not curr_ctx.parent.obj:
-                curr_ctx.parent.obj = {}
-
-            curr_ctx.parent.obj |= resp
-    else:
-        raise RuntimeError("Default context not found")
+    pass
