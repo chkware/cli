@@ -25,6 +25,15 @@ class TestGetLogFile:
 
         assert q.exists() and q.is_dir()
 
+    @staticmethod
+    def test_create_new_log_file():
+        """test_get_log_file"""
+
+        q = LoggingManager.create_new_log_file()
+
+        assert q.exists() and q.is_file()
+        q.unlink()
+
 
 def test_create_session_id():
     new_session = create_session_id()
