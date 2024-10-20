@@ -13,6 +13,7 @@ class LoggingManager:
 
     cache_dir = '.chkware_cache/'
     loggin_dir = 'logs/'
+    loggin_ext = '.log'
 
 
     @classmethod
@@ -23,10 +24,10 @@ class LoggingManager:
         try:
             cache_dir = os.environ["CHK_CACHE_PATH"]
         except KeyError:
-            cache_dir = ""
+            cache_dir = cls.cache_dir
 
         # populate cache dir
-        cache_path = os.getcwd() / Path(cache_dir)
+        cache_path = Path.cwd() / cache_dir
         if not cache_path.exists():
             cache_path.mkdir()
 
@@ -40,7 +41,9 @@ class LoggingManager:
         if not parent.exists():
             raise NotADirectoryError("Parent directory do not exists.")
         log_dir = parent / cls.loggin_dir
-        log_dir.mkdir()
+
+        if not log_dir.exists():
+            log_dir.mkdir()
 
         return log_dir
 

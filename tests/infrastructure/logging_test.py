@@ -9,7 +9,7 @@ class TestGetLogFile:
     """TestGetLogFile"""
 
     @staticmethod
-    def create_cache_dir():
+    def test_create_cache_dir():
         """test_get_log_file"""
 
         p = LoggingManager.create_cache_dir()
@@ -17,7 +17,7 @@ class TestGetLogFile:
         assert p.exists() and p.is_dir()
 
     @staticmethod
-    def create_create_log_dir():
+    def test_create_log_dir():
         """test_get_log_file"""
 
         p = LoggingManager.create_cache_dir()
