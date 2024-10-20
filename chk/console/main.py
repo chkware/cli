@@ -46,6 +46,7 @@ def after_hook(resp: dict) -> None:
             curr_ctx.parent.obj |= resp
     else:
         raise RuntimeError("Default context not found")
+VAR_ERROR_MSG = "-V, --variables accept values as JSON object"
 
 
 # root command
@@ -94,7 +95,7 @@ def fetch(file: str, no_format: bool, variables: str) -> None:
         {
             "variables": combine_initial_variables(
                 variables,
-                except_msg="-V, --variables accept values as JSON object",
+                except_msg=VAR_ERROR_MSG,
             )
         },
     )
@@ -128,7 +129,7 @@ def validate(file: str, no_format: bool, variables: str, data: str) -> None:
         {
             "variables": combine_initial_variables(
                 variables,
-                except_msg="-V, --variables accept values as JSON object",
+                except_msg=VAR_ERROR_MSG,
             ),
             "data": load_variables_as_dict(
                 data,
@@ -165,7 +166,7 @@ def workflow(file: str, no_format: bool, variables: str) -> None:
         {
             "variables": combine_initial_variables(
                 variables,
-                except_msg="-V, --variables accept values as JSON object",
+                except_msg=VAR_ERROR_MSG,
             ),
         },
     )
