@@ -48,7 +48,21 @@ class LoggingManager:
         return log_dir
 
 
+    @classmethod
+    def create_new_log_file(cls) -> Path:
+        """create new log file"""
+
+        cache_dir =cls.create_cache_dir()
+        log_dir = cls.create_log_dir(cache_dir)
+
+        log_file = log_dir / create_session_id()
+        log_file = log_file.with_suffix(cls.loggin_ext)
+
+        log_file.touch()
+        return log_file
+
+
 def create_session_id() -> str:
     """create_session_id"""
 
-    return "%s-%s" % (int(time.time()), uuid4().hex)
+    return f"{int(time.time())}-{uuid4().hex}"
