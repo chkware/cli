@@ -8,7 +8,7 @@ import chk.modules.workflow as workflow_executor
 from chk.console.services import (
     after_hook,
     combine_initial_variables,
-    load_variables_as_dict,
+    load_variables_as_dict, setup_logger,
 )
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
 
@@ -36,6 +36,8 @@ def chk(ctx: click.Context, debug: bool) -> None:
     """
     ctx.ensure_object(dict)
     ctx.obj["debug"] = debug
+
+    setup_logger(debug)
 
 
 # run fetch sub-command

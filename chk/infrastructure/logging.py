@@ -7,6 +7,12 @@ import time
 from pathlib import Path
 from uuid import uuid4
 
+from loguru import logger
+
+debug = logger.debug
+error = logger.error
+critical = logger.critical
+
 
 class LoggingManager:
     """LoggingManager"""
@@ -60,6 +66,19 @@ class LoggingManager:
 
         log_file.touch()
         return log_file
+
+    @classmethod
+    def setup_loguru(cls, log_path: Path | None) -> None:
+        """setup_loguru"""
+
+        logger.add(str(log_path))
+
+    @classmethod
+    def remove_loguru(cls) -> None:
+        """setup_loguru"""
+
+        logger.remove()
+
 
 
 def create_session_id() -> str:

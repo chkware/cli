@@ -7,6 +7,7 @@ from typing import Any
 import click
 
 from chk.infrastructure.file_loader import FileLoader
+from chk.infrastructure.logging import LoggingManager
 from chk.infrastructure.typing_extras import JsonDecodingError
 
 
@@ -33,4 +34,12 @@ def combine_initial_variables(external_vars: str, **kwargs: Any) -> dict:
 def after_hook(*args, **kwargs):
     """Run any function after implementation. Default pass"""
 
-    pass
+
+def setup_logger(should_log: bool) -> None:
+    """setup_logger"""
+
+    LoggingManager.remove_loguru()
+
+    if should_log:
+        log_file = LoggingManager.create_new_log_file()
+        LoggingManager.setup_loguru(log_file)
