@@ -22,7 +22,7 @@ from chk.infrastructure.document import (
 )
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import data_get
-from chk.infrastructure.logging import debug
+from chk.infrastructure.logging import debug, error, with_catch_log
 from chk.infrastructure.symbol_table import (
     EXPOSE_SCHEMA as EXP_SCHEMA,
     ExecResponse,
@@ -569,12 +569,14 @@ class FetchPresenter(PresentationBuilder):
         return "\n======\n".join(displayables)
 
 
+@with_catch_log
 def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     """Call a http document"""
 
     r_exception: Exception | None = None
 
     http_doc = HttpDocument.from_file_context(file_ctx)
+    debug(http_doc.model_dump_json())
 
     DocumentVersionMaker.verify_if_allowed(
         DocumentVersionMaker.from_dict(http_doc.model_dump()), VERSION_SCOPE
@@ -586,7 +588,10 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
 
     variable_doc = Variables()
     VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
+    debug(variable_doc.data)
+
     HttpDocumentSupport.process_request_template(http_doc, variable_doc)
+    debug(http_doc.model_dump_json())
 
     response = ApiResponse()
 
@@ -594,13 +599,16 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         response = HttpDocumentSupport.execute_request(http_doc)
     except Exception as ex:
         r_exception = ex
+        error(ex)
 
     output_data = Variables({"_response": response.data})
+    debug(output_data.data)
 
     exposed_data = ExposeManager.get_exposed_replaced_data(
         http_doc,
         {**variable_doc.data, **output_data.data},
     )
+    debug(exposed_data)
 
     # TODO: instead if sending specific report items, and making presentable in other
     #       module, we should prepare and long and short form of presentable that can be
@@ -621,6 +629,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     )
 
 
+@with_catch_log
 def execute(
     ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...
 ) -> None:
@@ -640,6 +649,7 @@ def execute(
     PresentationService.display(exr, exec_ctx, FetchPresenter)
 
 
+@with_catch_log
 def task_fetch(**kwargs: dict) -> ExecResponse:
     """Task impl"""
 
