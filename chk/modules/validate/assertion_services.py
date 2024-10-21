@@ -7,6 +7,7 @@ from datetime import datetime
 
 import chk.modules.validate.assertion_function as asrt_f
 from chk.infrastructure.helper import Cast
+from chk.infrastructure.logging import debug
 from chk.infrastructure.templating import StrTemplate
 from chk.modules.validate.assertion_message import get_assert_msg_for
 from chk.modules.validate.assertion_validation import AssertionEntityType
@@ -182,11 +183,13 @@ class AssertionEntryListRunner:
             assert_item = AssertionEntryListRunner._replace_assertion_values(
                 assert_item, variables
             )
+            debug(assert_item)
 
             resp: RunDetail = AssertionEntryListRunner._prepare_test_run_result(
                 assert_item,
                 AssertionEntryListRunner._call_assertion_method(assert_item),
             )
+            debug(resp)
 
             run_report.add_run_detail(resp)
 

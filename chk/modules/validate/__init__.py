@@ -190,18 +190,18 @@ class ValidationDocumentSupport:
                 _extra_fld = {
                     key: val for key, val in each_assert.items() if key in only
                 }
-
-            new_assertion_lst.append(
-                AssertionEntry(
-                    assert_type=_assert_type,
-                    actual=_actual,
-                    expected=_expected,
-                    cast_actual_to=_cast_actual_to,
-                    extra_fields=_extra_fld,
-                    msg_pass=_msg_pass,
-                    msg_fail=_msg_fail,
-                )
+            ae = AssertionEntry(
+                assert_type=_assert_type,
+                actual=_actual,
+                expected=_expected,
+                cast_actual_to=_cast_actual_to,
+                extra_fields=_extra_fld,
+                msg_pass=_msg_pass,
+                msg_fail=_msg_fail,
             )
+            debug(ae)
+
+            new_assertion_lst.append(ae)
 
         return new_assertion_lst
 
@@ -210,7 +210,6 @@ class ValidationDocumentSupport:
 def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     """Call a validation document"""
 
-    r_exception: Exception | None = None
     debug(file_ctx)
     debug(exec_ctx)
 
@@ -238,6 +237,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
 
     debug(variable_doc.data)
 
+    r_exception: Exception | None = None
     run_rpt = RunReport()
 
     try:
