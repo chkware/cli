@@ -17,8 +17,9 @@ VAR_ERROR_MSG = "-V, --variables accept values as JSON object"
 
 # root command
 @click.group()
+@click.option("--debug/--no-debug", default=False)
 @click.pass_context
-def chk(ctx: click.Context) -> None:
+def chk(ctx: click.Context, debug: bool) -> None:
     """\b
        █████████  █████   █████ █████   ████
       ███░░░░░███░░███   ░░███ ░░███   ███░
@@ -34,6 +35,7 @@ def chk(ctx: click.Context) -> None:
     Version 0.5.0, supported version strings: 0.7.2
     """
     ctx.ensure_object(dict)
+    ctx.obj["debug"] = debug
 
 
 # run fetch sub-command
@@ -43,7 +45,8 @@ def chk(ctx: click.Context) -> None:
     "-nf", "--no-format", is_flag=True, help="No formatting to show the output"
 )
 @click.option("-V", "--variables", type=str, help="Pass variable(s) as JSON object")
-def fetch(file: str, no_format: bool, variables: str) -> None:
+@click.pass_context
+def fetch(cctx: click.Context, file: str, no_format: bool, variables: str) -> None:
     """\b
     Command to run Http config files.
     FILE: Any .chk file, that has any of the following versions:
@@ -57,6 +60,7 @@ def fetch(file: str, no_format: bool, variables: str) -> None:
         {
             "dump": True,
             "format": not no_format,
+            "debug": cctx.obj.get("debug", False),
         },
         {
             "variables": combine_initial_variables(
@@ -77,7 +81,10 @@ def fetch(file: str, no_format: bool, variables: str) -> None:
 )
 @click.option("-V", "--variables", type=str, help="Pass variable(s) as JSON object")
 @click.option("-D", "--data", type=str, help="Pass data as JSON")
-def validate(file: str, no_format: bool, variables: str, data: str) -> None:
+@click.pass_context
+def validate(
+    cctx: click.Context, file: str, no_format: bool, variables: str, data: str
+) -> None:
     """\b
     Command to run Validation specification files.
     FILE: Any .chk file, that has any of the following versions:
@@ -91,6 +98,7 @@ def validate(file: str, no_format: bool, variables: str, data: str) -> None:
         {
             "dump": True,
             "format": not no_format,
+            "debug": cctx.obj.get("debug", False),
         },
         {
             "variables": combine_initial_variables(
@@ -114,7 +122,8 @@ def validate(file: str, no_format: bool, variables: str, data: str) -> None:
     "-nf", "--no-format", is_flag=True, help="No formatting to show the output"
 )
 @click.option("-V", "--variables", type=str, help="Pass variable(s) as JSON object")
-def workflow(file: str, no_format: bool, variables: str) -> None:
+@click.pass_context
+def workflow(cctx: click.Context, file: str, no_format: bool, variables: str) -> None:
     """\b
     Command to run Workflow specification files.
     FILE: Any .chk file, that has any of the following versions:
@@ -128,6 +137,7 @@ def workflow(file: str, no_format: bool, variables: str) -> None:
         {
             "dump": True,
             "format": not no_format,
+            "debug": cctx.obj.get("debug", False),
         },
         {
             "variables": combine_initial_variables(
