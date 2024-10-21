@@ -22,6 +22,7 @@ from chk.infrastructure.document import (
 )
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import data_get
+from chk.infrastructure.logging import debug
 from chk.infrastructure.symbol_table import (
     EXPOSE_SCHEMA as EXP_SCHEMA,
     ExecResponse,
@@ -630,6 +631,8 @@ def execute(
         exec_ctx: ExecuteContext
         cb: Callable
     """
+
+    debug("Fetch module")
 
     exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
 
