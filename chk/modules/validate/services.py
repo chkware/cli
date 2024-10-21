@@ -25,6 +25,7 @@ class ValidatePresenter(PresentationBuilder):
     def dump_error_fmt(self) -> str:
         """dump fmt error str"""
 
+        # TODO also add tests those failed.
         return (
             f"Validate error\n------\n{repr(self.data.exception)}"
             if self.data.exception

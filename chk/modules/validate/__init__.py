@@ -16,6 +16,7 @@ from chk.infrastructure.document import (
 )
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import data_get
+from chk.infrastructure.logging import debug, error, with_catch_log
 from chk.infrastructure.symbol_table import (
     EXPOSE_SCHEMA as EXP_SCHEMA,
     ExecResponse,
@@ -205,10 +206,16 @@ class ValidationDocumentSupport:
         return new_assertion_lst
 
 
+@with_catch_log
 def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     """Call a validation document"""
 
+    r_exception: Exception | None = None
+    debug(file_ctx)
+    debug(exec_ctx)
+
     validate_doc = ValidationDocument.from_file_context(file_ctx)
+    debug(validate_doc.model_dump_json())
 
     DocumentVersionMaker.verify_if_allowed(
         DocumentVersionMaker.from_dict(validate_doc.model_dump()), VERSION_SCOPE
@@ -220,12 +227,15 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
 
     variable_doc = Variables()
     VariableTableManager.handle(variable_doc, validate_doc, exec_ctx)
+    debug(variable_doc.data)
 
     # handle passed data in asserts
-    ValidationDocumentSupport.set_data_template(validate_doc, variable_doc, exec_ctx)
-    ValidationDocumentSupport.process_data_template(variable_doc)
+    with with_catch_log():
+        ValidationDocumentSupport.set_data_template(validate_doc, variable_doc, exec_ctx)
+        ValidationDocumentSupport.process_data_template(variable_doc)
 
-    r_exception: Exception | None = None
+    debug(variable_doc.data)
+
     run_rpt = RunReport()
 
     try:
@@ -239,6 +249,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
             raise SystemError("Validation failed")
     except Exception as ex:
         r_exception = ex
+        error(ex)
 
     output_data = Variables(
         {
@@ -246,6 +257,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
             "_data": variable_doc["_data"],
         }
     )
+    debug(output_data.data)
 
     exposed_data = ExposeManager.get_exposed_replaced_data(
         validate_doc,
@@ -254,6 +266,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
             **{"_asserts_response": run_rpt},
         },
     )
+    debug(exposed_data)
 
     return ExecResponse(
         file_ctx=file_ctx,
@@ -272,6 +285,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     )
 
 
+@with_catch_log
 def execute(
     ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...
 ) -> None:
@@ -289,6 +303,7 @@ def execute(
     PresentationService.display(exr, exec_ctx, ValidatePresenter)
 
 
+@with_catch_log
 def task_validation(**kwargs: dict) -> ExecResponse:
     """Task impl"""
 
