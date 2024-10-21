@@ -231,7 +231,9 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
 
     # handle passed data in asserts
     with with_catch_log():
-        ValidationDocumentSupport.set_data_template(validate_doc, variable_doc, exec_ctx)
+        ValidationDocumentSupport.set_data_template(
+            validate_doc, variable_doc, exec_ctx
+        )
         ValidationDocumentSupport.process_data_template(variable_doc)
 
     debug(variable_doc.data)
