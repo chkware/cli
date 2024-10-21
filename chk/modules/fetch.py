@@ -573,7 +573,6 @@ class FetchPresenter(PresentationBuilder):
 def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     """Call a http document"""
 
-    r_exception: Exception | None = None
     debug(file_ctx)
     debug(exec_ctx)
 
@@ -595,6 +594,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     HttpDocumentSupport.process_request_template(http_doc, variable_doc)
     debug(http_doc.model_dump_json())
 
+    r_exception: Exception | None = None
     response = ApiResponse()
 
     try:
