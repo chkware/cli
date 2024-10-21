@@ -574,6 +574,8 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     """Call a http document"""
 
     r_exception: Exception | None = None
+    debug(file_ctx)
+    debug(exec_ctx)
 
     http_doc = HttpDocument.from_file_context(file_ctx)
     debug(http_doc.model_dump_json())
