@@ -31,7 +31,7 @@ def combine_initial_variables(external_vars: str, **kwargs: Any) -> dict:
     return load_variables_as_dict(external_vars, **kwargs)
 
 
-def after_hook(*args, **kwargs):
+def after_hook(*args: list, **kwargs: dict) -> Any:
     """Run any function after implementation. Default pass"""
 
 
