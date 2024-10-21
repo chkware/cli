@@ -12,6 +12,9 @@ from loguru import logger
 debug = logger.debug
 error = logger.error
 critical = logger.critical
+success = logger.success
+
+with_catch_log = logger.catch
 
 
 class LoggingManager:
@@ -71,7 +74,7 @@ class LoggingManager:
     def setup_loguru(cls, log_path: Path | None) -> None:
         """setup_loguru"""
 
-        logger.add(str(log_path))
+        logger.add(str(log_path), backtrace=True, enqueue=True, catch=True)
 
     @classmethod
     def remove_loguru(cls) -> None:
