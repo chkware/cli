@@ -86,6 +86,24 @@ class ApiResponse(UserDict):
             body=response.text,
         )
 
+    def as_dict(self) -> dict:
+        """as_dict"""
+
+        _data = self.data
+
+        _as_dict = {
+            "code": _data["code"],
+            "info": _data["info"],
+            "headers": _data["headers"],
+        }
+
+        try:
+            _as_dict["body"] = json.loads(_data["body"])
+        except ValueError:
+            _as_dict["body"] = _data["body"]
+
+        return _as_dict
+
 
 class BearerAuthentication(requests.auth.AuthBase):
     """Authentication: Bearer ... support"""
@@ -603,7 +621,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         r_exception = ex
         error(ex)
 
-    output_data = Variables({"_response": response.data})
+    output_data = Variables({"_response": response.as_dict()})
     debug(output_data.data)
 
     exposed_data = ExposeManager.get_exposed_replaced_data(
@@ -642,8 +660,6 @@ def execute(
         exec_ctx: ExecuteContext
         cb: Callable
     """
-
-    debug("Fetch module")
 
     exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
 
