@@ -116,7 +116,7 @@ class RunReport(BaseModel):
 
         self.details.append(run_dtl)
 
-        if run_dtl.is_pass:
+        if not run_dtl.is_pass:
             self.count_fail += 1
 
     def as_fmt_str(self, only_incl_errors: bool = False) -> str:
