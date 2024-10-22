@@ -17,7 +17,7 @@ VAR_ERROR_MSG = "-V, --variables accept values as JSON object"
 
 # root command
 @click.group()
-@click.option("--debug/--no-debug", default=False)
+@click.option("--debug/--no-debug", default=True)
 @click.pass_context
 def chk(ctx: click.Context, debug: bool) -> None:
     """\b
