@@ -2,6 +2,7 @@
 """
 Workflow module test
 """
+
 from chk.infrastructure.symbol_table import ExecResponse
 from chk.modules.workflow import call, execute
 from tests import SPEC_DIR, get_exec_ctx, load_chk_file, load_file_ctx_for_file
@@ -9,7 +10,9 @@ from tests import SPEC_DIR, get_exec_ctx, load_chk_file, load_file_ctx_for_file
 
 class TestWorkflowExecute:
     @staticmethod
-    def test_execute_pass_vars(load_chk_file, load_file_ctx_for_file, get_exec_ctx, capsys):
+    def test_execute_pass_vars(
+        load_chk_file, load_file_ctx_for_file, get_exec_ctx, capsys
+    ):
         """test_execute"""
 
         filepath = f"{SPEC_DIR}workflow_cases/get-req-vars/coinstats-usd-workflow.chk"
@@ -22,7 +25,9 @@ class TestWorkflowExecute:
         assert "======" in captured.out
 
     @staticmethod
-    def test_execute_pass_args(load_chk_file, load_file_ctx_for_file, get_exec_ctx, capsys):
+    def test_execute_pass_args(
+        load_chk_file, load_file_ctx_for_file, get_exec_ctx, capsys
+    ):
         """test_execute"""
 
         filepath = f"{SPEC_DIR}workflow_cases/pass_data/coinstats-usd-workflow.chk"
