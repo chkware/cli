@@ -63,7 +63,7 @@ class ApiResponse(UserDict):
         presentation += "\r\n\r\n"
 
         # set body
-        presentation += self["body"]
+        presentation += self["body"] if isinstance(self["body"], str) else json.dumps(self["body"])
 
         return presentation
 
