@@ -4,7 +4,7 @@ common config
 """
 import pytest
 
-from chk.infrastructure.file_loader import FileLoader, FileContext, ExecuteContext
+from chk.infrastructure.file_loader import ExecuteContext, FileContext, FileLoader
 
 RES_DIR = "./tests/resources/storage/sample_config/"
 SPEC_DIR = "./tests/resources/storage/spec_docs/"
