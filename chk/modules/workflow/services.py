@@ -136,7 +136,7 @@ class WorkflowPresenter(PresentationBuilder):
                 if isinstance(value, dict):
                     for _k, _v in value.items():
                         if isinstance(_v, Iterable):
-                            value[_k] = dict(_v)
+                            value[_k] = dict(_v) if isinstance(_v, dict) else _v
 
                 to_append = json.dumps(value)
 
