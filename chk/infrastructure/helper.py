@@ -1,7 +1,9 @@
 """
 Helper functions module
 """
+
 import ast
+import re
 from collections.abc import Callable
 from typing import Any
 
@@ -157,6 +159,16 @@ class Cast:
 
         return var
 
+    @staticmethod
+    def try_dict(to_dict: Any, say_exception: bool = False) -> dict | Any:
+        try:
+            return dict(to_dict)
+        except ValueError as ex:
+            if say_exception:
+                raise ex
+            else:
+                return to_dict
+
 
 def formatter(message: object, cb: Callable = str, dump: bool = True) -> str:
     """Format message with given callback
@@ -175,3 +187,16 @@ def formatter(message: object, cb: Callable = str, dump: bool = True) -> str:
         click.echo(printable)
 
     return printable
+
+
+def slugify(string: str) -> str:
+    """Make slug out of string"""
+
+    if not isinstance(string, str):
+        raise TypeError("slugify: only string value supported.")
+
+    string = string.lower().strip()
+    string = re.sub(r"[^\w\s-]", "", string)
+    string = re.sub(r"[\s_-]+", "-", string)
+    string = re.sub(r"-{2,}", "", string)
+    return string

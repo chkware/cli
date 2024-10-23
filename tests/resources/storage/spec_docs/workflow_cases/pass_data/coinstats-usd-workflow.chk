@@ -1,0 +1,25 @@
+version: default:workflow:0.8.0
+
+name: simple Btc workflow
+id: BtcWF1
+
+variables:
+  group: coinstats
+  currency: GBP
+
+tasks:
+  - name: Fetch some content from URL
+    uses: fetch
+    file: "./<% group %>-usd-request.chk"
+    variables:
+      convertCurrency: <% currency %>
+
+  - name: Validate the content is okay
+    uses: validate
+    file: "./<% group %>-usd-validate.chk"
+    arguments:
+      data: <% _steps.0._response %>
+
+expose:
+  - <% _steps %>
+  - <% _steps.1._data.code %>

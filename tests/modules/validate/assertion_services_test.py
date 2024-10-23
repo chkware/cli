@@ -3,21 +3,18 @@
 Test assertion_services
 """
 import copy
-import datetime
 import types
-import uuid
 
 import pytest
 
-from chk.infrastructure.file_loader import FileContext, ExecuteContext
-from chk.infrastructure.symbol_table import Variables, VariableTableManager
+from chk.infrastructure.file_loader import ExecuteContext, FileContext
+from chk.infrastructure.symbol_table import VariableTableManager, Variables
 from chk.modules.validate import ValidationDocument, ValidationDocumentSupport
 from chk.modules.validate.assertion_services import (
-    AssertionEntryListRunner,
-    AllTestRunResult,
-    SingleTestRunResult,
     AssertionEntry,
+    AssertionEntryListRunner,
 )
+from chk.modules.validate.entities import RunReport
 
 
 @pytest.fixture
@@ -121,7 +118,7 @@ class TestAssertionEntryListRunner:
         assert_list, variables = setup_assertion_entry_list_pass_assert
         test_run_result = AssertionEntryListRunner.test_run(assert_list, variables.data)
 
-        assert isinstance(test_run_result, AllTestRunResult)
+        assert isinstance(test_run_result, RunReport)
 
     @staticmethod
     def test__replace_assertion_values_pass(setup_assertion_entry_list_pass_assert):
@@ -168,96 +165,22 @@ class TestAssertionEntryListRunner:
         assert_resp = AssertionEntryListRunner._call_assertion_method(assert_list[0])
         assert_item = assert_list[0]
 
-        resp = SingleTestRunResult(assert_used=assert_item)
-        AssertionEntryListRunner._prepare_test_run_result(
-            resp, assert_item, assert_resp
+        resp = AssertionEntryListRunner._prepare_test_run_result(
+            assert_item, assert_resp
         )
 
-        assert resp["assert_used"] == assert_item
-        assert not resp["is_pass"]
-        assert resp["message"]
-
-
-@pytest.fixture
-def setup_new_single_test_run_result():
-    s = SingleTestRunResult()
-
-    s["is_pass"] = True
-    s["message"] = "Ok"
-    s["assert_used"] = AssertionEntry(
-        assert_type="Empty",
-        actual="39",
-        actual_given="<% _data.roll %>",
-        expected=39,
-    )
-
-    return s
-
-
-class TestSingleTestRunResult:
-    @staticmethod
-    def test_create(setup_new_single_test_run_result):
-        s = SingleTestRunResult()
-        assert len(s) == 0
-
-        s = setup_new_single_test_run_result
-        assert len(s) == 3
-
-    @staticmethod
-    def test_as_dict(setup_new_single_test_run_result):
-        s = setup_new_single_test_run_result
-        assert isinstance(s.as_dict, dict)
-
-    @staticmethod
-    def test_as_fmt_str(setup_new_single_test_run_result):
-        s = setup_new_single_test_run_result
-
-        assert isinstance(s.as_fmt_str, str)
-        assert s.as_fmt_str == "\n+ Empty PASSED, Ok"
-
-
-@pytest.fixture
-def setup_new_all_test_run_result(setup_new_single_test_run_result):
-    s = AllTestRunResult()
-
-    s["id"] = uuid.uuid4()
-    s["time_start"] = datetime.datetime.now()
-    s["time_end"] = datetime.datetime.now()
-    s["count_all"] = 1
-    s["results"] = [setup_new_single_test_run_result]
-    s["count_fail"] = 0
-
-    return s
-
-
-class TestAllTestRunResult:
-    @staticmethod
-    def test_create(setup_new_all_test_run_result):
-        s = AllTestRunResult()
-        assert len(s) == 0
-
-        s = setup_new_all_test_run_result
-        assert len(s) == 6
-
-    @staticmethod
-    def test_as_dict(setup_new_all_test_run_result):
-        s = setup_new_all_test_run_result
-        assert isinstance(s.as_dict, dict)
-
-    @staticmethod
-    def test_as_fmt_str(setup_new_all_test_run_result):
-        s = setup_new_all_test_run_result
-
-        assert isinstance(s.as_fmt_str, str)
+        assert resp.assert_entry == assert_item
+        assert not resp.is_pass
+        assert resp.message
 
 
 class TestAssertionEntry:
     @staticmethod
     def test_create():
         ae = AssertionEntry(
-            "Empty",
-            "10",
-            10,
+            assert_type="Empty",
+            actual="10",
+            expected=10,
         )
 
         assert isinstance(ae, AssertionEntry)
@@ -267,7 +190,11 @@ class TestAssertionEntry:
     @staticmethod
     def test_copy():
         ae = AssertionEntry(
-            "Empty", "10", 10, cast_actual_to="int", extra_fields={"a": 1}
+            assert_type="Empty",
+            actual="10",
+            expected=10,
+            cast_actual_to="int",
+            extra_fields={"a": 1},
         )
 
         ar = copy.copy(ae)

@@ -10,8 +10,9 @@ requests = "*"
 cerberus = "*"
 defusedxml = "*"
 xmltodict = "*"
-jinja2 = "*"
 python-dotenv = "*"
+pydantic = "*"
+loguru = "*"
 
 [dev-packages]
 pytest = "*"
@@ -19,11 +20,11 @@ mypy = "*"
 pylint = "*"
 flake8 = "*"
 black = {extras = ["d"], version = "*"}
-var-dump = "*"
 types-pyyaml = "*"
 types-requests = "*"
 pytest-cov = "*"
 coveralls = "*"
+icecream = "*"
 
 [requires]
 python_version = "3.11"

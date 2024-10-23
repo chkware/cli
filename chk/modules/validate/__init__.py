@@ -2,38 +2,43 @@
 Validate module
 """
 
-import dataclasses
+from __future__ import annotations
+
 import enum
-import json
-import operator
 from collections import abc
 
 import cerberus
+from pydantic import BaseModel, Field
 
-from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
-from chk.infrastructure.file_loader import FileContext, ExecuteContext
-from chk.infrastructure.helper import data_get, formatter
-from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
-
-from chk.infrastructure.symbol_table import (
-    VARIABLE_SCHEMA as VAR_SCHEMA,
-    EXPOSE_SCHEMA as EXP_SCHEMA,
-    Variables,
-    VariableTableManager,
-    replace_value,
-    ExposeManager,
-    ExposableVariables,
+from chk.infrastructure.document import (
+    VersionedDocumentSupport,
+    VersionedDocumentV2,
 )
+from chk.infrastructure.file_loader import ExecuteContext, FileContext
+from chk.infrastructure.helper import data_get
+from chk.infrastructure.logging import debug, error, with_catch_log
+from chk.infrastructure.symbol_table import (
+    EXPOSE_SCHEMA as EXP_SCHEMA,
+    ExecResponse,
+    ExposeManager,
+    VARIABLE_SCHEMA as VAR_SCHEMA,
+    VariableTableManager,
+    Variables,
+    replace_value,
+)
+from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
+from chk.infrastructure.view import PresentationService
 from chk.modules.validate.assertion_services import (
     AssertionEntry,
     AssertionEntryListRunner,
-    AllTestRunResult,
     MAP_TYPE_TO_FN,
 )
 from chk.modules.validate.assertion_validation import (
-    get_schema_map,
     AssertionEntityProperty,
+    get_schema_map,
 )
+from chk.modules.validate.entities import RunReport, ValidationTask
+from chk.modules.validate.services import ValidatePresenter
 
 VERSION_SCOPE = ["validation"]
 
@@ -65,17 +70,16 @@ ASSERTS_SCHEMA = {
 }
 
 
-@dataclasses.dataclass(slots=True)
-class ValidationDocument(VersionedDocument):
+class ValidationDocument(VersionedDocumentV2, BaseModel):
     """
     Http document entity
     """
 
-    data: dict = dataclasses.field(default_factory=dict)
-    asserts: list = dataclasses.field(default_factory=list)
+    data: dict = Field(default_factory=dict)
+    asserts: list = Field(default_factory=list)
 
     @staticmethod
-    def from_file_context(ctx: FileContext) -> "ValidationDocument":
+    def from_file_context(ctx: FileContext) -> ValidationDocument:
         """Create a ValidationDocument from FileContext
         :param ctx: FileContext to create the ValidationDocument from
         """
@@ -88,18 +92,14 @@ class ValidationDocument(VersionedDocument):
 
         _data = data_get(ctx.document, ValidationConfigNode.DATA, {})
 
+        # @TODO keep `context`, `version` as object
+        # @TODO implement __repr__ for WorkflowDocument
         return ValidationDocument(
             context=tuple(ctx),
             version=_version,
             asserts=_asserts,
             data=_data,
         )
-
-    @property
-    def as_dict(self) -> dict:
-        """Return a dict of the data"""
-
-        return dataclasses.asdict(self)
 
 
 class ValidationDocumentSupport:
@@ -130,19 +130,23 @@ class ValidationDocumentSupport:
         """sets data or template"""
 
         data = data_get(exec_ctx.arguments, "data", {})
-        variables[ValidationConfigNode.VAR_NODE] = data if data else validate_doc.data
+        variables[ValidationConfigNode.VAR_NODE.value] = (
+            data if data else validate_doc.data
+        )
 
     @staticmethod
     def process_data_template(variables: Variables) -> None:
         """process data or template before assertion"""
-        data = variables[ValidationConfigNode.VAR_NODE]
+        data = variables[ValidationConfigNode.VAR_NODE.value]
         tmp_variables = {
             key: val
             for key, val in variables.data.items()
-            if key != ValidationConfigNode.VAR_NODE
+            if key != ValidationConfigNode.VAR_NODE.value
         }
 
-        variables[ValidationConfigNode.VAR_NODE] = replace_value(data, tmp_variables)
+        variables[ValidationConfigNode.VAR_NODE.value] = replace_value(
+            data, tmp_variables
+        )
 
     @staticmethod
     def make_assertion_entry_list(assert_lst: list[dict]) -> list[AssertionEntry]:
@@ -152,7 +156,12 @@ class ValidationDocumentSupport:
             if not (_assert_type := each_assert.get("type", None)):
                 raise RuntimeError("key: `type` not found in one of the asserts.")
 
-            validator = cerberus.Validator(get_schema_map(_assert_type))
+            try:
+                validator = cerberus.Validator(get_schema_map(_assert_type))
+            except KeyError as ex:
+                raise KeyError(
+                    f"`{_assert_type}` key not found. in {repr(each_assert)}"
+                ) from ex
 
             if not validator.validate(each_assert):
                 raise RuntimeError(
@@ -181,60 +190,104 @@ class ValidationDocumentSupport:
                 _extra_fld = {
                     key: val for key, val in each_assert.items() if key in only
                 }
-
-            new_assertion_lst.append(
-                AssertionEntry(
-                    assert_type=_assert_type,
-                    actual=_actual,
-                    expected=_expected,
-                    cast_actual_to=_cast_actual_to,
-                    extra_fields=_extra_fld,
-                    msg_pass=_msg_pass,
-                    msg_fail=_msg_fail,
-                )
+            ae = AssertionEntry(
+                assert_type=_assert_type,
+                actual=_actual,
+                expected=_expected,
+                cast_actual_to=_cast_actual_to,
+                extra_fields=_extra_fld,
+                msg_pass=_msg_pass,
+                msg_fail=_msg_fail,
             )
+            debug(ae)
+
+            new_assertion_lst.append(ae)
 
         return new_assertion_lst
 
-    @staticmethod
-    def display(expose_list: list, exec_ctx: ExecuteContext) -> None:
-        """Displays the response based on the command response format
 
-        Args:
-            expose_list: list
-            exec_ctx: ExecuteContext
-        """
+@with_catch_log
+def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
+    """Call a validation document"""
 
-        if not expose_list:
-            return
+    debug(file_ctx)
+    debug(exec_ctx)
 
-        display_item_list: list[object] = []
+    validate_doc = ValidationDocument.from_file_context(file_ctx)
+    debug(validate_doc.model_dump_json())
 
-        for expose_item in expose_list:
-            if isinstance(expose_item, AllTestRunResult):
-                if exec_ctx.options["format"]:
-                    display_item_list.append(expose_item.as_fmt_str)
-                else:
-                    display_item_list.append(expose_item.as_dict)
-            else:
-                display_item_list.append(expose_item)
+    DocumentVersionMaker.verify_if_allowed(
+        DocumentVersionMaker.from_dict(validate_doc.model_dump()), VERSION_SCOPE
+    )
 
-        if exec_ctx.options["format"]:
-            formatter(
-                "\n---\n".join([str(item) for item in display_item_list])
-                if len(display_item_list) > 1
-                else display_item_list.pop(),
-                dump=exec_ctx.options["dump"],
-            )
-        else:
-            formatter(
-                json.dumps(display_item_list)
-                if len(display_item_list) > 1
-                else json.dumps(display_item_list.pop()),
-                dump=exec_ctx.options["dump"],
-            )
+    VersionedDocumentSupport.validate_with_schema(
+        ValidationDocumentSupport.build_schema(), validate_doc
+    )
+
+    variable_doc = Variables()
+    VariableTableManager.handle(variable_doc, validate_doc, exec_ctx)
+    debug(variable_doc.data)
+
+    # handle passed data in asserts
+    with with_catch_log():
+        ValidationDocumentSupport.set_data_template(
+            validate_doc, variable_doc, exec_ctx
+        )
+        ValidationDocumentSupport.process_data_template(variable_doc)
+
+    debug(variable_doc.data)
+
+    r_exception: Exception | None = None
+    run_rpt = RunReport()
+
+    try:
+        assert_list = ValidationDocumentSupport.make_assertion_entry_list(
+            validate_doc.asserts
+        )
+
+        run_rpt = AssertionEntryListRunner.test_run(assert_list, variable_doc.data)
+
+        if run_rpt.count_fail != 0:
+            raise SystemError("Validation failed")
+    except Exception as ex:
+        r_exception = ex
+        error(ex)
+
+    output_data = Variables(
+        {
+            "_asserts_response": run_rpt,
+            "_data": variable_doc["_data"],
+        }
+    )
+    debug(output_data.data)
+
+    exposed_data = ExposeManager.get_exposed_replaced_data(
+        validate_doc,
+        {
+            **variable_doc.data,
+            **{"_asserts_response": run_rpt},
+        },
+    )
+    debug(exposed_data)
+
+    return ExecResponse(
+        file_ctx=file_ctx,
+        exec_ctx=exec_ctx,
+        variables_exec=output_data,
+        variables=variable_doc,
+        extra=run_rpt,
+        exposed=exposed_data,
+        exception=r_exception,
+        report={
+            "is_success": run_rpt.count_fail == 0 and r_exception is None,
+            "count_all": len(validate_doc.asserts),
+            "count_fail": run_rpt.count_fail,
+            "exceptions": [dtl.message for dtl in run_rpt.details if not dtl.is_pass],
+        },
+    )
 
 
+@with_catch_log
 def execute(
     ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...
 ) -> None:
@@ -246,42 +299,25 @@ def execute(
         cb: Callable
     """
 
-    validate_doc = ValidationDocument.from_file_context(ctx)
+    exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
 
-    DocumentVersionMaker.verify_if_allowed(
-        DocumentVersionMaker.from_dict(validate_doc.as_dict), VERSION_SCOPE
-    )
+    cb({ctx.filepath_hash: exr.variables_exec.data})
+    PresentationService.display(exr, exec_ctx, ValidatePresenter)
 
-    VersionedDocumentSupport.validate_with_schema(
-        ValidationDocumentSupport.build_schema(), validate_doc
-    )
 
-    variable_doc = Variables()
-    VariableTableManager.handle(variable_doc, validate_doc, exec_ctx)
+@with_catch_log
+def task_validation(**kwargs: dict) -> ExecResponse:
+    """Task impl"""
 
-    # handle passed data in asserts
-    ValidationDocumentSupport.set_data_template(validate_doc, variable_doc, exec_ctx)
-    ValidationDocumentSupport.process_data_template(variable_doc)
+    if not (doc := kwargs.get("task", {})):
+        raise ValueError("Wrong task format given.")
 
-    assert_list = ValidationDocumentSupport.make_assertion_entry_list(
-        validate_doc.asserts
-    )
+    _task = ValidationTask(**doc)
 
-    test_run_result = AssertionEntryListRunner.test_run(assert_list, variable_doc.data)
-
-    exposed_data = ExposeManager.get_exposed_replaced_data(
-        validate_doc,
-        {**variable_doc.data, **{"_asserts_response": test_run_result}},
-    )
-    ValidationDocumentSupport.display(exposed_data, exec_ctx)
-
-    cb(
-        {
-            ctx.filepath_hash: ExposableVariables(
-                {
-                    "_asserts_response": test_run_result.as_dict,
-                    "_data": variable_doc["_data"],
-                }
-            ).data
-        }
+    return call(
+        FileContext.from_file(_task.file),
+        ExecuteContext(
+            options={"dump": True, "format": True},
+            arguments=_task.arguments | {"variables": _task.variables},
+        ),
     )

@@ -1,40 +1,123 @@
 """
 Fetch module
 """
-import dataclasses
+
+from __future__ import annotations
+
 import enum
 import json
 import pathlib
-
 from collections import UserDict, abc
 from urllib.parse import unquote, urlparse
 
+import requests
+import xmltodict
+from defusedxml.minidom import parseString
+from pydantic import BaseModel, Field
 from requests.auth import HTTPBasicAuth
 
-from defusedxml.minidom import parseString
-import xmltodict
-
-from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
+from chk.infrastructure.document import (
+    VersionedDocumentSupport,
+    VersionedDocumentV2,
+)
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
-from chk.infrastructure.helper import data_get, formatter
+from chk.infrastructure.helper import data_get
+from chk.infrastructure.logging import debug, error, with_catch_log
 from chk.infrastructure.symbol_table import (
+    EXPOSE_SCHEMA as EXP_SCHEMA,
+    ExecResponse,
+    ExposeManager,
+    VARIABLE_SCHEMA as VAR_SCHEMA,
     VariableTableManager,
     Variables,
     replace_value,
-    VARIABLE_SCHEMA as VAR_SCHEMA,
-    EXPOSE_SCHEMA as EXP_SCHEMA,
-    ExposeManager,
-    ExposableVariables,
-)
-
-from chk.infrastructure.third_party.http_fetcher import (
-    ApiResponse,
-    fetch,
-    BearerAuthentication,
 )
 from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
+from chk.infrastructure.view import PresentationBuilder, PresentationService
 
 VERSION_SCOPE = ["http"]
+
+
+class ApiResponse(UserDict):
+    """Represent a response"""
+
+    __slots__ = ("code", "info", "headers", "body")
+
+    code: int
+    info: str
+    headers: dict
+    body: str
+
+    @property
+    def as_fmt_str(self) -> str:
+        """String representation of ApiResponse
+
+        Returns:
+            str: String representation
+        """
+        # set info
+        presentation = f"{self['info']}\r\n\r\n"
+
+        # set headers
+        presentation += "\r\n".join(f"{k}: {v}" for k, v in self["headers"].items())
+        presentation += "\r\n\r\n"
+
+        # set body
+        presentation += self["body"] if isinstance(self["body"], str) else json.dumps(self["body"])
+
+        return presentation
+
+    @staticmethod
+    def from_response(response: requests.Response) -> ApiResponse:
+        """Create a ApiResponse object from requests.Response object
+
+        Args:
+            response (requests.Response): _description_
+
+        Returns:
+            ApiResponse: _description_
+        """
+        version = "HTTP/1.0" if response.raw.version == 10 else "HTTP/1.1"
+
+        return ApiResponse(
+            code=response.status_code,
+            info=f"{version} {response.status_code} {response.reason}",
+            headers=dict(response.headers),
+            body=response.text,
+        )
+
+    def as_dict(self) -> dict:
+        """as_dict"""
+
+        _data = self.data
+
+        _as_dict = {
+            "code": _data["code"],
+            "info": _data["info"],
+            "headers": _data["headers"],
+        }
+
+        try:
+            _as_dict["body"] = json.loads(_data["body"])
+        except ValueError:
+            _as_dict["body"] = _data["body"]
+
+        return _as_dict
+
+
+class BearerAuthentication(requests.auth.AuthBase):
+    """Authentication: Bearer ... support"""
+
+    def __init__(self, token: str) -> None:
+        """Construct BearerAuthentication"""
+
+        self.token = token
+
+    def __call__(self, r: requests.PreparedRequest) -> requests.PreparedRequest:
+        """Add the actual header on call"""
+
+        r.headers["authorization"] = "Bearer " + self.token
+        return r
 
 
 class HttpMethod(enum.StrEnum):
@@ -201,6 +284,16 @@ def allowed_url(value: str) -> bool:
     return True
 
 
+class FetchTask(BaseModel):
+    """Parsed FetchTask"""
+
+    name: str
+    uses: str
+    file: str
+    variables: dict = Field(default_factory=dict)
+    arguments: dict = Field(default_factory=dict)
+
+
 class HttpRequestArgCompiler:
     """HttpRequestArgCompiler"""
 
@@ -308,16 +401,15 @@ class HttpRequestArgCompiler:
         HttpRequestArgCompiler.add_body(request_data, request_arg)
 
 
-@dataclasses.dataclass(slots=True)
-class HttpDocument(VersionedDocument):
+class HttpDocument(VersionedDocumentV2, BaseModel):
     """
     Http document entity
     """
 
-    request: dict = dataclasses.field(default_factory=dict)
+    request: dict = Field(default_factory=dict)
 
     @staticmethod
-    def from_file_context(ctx: FileContext) -> "HttpDocument":
+    def from_file_context(ctx: FileContext) -> HttpDocument:
         """Create a HttpDocument from FileContext
         :param ctx: FileContext to create the HttpDocument from
         """
@@ -328,17 +420,13 @@ class HttpDocument(VersionedDocument):
         if not (request_dct := data_get(ctx.document, "request")):
             raise RuntimeError("`request:` not found.")
 
+        # @TODO keep `context`, `version` as object
+        # @TODO implement __repr__ for WorkflowDocument
         return HttpDocument(
             context=tuple(ctx),
             version=version_str,
             request=request_dct,
         )
-
-    @property
-    def as_dict(self) -> dict:
-        """Return a dict of the data"""
-
-        return dataclasses.asdict(self)
 
 
 class ApiResponseDict(UserDict):
@@ -348,7 +436,7 @@ class ApiResponseDict(UserDict):
     body_as_dict: dict
 
     @staticmethod
-    def from_api_response(resp: ApiResponse) -> "ApiResponseDict":
+    def from_api_response(resp: ApiResponse) -> ApiResponseDict:
         """Create JsonApiResponse from ApiResponse
 
         Args:
@@ -423,7 +511,7 @@ class HttpDocumentSupport:
 
         HttpRequestArgCompiler.add_generic_args(http_doc.request, request_args)
 
-        return fetch(request_args)
+        return ApiResponse.from_response(requests.request(**request_args))
 
     @staticmethod
     def process_request_template(http_doc: HttpDocument, variables: Variables) -> None:
@@ -446,83 +534,71 @@ class HttpDocumentSupport:
 
         return {**VER_SCHEMA, **SCHEMA, **VAR_SCHEMA, **EXP_SCHEMA}
 
-    @staticmethod
-    def display(expose_list: list, exec_ctx: ExecuteContext) -> None:
-        """Displays the response based on the command response format
 
-        Args:
-            expose_list: list
-            exec_ctx: ExecuteContext
-        """
+class FetchPresenter(PresentationBuilder):
+    """FetchPresenter"""
 
-        if not expose_list:
-            return
-
-        display_item_list: list[object] = []
-
-        for expose_item in expose_list:
-            if isinstance(expose_item, (dict, list)):
-                if {"code", "info", "headers", "body"}.issubset(expose_item):
-                    resp = ApiResponse(expose_item)
-
-                    if exec_ctx.options["format"]:
-                        display_item_list.append(resp.as_fmt_str)
-                    else:
-                        display_item_list.append(
-                            ApiResponseDict.from_api_response(resp).as_dict
-                        )
-                else:
-                    if exec_ctx.options["format"]:
-                        display_item_list.append(json.dumps(expose_item))
-                    else:
-                        display_item_list.append(expose_item)
-            else:
-                if exec_ctx.options["format"]:
-                    display_item_list.append(str(expose_item))
-                else:
-                    display_item_list.append(expose_item)
-
-        if exec_ctx.options["format"]:
-            formatter(
-                "\n---\n".join(
-                    [
-                        item if isinstance(item, str) else str(item)
-                        for item in display_item_list
-                    ]
+    def dump_error_json(self) -> str:
+        return json.dumps(
+            {
+                "error": (
+                    repr(self.data.exception)
+                    if self.data.exception
+                    else "Unspecified error"
                 )
-                if len(display_item_list) > 1
-                else display_item_list.pop(),
-                dump=exec_ctx.options["dump"],
-            )
-        else:
-            _to_display = (
-                display_item_list
-                if len(display_item_list) > 1
-                else display_item_list.pop()
-            )
+            }
+        )
 
-            _to_display = (
-                _to_display if isinstance(_to_display, str) else json.dumps(_to_display)
-            )
+    def dump_error_fmt(self) -> str:
+        """dump fmt error str"""
 
-            formatter(_to_display, dump=exec_ctx.options["dump"])
+        return (
+            f"Fetch error\n------\n{repr(self.data.exception)}"
+            if self.data.exception
+            else "Fetch error\n------\nUnspecified error"
+        )
+
+    def dump_json(self) -> str:
+        """dump json"""
+
+        displayables: list[object] = []
+
+        for key, expose_item in self.data.exposed.items():
+            if key == RequestConfigNode.LOCAL:
+                resp = ApiResponse(expose_item)
+                displayables.append(ApiResponseDict.from_api_response(resp).as_dict)
+            else:
+                displayables.append(expose_item)
+
+        return json.dumps(displayables)
+
+    def dump_fmt(self) -> str:
+        """dump fmt string"""
+
+        displayables: list[str] = []
+
+        for key, expose_item in self.data.exposed.items():
+            if key == RequestConfigNode.LOCAL:
+                resp = ApiResponse(expose_item)
+                displayables.append(resp.as_fmt_str)
+            else:
+                displayables.append(json.dumps(expose_item))
+
+        return "\n======\n".join(displayables)
 
 
-def execute(
-    ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...
-) -> None:
-    """Run a http document
+@with_catch_log
+def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
+    """Call a http document"""
 
-    Args:
-        ctx: FileContext object to handle
-        exec_ctx: ExecuteContext
-        cb: Callable
-    """
+    debug(file_ctx)
+    debug(exec_ctx)
 
-    http_doc = HttpDocument.from_file_context(ctx)
+    http_doc = HttpDocument.from_file_context(file_ctx)
+    debug(http_doc.model_dump_json())
 
     DocumentVersionMaker.verify_if_allowed(
-        DocumentVersionMaker.from_dict(http_doc.as_dict), VERSION_SCOPE
+        DocumentVersionMaker.from_dict(http_doc.model_dump()), VERSION_SCOPE
     )
 
     VersionedDocumentSupport.validate_with_schema(
@@ -531,14 +607,79 @@ def execute(
 
     variable_doc = Variables()
     VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
-    HttpDocumentSupport.process_request_template(http_doc, variable_doc)
+    debug(variable_doc.data)
 
-    response = HttpDocumentSupport.execute_request(http_doc)
-    output_data = ExposableVariables({"_response": response.data})
+    HttpDocumentSupport.process_request_template(http_doc, variable_doc)
+    debug(http_doc.model_dump_json())
+
+    r_exception: Exception | None = None
+    response = ApiResponse()
+
+    try:
+        response = HttpDocumentSupport.execute_request(http_doc)
+    except Exception as ex:
+        r_exception = ex
+        error(ex)
+
+    output_data = Variables({"_response": response.as_dict()})
+    debug(output_data.data)
 
     exposed_data = ExposeManager.get_exposed_replaced_data(
-        http_doc, {**variable_doc.data, **output_data.data}
+        http_doc,
+        {**variable_doc.data, **output_data.data},
+    )
+    debug(exposed_data)
+
+    # TODO: instead if sending specific report items, and making presentable in other
+    #       module, we should prepare and long and short form of presentable that can be
+    #       loaded via other module
+
+    return ExecResponse(
+        file_ctx=file_ctx,
+        exec_ctx=exec_ctx,
+        variables_exec=output_data,
+        variables=variable_doc,
+        exception=r_exception,
+        exposed=exposed_data,
+        report={
+            "is_success": r_exception is None,
+            "request_method": file_ctx.document["request"]["method"],
+            "request_url": file_ctx.document["request"]["url"],
+        },
     )
 
-    cb({ctx.filepath_hash: output_data.data})
-    HttpDocumentSupport.display(exposed_data, exec_ctx)
+
+@with_catch_log
+def execute(
+    ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...
+) -> None:
+    """Call with a http document
+
+    Args:
+        ctx: FileContext object to handle
+        exec_ctx: ExecuteContext
+        cb: Callable
+    """
+
+    exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
+
+    cb({ctx.filepath_hash: exr.variables_exec.data})
+    PresentationService.display(exr, exec_ctx, FetchPresenter)
+
+
+@with_catch_log
+def task_fetch(**kwargs: dict) -> ExecResponse:
+    """Task impl"""
+
+    if not (doc := kwargs.get("task", {})):
+        raise ValueError("Wrong task format given.")
+
+    _task = FetchTask(**doc)
+
+    return call(
+        FileContext.from_file(_task.file),
+        ExecuteContext(
+            options={"dump": True, "format": True},
+            arguments=_task.arguments | {"variables": _task.variables},
+        ),
+    )

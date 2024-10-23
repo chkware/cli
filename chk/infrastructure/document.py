@@ -1,9 +1,11 @@
 """
 Base document and utility
 """
+
 import dataclasses
 
 import cerberus
+from pydantic import BaseModel, Field
 
 from chk.infrastructure.file_loader import FileContext
 
@@ -18,11 +20,22 @@ class VersionedDocument:
     version: str = dataclasses.field(default_factory=str)
 
 
+class VersionedDocumentV2(BaseModel):
+    """
+    versioned document entity
+    """
+
+    context: tuple = Field(default_factory=tuple)
+    version: str = Field(default_factory=str)
+
+
 class VersionedDocumentSupport:
     """DocumentVersionSupport"""
 
     @staticmethod
-    def validate_with_schema(schema: dict, doc: VersionedDocument) -> bool:
+    def validate_with_schema(
+        schema: dict, doc: VersionedDocument | VersionedDocumentV2
+    ) -> bool:
         """Validate a document with given schema
 
         Args:

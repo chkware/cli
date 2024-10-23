@@ -1,0 +1,22 @@
+version: default:workflow:0.8.0
+
+name: simple Btc workflow
+id: simple Btc workflow 1
+
+tasks:
+#  - name: Fetch some content from URL
+#    uses: fetch
+#    file: ../simple/coinstats-usd-request.chk
+
+  - name: Fetch some content from URL
+    uses: fetch
+    file: ./coinstats-usd-request.chk
+
+  - name: Validate the content is okay
+    uses: validate
+    file: ./coinstats-usd-validate.chk
+    arguments:
+      data: <% _steps.0._response %>
+
+expose:
+  - <% _steps %>

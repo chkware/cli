@@ -1,0 +1,16 @@
+---
+version: default:validation:0.7.2
+
+variables:
+  userName: ~
+
+asserts:
+  - { type: Str, actual: <% _data.body.jwt %>, msg_pass: '`jwt` is string.' }
+  - { type: Integer, actual: <% _data.body.user.id %>, msg_pass: '`user.id` is an int', msg_fail: '`user.id` is not an int', cast_actual_to: int }
+  - { type: Equal, actual: <% _data.body.user.username %>, expected: <% userName %> , msg_pass: '`user.username` matches', msg_fail: '`user.username` do not matches'}
+  - { type: Map, actual: <% _data.body.user %>, msg_pass: '`user` is a map', msg_fail: '`user` is not a map' }
+  - { type: StrHave, actual: <% _data.body.user.email %>, other: "@gmail.com" }
+  - { type: MapHasKeys, actual: <% _data.body.user %>, expected: ["id", "username", "email", "provider", "confirmed", "blocked", "gender", "name", "grade", "createdAt", "updatedAt", "age", "phoneNumber", "schoolName", "address", "isDisableOnLeaderBoard", "passwordChangedAt"] }
+
+expose:
+  - <% _asserts_response %>

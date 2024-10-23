@@ -1,0 +1,13 @@
+---
+version: default:validation:0.7.2
+
+variables:
+  userName: ~
+
+asserts:
+  - { type: Equal, actual: <% _data.body.username %>, expected: <% userName %> , msg_pass: '`user.username` matches', msg_fail: '`user.username` do not matches'}
+  - { type: MapHasKeys, actual: <% _data.body %>, expected: ["id", "username", "email", "provider", "confirmed", "blocked", "gender", "name", "grade", "createdAt", "updatedAt", "age", "phoneNumber", "schoolName", "address", "isDisableOnLeaderBoard", "passwordChangedAt", "role"] }
+  - { type: MapHasKeys, actual: <% _data.body.role %>, expected: ["id", "name", "description", "type", "createdAt", "updatedAt"] }
+
+expose:
+  - <% _asserts_response %>

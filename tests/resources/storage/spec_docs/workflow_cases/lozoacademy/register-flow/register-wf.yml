@@ -1,0 +1,88 @@
+version: default:workflow:0.8.0
+
+name: Lozo register workflow
+
+variables:
+  email: "hasanlock+lz25@gmail.com"
+  username: "lz25"
+
+tasks:
+  - name: Post user data for register
+    uses: fetch
+    file: "./register-req.yml"
+    variables:
+      email: <% email %>
+      username: <% username %>
+
+  - name: Validate register response
+    uses: validate
+    file: "./register-valid.yml"
+    variables:
+      userName: <% username %>
+    arguments:
+      data: <% _steps.0._response %>
+
+  - name: Update user's grade
+    uses: fetch
+    file: "./update-grade-req.yml"
+    variables:
+      userId: <% _steps.0._response.body.user.id %>
+      userGrade: 2
+      jwtToken: <% _steps.0._response.body.jwt %>
+
+  - name: Validate Update user's grade response
+    uses: validate
+    file: "./update-grade-valid.yml"
+    variables:
+      userName: <% username %>
+    arguments:
+      data: <% _steps.2._response %>
+
+  - name: Get profile avaters
+    uses: fetch
+    file: "./profile-avater-req.yml"
+    variables:
+      jwtToken: <% _steps.0._response.body.jwt %>
+
+  - name: Update user's profile avatar
+    uses: fetch
+    file: "./update-profile-avater-req.yml"
+    variables:
+      userId: <% _steps.0._response.body.user.id %>
+      profileAvatar: 27
+      jwtToken: <% _steps.0._response.body.jwt %>
+
+  - name: Validate update user's profile avatar response
+    uses: validate
+    file: "./update-grade-valid.yml"
+    variables:
+      userName: <% username %>
+    arguments:
+      data: <% _steps.5._response %>
+
+  - name: Get user's streaks
+    uses: fetch
+    file: "./streaks-req.yml"
+    variables:
+      jwtToken: <% _steps.0._response.body.jwt %>
+
+  - name: Validate user's streaks response
+    uses: validate
+    file: "./streaks-valid.yml"
+    arguments:
+      data: <% _steps.7._response.body %>
+
+  - name: Get user's profile
+    uses: fetch
+    file: "./me-req.yml"
+    variables:
+      jwtToken: <% _steps.0._response.body.jwt %>
+
+  - name: Validate user's profile response
+    uses: validate
+    file: "./me-valid.yml"
+    arguments:
+      data: <% _steps.9._response.body %>
+
+expose:
+  - <% _steps %>

@@ -1,11 +1,14 @@
 """
 File loader utility
 """
-import hashlib
-from typing import NamedTuple
-from pathlib import Path
 
+from __future__ import annotations
+
+import hashlib
 import json
+from pathlib import Path
+from typing import NamedTuple
+
 import yaml
 
 from chk.infrastructure.typing_extras import JsonDecodingError
@@ -25,7 +28,7 @@ class FileLoader:
         """
 
         if not allowed_list:
-            allowed_list = [".chk"]
+            allowed_list = [".chk", ".yaml", ".yml"]
 
         if not Path(file_name).is_file():
             raise FileNotFoundError("File not found")
@@ -81,7 +84,7 @@ class FileContext(NamedTuple):
     filepath_hash: str = ""
 
     @staticmethod
-    def from_file(file: str, **kwarg: dict) -> "FileContext":
+    def from_file(file: str, **kwarg: dict) -> FileContext:
         FileLoader.is_file_ok(file)
         absolute_path = str(Path(file).absolute())
         fpath_hash = hashlib.sha256(absolute_path.encode("utf-8")).hexdigest()
@@ -95,30 +98,47 @@ class FileContext(NamedTuple):
             arguments=kwarg["arguments"] if "arguments" in kwarg else {},
         )
 
+    @property
+    def filepath_as_path(self) -> Path:
+        """Get filepath as Path"""
 
-class PathFrom:
-    """Utility to expand to full path"""
+        return Path(self.filepath)
 
-    def __init__(self, base: Path):
-        self.base = base.absolute().parent
+    @property
+    def filepath_base_as_path(self) -> Path:
+        """Get filepath parent or base as Path"""
 
-    def absolute(self, target: str) -> str:
-        """Find absolute in comparison to base URL"""
+        return Path(self.filepath).absolute().parent
 
-        if target.startswith("./") or target.startswith("../"):
-            if self.base.exists():
-                to_path = self.base
 
-                target_path_sp = target.split("/")
-                for part in target_path_sp:
-                    if part == "..":
-                        to_path = to_path.parent
-                    else:
-                        to_path = Path(str(to_path) + "/" + part)
+def generate_abs_path(base_: str, target_: str) -> str:
+    """Generate absolute path in comparison to base path
+    Args:
+        base_: str, base path to calculate from
+        target_: str, file path that need absolute path
 
-                return str(to_path)
-            raise ValueError("Invalid base path.")
+    Returns:
+        Absolute path for given filepath
+    """
+
+    base = Path(base_)
+    base_abs = base.absolute().parent if base.is_file() else base.absolute()
+
+    if not base_abs.exists():
+        raise ValueError("Invalid base path.")
+    if not (target_.startswith("./") or target_.startswith("../")):
         raise ValueError("Invalid target path.")
+
+    to_path = base_abs
+    target_path_sp = target_.split("/")
+
+    for part in target_path_sp:
+        if part == "..":
+            to_path = to_path.parent
+        else:
+            to_path = to_path / part
+
+    return str(to_path)
 
 
 class ExecuteContext(NamedTuple):

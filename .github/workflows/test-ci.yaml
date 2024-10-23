@@ -9,12 +9,15 @@ jobs:
     name: Run test on ${{ matrix.os }} with ${{ matrix.py_ver }}
     strategy:
       matrix:
-        os: 
+        os:
           - macOS-latest
-          - macos-11
+          - macos-14
+          - macos-13
           - ubuntu-latest
-          - ubuntu-20.04
+          - ubuntu-24.04
+          - ubuntu-22.04
           - windows-latest
+          - windows-2022
           - windows-2019
     
     runs-on: ${{ matrix.os }}
