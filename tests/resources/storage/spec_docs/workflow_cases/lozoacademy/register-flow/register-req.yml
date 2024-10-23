@@ -1,0 +1,20 @@
+---
+version: default:http:0.7.2
+
+variables:
+  email: ~
+  username: ~
+  password: "a12345678"
+
+request:
+  url: "https://dev-api.lozoacademy.com/api/auth/local/register"
+  method: POST
+  body .enc=json:
+    email: <% email %>
+    password: <% password %>
+    username: <% username %>
+  headers:
+    "Content-Type": "application/json; charset=utf-8"
+
+expose:
+  - <% _response %>

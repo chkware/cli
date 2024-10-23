@@ -1,0 +1,21 @@
+---
+version: default:http:0.7.2
+
+variables:
+  profileAvatar: ~
+  userId: ~
+  jwtToken: ~
+
+request:
+  url: "https://dev-api.lozoacademy.com/api/users/<% userId %>"
+  method: PUT
+  body .enc=json:
+    profileAvatar: <% profileAvatar %>
+    id: <% userId %>
+  headers:
+    "Content-Type": "application/json; charset=utf-8"
+  auth .scm=bearer:
+    token: <% jwtToken %>
+
+expose:
+  - <% _response %>

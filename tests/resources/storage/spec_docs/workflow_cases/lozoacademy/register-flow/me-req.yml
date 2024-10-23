@@ -1,0 +1,16 @@
+---
+version: default:http:0.7.2
+
+variables:
+  jwtToken: ~
+
+request:
+  url: "https://dev-api.lozoacademy.com/api/users/me"
+  method: GET
+  headers:
+    "Content-Type": "application/json; charset=utf-8"
+  auth .scm=bearer:
+    token: <% jwtToken %>
+
+expose:
+  - <% _response %>
