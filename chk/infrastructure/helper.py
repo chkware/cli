@@ -170,13 +170,18 @@ class Cast:
                 return to_dict
 
 
-def formatter(message: object, cb: Callable = str, dump: bool = True) -> str:
+def formatter(
+        message: object,
+        cb: Callable = str,
+        dump: bool = True,
+        is_err: bool = False) -> str:
     """Format message with given callback
 
     Args:
         message: object
         cb: Callable
         dump: bool
+        is_err: bool
     Returns:
         str
     """
@@ -184,7 +189,7 @@ def formatter(message: object, cb: Callable = str, dump: bool = True) -> str:
     printable = str(cb(message))
 
     if dump:
-        click.echo(printable)
+        click.echo(printable, err=is_err)
 
     return printable
 
