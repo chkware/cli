@@ -7,7 +7,8 @@ from __future__ import annotations
 import enum
 import json
 import pathlib
-from collections import UserDict, abc
+from collections import abc
+from typing import Any
 from urllib.parse import unquote, urlparse
 
 import requests
@@ -132,73 +133,6 @@ class ApiResponseModel(BaseModel):
         presentation += json.dumps(_body) if isinstance(self.body, dict) else _body
 
         return presentation
-
-
-class ApiResponse(UserDict):
-    """Represent a response"""
-
-    __slots__ = ("code", "info", "headers", "body")
-
-    code: int
-    info: str
-    headers: dict
-    body: str
-
-    @property
-    def as_fmt_str(self) -> str:
-        """String representation of ApiResponse
-
-        Returns:
-            str: String representation
-        """
-        # set info
-        presentation = f"{self['info']}\r\n\r\n"
-
-        # set headers
-        presentation += "\r\n".join(f"{k}: {v}" for k, v in self["headers"].items())
-        presentation += "\r\n\r\n"
-
-        # set body
-        presentation += self["body"] if isinstance(self["body"], str) else json.dumps(self["body"])
-
-        return presentation
-
-    @staticmethod
-    def from_response(response: requests.Response) -> ApiResponse:
-        """Create a ApiResponse object from requests.Response object
-
-        Args:
-            response (requests.Response): _description_
-
-        Returns:
-            ApiResponse: _description_
-        """
-        version = "HTTP/1.0" if response.raw.version == 10 else "HTTP/1.1"
-
-        return ApiResponse(
-            code=response.status_code,
-            info=f"{version} {response.status_code} {response.reason}",
-            headers=dict(response.headers),
-            body=response.text,
-        )
-
-    def as_dict(self) -> dict:
-        """as_dict"""
-
-        _data = self.data
-
-        _as_dict = {
-            "code": _data["code"],
-            "info": _data["info"],
-            "headers": _data["headers"],
-        }
-
-        try:
-            _as_dict["body"] = json.loads(_data["body"])
-        except ValueError:
-            _as_dict["body"] = _data["body"]
-
-        return _as_dict
 
 
 class BearerAuthentication(requests.auth.AuthBase):
@@ -523,70 +457,6 @@ class HttpDocument(VersionedDocumentV2, BaseModel):
             version=version_str,
             request=request_dct,
         )
-
-
-class ApiResponseDict(UserDict):
-    """Represents a API response with body in dict representation"""
-
-    api_resp: dict
-    body_as_dict: dict
-
-    @staticmethod
-    def from_api_response(resp: ApiResponse) -> ApiResponseDict:
-        """Create JsonApiResponse from ApiResponse
-
-        Args:
-            resp (ApiResponse): ApiResponse object
-
-        Raises:
-            RuntimeError: if response format not supported
-
-        Returns:
-            ApiResponseDict: new ApiResponseDict object
-        """
-
-        body = None
-
-        try:
-            if "headers" in resp:
-                content_type = ""
-                if "Content-Type" in resp["headers"]:
-                    content_type = resp["headers"]["Content-Type"]
-                elif "content-type" in resp["headers"]:
-                    content_type = resp["headers"]["content-type"]
-
-                if content_type and "application/json" in content_type:
-                    body = json.loads(resp["body"])
-                elif content_type and "application/xml" in content_type:
-                    body = xmltodict.parse(parseString(resp["body"]).toxml())
-
-            if not body:
-                body = dict(resp["body"])
-
-            return ApiResponseDict(api_resp=resp.data, body_as_dict=body)
-
-        except Exception:
-            raise RuntimeError("Unsupported response format.")
-
-    @property
-    def as_json(self) -> str:
-        """Converts to JSON string
-
-        Returns:
-            str: JSON object as string representation
-        """
-
-        return json.dumps(self.as_dict)
-
-    @property
-    def as_dict(self) -> dict:
-        """Converts to JSON string
-
-        Returns:
-            str: JSON object as string representation
-        """
-
-        return {**self["api_resp"], **{"body": self["body_as_dict"]}}
 
 
 class HttpDocumentSupport:
