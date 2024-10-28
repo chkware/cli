@@ -38,6 +38,102 @@ from chk.infrastructure.view import PresentationBuilder, PresentationService
 VERSION_SCOPE = ["http"]
 
 
+class ApiResponseModel(BaseModel):
+    """ApiResponseModel"""
+
+    code: int = Field(default=0)
+    version: str = Field(default_factory=str)
+    reason: str = Field(default_factory=str)
+    headers: dict = Field(default_factory=dict)
+    body: str = Field(default_factory=str)
+
+    def __bool__(self) -> bool:
+        """implement __bool__"""
+
+        return self.code != 0 and len(self.version) > 0 and len(self.reason) > 0
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def info(self) -> str:
+        return f"{'HTTP/1.0' if self.version == 10 else 'HTTP/1.1'} {self.code} {self.reason}"
+
+    def body_as_dict(self) -> dict:
+        content_type = ""
+
+        if "Content-Type" in self.headers:
+            content_type = self.headers["Content-Type"]
+        elif "content-type" in self.headers:
+            content_type = self.headers["content-type"]
+        else:
+            raise TypeError("Unsupported content type.")
+
+        if "application/json" in content_type:
+            return json.loads(self.body)
+        elif "application/xml" in content_type:
+            return xmltodict.parse(parseString(self.body).toxml())
+        else:
+            raise ValueError("Non-convertable body found")
+
+    @model_serializer
+    def mdl_serializer(self) -> dict[str, Any]:
+        _dict = {
+            "code": self.code,
+            "info": self.info,
+            "headers": self.headers,
+        }
+
+        try:
+            _dict["body"] = self.body_as_dict()
+        except (TypeError, ValueError):
+            _dict["body"] = self.body
+
+        return _dict
+
+    @staticmethod
+    def from_response(response: requests.Response) -> ApiResponseModel:
+        """Create a ApiResponseModel object from requests.Response object
+
+        Args:
+            response (requests.Response): _description_
+
+        Returns:
+            ApiResponseModel: _description_
+        """
+
+        return ApiResponseModel(
+            code=response.status_code,
+            version="HTTP/1.0" if response.raw.version == 10 else "HTTP/1.1",
+            reason=response.reason,
+            headers=dict(response.headers),
+            body=response.text,
+        )
+
+    def as_fmt_str(self) -> str:
+        """String representation of ApiResponseModel
+
+        Returns:
+            str: String representation
+        """
+
+        # set info
+        presentation = f"{self.info}\r\n\r\n"
+
+        # set headers
+        presentation += "\r\n".join(f"{k}: {v}" for k, v in self["headers"].items())
+        presentation += "\r\n\r\n"
+
+        _body: Any = ""
+        try:
+            _body = self.body_as_dict()
+        except (TypeError, ValueError):
+            _body = self.body
+
+        # set body
+        presentation += json.dumps(_body) if isinstance(self.body, dict) else _body
+
+        return presentation
+
+
 class ApiResponse(UserDict):
     """Represent a response"""
 
