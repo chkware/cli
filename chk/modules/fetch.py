@@ -190,7 +190,11 @@ class ApiResponseModel(BaseModel):
         presentation += "\r\n".join(f"{k}: {v}" for k, v in self.headers.items())
         presentation += "\r\n\r\n"
 
-        presentation += json.dumps(self.body_as_dict()) if self.body_content_type == CTYPE_JSON else self.body
+        presentation += (
+            json.dumps(self.body_as_dict())
+            if self.body_content_type == CTYPE_JSON
+            else self.body
+        )
 
         return presentation
 

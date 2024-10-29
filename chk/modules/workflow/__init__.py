@@ -201,7 +201,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         wflow_doc = WorkflowDocument.from_file_context(file_ctx)
         debug(wflow_doc.model_dump_json())
     except Exception as ex:
-        error(ex)
+        error(ex, exception=ex)
         die_with_error(ex, WorkflowPresenter, exec_ctx.options["format"])
 
     variable_doc = Variables()
@@ -259,4 +259,8 @@ def execute(
     exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
 
     cb({ctx.filepath_hash: exr.variables_exec.data})
-    PresentationService.display(exr, exec_ctx, WorkflowPresenter)
+    try:
+        PresentationService.display(exr, exec_ctx, WorkflowPresenter)
+    except Exception as ex:
+        error(ex, exception=ex)
+        die_with_error(ex, WorkflowPresenter, exec_ctx.options["format"])
