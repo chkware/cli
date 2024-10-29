@@ -14,7 +14,7 @@ from urllib.parse import unquote, urlparse
 import requests
 import xmltodict
 from defusedxml.minidom import parseString
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, computed_field, model_serializer
 from requests.auth import HTTPBasicAuth
 
 from chk.infrastructure.document import (
@@ -22,7 +22,7 @@ from chk.infrastructure.document import (
     VersionedDocumentV2,
 )
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
-from chk.infrastructure.helper import data_get
+from chk.infrastructure.helper import Cast, data_get
 from chk.infrastructure.logging import debug, error, with_catch_log
 from chk.infrastructure.symbol_table import (
     EXPOSE_SCHEMA as EXP_SCHEMA,
@@ -37,30 +37,35 @@ from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEM
 from chk.infrastructure.view import PresentationBuilder, PresentationService
 
 VERSION_SCOPE = ["http"]
+Http_V10 = "HTTP/1.0"
+Http_V11 = "HTTP/1.1"
+CTYPE_JSON = "application/json"
+CTYPE_XML = "application/xml"
 
 
 class ApiResponseModel(BaseModel):
     """ApiResponseModel"""
 
     code: int = Field(default=0)
-    version: str = Field(default_factory=str)
+    version: int = Field(default_factory=int)
     reason: str = Field(default_factory=str)
-    headers: dict = Field(default_factory=dict)
+    headers: dict[str, str] = Field(default_factory=dict)
     body: str = Field(default_factory=str)
 
     def __bool__(self) -> bool:
         """implement __bool__"""
-
-        return self.code != 0 and len(self.version) > 0 and len(self.reason) > 0
+        return self.code != 0 and self.version in (10, 11) and len(self.reason) > 0
 
     @computed_field  # type: ignore[prop-decorator]
     @property
     def info(self) -> str:
-        return f"{'HTTP/1.0' if self.version == 10 else 'HTTP/1.1'} {self.code} {self.reason}"
+        return (
+            f"{Http_V10 if self.version == 10 else Http_V11} {self.code} {self.reason}"
+        )
 
-    def body_as_dict(self) -> dict:
-        content_type = ""
-
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def body_content_type(self) -> str:
         if "Content-Type" in self.headers:
             content_type = self.headers["Content-Type"]
         elif "content-type" in self.headers:
@@ -68,12 +73,36 @@ class ApiResponseModel(BaseModel):
         else:
             raise TypeError("Unsupported content type.")
 
-        if "application/json" in content_type:
-            return json.loads(self.body)
-        elif "application/xml" in content_type:
-            return xmltodict.parse(parseString(self.body).toxml())
+        if CTYPE_JSON in content_type:
+            return CTYPE_JSON
+        elif CTYPE_XML in content_type:
+            return CTYPE_XML
         else:
             raise ValueError("Non-convertable body found")
+
+    @info.setter
+    def set_info(self, sinfo: str) -> None:
+        """set info"""
+
+        if not sinfo:
+            raise ValueError("Info can not be empty.")
+
+        _version, _, _reason = sinfo.split()
+
+        if Http_V10 == _version:
+            self.version = 10
+        elif Http_V11 == _version:
+            self.version = 11
+        else:
+            raise ValueError("Unsupported protocol.")
+
+        self.reason = _reason
+
+    def body_as_dict(self) -> abc.Iterable:
+        if CTYPE_JSON == self.body_content_type:
+            return json.loads(self.body)
+        elif CTYPE_XML == self.body_content_type:
+            return xmltodict.parse(parseString(self.body).toxml())
 
     @model_serializer
     def mdl_serializer(self) -> dict[str, Any]:
@@ -103,11 +132,49 @@ class ApiResponseModel(BaseModel):
 
         return ApiResponseModel(
             code=response.status_code,
-            version="HTTP/1.0" if response.raw.version == 10 else "HTTP/1.1",
+            version=11 if response.raw.version == 0 else response.raw.version,
             reason=response.reason,
             headers=dict(response.headers),
             body=response.text,
         )
+
+    @staticmethod
+    def from_dict(**kwargs: dict) -> ApiResponseModel:
+        """Construct from dict"""
+
+        if not all(
+            [item in kwargs.keys() for item in ["code", "info", "headers", "body"]]
+        ):
+            raise KeyError("Expected keys to make ApiResponseModel not found")
+
+        if not isinstance(kwargs["code"], str):
+            raise ValueError("Invalid code.")
+
+        if not isinstance(kwargs["headers"], dict):
+            raise ValueError("Invalid headers.")
+
+        if "Content-Type" in kwargs["headers"]:
+            content_type = kwargs["headers"]["Content-Type"]
+        elif "content-type" in kwargs["headers"]:
+            content_type = kwargs["headers"]["content-type"]
+        else:
+            raise TypeError("Unsupported content type.")
+
+        if CTYPE_JSON in content_type:
+            _body = json.dumps(kwargs["body"])
+        elif CTYPE_XML in content_type:
+            _body = parseString(kwargs["body"]).toxml()
+        else:
+            raise ValueError("Non-convertable body found")
+
+        model = ApiResponseModel(
+            code=Cast.to_int(kwargs["code"]),
+            headers=kwargs["headers"],
+            body=_body,
+        )
+        model.info = kwargs["info"]
+
+        return model
 
     def as_fmt_str(self) -> str:
         """String representation of ApiResponseModel
@@ -120,17 +187,10 @@ class ApiResponseModel(BaseModel):
         presentation = f"{self.info}\r\n\r\n"
 
         # set headers
-        presentation += "\r\n".join(f"{k}: {v}" for k, v in self["headers"].items())
+        presentation += "\r\n".join(f"{k}: {v}" for k, v in self.headers.items())
         presentation += "\r\n\r\n"
 
-        _body: Any = ""
-        try:
-            _body = self.body_as_dict()
-        except (TypeError, ValueError):
-            _body = self.body
-
-        # set body
-        presentation += json.dumps(_body) if isinstance(self.body, dict) else _body
+        presentation += json.dumps(self.body_as_dict()) if self.body_content_type == CTYPE_JSON else self.body
 
         return presentation
 
@@ -406,7 +466,7 @@ class HttpRequestArgCompiler:
                 "content-type" not in request_arg["headers"]
                 and "Content-Type" not in request_arg["headers"]
             ):
-                request_arg["headers"]["content-type"] = "application/xml"
+                request_arg["headers"]["content-type"] = CTYPE_XML
 
             request_arg["data"] = body
         elif (body := request_data.get(RequestConfigNode.BODY_TXT)) is not None:
