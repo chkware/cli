@@ -25,6 +25,7 @@ types-requests = "*"
 pytest-cov = "*"
 coveralls = "*"
 icecream = "*"
+requests-mock = "*"
 
 [requires]
 python_version = "3.11"
