@@ -7,6 +7,7 @@ from __future__ import annotations
 import enum
 import json
 import pathlib
+import sys
 from collections import abc
 from typing import Any
 from urllib.parse import unquote, urlparse
@@ -23,7 +24,7 @@ from chk.infrastructure.document import (
 )
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import Cast, data_get
-from chk.infrastructure.logging import debug, error, with_catch_log
+from chk.infrastructure.logging import debug, error_trace, with_catch_log
 from chk.infrastructure.symbol_table import (
     EXPOSE_SCHEMA as EXP_SCHEMA,
     ExecResponse,
@@ -34,7 +35,11 @@ from chk.infrastructure.symbol_table import (
     replace_value,
 )
 from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
-from chk.infrastructure.view import PresentationBuilder, PresentationService
+from chk.infrastructure.view import (
+    PresentationBuilder,
+    PresentationService,
+    die_with_error,
+)
 
 VERSION_SCOPE = ["http"]
 Http_V10 = "HTTP/1.0"
@@ -70,8 +75,6 @@ class ApiResponseModel(BaseModel):
             content_type = self.headers["Content-Type"]
         elif "content-type" in self.headers:
             content_type = self.headers["content-type"]
-        else:
-            raise TypeError("Unsupported content type.")
 
         if CTYPE_JSON in content_type:
             return CTYPE_JSON
@@ -103,6 +106,8 @@ class ApiResponseModel(BaseModel):
             return json.loads(self.body)
         elif CTYPE_XML == self.body_content_type:
             return xmltodict.parse(parseString(self.body).toxml())
+        else:
+            raise ValueError("Non-convertable body found")
 
     @model_serializer
     def mdl_serializer(self) -> dict[str, Any]:
@@ -130,13 +135,18 @@ class ApiResponseModel(BaseModel):
             ApiResponseModel: _description_
         """
 
-        return ApiResponseModel(
+        arm = ApiResponseModel(
             code=response.status_code,
             version=11 if response.raw.version == 0 else response.raw.version,
             reason=response.reason,
             headers=dict(response.headers),
             body=response.text,
         )
+
+        if arm:
+            arm.body_content_type
+
+        return arm
 
     @staticmethod
     def from_dict(**kwargs: dict) -> ApiResponseModel:
@@ -147,7 +157,7 @@ class ApiResponseModel(BaseModel):
         ):
             raise KeyError("Expected keys to make ApiResponseModel not found")
 
-        if not isinstance(kwargs["code"], str):
+        if not isinstance(kwargs["code"], int):
             raise ValueError("Invalid code.")
 
         if not isinstance(kwargs["headers"], dict):
@@ -157,8 +167,6 @@ class ApiResponseModel(BaseModel):
             content_type = kwargs["headers"]["Content-Type"]
         elif "content-type" in kwargs["headers"]:
             content_type = kwargs["headers"]["content-type"]
-        else:
-            raise TypeError("Unsupported content type.")
 
         if CTYPE_JSON in content_type:
             _body = json.dumps(kwargs["body"])
@@ -527,7 +535,7 @@ class HttpDocumentSupport:
     """Service class for HttpDocument"""
 
     @staticmethod
-    def execute_request(http_doc: HttpDocument) -> ApiResponse:
+    def execute_request(http_doc: HttpDocument) -> ApiResponseModel:
         """Execute http request from given HttpDocument
 
         Args:
@@ -541,7 +549,7 @@ class HttpDocumentSupport:
 
         HttpRequestArgCompiler.add_generic_args(http_doc.request, request_args)
 
-        return ApiResponse.from_response(requests.request(**request_args))
+        return ApiResponseModel.from_response(requests.request(**request_args))
 
     @staticmethod
     def process_request_template(http_doc: HttpDocument, variables: Variables) -> None:
@@ -594,9 +602,14 @@ class FetchPresenter(PresentationBuilder):
         displayables: list[object] = []
 
         for key, expose_item in self.data.exposed.items():
-            if key == RequestConfigNode.LOCAL:
-                resp = ApiResponse(expose_item)
-                displayables.append(ApiResponseDict.from_api_response(resp).as_dict)
+            if key == RequestConfigNode.LOCAL and all(
+                [
+                    item in expose_item.keys()
+                    for item in ["code", "info", "headers", "body"]
+                ]
+            ):
+                resp = ApiResponseModel.from_dict(**expose_item)
+                displayables.append(resp.model_dump())
             else:
                 displayables.append(expose_item)
 
@@ -608,9 +621,14 @@ class FetchPresenter(PresentationBuilder):
         displayables: list[str] = []
 
         for key, expose_item in self.data.exposed.items():
-            if key == RequestConfigNode.LOCAL:
-                resp = ApiResponse(expose_item)
-                displayables.append(resp.as_fmt_str)
+            if key == RequestConfigNode.LOCAL and all(
+                [
+                    item in expose_item.keys()
+                    for item in ["code", "info", "headers", "body"]
+                ]
+            ):
+                resp = ApiResponseModel.from_dict(**expose_item)
+                displayables.append(resp.as_fmt_str())
             else:
                 displayables.append(json.dumps(expose_item))
 
@@ -643,16 +661,16 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     debug(http_doc.model_dump_json())
 
     r_exception: Exception | None = None
-    response = ApiResponse()
+    output_data = Variables({})
 
     try:
         response = HttpDocumentSupport.execute_request(http_doc)
+
+        output_data = Variables({"_response": response.model_dump()})
+        debug(output_data.data)
     except Exception as ex:
         r_exception = ex
-        error(ex)
-
-    output_data = Variables({"_response": response.as_dict()})
-    debug(output_data.data)
+        error_trace(exception=sys.exc_info()).error(ex)
 
     exposed_data = ExposeManager.get_exposed_replaced_data(
         http_doc,
@@ -694,7 +712,11 @@ def execute(
     exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
 
     cb({ctx.filepath_hash: exr.variables_exec.data})
-    PresentationService.display(exr, exec_ctx, FetchPresenter)
+    try:
+        PresentationService.display(exr, exec_ctx, FetchPresenter)
+    except Exception as ex:
+        error_trace(exception=sys.exc_info()).error(ex)
+        die_with_error(ex, FetchPresenter, exec_ctx.options["format"])
 
 
 @with_catch_log

@@ -102,14 +102,14 @@ HEADERS_DICT = {
 }
 
 REQUEST_DICT_JSON = {
-    "code": "200",
+    "code": 200,
     "info": "HTTP/1.1 200 OK",
     "headers": HEADERS_DICT | {"Content-Type": "application/json; charset=utf-8"},
     "body": json.loads(BODY_JSON),
 }
 
 REQUEST_DICT_XML = {
-    "code": "200",
+    "code": 200,
     "info": "HTTP/1.1 200 OK",
     "headers": HEADERS_DICT | {"Content-Type": "application/xml; charset=utf-8"},
     "body": BODY_XML,
