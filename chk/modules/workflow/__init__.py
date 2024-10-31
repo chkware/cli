@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import json
 import pathlib
+import sys
 from collections import abc
 from collections.abc import Callable
 
@@ -16,7 +17,7 @@ from chk.infrastructure.document import (
 )
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import data_get, slugify
-from chk.infrastructure.logging import debug, error, with_catch_log
+from chk.infrastructure.logging import debug, error, error_trace, with_catch_log
 from chk.infrastructure.symbol_table import (
     ExecResponse,
     ExposeManager,
@@ -201,7 +202,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         wflow_doc = WorkflowDocument.from_file_context(file_ctx)
         debug(wflow_doc.model_dump_json())
     except Exception as ex:
-        error(ex, exception=ex)
+        error_trace(exception=sys.exc_info()).error(ex)
         die_with_error(ex, WorkflowPresenter, exec_ctx.options["format"])
 
     variable_doc = Variables()
