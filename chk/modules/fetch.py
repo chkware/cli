@@ -510,11 +510,19 @@ class HttpDocument(VersionedDocumentV2, BaseModel):
 
     request: dict = Field(default_factory=dict)
 
+    def __bool__(self) -> bool:
+        """Check is the document is empty"""
+
+        return len(self.request) > 0
+
     @staticmethod
     def from_file_context(ctx: FileContext) -> HttpDocument:
         """Create a HttpDocument from FileContext
         :param ctx: FileContext to create the HttpDocument from
         """
+
+        doc_ver = DocumentVersionMaker.from_dict(ctx.document)
+        DocumentVersionMaker.verify_if_allowed(doc_ver, VERSION_SCOPE)
 
         if not (version_str := data_get(ctx.document, "version")):
             raise RuntimeError("`version:` not found.")
@@ -544,6 +552,9 @@ class HttpDocumentSupport:
         Returns:
             dict: Returns response for http request
         """
+
+        if not http_doc:
+            raise ValueError("Empty document found.")
 
         request_args: dict = {}
 
@@ -642,45 +653,52 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     debug(file_ctx)
     debug(exec_ctx)
 
-    http_doc = HttpDocument.from_file_context(file_ctx)
-    debug(http_doc.model_dump_json())
-
-    DocumentVersionMaker.verify_if_allowed(
-        DocumentVersionMaker.from_dict(http_doc.model_dump()), VERSION_SCOPE
-    )
-
-    VersionedDocumentSupport.validate_with_schema(
-        HttpDocumentSupport.build_schema(), http_doc
-    )
-
-    variable_doc = Variables()
-    VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
-    debug(variable_doc.data)
-
-    HttpDocumentSupport.process_request_template(http_doc, variable_doc)
-    debug(http_doc.model_dump_json())
-
     r_exception: Exception | None = None
-    output_data = Variables({})
+    variable_doc = Variables()
+    output_data = Variables()
+    exposed_data = {}
 
     try:
+        http_doc = HttpDocument.from_file_context(file_ctx)
+        debug(http_doc.model_dump_json())
+
+        VersionedDocumentSupport.validate_with_schema(
+            HttpDocumentSupport.build_schema(), http_doc
+        )
+
+        VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
+        debug(variable_doc.data)
+
+        HttpDocumentSupport.process_request_template(http_doc, variable_doc)
+        debug(http_doc.model_dump_json())
+
+        # try:
         response = HttpDocumentSupport.execute_request(http_doc)
 
         output_data = Variables({"_response": response.model_dump()})
         debug(output_data.data)
+
+        exposed_data = ExposeManager.get_exposed_replaced_data(
+            http_doc,
+            {**variable_doc.data, **output_data.data},
+        )
+        debug(exposed_data)
+
     except Exception as ex:
         r_exception = ex
         error_trace(exception=sys.exc_info()).error(ex)
 
-    exposed_data = ExposeManager.get_exposed_replaced_data(
-        http_doc,
-        {**variable_doc.data, **output_data.data},
-    )
-    debug(exposed_data)
-
     # TODO: instead if sending specific report items, and making presentable in other
     #       module, we should prepare and long and short form of presentable that can be
     #       loaded via other module
+
+    request_method, request_url = "", ""
+
+    if "request" in file_ctx.document:
+        if "method" in file_ctx.document["request"]:
+            request_method = file_ctx.document["request"]["method"]
+        if "url" in file_ctx.document["request"]:
+            request_url = file_ctx.document["request"]["url"]
 
     return ExecResponse(
         file_ctx=file_ctx,
@@ -691,8 +709,8 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         exposed=exposed_data,
         report={
             "is_success": r_exception is None,
-            "request_method": file_ctx.document["request"]["method"],
-            "request_url": file_ctx.document["request"]["url"],
+            "request_method": request_method,
+            "request_url": request_url,
         },
     )
 
@@ -709,10 +727,9 @@ def execute(
         cb: Callable
     """
 
-    exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
-
-    cb({ctx.filepath_hash: exr.variables_exec.data})
     try:
+        exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
+        cb({ctx.filepath_hash: exr.variables_exec.data})
         PresentationService.display(exr, exec_ctx, FetchPresenter)
     except Exception as ex:
         error_trace(exception=sys.exc_info()).error(ex)
