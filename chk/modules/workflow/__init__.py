@@ -198,37 +198,36 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     debug(file_ctx)
     debug(exec_ctx)
 
+    r_exception: Exception | None = None
+    variable_doc = Variables()
+    output_data = Variables()
+    exposed_data = {}
+
     try:
         wflow_doc = WorkflowDocument.from_file_context(file_ctx)
         debug(wflow_doc.model_dump_json())
-    except Exception as ex:
-        error_trace(exception=sys.exc_info()).error(ex)
-        die_with_error(ex, WorkflowPresenter, exec_ctx.options["format"])
 
-    variable_doc = Variables()
-    VariableTableManager.handle(variable_doc, wflow_doc, exec_ctx)
-    debug(variable_doc.data)
+        variable_doc = Variables()
+        VariableTableManager.handle(variable_doc, wflow_doc, exec_ctx)
+        debug(variable_doc.data)
 
-    service = WorkflowDocumentSupport()
-    # @TODO make sure the document do not call self making it repeating
-    service.set_step_template(variable_doc)
+        service = WorkflowDocumentSupport()
+        # @TODO make sure the document do not call self making it repeating
+        service.set_step_template(variable_doc)
 
-    r_exception: Exception | None = None
-
-    try:
         with with_catch_log():
             exec_report = service.process_task_template(wflow_doc, variable_doc)
+
+        output_data = Variables({"_steps": variable_doc[WorkflowConfigNode.NODE.value]})
+        debug(output_data.data)
+
+        exposed_data = ExposeManager.get_exposed_replaced_data(
+            wflow_doc, variable_doc.data
+        )
+        debug(exposed_data)
     except Exception as ex:
         r_exception = ex
-        error(ex)
-
-    output_data = Variables({"_steps": variable_doc[WorkflowConfigNode.NODE.value]})
-    debug(output_data.data)
-
-    exposed_data: dict = ExposeManager.get_exposed_replaced_data(
-        wflow_doc, variable_doc.data
-    )
-    debug(exposed_data)
+        error_trace(exception=sys.exc_info()).error(ex)
 
     # TODO also send failed_details (fail code, message, stacktrace, etc)
     return ExecResponse(
@@ -257,11 +256,10 @@ def execute(
         cb: Callable
     """
 
-    exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
-
-    cb({ctx.filepath_hash: exr.variables_exec.data})
     try:
+        exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
+        cb({ctx.filepath_hash: exr.variables_exec.data})
         PresentationService.display(exr, exec_ctx, WorkflowPresenter)
     except Exception as ex:
-        error(ex, exception=ex)
+        error_trace(exception=sys.exc_info()).error(ex)
         die_with_error(ex, WorkflowPresenter, exec_ctx.options["format"])
