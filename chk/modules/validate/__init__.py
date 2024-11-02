@@ -5,6 +5,7 @@ Validate module
 from __future__ import annotations
 
 import enum
+import sys
 from collections import abc
 
 import cerberus
@@ -16,7 +17,7 @@ from chk.infrastructure.document import (
 )
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import data_get
-from chk.infrastructure.logging import debug, error, with_catch_log
+from chk.infrastructure.logging import debug, error_trace, with_catch_log
 from chk.infrastructure.symbol_table import (
     EXPOSE_SCHEMA as EXP_SCHEMA,
     ExecResponse,
@@ -27,7 +28,7 @@ from chk.infrastructure.symbol_table import (
     replace_value,
 )
 from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
-from chk.infrastructure.view import PresentationService
+from chk.infrastructure.view import PresentationService, die_with_error
 from chk.modules.validate.assertion_services import (
     AssertionEntry,
     AssertionEntryListRunner,
@@ -86,6 +87,10 @@ class ValidationDocument(VersionedDocumentV2, BaseModel):
 
         if not (_version := data_get(ctx.document, "version")):
             raise RuntimeError("`version:` not found.")
+
+        DocumentVersionMaker.verify_if_allowed(
+            DocumentVersionMaker.from_dict(ctx.document), VERSION_SCOPE
+        )
 
         if not (_asserts := data_get(ctx.document, ValidationConfigNode.ASSERTS, [])):
             raise RuntimeError(f"`{ValidationConfigNode.ASSERTS}:` not found.")
@@ -213,34 +218,35 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     debug(file_ctx)
     debug(exec_ctx)
 
-    validate_doc = ValidationDocument.from_file_context(file_ctx)
-    debug(validate_doc.model_dump_json())
-
-    DocumentVersionMaker.verify_if_allowed(
-        DocumentVersionMaker.from_dict(validate_doc.model_dump()), VERSION_SCOPE
-    )
-
-    VersionedDocumentSupport.validate_with_schema(
-        ValidationDocumentSupport.build_schema(), validate_doc
-    )
-
-    variable_doc = Variables()
-    VariableTableManager.handle(variable_doc, validate_doc, exec_ctx)
-    debug(variable_doc.data)
-
-    # handle passed data in asserts
-    with with_catch_log():
-        ValidationDocumentSupport.set_data_template(
-            validate_doc, variable_doc, exec_ctx
-        )
-        ValidationDocumentSupport.process_data_template(variable_doc)
-
-    debug(variable_doc.data)
-
     r_exception: Exception | None = None
+    variable_doc = Variables()
+    output_data = Variables()
+    exposed_data = {}
     run_rpt = RunReport()
+    validate_doc = ValidationDocument()
 
     try:
+
+        validate_doc = ValidationDocument.from_file_context(file_ctx)
+        debug(validate_doc.model_dump_json())
+
+        VersionedDocumentSupport.validate_with_schema(
+            ValidationDocumentSupport.build_schema(), validate_doc
+        )
+
+        variable_doc = Variables()
+        VariableTableManager.handle(variable_doc, validate_doc, exec_ctx)
+        debug(variable_doc.data)
+
+        # handle passed data in asserts
+        with with_catch_log():
+            ValidationDocumentSupport.set_data_template(
+                validate_doc, variable_doc, exec_ctx
+            )
+            ValidationDocumentSupport.process_data_template(variable_doc)
+
+        debug(variable_doc.data)
+
         assert_list = ValidationDocumentSupport.make_assertion_entry_list(
             validate_doc.asserts
         )
@@ -248,27 +254,32 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         run_rpt = AssertionEntryListRunner.test_run(assert_list, variable_doc.data)
 
         if run_rpt.count_fail != 0:
-            raise SystemError("Validation failed")
+            raise SystemError("One or more validation failed")
+
+        output_data = Variables(
+            {
+                "_asserts_response": run_rpt,
+                "_data": variable_doc["_data"],
+            }
+        )
+        debug(output_data.data)
+
+        exposed_data = ExposeManager.get_exposed_replaced_data(
+            validate_doc,
+            {
+                **variable_doc.data,
+                **{"_asserts_response": run_rpt},
+            },
+        )
+        debug(exposed_data)
     except Exception as ex:
         r_exception = ex
-        error(ex)
+        error_trace(exception=sys.exc_info()).error(ex)
 
-    output_data = Variables(
-        {
-            "_asserts_response": run_rpt,
-            "_data": variable_doc["_data"],
-        }
-    )
-    debug(output_data.data)
-
-    exposed_data = ExposeManager.get_exposed_replaced_data(
-        validate_doc,
-        {
-            **variable_doc.data,
-            **{"_asserts_response": run_rpt},
-        },
-    )
-    debug(exposed_data)
+    # TODO: this is needed only when the request is true
+    #       > ExecResponse.__bool__() needed to see if the object is ok OR
+    #       > add "variables_exec", "extra", "exposed", "report" only when call() is
+    #           successful
 
     return ExecResponse(
         file_ctx=file_ctx,
@@ -298,11 +309,14 @@ def execute(
         exec_ctx: ExecuteContext
         cb: Callable
     """
+    try:
+        exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
 
-    exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
-
-    cb({ctx.filepath_hash: exr.variables_exec.data})
-    PresentationService.display(exr, exec_ctx, ValidatePresenter)
+        cb({ctx.filepath_hash: exr.variables_exec.data})
+        PresentationService.display(exr, exec_ctx, ValidatePresenter)
+    except Exception as ex:
+        error_trace(exception=sys.exc_info()).error(ex)
+        die_with_error(ex, ValidatePresenter, exec_ctx.options["format"])
 
 
 @with_catch_log
