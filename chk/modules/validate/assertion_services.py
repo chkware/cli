@@ -87,7 +87,7 @@ class AssertionEntryListRunner:
         if assert_item.cast_actual_to != "" and isinstance(assert_item.actual, str):
             assert_item.actual_b4_cast = assert_item.actual
 
-            if assert_item.cast_actual_to == "int_or_flot":
+            if assert_item.cast_actual_to == "int_or_float":
                 assert_item.actual = Cast.to_int_or_float(assert_item.actual)
             elif assert_item.cast_actual_to == "int":
                 assert_item.actual = Cast.to_int(assert_item.actual)

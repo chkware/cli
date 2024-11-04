@@ -1,6 +1,7 @@
 """
 Assertion validation module
 """
+
 import copy
 import enum
 
@@ -78,7 +79,7 @@ _generic_schema = {
         "nullable": False,
         "type": "string",
         "allowed": [
-            "int_or_flot",
+            "int_or_float",
             "int",
             "float",
             "bool",
