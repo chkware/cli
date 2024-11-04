@@ -2,6 +2,7 @@
 Validate module entities
 """
 
+from collections.abc import Generator
 import uuid
 from datetime import datetime
 from typing import Any
@@ -24,7 +25,7 @@ class AssertionEntry(BaseModel):
     actual_b4_cast: Any = Field(default=NotImplemented)
     extra_fields: dict = Field(default_factory=dict)
 
-    def __iter__(self):
+    def __iter__(self) -> Generator:
         yield "assert_type", self.assert_type
         yield "actual", self.actual
         yield "expected", "" if self.expected == NotImplemented else self.expected
@@ -47,7 +48,7 @@ class RunDetail(BaseModel):
     is_pass: bool = Field(default=False)
     message: str = Field(default_factory=str)
 
-    def __iter__(self):
+    def __iter__(self) -> Generator:
         """implement __iter__"""
 
         yield "assert_entry", dict(self.assert_entry)
@@ -98,7 +99,7 @@ class RunReport(BaseModel):
     count_fail: int = Field(default=0)
     details: list[RunDetail] = Field(default_factory=list)
 
-    def __iter__(self):
+    def __iter__(self) -> Generator:
         """Implement __iter__"""
 
         yield "id", str(self.id)
