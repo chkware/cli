@@ -7,13 +7,15 @@ from __future__ import annotations
 import enum
 import json
 import pathlib
-from collections import UserDict, abc
+import sys
+from collections import abc
+from typing import Any
 from urllib.parse import unquote, urlparse
 
 import requests
 import xmltodict
 from defusedxml.minidom import parseString
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, computed_field, model_serializer
 from requests.auth import HTTPBasicAuth
 
 from chk.infrastructure.document import (
@@ -21,8 +23,8 @@ from chk.infrastructure.document import (
     VersionedDocumentV2,
 )
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
-from chk.infrastructure.helper import data_get
-from chk.infrastructure.logging import debug, error, with_catch_log
+from chk.infrastructure.helper import Cast, data_get
+from chk.infrastructure.logging import debug, error_trace, with_catch_log
 from chk.infrastructure.symbol_table import (
     EXPOSE_SCHEMA as EXP_SCHEMA,
     ExecResponse,
@@ -33,76 +35,176 @@ from chk.infrastructure.symbol_table import (
     replace_value,
 )
 from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
-from chk.infrastructure.view import PresentationBuilder, PresentationService
+from chk.infrastructure.view import (
+    PresentationBuilder,
+    PresentationService,
+    die_with_error,
+)
 
 VERSION_SCOPE = ["http"]
+Http_V10 = "HTTP/1.0"
+Http_V11 = "HTTP/1.1"
+CTYPE_JSON = "application/json"
+CTYPE_XML = "application/xml"
 
 
-class ApiResponse(UserDict):
-    """Represent a response"""
+class ApiResponseModel(BaseModel):
+    """ApiResponseModel"""
 
-    __slots__ = ("code", "info", "headers", "body")
+    code: int = Field(default=0)
+    version: int = Field(default_factory=int)
+    reason: str = Field(default_factory=str)
+    headers: dict[str, str] = Field(default_factory=dict)
+    body: str = Field(default_factory=str)
 
-    code: int
-    info: str
-    headers: dict
-    body: str
+    def __bool__(self) -> bool:
+        """implement __bool__"""
+        return self.code != 0 and self.version in (10, 11) and len(self.reason) > 0
 
+    @computed_field  # type: ignore[prop-decorator]
     @property
-    def as_fmt_str(self) -> str:
-        """String representation of ApiResponse
+    def info(self) -> str:
+        return (
+            f"{Http_V10 if self.version == 10 else Http_V11} {self.code} {self.reason}"
+        )
 
-        Returns:
-            str: String representation
-        """
-        # set info
-        presentation = f"{self['info']}\r\n\r\n"
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def body_content_type(self) -> str:
+        if "Content-Type" in self.headers:
+            content_type = self.headers["Content-Type"]
+        elif "content-type" in self.headers:
+            content_type = self.headers["content-type"]
 
-        # set headers
-        presentation += "\r\n".join(f"{k}: {v}" for k, v in self["headers"].items())
-        presentation += "\r\n\r\n"
+        if CTYPE_JSON in content_type:
+            return CTYPE_JSON
+        elif CTYPE_XML in content_type:
+            return CTYPE_XML
+        else:
+            raise ValueError("Non-convertable body found")
 
-        # set body
-        presentation += self["body"] if isinstance(self["body"], str) else json.dumps(self["body"])
+    @info.setter
+    def set_info(self, sinfo: str) -> None:
+        """set info"""
 
-        return presentation
+        if not sinfo:
+            raise ValueError("Info can not be empty.")
+
+        _version, _, _reason = sinfo.split()
+
+        if Http_V10 == _version:
+            self.version = 10
+        elif Http_V11 == _version:
+            self.version = 11
+        else:
+            raise ValueError("Unsupported protocol.")
+
+        self.reason = _reason
+
+    def body_as_dict(self) -> abc.Iterable:
+        if CTYPE_JSON == self.body_content_type:
+            return json.loads(self.body)
+        elif CTYPE_XML == self.body_content_type:
+            return xmltodict.parse(parseString(self.body).toxml())
+        else:
+            raise ValueError("Non-convertable body found")
+
+    @model_serializer
+    def mdl_serializer(self) -> dict[str, Any]:
+        _dict = {
+            "code": self.code,
+            "info": self.info,
+            "headers": self.headers,
+        }
+
+        try:
+            _dict["body"] = self.body_as_dict()
+        except (TypeError, ValueError):
+            _dict["body"] = self.body
+
+        return _dict
 
     @staticmethod
-    def from_response(response: requests.Response) -> ApiResponse:
-        """Create a ApiResponse object from requests.Response object
+    def from_response(response: requests.Response) -> ApiResponseModel:
+        """Create a ApiResponseModel object from requests.Response object
 
         Args:
             response (requests.Response): _description_
 
         Returns:
-            ApiResponse: _description_
+            ApiResponseModel: _description_
         """
-        version = "HTTP/1.0" if response.raw.version == 10 else "HTTP/1.1"
 
-        return ApiResponse(
+        arm = ApiResponseModel(
             code=response.status_code,
-            info=f"{version} {response.status_code} {response.reason}",
+            version=11 if response.raw.version == 0 else response.raw.version,
+            reason=response.reason,
             headers=dict(response.headers),
             body=response.text,
         )
 
-    def as_dict(self) -> dict:
-        """as_dict"""
+        if arm:
+            arm.body_content_type
 
-        _data = self.data
+        return arm
 
-        _as_dict = {
-            "code": _data["code"],
-            "info": _data["info"],
-            "headers": _data["headers"],
-        }
+    @staticmethod
+    def from_dict(**kwargs: dict) -> ApiResponseModel:
+        """Construct from dict"""
 
-        try:
-            _as_dict["body"] = json.loads(_data["body"])
-        except ValueError:
-            _as_dict["body"] = _data["body"]
+        if not all(
+            [item in kwargs.keys() for item in ["code", "info", "headers", "body"]]
+        ):
+            raise KeyError("Expected keys to make ApiResponseModel not found")
 
-        return _as_dict
+        if not isinstance(kwargs["code"], int):
+            raise ValueError("Invalid code.")
+
+        if not isinstance(kwargs["headers"], dict):
+            raise ValueError("Invalid headers.")
+
+        if "Content-Type" in kwargs["headers"]:
+            content_type = kwargs["headers"]["Content-Type"]
+        elif "content-type" in kwargs["headers"]:
+            content_type = kwargs["headers"]["content-type"]
+
+        if CTYPE_JSON in content_type:
+            _body = json.dumps(kwargs["body"])
+        elif CTYPE_XML in content_type:
+            _body = parseString(kwargs["body"]).toxml()
+        else:
+            raise ValueError("Non-convertable body found")
+
+        model = ApiResponseModel(
+            code=Cast.to_int(kwargs["code"]),
+            headers=kwargs["headers"],
+            body=_body,
+        )
+        model.info = kwargs["info"]
+
+        return model
+
+    def as_fmt_str(self) -> str:
+        """String representation of ApiResponseModel
+
+        Returns:
+            str: String representation
+        """
+
+        # set info
+        presentation = f"{self.info}\r\n\r\n"
+
+        # set headers
+        presentation += "\r\n".join(f"{k}: {v}" for k, v in self.headers.items())
+        presentation += "\r\n\r\n"
+
+        presentation += (
+            json.dumps(self.body_as_dict())
+            if self.body_content_type == CTYPE_JSON
+            else self.body
+        )
+
+        return presentation
 
 
 class BearerAuthentication(requests.auth.AuthBase):
@@ -376,7 +478,7 @@ class HttpRequestArgCompiler:
                 "content-type" not in request_arg["headers"]
                 and "Content-Type" not in request_arg["headers"]
             ):
-                request_arg["headers"]["content-type"] = "application/xml"
+                request_arg["headers"]["content-type"] = CTYPE_XML
 
             request_arg["data"] = body
         elif (body := request_data.get(RequestConfigNode.BODY_TXT)) is not None:
@@ -408,11 +510,19 @@ class HttpDocument(VersionedDocumentV2, BaseModel):
 
     request: dict = Field(default_factory=dict)
 
+    def __bool__(self) -> bool:
+        """Check is the document is empty"""
+
+        return len(self.request) > 0
+
     @staticmethod
     def from_file_context(ctx: FileContext) -> HttpDocument:
         """Create a HttpDocument from FileContext
         :param ctx: FileContext to create the HttpDocument from
         """
+
+        doc_ver = DocumentVersionMaker.from_dict(ctx.document)
+        DocumentVersionMaker.verify_if_allowed(doc_ver, VERSION_SCOPE)
 
         if not (version_str := data_get(ctx.document, "version")):
             raise RuntimeError("`version:` not found.")
@@ -429,75 +539,11 @@ class HttpDocument(VersionedDocumentV2, BaseModel):
         )
 
 
-class ApiResponseDict(UserDict):
-    """Represents a API response with body in dict representation"""
-
-    api_resp: dict
-    body_as_dict: dict
-
-    @staticmethod
-    def from_api_response(resp: ApiResponse) -> ApiResponseDict:
-        """Create JsonApiResponse from ApiResponse
-
-        Args:
-            resp (ApiResponse): ApiResponse object
-
-        Raises:
-            RuntimeError: if response format not supported
-
-        Returns:
-            ApiResponseDict: new ApiResponseDict object
-        """
-
-        body = None
-
-        try:
-            if "headers" in resp:
-                content_type = ""
-                if "Content-Type" in resp["headers"]:
-                    content_type = resp["headers"]["Content-Type"]
-                elif "content-type" in resp["headers"]:
-                    content_type = resp["headers"]["content-type"]
-
-                if content_type and "application/json" in content_type:
-                    body = json.loads(resp["body"])
-                elif content_type and "application/xml" in content_type:
-                    body = xmltodict.parse(parseString(resp["body"]).toxml())
-
-            if not body:
-                body = dict(resp["body"])
-
-            return ApiResponseDict(api_resp=resp.data, body_as_dict=body)
-
-        except Exception:
-            raise RuntimeError("Unsupported response format.")
-
-    @property
-    def as_json(self) -> str:
-        """Converts to JSON string
-
-        Returns:
-            str: JSON object as string representation
-        """
-
-        return json.dumps(self.as_dict)
-
-    @property
-    def as_dict(self) -> dict:
-        """Converts to JSON string
-
-        Returns:
-            str: JSON object as string representation
-        """
-
-        return {**self["api_resp"], **{"body": self["body_as_dict"]}}
-
-
 class HttpDocumentSupport:
     """Service class for HttpDocument"""
 
     @staticmethod
-    def execute_request(http_doc: HttpDocument) -> ApiResponse:
+    def execute_request(http_doc: HttpDocument) -> ApiResponseModel:
         """Execute http request from given HttpDocument
 
         Args:
@@ -507,11 +553,14 @@ class HttpDocumentSupport:
             dict: Returns response for http request
         """
 
+        if not http_doc:
+            raise ValueError("Empty document found.")
+
         request_args: dict = {}
 
         HttpRequestArgCompiler.add_generic_args(http_doc.request, request_args)
 
-        return ApiResponse.from_response(requests.request(**request_args))
+        return ApiResponseModel.from_response(requests.request(**request_args))
 
     @staticmethod
     def process_request_template(http_doc: HttpDocument, variables: Variables) -> None:
@@ -538,23 +587,23 @@ class HttpDocumentSupport:
 class FetchPresenter(PresentationBuilder):
     """FetchPresenter"""
 
-    def dump_error_json(self) -> str:
-        return json.dumps(
-            {
-                "error": (
-                    repr(self.data.exception)
-                    if self.data.exception
-                    else "Unspecified error"
-                )
-            }
-        )
+    def dump_error_json(self, err: object = None) -> str:
+        """dump_error_json"""
 
-    def dump_error_fmt(self) -> str:
+        if not err:
+            err = self.data.exception
+
+        return json.dumps({"error": (repr(err) if err else "Unspecified error")})
+
+    def dump_error_fmt(self, err: object = None) -> str:
         """dump fmt error str"""
 
+        if not err:
+            err = self.data.exception
+
         return (
-            f"Fetch error\n------\n{repr(self.data.exception)}"
-            if self.data.exception
+            f"Fetch error\n------\n{repr(err)}"
+            if err
             else "Fetch error\n------\nUnspecified error"
         )
 
@@ -564,9 +613,14 @@ class FetchPresenter(PresentationBuilder):
         displayables: list[object] = []
 
         for key, expose_item in self.data.exposed.items():
-            if key == RequestConfigNode.LOCAL:
-                resp = ApiResponse(expose_item)
-                displayables.append(ApiResponseDict.from_api_response(resp).as_dict)
+            if key == RequestConfigNode.LOCAL and all(
+                [
+                    item in expose_item.keys()
+                    for item in ["code", "info", "headers", "body"]
+                ]
+            ):
+                resp = ApiResponseModel.from_dict(**expose_item)
+                displayables.append(resp.model_dump())
             else:
                 displayables.append(expose_item)
 
@@ -578,9 +632,14 @@ class FetchPresenter(PresentationBuilder):
         displayables: list[str] = []
 
         for key, expose_item in self.data.exposed.items():
-            if key == RequestConfigNode.LOCAL:
-                resp = ApiResponse(expose_item)
-                displayables.append(resp.as_fmt_str)
+            if key == RequestConfigNode.LOCAL and all(
+                [
+                    item in expose_item.keys()
+                    for item in ["code", "info", "headers", "body"]
+                ]
+            ):
+                resp = ApiResponseModel.from_dict(**expose_item)
+                displayables.append(resp.as_fmt_str())
             else:
                 displayables.append(json.dumps(expose_item))
 
@@ -594,45 +653,52 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     debug(file_ctx)
     debug(exec_ctx)
 
-    http_doc = HttpDocument.from_file_context(file_ctx)
-    debug(http_doc.model_dump_json())
-
-    DocumentVersionMaker.verify_if_allowed(
-        DocumentVersionMaker.from_dict(http_doc.model_dump()), VERSION_SCOPE
-    )
-
-    VersionedDocumentSupport.validate_with_schema(
-        HttpDocumentSupport.build_schema(), http_doc
-    )
-
-    variable_doc = Variables()
-    VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
-    debug(variable_doc.data)
-
-    HttpDocumentSupport.process_request_template(http_doc, variable_doc)
-    debug(http_doc.model_dump_json())
-
     r_exception: Exception | None = None
-    response = ApiResponse()
+    variable_doc = Variables()
+    output_data = Variables()
+    exposed_data = {}
 
     try:
+        http_doc = HttpDocument.from_file_context(file_ctx)
+        debug(http_doc.model_dump_json())
+
+        VersionedDocumentSupport.validate_with_schema(
+            HttpDocumentSupport.build_schema(), http_doc
+        )
+
+        VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
+        debug(variable_doc.data)
+
+        HttpDocumentSupport.process_request_template(http_doc, variable_doc)
+        debug(http_doc.model_dump_json())
+
+        # try:
         response = HttpDocumentSupport.execute_request(http_doc)
+
+        output_data = Variables({"_response": response.model_dump()})
+        debug(output_data.data)
+
+        exposed_data = ExposeManager.get_exposed_replaced_data(
+            http_doc,
+            {**variable_doc.data, **output_data.data},
+        )
+        debug(exposed_data)
+
     except Exception as ex:
         r_exception = ex
-        error(ex)
-
-    output_data = Variables({"_response": response.as_dict()})
-    debug(output_data.data)
-
-    exposed_data = ExposeManager.get_exposed_replaced_data(
-        http_doc,
-        {**variable_doc.data, **output_data.data},
-    )
-    debug(exposed_data)
+        error_trace(exception=sys.exc_info()).error(ex)
 
     # TODO: instead if sending specific report items, and making presentable in other
     #       module, we should prepare and long and short form of presentable that can be
     #       loaded via other module
+
+    request_method, request_url = "", ""
+
+    if "request" in file_ctx.document:
+        if "method" in file_ctx.document["request"]:
+            request_method = file_ctx.document["request"]["method"]
+        if "url" in file_ctx.document["request"]:
+            request_url = file_ctx.document["request"]["url"]
 
     return ExecResponse(
         file_ctx=file_ctx,
@@ -643,8 +709,8 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         exposed=exposed_data,
         report={
             "is_success": r_exception is None,
-            "request_method": file_ctx.document["request"]["method"],
-            "request_url": file_ctx.document["request"]["url"],
+            "request_method": request_method,
+            "request_url": request_url,
         },
     )
 
@@ -661,10 +727,13 @@ def execute(
         cb: Callable
     """
 
-    exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
-
-    cb({ctx.filepath_hash: exr.variables_exec.data})
-    PresentationService.display(exr, exec_ctx, FetchPresenter)
+    try:
+        exr = call(file_ctx=ctx, exec_ctx=exec_ctx)
+        cb({ctx.filepath_hash: exr.variables_exec.data})
+        PresentationService.display(exr, exec_ctx, FetchPresenter)
+    except Exception as ex:
+        error_trace(exception=sys.exc_info()).error(ex)
+        die_with_error(ex, FetchPresenter, exec_ctx.options["format"])
 
 
 @with_catch_log

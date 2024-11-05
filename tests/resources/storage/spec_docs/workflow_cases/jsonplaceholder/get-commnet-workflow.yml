@@ -1,0 +1,17 @@
+version: default:workflow:0.8.0
+
+name: Get Comment workflow
+
+tasks:
+  - name: Get comments
+    uses: fetch
+    file: "./get-comments.yml"
+
+  - name: Validate get comments
+    uses: validate
+    file: "./get-comments-valid.yml"
+    arguments:
+      data: <% _steps.0._response %>
+
+expose:
+  - <% _steps %>

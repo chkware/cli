@@ -13,6 +13,7 @@ debug = logger.debug
 error = logger.error
 critical = logger.critical
 success = logger.success
+error_trace = logger.opt
 
 with_catch_log = logger.catch
 
