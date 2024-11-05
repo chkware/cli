@@ -253,9 +253,6 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
 
         run_rpt = AssertionEntryListRunner.test_run(assert_list, variable_doc.data)
 
-        if run_rpt.count_fail != 0:
-            raise SystemError("One or more validation failed")
-
         output_data = Variables(
             {
                 "_asserts_response": run_rpt,
