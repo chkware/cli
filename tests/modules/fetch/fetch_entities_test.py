@@ -11,7 +11,6 @@ from chk.modules.fetch import (
 )
 
 
-
 class TestHttpDocument:
     @staticmethod
     def test_from_file_context_pass():
@@ -53,7 +52,7 @@ class TestHttpDocument:
             }
         )
 
-        with pytest.raises(RuntimeError):
+        with pytest.raises(ValueError):
             HttpDocument.from_file_context(ctx)
 
 
