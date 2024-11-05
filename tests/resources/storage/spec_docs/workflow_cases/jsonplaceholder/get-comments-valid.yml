@@ -1,0 +1,12 @@
+---
+version: default:validation:0.7.2
+
+asserts:
+  # - { type: List, actual: <% _data.body %> }
+  - { type: Map, actual: <% _data.body.1 %> }
+  - type: MapHasKeys
+    actual: <% _data.body.1 %>
+    expected: [ "postId", "id", "name", "email", "body" ]
+
+expose:
+  - <% _asserts_response %>

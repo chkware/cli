@@ -1,0 +1,12 @@
+---
+version: default:http:0.7.2
+
+request:
+  url: https://jsonplaceholder.typicode.com/users
+  method: GET
+
+  headers:
+    content-type: application/json
+
+expose:
+  - <% _response %>
