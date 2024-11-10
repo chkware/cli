@@ -2,6 +2,8 @@
 Console service module
 """
 
+import os
+import sys
 from typing import Any
 
 import click
@@ -18,7 +20,7 @@ def load_variables_as_dict(json_str: str, **kwargs: Any) -> dict:
         try:
             return FileLoader.load_json_from_str(json_str)
         except JsonDecodingError as err:
-            message = kwargs.get("except_msg") or "JSON loading error."
+            message = kwargs.get("except_msg", "JSON loading error.")
             raise click.UsageError(str(message)) from err
 
     return {}
@@ -43,3 +45,14 @@ def setup_logger(should_log: bool) -> None:
     if should_log:
         log_file = LoggingManager.create_new_log_file()
         LoggingManager.setup_loguru(log_file)
+
+
+def get_stdin() -> str:
+    """This will get stdin piped input *if exists*"""
+
+    raw_str = ""
+    with os.fdopen(sys.stdin.fileno(), "rb", buffering=0) as stdin:
+        if not stdin.seekable():
+            raw_str = "".join([_.decode("utf-8") for _ in stdin.readlines()])
+
+    return raw_str
