@@ -8,10 +8,12 @@ import chk.modules.workflow as workflow_executor
 from chk.console.services import (
     after_hook,
     combine_initial_variables,
+    get_stdin,
     load_variables_as_dict,
     setup_logger,
 )
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
+from chk.infrastructure.logging import with_catch_log
 
 VAR_ERROR_MSG = "-V, --variables accept values as JSON object"
 
@@ -84,9 +86,15 @@ def fetch(cctx: click.Context, file: str, no_format: bool, variables: str) -> No
 )
 @click.option("-V", "--variables", type=str, help="Pass variable(s) as JSON object")
 @click.option("-D", "--data", type=str, help="Pass data as JSON")
+@click.option("-Di", "--data-in", is_flag=True, help="Pass data as JSON [from pipe]")
 @click.pass_context
 def validate(
-    cctx: click.Context, file: str, no_format: bool, variables: str, data: str
+    cctx: click.Context,
+    file: str,
+    no_format: bool,
+    variables: str,
+    data: str,
+    data_in: bool,
 ) -> None:
     """\b
     Command to run Validation specification files.
@@ -96,6 +104,17 @@ def validate(
     - default.http.*"""
 
     ctx: FileContext = FileContext.from_file(file)
+
+    with with_catch_log():
+        _data = (
+            load_variables_as_dict(
+                get_stdin(), except_msg="-Di, --data-in: Pass data as JSON [from pipe]"
+            )
+            if data_in
+            else load_variables_as_dict(
+                data, except_msg="-D, --data: Pass data as JSON"
+            )
+        )
 
     execution_ctx = ExecuteContext(
         {
@@ -108,10 +127,7 @@ def validate(
                 variables,
                 except_msg=VAR_ERROR_MSG,
             ),
-            "data": load_variables_as_dict(
-                data,
-                except_msg="-D, --data accept values as JSON object",
-            ),
+            "data": _data,
         },
     )
 
