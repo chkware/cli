@@ -1,17 +1,32 @@
 # type: ignore
-import json
 
 import pytest
 
 from chk.infrastructure.file_loader import FileContext
 from chk.infrastructure.symbol_table import Variables
-from chk.modules.fetch import (
-    HttpDocument,
-    HttpDocumentSupport,
-)
+from chk.modules.fetch import HttpDocumentSupport
+from chk.modules.fetch.entities import HttpDocument
 
 
 class TestHttpDocument:
+    @staticmethod
+    def test_bool_pass():
+        ctx = FileContext(
+            document={
+                "version": "default:http:0.7.2",
+                "request": {
+                    "url": "https://jsonplaceholder.typicode.com/albums/1",
+                    "method": "GET",
+                },
+            }
+        )
+
+        doc = HttpDocumentSupport.from_file_context(ctx)
+
+        assert doc
+
+
+class TestHttpDocumentSupport:
     @staticmethod
     def test_from_file_context_pass():
         ctx = FileContext(
@@ -24,7 +39,7 @@ class TestHttpDocument:
             }
         )
 
-        doc = HttpDocument.from_file_context(ctx)
+        doc = HttpDocumentSupport.from_file_context(ctx)
 
         assert isinstance(doc.context, tuple)
         assert isinstance(doc.version, str)
@@ -39,7 +54,7 @@ class TestHttpDocument:
         )
 
         with pytest.raises(RuntimeError):
-            HttpDocument.from_file_context(ctx)
+            HttpDocumentSupport.from_file_context(ctx)
 
     @staticmethod
     def test_from_file_context_fail_no_version():
@@ -53,10 +68,8 @@ class TestHttpDocument:
         )
 
         with pytest.raises(ValueError):
-            HttpDocument.from_file_context(ctx)
+            HttpDocumentSupport.from_file_context(ctx)
 
-
-class TestHttpDocumentSupport:
     @staticmethod
     def test_execute_request_pass():
         ctx = FileContext(
@@ -69,7 +82,7 @@ class TestHttpDocumentSupport:
             }
         )
 
-        http_doc = HttpDocument.from_file_context(ctx)
+        http_doc = HttpDocumentSupport.from_file_context(ctx)
         resp = HttpDocumentSupport.execute_request(http_doc)
 
         assert "userId" in resp.body
@@ -86,7 +99,7 @@ class TestHttpDocumentSupport:
             }
         )
 
-        http_doc = HttpDocument.from_file_context(ctx)
+        http_doc = HttpDocumentSupport.from_file_context(ctx)
         variable_doc = Variables({"method": "GET"})
 
         HttpDocumentSupport.process_request_template(http_doc, variable_doc)

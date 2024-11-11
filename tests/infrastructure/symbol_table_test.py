@@ -13,7 +13,7 @@ from chk.infrastructure.symbol_table import (
     Variables,
     replace_value,
 )
-from chk.modules.fetch import HttpDocument
+from chk.modules.fetch import HttpDocumentSupport
 
 
 class TestVariableTableManager:
@@ -39,7 +39,7 @@ class TestVariableTableManager:
             }
         )
 
-        http_doc = HttpDocument.from_file_context(file_ctx)
+        http_doc = HttpDocumentSupport.from_file_context(file_ctx)
 
         variable_doc = Variables()
         VariableTableManager.handle(variable_doc, http_doc, exc)
@@ -277,7 +277,7 @@ class TestExposeManager:
 
         file_ctx = FileContext(filepath_hash="ab12", document=document)
 
-        http_doc = HttpDocument.from_file_context(file_ctx)
+        http_doc = HttpDocumentSupport.from_file_context(file_ctx)
 
         exposed_data = ExposeManager.get_exposed_replaced_data(
             http_doc, {"a": 1, "b": 2}
@@ -302,7 +302,7 @@ class TestExposeManager:
             arguments={VariableConfigNode.VARIABLES: {"extension": ".org"}}
         )
 
-        http_doc = HttpDocument.from_file_context(file_ctx)
+        http_doc = HttpDocumentSupport.from_file_context(file_ctx)
 
         variable_doc = Variables()
         VariableTableManager.handle(variable_doc, http_doc, exec_ctx)

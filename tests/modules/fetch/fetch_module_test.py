@@ -3,7 +3,7 @@
 """
 Fetch module tests
 """
-from chk.infrastructure.file_loader import FileContext, ExecuteContext
+from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.modules.fetch import call
 
 
