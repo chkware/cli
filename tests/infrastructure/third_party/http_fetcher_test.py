@@ -6,7 +6,7 @@ import pytest
 import requests
 from defusedxml.minidom import parseString
 
-from chk.modules.fetch import ApiResponseModel
+from chk.modules.fetch.entities import ApiResponseModel
 
 BODY_JSON = """[
     {
