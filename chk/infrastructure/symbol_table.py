@@ -15,7 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from chk.infrastructure.document import VersionedDocument, VersionedDocumentV2
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import data_get
-from chk.infrastructure.templating import StrTemplate
+from chk.infrastructure.templating import JinjaTemplate, StrTemplate
 
 
 class VariableConfigNode(enum.StrEnum):
@@ -95,8 +95,8 @@ def replace_value(doc: dict | list, var_s: dict) -> dict | list:
 
     for key, val in list(doc.items() if isinstance(doc, dict) else enumerate(doc)):
         if isinstance(val, str):
-            str_tpl = StrTemplate(val)
-            doc[key] = str_tpl.substitute(var_s)
+            str_tpl = JinjaTemplate.make(val)
+            doc[key] = str_tpl.render(var_s)
         elif isinstance(val, (dict, list)):
             doc[key] = replace_value(doc[key], var_s)
     return doc
