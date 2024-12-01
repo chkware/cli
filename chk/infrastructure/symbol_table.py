@@ -15,7 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from chk.infrastructure.document import VersionedDocument, VersionedDocumentV2
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.helper import data_get
-from chk.infrastructure.templating import JinjaTemplate, StrTemplate
+from chk.infrastructure.templating import JinjaTemplate, is_template_str
 
 
 class VariableConfigNode(enum.StrEnum):
@@ -143,7 +143,7 @@ class VariableTableManager:
         """
 
         for key, val in document.items():
-            if isinstance(val, str) and StrTemplate.is_tpl(val):
+            if isinstance(val, str) and is_template_str(val):
                 continue
 
             variable_doc[key] = val
@@ -165,7 +165,7 @@ class VariableTableManager:
 
         composite_values = {}
         for key, val in document.items():
-            if isinstance(val, str) and StrTemplate.is_tpl(val):
+            if isinstance(val, str) and is_template_str(val):
                 composite_values[key] = val
 
         if composite_values:
