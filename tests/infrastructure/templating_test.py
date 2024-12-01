@@ -5,7 +5,7 @@ test templating
 
 import pytest
 
-from chk.infrastructure.templating import JinjaTemplate, StrTemplate
+from chk.infrastructure.templating import JinjaTemplate, StrTemplate, is_template_str
 
 
 class TestStrTemplate:
@@ -159,6 +159,22 @@ class TestIsTplFromStrTemplate:
     def test_is_tpl_fail_with_only_end_delimiter():
         assert not StrTemplate.is_tpl("some time %>")
 
+class TestIsTpl:
+    @staticmethod
+    def test_is_tpl_pass():
+        assert is_template_str("<% some %>")
+
+    @staticmethod
+    def test_is_tpl_fail():
+        assert not is_template_str("some time")
+
+    @staticmethod
+    def test_is_tpl_fail_with_only_start_delimiter():
+        assert not is_template_str("some <% time")
+
+    @staticmethod
+    def test_is_tpl_fail_with_only_end_delimiter():
+        assert not is_template_str("some time %>")
 
 class TestParseFromStrTemplate:
     @classmethod
