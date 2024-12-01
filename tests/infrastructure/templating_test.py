@@ -3,12 +3,9 @@
 test templating
 """
 
-import sys
-from io import TextIOWrapper, BytesIO
-
 import pytest
 
-from chk.infrastructure.templating import StrTemplate
+from chk.infrastructure.templating import JinjaTemplate, StrTemplate
 
 
 class TestStrTemplate:
@@ -179,3 +176,30 @@ class TestParseFromStrTemplate:
     @classmethod
     def test_return_list_with_parsable(cls):
         assert StrTemplate._parse("a <% vb %>") == ["a ", "<% vb %>"]
+
+
+class TestJinjaTemplate:
+
+    @staticmethod
+    def test_basic_tpl_create():
+        data = {
+            "a": {
+                "b": {
+                    "c": [1, 2],
+                    "cstr": "Some string",
+                    "cfloat": 0.0025,
+                }
+            }
+        }
+
+        tpl = JinjaTemplate.make("<% a.b.c %>")
+        assert tpl.render(data) == [1, 2]
+
+        tpl = JinjaTemplate.make("Some <% a.b.c %>")
+        assert tpl.render(data) == "Some [1, 2]"
+
+    @staticmethod
+    def test_basic_tpl_create_fail():
+
+        with pytest.raises(ValueError):
+            JinjaTemplate.make("")

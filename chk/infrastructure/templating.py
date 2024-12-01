@@ -2,8 +2,13 @@
 Templating module
 """
 
-import typing
 import re
+import typing
+
+from jinja2.environment import Template
+from jinja2.nativetypes import NativeEnvironment
+
+from chk.infrastructure.logging import error
 
 
 class StrTemplate:
@@ -138,3 +143,27 @@ class StrTemplate:
         """Check given string is templated string or not"""
 
         return StrTemplate.d_start in tpl_str and StrTemplate.d_end in tpl_str
+
+
+class JinjaTemplate:
+    """JinjaTemplate is wrapper class for JinjaNativeTemplate"""
+
+    @staticmethod
+    def make(template: str) -> Template:
+        """Create a NativeEnvironment with default settings"""
+
+        if not template or not isinstance(template, str):
+            e_msg = f"Malformed template: {template}"
+            error(e_msg)
+            raise ValueError(e_msg)
+
+        n_env = NativeEnvironment(
+            variable_start_string="<%",
+            variable_end_string="%>",
+            block_start_string="<@",
+            block_end_string="@>",
+            comment_start_string="<#",
+            comment_end_string="#>",
+        )
+
+        return n_env.from_string(template)
