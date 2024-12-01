@@ -13,6 +13,7 @@ xmltodict = "*"
 python-dotenv = "*"
 pydantic = "*"
 loguru = "*"
+jinja2 = "*"
 
 [dev-packages]
 pytest = "*"
