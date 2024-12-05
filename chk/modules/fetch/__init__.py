@@ -39,7 +39,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         debug(variable_doc.data)
 
         HttpDocumentSupport.process_request_template(http_doc, variable_doc)
-        debug(http_doc.model_dump_json())
+        debug(http_doc.model_dump())
 
         # try:
         response = HttpDocumentSupport.execute_request(http_doc)

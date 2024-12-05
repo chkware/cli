@@ -8,7 +8,7 @@ from datetime import datetime
 import chk.modules.validate.assertion_function as asrt_f
 from chk.infrastructure.helper import Cast
 from chk.infrastructure.logging import debug
-from chk.infrastructure.templating import StrTemplate
+from chk.infrastructure.templating import JinjaTemplate, is_template_str
 from chk.modules.validate.assertion_message import get_assert_msg_for
 from chk.modules.validate.assertion_validation import AssertionEntityType
 from chk.modules.validate.entities import AssertionEntry, RunDetail, RunReport
@@ -76,12 +76,10 @@ class AssertionEntryListRunner:
         """
 
         # replace actual value for template
-        if isinstance(assert_item.actual, str) and StrTemplate.is_tpl(
-            assert_item.actual
-        ):
+        if isinstance(assert_item.actual, str) and is_template_str(assert_item.actual):
             assert_item.actual_given = assert_item.actual
-            str_tpl = StrTemplate(assert_item.actual)
-            assert_item.actual = str_tpl.substitute(variable_d)
+            str_tpl = JinjaTemplate.make(assert_item.actual)
+            assert_item.actual = str_tpl.render(variable_d)
 
         # convert actual value type
         if assert_item.cast_actual_to != "" and isinstance(assert_item.actual, str):
@@ -103,11 +101,11 @@ class AssertionEntryListRunner:
                 assert_item.actual = Cast.to_auto(assert_item.actual)
 
         # replace expected value for template
-        if isinstance(assert_item.expected, str) and StrTemplate.is_tpl(
+        if isinstance(assert_item.expected, str) and is_template_str(
             assert_item.expected
         ):
-            str_tpl = StrTemplate(assert_item.expected)
-            assert_item.expected = str_tpl.substitute(variable_d)
+            str_tpl = JinjaTemplate.make(assert_item.expected)
+            assert_item.expected = str_tpl.render(variable_d)
 
         return assert_item
 
