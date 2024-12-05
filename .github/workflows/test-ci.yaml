@@ -7,6 +7,12 @@ on:
 jobs:
   test:
     name: Run test on ${{ matrix.os }} with ${{ matrix.py_ver }}
+
+    env:
+      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      COINSTATS_API_KEY: ${{ secrets.COINSTATS_API_KEY }}
+
     strategy:
       matrix:
         os:
@@ -19,7 +25,7 @@ jobs:
           - windows-latest
           - windows-2022
           - windows-2019
-    
+
     runs-on: ${{ matrix.os }}
     if: ${{ ! github.event.pull_request.draft }}
 
@@ -30,11 +36,11 @@ jobs:
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-          cache: 'pip'
+          python-version: "3.11"
+          cache: "pip"
 
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
 
       - name: Run tests
-        run: python -m pytest
+        run: py.test -s --ignore=chk

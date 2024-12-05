@@ -10,11 +10,11 @@ jobs:
   coverage:
     name: Runs on ubuntu-latest with 3.11.0
     runs-on: ubuntu-latest
-    if: ${{ ! github.event.pull_request.draft }}
 
     env:
       COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      COINSTATS_API_KEY: ${{ secrets.COINSTATS_API_KEY }}
 
     steps:
       - name: Checkout code
@@ -23,14 +23,14 @@ jobs:
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-          cache: 'pip'
+          python-version: "3.11"
+          cache: "pip"
 
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
 
       - name: Run tests and generate .coverage
-        run: python -m pytest --cov=./chk
+        run: py.test -s --ignore=chk --cov=./chk
 
       - name: Upload to coveralls.io
         run: coveralls
