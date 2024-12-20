@@ -1,5 +1,34 @@
+[tool.poetry]
+name = "chk"
+version = "0.5.0"
+description = "Low-code API quality testing, and automation toolbox"
+authors = ["HSN <hasanlock@gmail.com>"]
+license = "MPL2"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+click = "^8.1.7"
+pyyaml = "^6.0.2"
+requests = "^2.32.3"
+cerberus = "^1.3.5"
+defusedxml = "^0.7.1"
+xmltodict = "^0.14.2"
+python-dotenv = "^1.0.1"
+pydantic = "^2.10.4"
+loguru = "^0.7.3"
+jinja2 = "^3.1.4"
+
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.4"
+mypy = "^1.14.0"
+pylint = "^3.3.2"
+flake8 = "^7.1.1"
+black = "^24.10.0"
+icecream = "^2.1.3"
+requests-mock = "^1.12.1"
+
 [build-system]
-requires = [
-    "setuptools>=45",
-]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
