@@ -2,9 +2,41 @@
 name = "chk"
 version = "0.5.0"
 description = "Low-code API quality testing, and automation toolbox"
-authors = ["HSN <hasanlock@gmail.com>"]
-license = "MPL2"
+authors = ["Mahmudul Hasan <hasanlock@gmail.com>"]
+
+license = "MPL-2.0"
 readme = "README.md"
+
+homepage = "https://chkware.com/"
+repository = "https://github.com/chkware/cli"
+documentation = "https://chkware.com/docs"
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Testing",
+    "Topic :: System :: Networking",
+    "Topic :: Terminals",
+    "Topic :: Text Processing",
+    "Topic :: Utilities",
+]
+
+exclude = ["tests", "tests.*", "docs", "docs.*"]
+packages = [{ include = "chk" }]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/chkware/cli/issues"
+"Ask a question" = "https://github.com/orgs/chkware/discussions/categories/q-a"
+Twitter = "https://twitter.com/chkware"
 
 [tool.poetry.dependencies]
 python = "^3.13"
@@ -19,7 +51,6 @@ pydantic = "^2.10.4"
 loguru = "^0.7.3"
 jinja2 = "^3.1.4"
 
-
 [tool.poetry.group.test.dependencies]
 pytest = "^8.3.4"
 mypy = "^1.14.0"
@@ -28,6 +59,9 @@ flake8 = "^7.1.1"
 black = "^24.10.0"
 icecream = "^2.1.3"
 requests-mock = "^1.12.1"
+
+[tool.poetry.scripts]
+chk = "chk.console.main:chk"
 
 [build-system]
 requires = ["poetry-core"]
