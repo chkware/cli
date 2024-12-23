@@ -5,7 +5,7 @@
 ![CHKware | Low-code API quality testing, and automation toolbox](https://raw.githubusercontent.com/chkware/cli/main/docs/github-readme-01.png)
 
 [![PyPI version](https://badge.fury.io/py/chk.svg)](https://badge.fury.io/py/chk)
-[![Python 3.11](https://img.shields.io/badge/python-3.11-red.svg)](https://www.python.org/downloads/)
+[![Python 3.13](https://img.shields.io/badge/python-3.13-blue.svg)](https://www.python.org/downloads/)
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/chkware.svg?style=social&label=Follow%20%40chkware)](https://twitter.com/chkware)
 [![Known Vulnerabilities](https://snyk.io/test/github/chkware/cli/main/badge.svg)](https://snyk.io/test/github/chkware/cli)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=chkware_cli&metric=bugs)](https://sonarcloud.io/summary/new_code?id=chkware_cli)
