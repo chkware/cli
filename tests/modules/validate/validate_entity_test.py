@@ -2,6 +2,7 @@
 """
 Validation entity test
 """
+
 import pytest
 
 from chk.infrastructure.file_loader import FileContext, ExecuteContext

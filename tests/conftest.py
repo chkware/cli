@@ -1,4 +1,4 @@
-""" ConfTest """
+"""ConfTest"""
 
 import pytest
 from loguru import logger

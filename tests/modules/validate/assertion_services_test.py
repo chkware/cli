@@ -2,6 +2,7 @@
 """
 Test assertion_services
 """
+
 import copy
 import types
 

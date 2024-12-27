@@ -2,6 +2,7 @@
 """
 Test module for main
 """
+
 import click
 import pytest
 

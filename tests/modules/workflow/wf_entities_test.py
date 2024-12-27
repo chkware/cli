@@ -2,6 +2,7 @@
 """
 Testing Entities for workflow
 """
+
 from pathlib import Path
 
 import pytest
@@ -25,7 +26,6 @@ fp = str(fp_p)
 class TestChkwareTask:
     @staticmethod
     def test_from_dict_pass():
-
         task = ChkwareTask(
             fp,
             **{

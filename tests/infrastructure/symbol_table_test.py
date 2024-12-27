@@ -2,6 +2,7 @@
 """
 Tests for symbol table
 """
+
 import json
 
 from chk.console.main import combine_initial_variables
@@ -319,10 +320,10 @@ class TestExposeManager:
 
 
 class TestExecResponse:
-
     @staticmethod
     def test_pass():
-        er = ExecResponse(file_ctx={}, exec_ctx={}, variables=Variables(),
-                          variables_exec=Variables())
+        er = ExecResponse(
+            file_ctx={}, exec_ctx={}, variables=Variables(), variables_exec=Variables()
+        )
 
         assert id(er.exposed) != id(er.report)

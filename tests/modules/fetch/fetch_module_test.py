@@ -81,4 +81,3 @@ class TestFetchCall:
 
         assert isinstance(er, ExecResponse)
         assert isinstance(er.exception, requests.ConnectionError)
-
