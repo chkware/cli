@@ -67,7 +67,7 @@ class TestHttpDocumentSupport:
             }
         )
 
-        with pytest.raises(ValueError):
+        with pytest.raises(RuntimeError):
             HttpDocumentSupport.from_file_context(ctx)
 
     @staticmethod

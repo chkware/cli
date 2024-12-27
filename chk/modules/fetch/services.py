@@ -178,9 +178,6 @@ class HttpDocumentSupport:
         doc_ver = DocumentVersionMaker.from_dict(ctx.document)
         DocumentVersionMaker.verify_if_allowed(doc_ver, VERSION_SCOPE)
 
-        if not (version_str := data_get(ctx.document, "version")):
-            raise RuntimeError("`version:` not found.")
-
         if not (request_dct := data_get(ctx.document, "request")):
             raise RuntimeError("`request:` not found.")
 
@@ -188,7 +185,7 @@ class HttpDocumentSupport:
         # @TODO implement __repr__ for WorkflowDocument
         return HttpDocument(
             context=tuple(ctx),
-            version=version_str,
+            version=str(doc_ver),
             request=request_dct,
         )
 
