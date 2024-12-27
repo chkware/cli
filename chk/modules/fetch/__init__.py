@@ -7,9 +7,12 @@ from collections import abc
 from chk.infrastructure.document import VersionedDocumentSupport
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.logging import debug, error_trace, with_catch_log
-from chk.infrastructure.symbol_table import ExecResponse, ExposeManager, \
-    VariableTableManager, \
-    Variables
+from chk.infrastructure.symbol_table import (
+    ExecResponse,
+    ExposeManager,
+    VariableTableManager,
+    Variables,
+)
 from chk.infrastructure.view import PresentationService, die_with_error
 from chk.modules.fetch.entities import FetchTask
 from chk.modules.fetch.services import FetchPresenter, HttpDocumentSupport
@@ -22,11 +25,6 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     debug(file_ctx)
     debug(exec_ctx)
 
-    r_exception: Exception | None = None
-    variable_doc = Variables()
-    output_data = Variables()
-    exposed_data = {}
-
     try:
         http_doc = HttpDocumentSupport.from_file_context(file_ctx)
         debug(http_doc.model_dump_json())
@@ -34,28 +32,31 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         VersionedDocumentSupport.validate_with_schema(
             HttpDocumentSupport.build_schema(), http_doc
         )
-
-        VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
-        debug(variable_doc.data)
-
-        HttpDocumentSupport.process_request_template(http_doc, variable_doc)
-        debug(http_doc.model_dump())
-
-        # try:
-        response = HttpDocumentSupport.execute_request(http_doc)
-
-        output_data = Variables({"_response": response.model_dump()})
-        debug(output_data.data)
-
-        exposed_data = ExposeManager.get_exposed_replaced_data(
-            http_doc,
-            {**variable_doc.data, **output_data.data},
-        )
-        debug(exposed_data)
-
     except Exception as ex:
-        r_exception = ex
         error_trace(exception=sys.exc_info()).error(ex)
+        return ExecResponse(file_ctx=file_ctx, exec_ctx=exec_ctx, exception=ex)
+
+    variable_doc = Variables()
+    VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
+    debug(variable_doc.data)
+
+    HttpDocumentSupport.process_request_template(http_doc, variable_doc)
+    debug(http_doc.model_dump())
+
+    try:
+        response = HttpDocumentSupport.execute_request(http_doc)
+    except Exception as ex:
+        error_trace(exception=sys.exc_info()).error(ex)
+        return ExecResponse(file_ctx=file_ctx, exec_ctx=exec_ctx, exception=ex)
+
+    output_data = Variables({"_response": response.model_dump()})
+    debug(output_data.data)
+
+    exposed_data = ExposeManager.get_exposed_replaced_data(
+        http_doc,
+        {**variable_doc.data, **output_data.data},
+    )
+    debug(exposed_data)
 
     # TODO: instead if sending specific report items, and making presentable in other
     #       module, we should prepare and long and short form of presentable that can be
@@ -74,10 +75,9 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         exec_ctx=exec_ctx,
         variables_exec=output_data,
         variables=variable_doc,
-        exception=r_exception,
         exposed=exposed_data,
         report={
-            "is_success": r_exception is None,
+            "is_success": True,
             "request_method": request_method,
             "request_url": request_url,
         },
