@@ -67,3 +67,10 @@ chk = "chk.console.main:chk"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poe.tasks]
+test = "py.test -s"
+clear-cache = "rm -rf .chkware_cache"
+requirements-root = 'poetry export --output requirements.txt'
+requirements-test = 'poetry export --output requirements-dev.txt --with test'
+requirements = ["requirements-root", "requirements-test"]
