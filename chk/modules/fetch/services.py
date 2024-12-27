@@ -17,12 +17,13 @@ from chk.infrastructure.symbol_table import (
     EXPOSE_SCHEMA as EXP_SCHEMA,
     VARIABLE_SCHEMA as VAR_SCHEMA,
     Variables,
-    replace_value,
+    replace_value
 )
-from chk.infrastructure.version import DocumentVersionMaker, SCHEMA as VER_SCHEMA
-from chk.infrastructure.view import (
-    PresentationBuilder,
+from chk.infrastructure.version import (
+    DocumentVersionMaker,
+    SCHEMA as VER_SCHEMA,
 )
+from chk.infrastructure.view import PresentationBuilder
 from chk.modules.fetch.entities import (
     ApiResponseModel,
     BearerAuthentication,
