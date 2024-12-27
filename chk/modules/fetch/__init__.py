@@ -1,6 +1,7 @@
 """
 Fetch module
 """
+
 import sys
 from collections import abc
 

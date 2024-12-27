@@ -32,11 +32,13 @@ class AssertionEntry(BaseModel):
         yield "msg_pass", self.msg_pass
         yield "msg_fail", self.msg_fail
         yield "cast_actual_to", self.cast_actual_to
-        yield "actual_given", (
-            "" if self.actual_given == NotImplemented else self.actual_given
+        yield (
+            "actual_given",
+            ("" if self.actual_given == NotImplemented else self.actual_given),
         )
-        yield "actual_b4_cast", (
-            "" if self.actual_b4_cast == NotImplemented else self.actual_b4_cast
+        yield (
+            "actual_b4_cast",
+            ("" if self.actual_b4_cast == NotImplemented else self.actual_b4_cast),
         )
         yield "extra_fields", self.extra_fields
 

@@ -226,7 +226,6 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     validate_doc = ValidationDocument()
 
     try:
-
         validate_doc = ValidationDocument.from_file_context(file_ctx)
         debug(validate_doc.model_dump_json())
 

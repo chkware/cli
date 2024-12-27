@@ -17,7 +17,7 @@ from chk.infrastructure.symbol_table import (
     EXPOSE_SCHEMA as EXP_SCHEMA,
     VARIABLE_SCHEMA as VAR_SCHEMA,
     Variables,
-    replace_value
+    replace_value,
 )
 from chk.infrastructure.version import (
     DocumentVersionMaker,
@@ -27,9 +27,12 @@ from chk.infrastructure.view import PresentationBuilder
 from chk.modules.fetch.entities import (
     ApiResponseModel,
     BearerAuthentication,
-    CTYPE_XML, HttpDocument,
+    CTYPE_XML,
+    HttpDocument,
     HttpMethod,
-    RequestConfigNode, SCHEMA, VERSION_SCOPE,
+    RequestConfigNode,
+    SCHEMA,
+    VERSION_SCOPE,
 )
 
 

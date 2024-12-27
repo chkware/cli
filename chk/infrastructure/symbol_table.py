@@ -1,6 +1,7 @@
 """
 Symbol and variable management
 """
+
 from __future__ import annotations
 
 import copy
@@ -108,10 +109,10 @@ class VariableTableManager:
 
     @classmethod
     def handle(
-            cls,
-            variable_doc: Variables,
-            document: VersionedDocument | VersionedDocumentV2,
-            exec_ctx: ExecuteContext,
+        cls,
+        variable_doc: Variables,
+        document: VersionedDocument | VersionedDocumentV2,
+        exec_ctx: ExecuteContext,
     ) -> None:
         """Handles variable handling
 
@@ -151,10 +152,10 @@ class VariableTableManager:
 
     @classmethod
     def handle_composite(
-            cls,
-            variable_doc: Variables,
-            document: dict,
-            replace_callback: Callable = replace_value,
+        cls,
+        variable_doc: Variables,
+        document: dict,
+        replace_callback: Callable = replace_value,
     ) -> None:
         """Handles absolute variables and values from document
 
@@ -178,7 +179,7 @@ class VariableTableManager:
 
     @classmethod
     def handle_execute_context(
-            cls, variable_doc: Variables, exec_ctx: ExecuteContext
+        cls, variable_doc: Variables, exec_ctx: ExecuteContext
     ) -> None:
         """Handle variables passed from external context
 
@@ -220,9 +221,9 @@ class ExposeManager:
 
     @staticmethod
     def replace_values(
-            expose_doc: list,
-            values: dict,
-            replace_callback: Callable = replace_value,
+        expose_doc: list,
+        values: dict,
+        replace_callback: Callable = replace_value,
     ) -> list:
         """Replace values on expose document
 

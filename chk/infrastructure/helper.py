@@ -171,10 +171,8 @@ class Cast:
 
 
 def formatter(
-        message: object,
-        cb: Callable = str,
-        dump: bool = True,
-        is_err: bool = False) -> str:
+    message: object, cb: Callable = str, dump: bool = True, is_err: bool = False
+) -> str:
     """Format message with given callback
 
     Args:

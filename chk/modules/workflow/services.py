@@ -97,7 +97,6 @@ class WorkflowPresenter(PresentationBuilder):
                 "exception": repr(item.exception),
             }
             if item.task.uses == "fetch":
-
                 response_task_dump["fetch_request_method"] = (
                     item.others["request_method"]
                     if "request_method" in item.others
