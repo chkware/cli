@@ -70,8 +70,8 @@ class ExecResponse(BaseModel):
 
     file_ctx: FileContext
     exec_ctx: ExecuteContext
-    variables: Variables
-    variables_exec: Variables
+    variables: Variables = Field(default_factory=Variables)
+    variables_exec: Variables = Field(default_factory=Variables)
     extra: object = Field(default=None)
     exception: Exception | None = Field(default=None)
     exposed: dict = Field(default_factory=dict)
