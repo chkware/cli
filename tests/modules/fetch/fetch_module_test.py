@@ -81,3 +81,32 @@ class TestFetchCall:
 
         assert isinstance(er, ExecResponse)
         assert isinstance(er.exception, requests.ConnectionError)
+
+    @staticmethod
+    def test_fails_for_document_error():
+        access_token = ""
+
+        file_ctx = FileContext(
+            document={
+                "version": "default:http:0.7.2",
+                "request": {
+                    "url": "https://jsonplaceholdery.typicode.com/albums/1",
+                    "method": "GET",
+                    "auth .scm=bearer": {
+                        "token": [access_token]
+                    },
+                }
+            }
+        )
+
+        exec_ctx = ExecuteContext(
+            options={
+                "dump": True,
+                "format": False,
+            }
+        )
+
+        er = call(file_ctx, exec_ctx)
+
+        assert isinstance(er, ExecResponse)
+        assert isinstance(er.exception, ValueError)
