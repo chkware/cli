@@ -85,12 +85,8 @@ class ValidationDocument(VersionedDocumentV2, BaseModel):
         :param ctx: FileContext to create the ValidationDocument from
         """
 
-        if not (_version := data_get(ctx.document, "version")):
-            raise RuntimeError("`version:` not found.")
-
-        DocumentVersionMaker.verify_if_allowed(
-            DocumentVersionMaker.from_dict(ctx.document), VERSION_SCOPE
-        )
+        doc_ver = DocumentVersionMaker.from_dict(ctx.document)
+        DocumentVersionMaker.verify_if_allowed(doc_ver, VERSION_SCOPE)
 
         if not (_asserts := data_get(ctx.document, ValidationConfigNode.ASSERTS, [])):
             raise RuntimeError(f"`{ValidationConfigNode.ASSERTS}:` not found.")
@@ -101,7 +97,7 @@ class ValidationDocument(VersionedDocumentV2, BaseModel):
         # @TODO implement __repr__ for WorkflowDocument
         return ValidationDocument(
             context=tuple(ctx),
-            version=_version,
+            version=str(doc_ver),
             asserts=_asserts,
             data=_data,
         )
@@ -140,7 +136,7 @@ class ValidationDocumentSupport:
         )
 
     @staticmethod
-    def process_data_template(variables: Variables) -> None:
+    def  process_data_template(variables: Variables) -> None:
         """process data or template before assertion"""
         data = variables[ValidationConfigNode.VAR_NODE.value]
         tmp_variables = {
@@ -218,13 +214,6 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     debug(file_ctx)
     debug(exec_ctx)
 
-    r_exception: Exception | None = None
-    variable_doc = Variables()
-    output_data = Variables()
-    exposed_data = {}
-    run_rpt = RunReport()
-    validate_doc = ValidationDocument()
-
     try:
         validate_doc = ValidationDocument.from_file_context(file_ctx)
         debug(validate_doc.model_dump_json())
@@ -232,45 +221,48 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         VersionedDocumentSupport.validate_with_schema(
             ValidationDocumentSupport.build_schema(), validate_doc
         )
+    except Exception as ex:
+        error_trace(exception=sys.exc_info()).error(ex)
+        return ExecResponse(file_ctx=file_ctx, exec_ctx=exec_ctx, exception=ex)
 
-        variable_doc = Variables()
-        VariableTableManager.handle(variable_doc, validate_doc, exec_ctx)
-        debug(variable_doc.data)
+    variable_doc = Variables()
+    VariableTableManager.handle(variable_doc, validate_doc, exec_ctx)
+    debug(variable_doc.data)
 
-        # handle passed data in asserts
-        with with_catch_log():
-            ValidationDocumentSupport.set_data_template(
-                validate_doc, variable_doc, exec_ctx
-            )
-            ValidationDocumentSupport.process_data_template(variable_doc)
+    # handle passed data in asserts
+    ValidationDocumentSupport.set_data_template(
+        validate_doc, variable_doc, exec_ctx
+    )
 
-        debug(variable_doc.data)
+    ValidationDocumentSupport.process_data_template(variable_doc)
+    debug(variable_doc.data)
 
+    try:
         assert_list = ValidationDocumentSupport.make_assertion_entry_list(
             validate_doc.asserts
         )
 
         run_rpt = AssertionEntryListRunner.test_run(assert_list, variable_doc.data)
-
-        output_data = Variables(
-            {
-                "_asserts_response": run_rpt,
-                "_data": variable_doc["_data"],
-            }
-        )
-        debug(output_data.data)
-
-        exposed_data = ExposeManager.get_exposed_replaced_data(
-            validate_doc,
-            {
-                **variable_doc.data,
-                **{"_asserts_response": run_rpt},
-            },
-        )
-        debug(exposed_data)
     except Exception as ex:
-        r_exception = ex
         error_trace(exception=sys.exc_info()).error(ex)
+        return ExecResponse(file_ctx=file_ctx, exec_ctx=exec_ctx, exception=ex)
+
+    output_data = Variables(
+        {
+            "_asserts_response": run_rpt,
+            "_data": variable_doc["_data"],
+        }
+    )
+    debug(output_data.data)
+
+    exposed_data = ExposeManager.get_exposed_replaced_data(
+        validate_doc,
+        {
+            **variable_doc.data,
+            **{"_asserts_response": run_rpt},
+        },
+    )
+    debug(exposed_data)
 
     # TODO: this is needed only when the request is true
     #       > ExecResponse.__bool__() needed to see if the object is ok OR
@@ -284,9 +276,9 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         variables=variable_doc,
         extra=run_rpt,
         exposed=exposed_data,
-        exception=r_exception,
+        exception=None,
         report={
-            "is_success": run_rpt.count_fail == 0 and r_exception is None,
+            "is_success": run_rpt.count_fail == 0,
             "count_all": len(validate_doc.asserts),
             "count_fail": run_rpt.count_fail,
             "exceptions": [dtl.message for dtl in run_rpt.details if not dtl.is_pass],
