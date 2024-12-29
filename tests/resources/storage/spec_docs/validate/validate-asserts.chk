@@ -230,3 +230,7 @@ asserts:
 
 expose:
   - <% _asserts_response %>
+
+#
+# poetry run python -m chk validate tests/resources/storage/spec_docs/validate/validate-asserts.chk
+#

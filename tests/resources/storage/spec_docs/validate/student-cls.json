@@ -1,7 +1,4 @@
 {
-  "name": "<% name %>",
   "roll": "<% roll %>",
-  "class": "<% class %>",
-  "uniq": "<% year %>-<% class %>-<% roll %>",
   "year": "<% year %>"
 }

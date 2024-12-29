@@ -16,5 +16,7 @@ expose:
   - <% _data %>
 
 # --- shell command ---
-# pipenv run python -m chk validate -nf tests/resources/storage/spec_docs/validate/btc-usd-validate.chk -D "$(pipenv run python -m chk fetch -nf tests/resources/storage/spec_docs/fetch/bitcoin-usd.chk)"
+# poetry run python -m chk validate -nf tests/resources/storage/spec_docs/validate/btc-usd-validate.chk -D "$(poetry run python -m chk fetch -nf tests/resources/storage/spec_docs/fetch/bitcoin-usd.chk | jq '.[0]')"
+# or
+# poetry run python -m chk fetch -nf tests/resources/storage/spec_docs/fetch/bitcoin-usd.chk | jq '.[0]' | poetry run python -m chk validate -nf tests/resources/storage/spec_docs/validate/btc-usd-validate.chk -Di
 # ---
