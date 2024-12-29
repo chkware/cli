@@ -223,7 +223,12 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         )
     except Exception as ex:
         error_trace(exception=sys.exc_info()).error(ex)
-        return ExecResponse(file_ctx=file_ctx, exec_ctx=exec_ctx, exception=ex, report={"is_success": False})
+        return ExecResponse(
+            file_ctx=file_ctx,
+            exec_ctx=exec_ctx,
+            exception=ex,
+            report={"is_success": False},
+        )
 
     variable_doc = Variables()
     VariableTableManager.handle(variable_doc, validate_doc, exec_ctx)
@@ -243,7 +248,12 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         run_rpt = AssertionEntryListRunner.test_run(assert_list, variable_doc.data)
     except Exception as ex:
         error_trace(exception=sys.exc_info()).error(ex)
-        return ExecResponse(file_ctx=file_ctx, exec_ctx=exec_ctx, exception=ex, report={"is_success": False})
+        return ExecResponse(
+            file_ctx=file_ctx,
+            exec_ctx=exec_ctx,
+            exception=ex,
+            report={"is_success": False},
+        )
 
     output_data = Variables(
         {

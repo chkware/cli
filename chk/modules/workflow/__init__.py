@@ -203,7 +203,12 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         debug(wflow_doc.model_dump_json())
     except Exception as ex:
         error_trace(exception=sys.exc_info()).error(ex)
-        return ExecResponse(file_ctx=file_ctx, exec_ctx=exec_ctx, exception=ex, report={"is_success": False})
+        return ExecResponse(
+            file_ctx=file_ctx,
+            exec_ctx=exec_ctx,
+            exception=ex,
+            report={"is_success": False},
+        )
 
     variable_doc = Variables()
     VariableTableManager.handle(variable_doc, wflow_doc, exec_ctx)
@@ -217,7 +222,12 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         exec_report = service.process_task_template(wflow_doc, variable_doc)
     except Exception as ex:
         error_trace(exception=sys.exc_info()).error(ex)
-        return ExecResponse(file_ctx=file_ctx, exec_ctx=exec_ctx, exception=ex, report={"is_success": False})
+        return ExecResponse(
+            file_ctx=file_ctx,
+            exec_ctx=exec_ctx,
+            exception=ex,
+            report={"is_success": False},
+        )
 
     output_data = Variables({"_steps": variable_doc[WorkflowConfigNode.NODE.value]})
     debug(output_data.data)

@@ -35,7 +35,12 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         )
     except Exception as ex:
         error_trace(exception=sys.exc_info()).error(ex)
-        return ExecResponse(file_ctx=file_ctx, exec_ctx=exec_ctx, exception=ex, report={"is_success": False})
+        return ExecResponse(
+            file_ctx=file_ctx,
+            exec_ctx=exec_ctx,
+            exception=ex,
+            report={"is_success": False},
+        )
 
     variable_doc = Variables()
     VariableTableManager.handle(variable_doc, http_doc, exec_ctx)
@@ -48,8 +53,12 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         response = HttpDocumentSupport.execute_request(http_doc)
     except Exception as ex:
         error_trace(exception=sys.exc_info()).error(ex)
-        return ExecResponse(file_ctx=file_ctx, exec_ctx=exec_ctx, exception=ex, report={"is_success": False},
-)
+        return ExecResponse(
+            file_ctx=file_ctx,
+            exec_ctx=exec_ctx,
+            exception=ex,
+            report={"is_success": False},
+        )
 
     output_data = Variables({"_response": response.model_dump()})
     debug(output_data.data)
