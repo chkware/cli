@@ -38,7 +38,7 @@ from chk.modules.validate.assertion_validation import (
     AssertionEntityProperty,
     get_schema_map,
 )
-from chk.modules.validate.entities import RunReport, ValidationTask
+from chk.modules.validate.entities import ValidationTask
 from chk.modules.validate.services import ValidatePresenter
 
 VERSION_SCOPE = ["validation"]
@@ -136,7 +136,7 @@ class ValidationDocumentSupport:
         )
 
     @staticmethod
-    def  process_data_template(variables: Variables) -> None:
+    def process_data_template(variables: Variables) -> None:
         """process data or template before assertion"""
         data = variables[ValidationConfigNode.VAR_NODE.value]
         tmp_variables = {
@@ -223,16 +223,14 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         )
     except Exception as ex:
         error_trace(exception=sys.exc_info()).error(ex)
-        return ExecResponse(file_ctx=file_ctx, exec_ctx=exec_ctx, exception=ex)
+        return ExecResponse(file_ctx=file_ctx, exec_ctx=exec_ctx, exception=ex, report={"is_success": False})
 
     variable_doc = Variables()
     VariableTableManager.handle(variable_doc, validate_doc, exec_ctx)
     debug(variable_doc.data)
 
     # handle passed data in asserts
-    ValidationDocumentSupport.set_data_template(
-        validate_doc, variable_doc, exec_ctx
-    )
+    ValidationDocumentSupport.set_data_template(validate_doc, variable_doc, exec_ctx)
 
     ValidationDocumentSupport.process_data_template(variable_doc)
     debug(variable_doc.data)
@@ -245,7 +243,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         run_rpt = AssertionEntryListRunner.test_run(assert_list, variable_doc.data)
     except Exception as ex:
         error_trace(exception=sys.exc_info()).error(ex)
-        return ExecResponse(file_ctx=file_ctx, exec_ctx=exec_ctx, exception=ex)
+        return ExecResponse(file_ctx=file_ctx, exec_ctx=exec_ctx, exception=ex, report={"is_success": False})
 
     output_data = Variables(
         {
@@ -276,7 +274,6 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         variables=variable_doc,
         extra=run_rpt,
         exposed=exposed_data,
-        exception=None,
         report={
             "is_success": run_rpt.count_fail == 0,
             "count_all": len(validate_doc.asserts),

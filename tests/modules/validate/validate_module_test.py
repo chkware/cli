@@ -65,9 +65,6 @@ class TestValidateCall:
         )
 
         er = call(file_ctx, exec_ctx)
-        import icecream
-        icecream.ic(er)
 
         assert isinstance(er, ExecResponse)
-        icecream.ic(er.exception, type(er.exception))
-        # assert isinstance(er.exception, RuntimeError)
+        assert isinstance(er.exception, KeyError)
