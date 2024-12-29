@@ -39,8 +39,11 @@ class TestWorkflowExecute:
         captured = capsys.readouterr()
         assert "======" in captured.out
 
+class TestWorkflowCall:
+    """TestWorkflowCall"""
+
     @staticmethod
-    def test_call(load_chk_file, load_file_ctx_for_file, get_exec_ctx):
+    def test_pass(load_chk_file, load_file_ctx_for_file, get_exec_ctx):
         """test_call"""
 
         filepath = f"{SPEC_DIR}workflow_cases/get-req-vars/coinstats-usd-workflow.chk"
