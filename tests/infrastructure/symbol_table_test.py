@@ -164,7 +164,7 @@ class TestReplaceValue:
             "request": {
                 "url": "https://httpbin.org/get",
                 "method": "GET",
-                "auth .scm=bearer": {"token": "<% token %>"},
+                "auth[bearer]": {"token": "<% token %>"},
             },
         }
 
@@ -176,7 +176,7 @@ class TestReplaceValue:
         assert replace_value(document["request"], variables) == {
             "url": "https://httpbin.org/get",
             "method": "GET",
-            "auth .scm=bearer": {"token": "asdf123"},
+            "auth[bearer]": {"token": "asdf123"},
         }
 
 
@@ -236,7 +236,7 @@ class TestExposeManager:
             "request": {
                 "url": "https://httpbin.org/get",
                 "method": "GET",
-                "auth .scm=bearer": {"token": "1234"},
+                "auth[bearer]": {"token": "1234"},
             },
         }
 

@@ -9,7 +9,7 @@ variables:
 request:
   url: "https://dev-api.lozoacademy.com/api/auth/local/register"
   method: POST
-  body .enc=json:
+  body[json]:
     email: <% email %>
     password: <% password %>
     username: <% username %>

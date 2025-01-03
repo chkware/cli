@@ -92,7 +92,7 @@ class TestFetchCall:
                 "request": {
                     "url": "https://jsonplaceholdery.typicode.com/albums/1",
                     "method": "GET",
-                    "auth .scm=bearer": {
+                    "auth[bearer]": {
                         "token": [access_token]
                     },
                 }
