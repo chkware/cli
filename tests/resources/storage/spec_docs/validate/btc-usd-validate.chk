@@ -16,7 +16,7 @@ expose:
   - <% _data %>
 
 # --- shell command ---
-# poetry run python -m chk validate -nf tests/resources/storage/spec_docs/validate/btc-usd-validate.chk -D "$(poetry run python -m chk fetch -nf tests/resources/storage/spec_docs/fetch/bitcoin-usd.chk | jq '.[0]')"
+# chk validate -nf tests/resources/storage/spec_docs/validate/btc-usd-validate.chk -D "$(chk fetch -nf tests/resources/storage/spec_docs/fetch/bitcoin-usd.chk | jq '.[0]')"
 # or
-# poetry run python -m chk fetch -nf tests/resources/storage/spec_docs/fetch/bitcoin-usd.chk | jq '.[0]' | poetry run python -m chk validate -nf tests/resources/storage/spec_docs/validate/btc-usd-validate.chk -Di
+# chk fetch -nf tests/resources/storage/spec_docs/fetch/bitcoin-usd.chk | jq '.[0]' | chk validate -nf tests/resources/storage/spec_docs/validate/btc-usd-validate.chk -Di
 # ---

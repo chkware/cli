@@ -10,5 +10,5 @@ expose:
   - <% _data %>
 
 #
-# cat tests/resources/storage/spec_docs/validate/student-cls.json | poetry run python -m chk validate -nf tests/resources/storage/spec_docs/validate/student-validate.chk -Di -V '{"roll" : 39, "year": 2023}' | jq .
+# cat tests/resources/storage/spec_docs/validate/student-cls.json | chk validate -nf tests/resources/storage/spec_docs/validate/student-validate.chk -Di -V '{"roll" : 39, "year": 2023}' | jq .
 #

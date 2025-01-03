@@ -14,3 +14,5 @@ request:
 
 expose:
   - <% _response %>
+
+# chk fetch tests/resources/storage/spec_docs/workflow_cases/get-req-vars/coinstats-usd-request.chk
