@@ -70,9 +70,9 @@ build-backend = "poetry.core.masonry.api"
 test = "py.test -s"
 clear-cache = "rm -rf .chkware_cache"
 
-requirements-root = "poetry export --output requirements.txt"
-requirements-test = "poetry export --output requirements-dev.txt --with test"
-requirements = ["requirements-root", "requirements-test"]
+_requirements_root_ = "poetry export --output requirements.txt"
+_requirements_test_ = "poetry export --output requirements-dev.txt --with test"
+requirements = ["_requirements_root_", "_requirements_test_"]
 
 fix-format = "ruff format --config ruff.toml chk"
 fix-check = "ruff check --config ruff.toml chk"
