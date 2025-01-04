@@ -2,6 +2,7 @@
 """
 common config
 """
+
 import pytest
 
 from chk.infrastructure.file_loader import ExecuteContext, FileContext, FileLoader

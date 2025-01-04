@@ -63,7 +63,10 @@ class PresentationService:
             else:
                 formatter(wfp.dump_json(), dump=exec_ctx.options["dump"])
 
-def die_with_error(err: Exception, Presenter: type[PresentationBuilder], is_fmt: bool) -> None:
+
+def die_with_error(
+    err: Exception, Presenter: type[PresentationBuilder], is_fmt: bool
+) -> None:
     """die_with_error"""
 
     prs = Presenter(data=None)

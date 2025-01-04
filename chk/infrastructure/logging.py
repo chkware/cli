@@ -21,10 +21,9 @@ with_catch_log = logger.catch
 class LoggingManager:
     """LoggingManager"""
 
-    cache_dir = '.chkware_cache/'
-    loggin_dir = 'logs/'
-    loggin_ext = '.log'
-
+    cache_dir = ".chkware_cache/"
+    loggin_dir = "logs/"
+    loggin_ext = ".log"
 
     @classmethod
     def create_cache_dir(cls) -> Path:
@@ -43,7 +42,6 @@ class LoggingManager:
 
         return cache_path
 
-
     @classmethod
     def create_log_dir(cls, parent: Path) -> Path:
         """create_cache_dir"""
@@ -57,12 +55,11 @@ class LoggingManager:
 
         return log_dir
 
-
     @classmethod
     def create_new_log_file(cls) -> Path:
         """create new log file"""
 
-        cache_dir =cls.create_cache_dir()
+        cache_dir = cls.create_cache_dir()
         log_dir = cls.create_log_dir(cache_dir)
 
         log_file = log_dir / create_session_id()
@@ -82,7 +79,6 @@ class LoggingManager:
         """setup_loguru"""
 
         logger.remove()
-
 
 
 def create_session_id() -> str:

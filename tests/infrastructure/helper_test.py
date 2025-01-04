@@ -2,6 +2,7 @@
 """
 test global chk functions
 """
+
 import math
 import sys
 from io import TextIOWrapper, BytesIO

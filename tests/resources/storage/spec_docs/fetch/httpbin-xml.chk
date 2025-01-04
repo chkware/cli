@@ -5,7 +5,7 @@ request:
   url: https://httpbin.org/post
   method: POST
 
-  body .enc=xml: |
+  body[xml]: |
     <?xml version="1.0"?>
     <person>
       <name>Some One</name>

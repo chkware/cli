@@ -1,6 +1,7 @@
 # type: ignore
 
 """test loader"""
+
 import sys
 from pathlib import Path
 
@@ -17,7 +18,7 @@ from chk.infrastructure.typing_extras import JsonDecodingError
 
 @pytest.fixture
 def file_n():
-    return "bitcoin-usd.chk"
+    return "UserOk.yaml"
 
 
 @pytest.fixture
@@ -123,8 +124,8 @@ class TestGenerateAbsPath:
     """Test PathResolver"""
 
     @staticmethod
-    def test_generate_abs_path_pass():
-        ctx = FileContext.from_file(tests.RES_DIR + "bitcoin-usd.chk")
+    def test_generate_abs_path_pass(get_FileContext_v1):
+        ctx, _ = get_FileContext_v1
         p_base = ctx.filepath
 
         path_1 = "tests/resources/storage/sample_config/bitcoin-usd-testcase-data.chk"
@@ -163,8 +164,8 @@ FILE_PATH = "tests/resources/storage/sample_config/"
 class TestFileLoaderIsFileOk:
     """Create tests"""
 
-    def test_pass_with_default_allowed_list(self):
-        file_name = FILE_PATH + "bitcoin-usd.chk"
+    def test_pass_with_default_allowed_list(self, get_FileContext_v1):
+        _, file_name = get_FileContext_v1
         assert FileLoader.is_file_ok(file_name) is True
 
     def test_fail_with_default_allowed_list_file_not_found(self):
@@ -181,8 +182,8 @@ class TestFileLoaderIsFileOk:
 class TestFileLoaderLoadYaml:
     """Create tests"""
 
-    def test_pass_valid_file(self):
-        file_name = FILE_PATH + "bitcoin-usd.chk"
+    def test_pass_valid_file(self, get_FileContext_v1):
+        _, file_name = get_FileContext_v1
         loaded_content = FileLoader.load_yaml(file_name)
 
         assert isinstance(loaded_content, dict)

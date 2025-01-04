@@ -54,12 +54,10 @@ jinja2 = "^3.1.4"
 [tool.poetry.group.test.dependencies]
 pytest = "^8.3.4"
 mypy = "^1.14.0"
-pylint = "^3.3.2"
-flake8 = "^7.1.1"
-black = "^24.10.0"
 icecream = "^2.1.3"
 requests-mock = "^1.12.1"
 pytest-cov = "^6.0.0"
+ruff = "^0.8.4"
 
 [tool.poetry.scripts]
 chk = "chk.console.main:chk"
@@ -67,3 +65,15 @@ chk = "chk.console.main:chk"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poe.tasks]
+test = "py.test -s"
+clear-cache = "rm -rf .chkware_cache"
+
+_requirements_root_ = "poetry export --output requirements.txt"
+_requirements_test_ = "poetry export --output requirements-dev.txt --with test"
+requirements = ["_requirements_root_", "_requirements_test_"]
+
+fix-format = "ruff format --config ruff.toml chk"
+fix-check = "ruff check --config ruff.toml chk"
+fix = ["fix-check", "fix-format"]

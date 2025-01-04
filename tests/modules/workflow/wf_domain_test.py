@@ -2,6 +2,7 @@
 """
 Domain test code
 """
+
 from pydantic import BaseModel, Field
 
 from chk.infrastructure.symbol_table import Variables
@@ -13,7 +14,6 @@ from tests import SPEC_DIR, load_chk_file, load_file_ctx_for_file
 class TestWorkflowDocument:
     @staticmethod
     def test_from_file_context_pass(load_chk_file, load_file_ctx_for_file):
-
         class TaskDict(BaseModel):
             file: str = Field(default=str)
             name: str = Field(default=str)
@@ -30,7 +30,6 @@ class TestWorkflowDocument:
 
     @staticmethod
     def test_from_file_context_pass_noid(load_chk_file, load_file_ctx_for_file):
-
         class TaskDict(BaseModel):
             file: str = Field(default=str)
             name: str = Field(default=str)
@@ -58,5 +57,7 @@ class TestWorkflowDocumentSupport:
 
         wfdoc = WorkflowDocument.from_file_context(file_ctx)
 
-        rpt = WorkflowDocumentSupport.process_task_template(wfdoc, Variables({"_steps": []}))
+        rpt = WorkflowDocumentSupport.process_task_template(
+            wfdoc, Variables({"_steps": []})
+        )
         assert isinstance(rpt, list)

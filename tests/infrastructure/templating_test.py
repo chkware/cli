@@ -9,7 +9,6 @@ from chk.infrastructure.templating import JinjaTemplate
 
 
 class TestJinjaTemplate:
-
     @staticmethod
     def test_basic_tpl_create():
         data = {
@@ -30,6 +29,5 @@ class TestJinjaTemplate:
 
     @staticmethod
     def test_basic_tpl_create_fail():
-
         with pytest.raises(ValueError):
             JinjaTemplate.make("")

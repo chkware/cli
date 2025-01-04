@@ -9,12 +9,12 @@ variables:
 request:
   url: "https://dev-api.lozoacademy.com/api/users/<% userId %>"
   method: PUT
-  body .enc=json:
+  body[json]:
     grade: <% userGrade %>
     id: <% userId %>
   headers:
     "Content-Type": "application/json; charset=utf-8"
-  auth .scm=bearer:
+  auth[bearer]:
     token: <% jwtToken %>
 
 expose:

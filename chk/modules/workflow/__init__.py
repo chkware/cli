@@ -198,36 +198,42 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     debug(file_ctx)
     debug(exec_ctx)
 
-    r_exception: Exception | None = None
-    variable_doc = Variables()
-    output_data = Variables()
-    exposed_data = {}
-
     try:
         wflow_doc = WorkflowDocument.from_file_context(file_ctx)
         debug(wflow_doc.model_dump_json())
+    except Exception as ex:
+        error_trace(exception=sys.exc_info()).error(ex)
+        return ExecResponse(
+            file_ctx=file_ctx,
+            exec_ctx=exec_ctx,
+            exception=ex,
+            report={"is_success": False},
+        )
 
-        variable_doc = Variables()
-        VariableTableManager.handle(variable_doc, wflow_doc, exec_ctx)
-        debug(variable_doc.data)
+    variable_doc = Variables()
+    VariableTableManager.handle(variable_doc, wflow_doc, exec_ctx)
+    debug(variable_doc.data)
 
+    try:
         service = WorkflowDocumentSupport()
         # @TODO make sure the document do not call self making it repeating
         service.set_step_template(variable_doc)
 
-        with with_catch_log():
-            exec_report = service.process_task_template(wflow_doc, variable_doc)
-
-        output_data = Variables({"_steps": variable_doc[WorkflowConfigNode.NODE.value]})
-        debug(output_data.data)
-
-        exposed_data = ExposeManager.get_exposed_replaced_data(
-            wflow_doc, variable_doc.data
-        )
-        debug(exposed_data)
+        exec_report = service.process_task_template(wflow_doc, variable_doc)
     except Exception as ex:
-        r_exception = ex
         error_trace(exception=sys.exc_info()).error(ex)
+        return ExecResponse(
+            file_ctx=file_ctx,
+            exec_ctx=exec_ctx,
+            exception=ex,
+            report={"is_success": False},
+        )
+
+    output_data = Variables({"_steps": variable_doc[WorkflowConfigNode.NODE.value]})
+    debug(output_data.data)
+
+    exposed_data = ExposeManager.get_exposed_replaced_data(wflow_doc, variable_doc.data)
+    debug(exposed_data)
 
     # TODO also send failed_details (fail code, message, stacktrace, etc)
     return ExecResponse(
@@ -237,9 +243,8 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         variables_exec=output_data,
         extra=exec_report,
         exposed=exposed_data,
-        exception=r_exception,
         report={
-            "is_success": r_exception is None,
+            "is_success": True,
         },
     )
 

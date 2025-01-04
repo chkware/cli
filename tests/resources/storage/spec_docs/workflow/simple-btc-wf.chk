@@ -12,7 +12,7 @@ tasks:
     uses: validate
     file: ../validate/btc-usd-validate.chk
     arguments:
-      data: <% _tasks.0._expose.0 %>
+      data: <% _steps.0._response %>
 
 expose:
-  - <% _tasks %>
+  - <% _steps %>

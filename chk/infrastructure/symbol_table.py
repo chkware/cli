@@ -2,6 +2,8 @@
 Symbol and variable management
 """
 
+from __future__ import annotations
+
 import copy
 import enum
 import os
@@ -69,8 +71,8 @@ class ExecResponse(BaseModel):
 
     file_ctx: FileContext
     exec_ctx: ExecuteContext
-    variables: Variables
-    variables_exec: Variables
+    variables: Variables = Field(default_factory=Variables)
+    variables_exec: Variables = Field(default_factory=Variables)
     extra: object = Field(default=None)
     exception: Exception | None = Field(default=None)
     exposed: dict = Field(default_factory=dict)
@@ -254,7 +256,6 @@ class ExposeManager:
         file_ctx = FileContext(*document.context)
 
         if expose_doc := ExposeManager.get_expose_doc(file_ctx.document):
-
             exposed_doc_t = copy.copy(expose_doc)
             exposed_doc_t = [
                 str(key).replace("%>", "").replace("<%", "").strip()

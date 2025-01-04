@@ -2,6 +2,7 @@
 """
 Document test
 """
+
 import pytest
 
 from chk.infrastructure.document import VersionedDocument, VersionedDocumentSupport
@@ -11,7 +12,6 @@ from chk.infrastructure.symbol_table import VARIABLE_SCHEMA as VAR_SCHEMA
 
 
 class TestVersionedDocumentSupport:
-
     @staticmethod
     def test_validate_with_schema_pass():
         document = {

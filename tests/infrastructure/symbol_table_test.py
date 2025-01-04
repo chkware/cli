@@ -2,11 +2,13 @@
 """
 Tests for symbol table
 """
+
 import json
 
 from chk.console.main import combine_initial_variables
 from chk.infrastructure.file_loader import ExecuteContext, FileContext
 from chk.infrastructure.symbol_table import (
+    ExecResponse,
     ExposeManager,
     VariableConfigNode,
     VariableTableManager,
@@ -162,7 +164,7 @@ class TestReplaceValue:
             "request": {
                 "url": "https://httpbin.org/get",
                 "method": "GET",
-                "auth .scm=bearer": {"token": "<% token %>"},
+                "auth[bearer]": {"token": "<% token %>"},
             },
         }
 
@@ -174,7 +176,7 @@ class TestReplaceValue:
         assert replace_value(document["request"], variables) == {
             "url": "https://httpbin.org/get",
             "method": "GET",
-            "auth .scm=bearer": {"token": "asdf123"},
+            "auth[bearer]": {"token": "asdf123"},
         }
 
 
@@ -234,7 +236,7 @@ class TestExposeManager:
             "request": {
                 "url": "https://httpbin.org/get",
                 "method": "GET",
-                "auth .scm=bearer": {"token": "1234"},
+                "auth[bearer]": {"token": "1234"},
             },
         }
 
@@ -315,3 +317,13 @@ class TestExposeManager:
         assert len(exposed_data) == 1
         assert isinstance(exposed_data["_response"], dict)
         assert len(exposed_data["_response"]) == 2
+
+
+class TestExecResponse:
+    @staticmethod
+    def test_pass():
+        er = ExecResponse(
+            file_ctx={}, exec_ctx={}, variables=Variables(), variables_exec=Variables()
+        )
+
+        assert id(er.exposed) != id(er.report)

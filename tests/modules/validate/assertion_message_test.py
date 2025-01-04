@@ -3,6 +3,7 @@
 """
 Test module for assertion Functions support func
 """
+
 import chk.modules.validate.assertion_message as asrt
 
 

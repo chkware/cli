@@ -5,7 +5,7 @@ request:
   url: https://httpbin.org/get
   method: GET
 
-  auth .scm=basic:
+  auth[basic]:
     username: Someuser
     password: Someuserpassword
 

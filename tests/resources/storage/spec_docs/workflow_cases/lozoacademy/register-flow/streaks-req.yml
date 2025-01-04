@@ -9,7 +9,7 @@ request:
   method: GET
   headers:
     "Content-Type": "application/json; charset=utf-8"
-  auth .scm=bearer:
+  auth[bearer]:
     token: <% jwtToken %>
 
 expose:

@@ -49,20 +49,20 @@ class RequestConfigNode(enum.StrEnum):
     PARAMS = "url_params"
 
     # Basic
-    AUTH_BA = "auth .scm=basic"
+    AUTH_BA = "auth[basic]"
     AUTH_BA_USR = "username"
     AUTH_BA_PAS = "password"
 
     # Bearer
-    AUTH_BE = "auth .scm=bearer"
+    AUTH_BE = "auth[bearer]"
     AUTH_BE_TOK = "token"
 
     # Body
-    BODY_FRM = "body .enc=form"
-    BODY_FRM_DAT = "body .enc=form-data"
-    BODY_JSN = "body .enc=json"
-    BODY_XML = "body .enc=xml"
-    BODY_TXT = "body .enc=text"
+    BODY_FRM = "body[form]"
+    BODY_FRM_DAT = "body[form-data]"
+    BODY_JSN = "body[json]"
+    BODY_XML = "body[xml]"
+    BODY_TXT = "body[text]"
 
 
 SCHEMA = {

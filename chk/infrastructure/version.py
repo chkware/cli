@@ -128,6 +128,9 @@ class DocumentVersionMaker:
         """Create a DocumentVersion from given dict"""
 
         version_str = data_get(document, VersionConfigNode.VERSION, None)
+        if not version_str:
+            raise RuntimeError("`version:` not found.")
+
         return DocumentVersion(version_str)
 
     @staticmethod

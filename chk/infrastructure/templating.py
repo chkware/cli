@@ -16,7 +16,7 @@ class JinjaTemplate:
         """Create a NativeEnvironment with default settings"""
 
         if not template or not isinstance(template, str):
-            e_msg = f"Malformed template: {template}"
+            e_msg = f"Template error: {type(template)} {template}"
             error(e_msg)
             raise ValueError(e_msg)
 
