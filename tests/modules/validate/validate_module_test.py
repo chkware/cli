@@ -14,7 +14,7 @@ class TestValidateCall:
     def test_fail() -> None:
         file_ctx = FileContext(
             document={
-                # "version": "default:validation:0.7.2",
+                # "version": "default:validate:0.7.2",
                 "asserts": [
                     {
                         "type": "Equal",
@@ -42,7 +42,7 @@ class TestValidateCall:
     def test_fail_for_wrong_key() -> None:
         file_ctx = FileContext(
             document={
-                "version": "default:validation:0.7.2",
+                "version": "default:validate:0.7.2",
                 "asserts": [
                     {
                         "type": "Equals",

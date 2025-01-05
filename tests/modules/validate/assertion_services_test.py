@@ -22,7 +22,7 @@ from chk.modules.validate.entities import RunReport
 def setup_assertion_entry_list_pass_assert():
     ctx = FileContext(
         document={
-            "version": "default:validation:0.7.2",
+            "version": "default:validate:0.7.2",
             "asserts": [
                 {
                     "type": "Equal",
@@ -64,7 +64,7 @@ def setup_assertion_entry_list_pass_assert():
 def setup_assertion_entry_list_many_items_pass_assert():
     ctx = FileContext(
         document={
-            "version": "default:validation:0.7.2",
+            "version": "default:validate:0.7.2",
             "asserts": [
                 {
                     "type": "Equal",

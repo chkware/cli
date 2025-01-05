@@ -20,7 +20,7 @@ VERSION_STORE = {
         "0.7.2",
         "0.8.0",
     ],
-    "validation": [
+    "validate": [
         "0.7.2",
         "0.8.0",
     ],
