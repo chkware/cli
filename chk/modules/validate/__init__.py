@@ -41,7 +41,7 @@ from chk.modules.validate.assertion_validation import (
 from chk.modules.validate.entities import ValidationTask
 from chk.modules.validate.services import ValidatePresenter
 
-VERSION_SCOPE = ["validation"]
+VERSION_SCOPE = ["validate"]
 
 
 class ValidationConfigNode(enum.StrEnum):

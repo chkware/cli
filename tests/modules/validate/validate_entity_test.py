@@ -20,7 +20,7 @@ class TestValidationDocument:
     def test_from_file_context_pass_when_no_data():
         ctx = FileContext(
             document={
-                "version": "default:validation:0.7.2",
+                "version": "default:validate:0.7.2",
                 "asserts": [
                     {
                         "type": "Equal",
@@ -47,7 +47,7 @@ class TestValidationDocument:
     def test_from_file_context_pass_when_data():
         ctx = FileContext(
             document={
-                "version": "default:validation:0.7.2",
+                "version": "default:validate:0.7.2",
                 "asserts": [
                     {
                         "type": "Equal",
@@ -80,7 +80,7 @@ class TestValidationDocument:
     def test_from_file_context_fail_when_no_asserts():
         ctx = FileContext(
             document={
-                "version": "default:validation:0.7.2",
+                "version": "default:validate:0.7.2",
                 "data": {
                     "name": "Sadaqat",
                     "roll": 39,
@@ -98,7 +98,7 @@ class TestValidationDocument:
     def test_as_dict_pass():
         ctx = FileContext(
             document={
-                "version": "default:validation:0.7.2",
+                "version": "default:validate:0.7.2",
                 "asserts": [
                     {
                         "type": "Equal",
@@ -133,7 +133,7 @@ class TestValidationDocumentSupport:
     def test_set_data_template_pass_when_set_from_exec_ctx(self):
         ctx = FileContext(
             document={
-                "version": "default:validation:0.7.2",
+                "version": "default:validate:0.7.2",
                 "asserts": [
                     {
                         "type": "Equal",
@@ -162,7 +162,7 @@ class TestValidationDocumentSupport:
     def test_set_data_template_pass_when_set_from_doc(self):
         ctx = FileContext(
             document={
-                "version": "default:validation:0.7.2",
+                "version": "default:validate:0.7.2",
                 "asserts": [
                     {
                         "type": "Equal",
@@ -191,7 +191,7 @@ class TestValidationDocumentSupport:
     def test_set_data_template_pass_exec_ctx_prioritise(self):
         ctx = FileContext(
             document={
-                "version": "default:validation:0.7.2",
+                "version": "default:validate:0.7.2",
                 "asserts": [
                     {
                         "type": "Equal",
@@ -226,7 +226,7 @@ class TestValidationDocumentSupport:
     def test_process_data_template_pass():
         ctx = FileContext(
             document={
-                "version": "default:validation:0.7.2",
+                "version": "default:validate:0.7.2",
                 "asserts": [
                     {
                         "type": "Equal",
@@ -265,7 +265,7 @@ class TestValidationDocumentSupport:
     def test_make_assertion_entry_list_pass():
         ctx = FileContext(
             document={
-                "version": "default:validation:0.7.2",
+                "version": "default:validate:0.7.2",
                 "asserts": [
                     {
                         "type": "Equal",

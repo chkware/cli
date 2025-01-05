@@ -1,5 +1,5 @@
 ---
-version: default:validation:0.7.2
+version: default:validate:0.7.2
 
 asserts:
   - { type: Equal, actual: <% _data.roll %>, expected: 39 }
