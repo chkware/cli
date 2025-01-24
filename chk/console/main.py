@@ -56,7 +56,7 @@ def chk(ctx: click.Context, debug: bool) -> None:
 def fetch(cctx: click.Context, file: str, no_format: bool, variables: str) -> None:
     """\b
     Command to run Http config files.
-    FILE: Any .chk file, that has any of the following versions:
+    FILE: Any .chk, .yaml and .yml file, that has any of the following versions:
 
     \b
     - default.http.*"""
@@ -100,10 +100,10 @@ def validate(
 ) -> None:
     """\b
     Command to run Validation specification files.
-    FILE: Any .chk file, that has any of the following versions:
+    FILE: Any .chk, .yaml and .yml file, that has any of the following versions:
 
     \b
-    - default.http.*"""
+    - default.validate.*"""
 
     ctx: FileContext = FileContext.from_file(file)
 
@@ -147,10 +147,10 @@ def validate(
 def workflow(cctx: click.Context, file: str, no_format: bool, variables: str) -> None:
     """\b
     Command to run Workflow specification files.
-    FILE: Any .chk file, that has any of the following versions:
+    FILE: Any .chk, .yaml and .yml file, that has any of the following versions:
 
     \b
-    - default.http.*"""
+    - default.workflow.*"""
 
     ctx: FileContext = FileContext.from_file(file)
 
