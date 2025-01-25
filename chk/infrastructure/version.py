@@ -14,15 +14,9 @@ VERSION_FORMAT_REGEX = r"^([A-Za-z0-9-\.:]+){3}$"
 VERSION_STORE = {
     "http": [
         "0.7.2",
-        "0.8.0",
-    ],
-    "testcase": [
-        "0.7.2",
-        "0.8.0",
     ],
     "validate": [
         "0.7.2",
-        "0.8.0",
     ],
     "workflow": [
         "0.8.0",

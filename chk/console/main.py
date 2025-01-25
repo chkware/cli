@@ -37,7 +37,7 @@ def chk(ctx: click.Context, debug: bool) -> None:
 
     \b
     Low-code API quality testing, and automation toolbox.
-    Version 0.5.0, supported version strings: 0.7.2
+    Version 0.5.0
     """
     ctx.ensure_object(dict)
     ctx.obj["debug"] = debug
@@ -55,7 +55,7 @@ def chk(ctx: click.Context, debug: bool) -> None:
 @click.pass_context
 def fetch(cctx: click.Context, file: str, no_format: bool, variables: str) -> None:
     """\b
-    Command to run Http config files.
+    Command to run HTTP config files.
     FILE: Any .chk, .yaml and .yml file, that has any of the following versions:
 
     \b
