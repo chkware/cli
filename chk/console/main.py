@@ -20,7 +20,9 @@ VAR_ERROR_MSG = "-V, --variables accept values as JSON object"
 
 # root command
 @click.group()
-@click.option("--debug/--no-debug", default=True)
+@click.option(
+    "--debug/--no-debug", is_flag=True, default=True, help="Enable debug logging"
+)
 @click.pass_context
 def chk(ctx: click.Context, debug: bool) -> None:
     """\b
@@ -35,7 +37,7 @@ def chk(ctx: click.Context, debug: bool) -> None:
 
     \b
     Low-code API quality testing, and automation toolbox.
-    Version 0.5.0, supported version strings: 0.7.2
+    Version 0.5.0
     """
     ctx.ensure_object(dict)
     ctx.obj["debug"] = debug
@@ -53,8 +55,8 @@ def chk(ctx: click.Context, debug: bool) -> None:
 @click.pass_context
 def fetch(cctx: click.Context, file: str, no_format: bool, variables: str) -> None:
     """\b
-    Command to run Http config files.
-    FILE: Any .chk file, that has any of the following versions:
+    Command to run HTTP config files.
+    FILE: Any .chk, .yaml and .yml file, that has any of the following versions:
 
     \b
     - default.http.*"""
@@ -98,10 +100,10 @@ def validate(
 ) -> None:
     """\b
     Command to run Validation specification files.
-    FILE: Any .chk file, that has any of the following versions:
+    FILE: Any .chk, .yaml and .yml file, that has any of the following versions:
 
     \b
-    - default.http.*"""
+    - default.validate.*"""
 
     ctx: FileContext = FileContext.from_file(file)
 
@@ -145,10 +147,10 @@ def validate(
 def workflow(cctx: click.Context, file: str, no_format: bool, variables: str) -> None:
     """\b
     Command to run Workflow specification files.
-    FILE: Any .chk file, that has any of the following versions:
+    FILE: Any .chk, .yaml and .yml file, that has any of the following versions:
 
     \b
-    - default.http.*"""
+    - default.workflow.*"""
 
     ctx: FileContext = FileContext.from_file(file)
 
