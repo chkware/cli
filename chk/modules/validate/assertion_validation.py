@@ -5,7 +5,7 @@ Assertion validation module
 import copy
 import enum
 
-AssertionEntityProperty = ("type", "actual", "expected", "cast_actual_to")
+AssertionEntityProperty = ("type", "actual", "expected")
 
 
 class AssertionEntityType(enum.StrEnum):
@@ -72,23 +72,6 @@ _generic_schema = {
         "required": False,
         "empty": True,
         "nullable": True,
-    },
-    "cast_actual_to": {
-        "required": False,
-        "empty": False,
-        "nullable": False,
-        "type": "string",
-        "allowed": [
-            "int_or_float",
-            "int",
-            "float",
-            "bool",
-            "none",
-            "map",
-            "list",
-            "str",
-            "auto",
-        ],
     },
     "msg_pass": {
         "required": False,
