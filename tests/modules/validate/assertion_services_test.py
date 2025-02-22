@@ -79,7 +79,6 @@ def setup_assertion_entry_list_many_items_pass_assert():
                 {
                     "type": "Equal",
                     "actual": "<% _data.year %>",
-                    "cast_actual_to": "int",
                     "expected": 2023,
                 },
             ],
@@ -194,7 +193,6 @@ class TestAssertionEntry:
             assert_type="Empty",
             actual="10",
             expected=10,
-            cast_actual_to="int",
             extra_fields={"a": 1},
         )
 

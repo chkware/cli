@@ -5,9 +5,9 @@ variables:
   vdata: ~
 
 asserts:
-  - { type: Equal, actual: <% vdata.code %>, expected: 200, msg_pass: 'Response was successful with code `{type_actual}({value_actual})`', cast_actual_to: int }
+  - { type: Equal, actual: <% vdata.code %>, expected: 200, msg_pass: 'Response was successful with code `{type_actual}({value_actual})`' }
   - { type: Map, actual: <% vdata.headers %>, msg_pass: 'Header is a list', msg_fail: 'Header is not a list' }
-  - { type: Str, actual: <% vdata.code %>, msg_pass: 'Code `{type_actual}({value_actual})` is a string', msg_fail: 'Code `{type_actual}({value_actual})` is not a string', cast_actual_to: int }
+  - { type: Str, actual: <% vdata.code %>, msg_pass: 'Code `{type_actual}({value_actual})` is a string', msg_fail: 'Code `{type_actual}({value_actual})` is not a string' }
   - { type: StrHave, actual: <% vdata.info %>, other: "200 OK" }
   - { type: Map, actual: <% vdata.body %> }
   - { type: List, actual: <% vdata.body.explorers %> }
