@@ -81,25 +81,6 @@ class AssertionEntryListRunner:
             str_tpl = JinjaTemplate.make(assert_item.actual)
             assert_item.actual = str_tpl.render(variable_d)
 
-        # convert actual value type
-        if assert_item.cast_actual_to != "" and isinstance(assert_item.actual, str):
-            assert_item.actual_b4_cast = assert_item.actual
-
-            if assert_item.cast_actual_to == "int_or_float":
-                assert_item.actual = Cast.to_int_or_float(assert_item.actual)
-            elif assert_item.cast_actual_to == "int":
-                assert_item.actual = Cast.to_int(assert_item.actual)
-            elif assert_item.cast_actual_to == "float":
-                assert_item.actual = Cast.to_float(assert_item.actual)
-            elif assert_item.cast_actual_to == "bool":
-                assert_item.actual = Cast.to_bool(assert_item.actual)
-            elif assert_item.cast_actual_to == "none":
-                assert_item.actual = Cast.to_none(assert_item.actual)
-            elif assert_item.cast_actual_to in ["map", "list", "str"]:
-                assert_item.actual = Cast.to_hashable(assert_item.actual)
-            elif assert_item.cast_actual_to == "auto":
-                assert_item.actual = Cast.to_auto(assert_item.actual)
-
         # replace expected value for template
         if isinstance(assert_item.expected, str) and is_template_str(
             assert_item.expected

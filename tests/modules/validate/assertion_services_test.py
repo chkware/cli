@@ -79,7 +79,6 @@ def setup_assertion_entry_list_many_items_pass_assert():
                 {
                     "type": "Equal",
                     "actual": "<% _data.year %>",
-                    "cast_actual_to": "int",
                     "expected": 2023,
                 },
             ],
@@ -194,7 +193,6 @@ class TestAssertionEntry:
             assert_type="Empty",
             actual="10",
             expected=10,
-            cast_actual_to="int",
             extra_fields={"a": 1},
         )
 
@@ -202,3 +200,39 @@ class TestAssertionEntry:
         assert ar.assert_type == ae.assert_type
         assert ar is not ae
         assert "a" in ar.extra_fields
+
+
+class TestAssertionEntryCasting:
+    """TestAssertionEntryCasting"""
+
+    @staticmethod
+    def test_casting_int_pass():
+        """test_casting_int_pass"""
+
+        assert_list = [
+            AssertionEntry(
+            assert_type="Equal",
+            actual="<% '10' | int %>",
+            expected=10,
+            ),
+        ]
+
+        run_rpt = AssertionEntryListRunner.test_run(assert_list, {})
+
+        assert run_rpt.count_fail == 0
+
+    @staticmethod
+    def test_casting_float_pass():
+        """test_casting_float_pass"""
+
+        assert_list = [
+            AssertionEntry(
+            assert_type="Equal",
+            actual="<% '10.0032' | float %>",
+            expected=10.0032,
+            ),
+        ]
+
+        run_rpt = AssertionEntryListRunner.test_run(assert_list, {})
+
+        assert run_rpt.count_fail == 0

@@ -20,7 +20,7 @@ class JinjaTemplate:
             error(e_msg)
             raise ValueError(e_msg)
 
-        n_env = NativeEnvironment(
+        env = NativeEnvironment(
             variable_start_string="<%",
             variable_end_string="%>",
             block_start_string="<@",
@@ -29,7 +29,7 @@ class JinjaTemplate:
             comment_end_string="#>",
         )
 
-        return n_env.from_string(template)
+        return env.from_string(template)
 
 
 def is_template_str(tpl: str) -> bool:
