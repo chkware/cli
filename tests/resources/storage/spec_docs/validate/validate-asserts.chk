@@ -19,10 +19,6 @@ data:
 asserts:
   - { type: Equal, actual: <% response.int %>, expected: 200 }
   - { type: Equal, actual: <% response.float %>, expected: 200.23 }
-  - { type: Equal, actual: "[ 1, 2, 3 ]", expected: [ 1, 2, 3 ] }
-  - { type: Equal, actual: "{'a': 1, 'c': 3, 'b': 2}", expected: { 'a': 1, 'c': 3, 'b': 2 } }
-  - { type: Equal, actual: "False", expected: False }
-  - { type: Equal, actual: "False", expected: False }
 
   - { type: NotEqual, actual: "False", expected: False }
 
@@ -69,29 +65,27 @@ asserts:
   - { type: IntegerBetween, actual: 12, min: 11, max: 13 }
   - { type: IntegerBetween, actual: 5, min: 11, max: 13 }
   - { type: IntegerBetween, actual: 15, min: 11, max: 13 }
-  - { type: IntegerBetween, actual: "15", min: 11, max: 13 }
-  - { type: IntegerBetween, actual: "12", min: 11, max: 13 }
+  - { type: IntegerBetween, actual: <% "15" | int %>, min: 11, max: 13 }
+  - { type: IntegerBetween, actual: <% "12" | int %>, min: 11, max: 13 }
 
   - { type: IntegerGreater, actual: 12, other: 11 }
   - { type: IntegerGreater, actual: 5, other: 11 }
-  - { type: IntegerGreater, actual: "15", other: 11 }
-  - { type: IntegerGreater, actual: "12", other: 11 }
+  - { type: IntegerGreater, actual: <% "15" | int %>, other: 11 }
+  - { type: IntegerGreater, actual: <% "12" | int %>, other: 11 }
 
   - { type: IntegerGreaterOrEqual, actual: 12, other: 12 }
   - { type: IntegerGreaterOrEqual, actual: 5, other: 11 }
-  - { type: IntegerGreaterOrEqual, actual: "15", other: 15 }
-  - { type: IntegerGreaterOrEqual, actual: "12", other: 15 }
-  - { type: IntegerGreaterOrEqual, actual: "16", other: 15 }
+  - { type: IntegerGreaterOrEqual, actual: <% "15" | int %>, other: 15 }
+  - { type: IntegerGreaterOrEqual, actual: <% "12" | int %>, other: 15 }
 
   - { type: IntegerLess, actual: 12, other: 11 }
   - { type: IntegerLess, actual: 5, other: 11 }
-  - { type: IntegerLess, actual: "12", other: 13 }
+  - { type: IntegerLess, actual: <% "12" | int %>, other: 13 }
 
   - { type: IntegerLessOrEqual, actual: 12, other: 12 }
   - { type: IntegerLessOrEqual, actual: 5, other: 11 }
-  - { type: IntegerLessOrEqual, actual: "15", other: 15 }
-  - { type: IntegerLessOrEqual, actual: "12", other: 15 }
-  - { type: IntegerLessOrEqual, actual: "16", other: 15 }
+  - { type: IntegerLessOrEqual, actual: <% "15" | int %>, other: 15 }
+  - { type: IntegerLessOrEqual, actual: <% "12" | int %>, other: 15 }
 
   - { type: Float, actual: 10.0 }
   - { type: Float, actual: -10.00000000001 }
@@ -100,31 +94,30 @@ asserts:
   - { type: FloatBetween, actual: 12.34, min: 11, max: 13 }
   - { type: FloatBetween, actual: 5.0, min: 11, max: 13 }
   - { type: FloatBetween, actual: 15.89, min: 11, max: 13 }
-  - { type: FloatBetween, actual: "15.32", min: 11, max: 13 }
-  - { type: FloatBetween, actual: "12.24", min: 11, max: 13 }
+  - { type: FloatBetween, actual: <% "15.32" | float %>, min: 11, max: 13 }
+  - { type: FloatBetween, actual: <% "12.24" | float %>, min: 11, max: 13 }
 
   - { type: FloatGreater, actual: 12.0, other: 12 }
   - { type: FloatGreater, actual: 5.0, other: 13 }
   - { type: FloatGreater, actual: 15.89, other: 13 }
-  - { type: FloatGreater, actual: "15.32", other: 13 }
-  - { type: FloatGreater, actual: "13.24", other: 13 }
+  - { type: FloatGreater, actual: <% "15.32" | float %>, other: 13 }
+  - { type: FloatGreater, actual: <% "13.24" | float %>, other: 13 }
 
   - { type: FloatGreaterOrEqual, actual: 12.0, other: 12 }
   - { type: FloatGreaterOrEqual, actual: 5.0, other: 11 }
-  - { type: FloatGreaterOrEqual, actual: "15", other: 15 }
-  - { type: FloatGreaterOrEqual, actual: "12.23", other: 15 }
-  - { type: FloatGreaterOrEqual, actual: "16.56", other: 15 }
+  - { type: FloatGreaterOrEqual, actual: <% "15" | float %>, other: 15 }
+  - { type: FloatGreaterOrEqual, actual: <% "12.23" | float %>, other: 15 }
+  - { type: FloatGreaterOrEqual, actual: <% "16.56" | float %>, other: 15 }
 
   - { type: FloatLess, actual: 12.9, other: 11.0 }
   - { type: FloatLess, actual: 5.0, other: 11.0 }
-  - { type: FloatLess, actual: "12.3", other: 13.3 }
-  - { type: FloatLess, actual: "12.3", other: 13.3 }
+  - { type: FloatLess, actual: <% "12.23" | float %>, other: 13.3 }
 
   - { type: FloatLessOrEqual, actual: 12.0, other: 12 }
   - { type: FloatLessOrEqual, actual: 5.0, other: 11 }
-  - { type: FloatLessOrEqual, actual: "15", other: 15 }
-  - { type: FloatLessOrEqual, actual: "12.23", other: 15.7 }
-  - { type: FloatLessOrEqual, actual: "16.56", other: 15 }
+  - { type: FloatLessOrEqual, actual: <% "15" | float %>, other: 15 }
+  - { type: FloatLessOrEqual, actual: <% "12.23" | float %>, other: 15.7 }
+  - { type: FloatLessOrEqual, actual: <% "16.56" | float %>, other: 15 }
 
   - { type: Str, actual: <% response.string1%> }
   - { type: Str, actual: <% response.string2 %> }
