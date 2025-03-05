@@ -16,6 +16,22 @@ class JinjaTemplate:
     """JinjaTemplate is wrapper class for JinjaNativeTemplate"""
 
     @staticmethod
+    def build_env() -> NativeEnvironment:
+        """Build a native env"""
+
+        env = NativeEnvironment(
+            variable_start_string="<%",
+            variable_end_string="%>",
+            block_start_string="<@",
+            block_end_string="@>",
+            comment_start_string="<#",
+            comment_end_string="#>",
+        )
+
+        env.filters["fromjson"] = filter_fromjson
+        return env
+
+    @staticmethod
     def make(template: str) -> Template:
         """Create a NativeEnvironment with default settings"""
 
