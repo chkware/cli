@@ -174,8 +174,10 @@ class VariableTableManager:
             replaced_values: dict = replace_callback(
                 composite_values, variable_doc.data
             )
-            for key, val in replaced_values.items():
-                variable_doc[key] = val
+
+            cls.handle_absolute(variable_doc, replaced_values)
+            cls.handle_composite(variable_doc, replaced_values)
+
 
     @classmethod
     def handle_execute_context(
