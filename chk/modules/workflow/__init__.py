@@ -10,6 +10,7 @@ import sys
 from collections import abc
 from collections.abc import Callable
 
+import icecream
 from pydantic import BaseModel, ConfigDict, Field
 
 from chk.infrastructure.document import (
@@ -114,6 +115,17 @@ class WorkflowDocumentSupport:
         variables[WorkflowConfigNode.NODE.value] = []
 
     @classmethod
+    def process_task_variables_template(cls, task: dict, variables: Variables):
+        """process task.variables template"""
+
+        if "variables" in task:
+            doc = task["variables"]
+            loc_vars = Variables(variables.data)
+
+            VariableTableManager.handle_variable_doc(loc_vars, doc)
+            task["variables"] = {key: value for key, value in loc_vars.items() if key in doc.keys()}
+
+    @classmethod
     def process_task_template(
         cls, document: WorkflowDocument, variables: Variables
     ) -> list:
@@ -135,11 +147,15 @@ class WorkflowDocumentSupport:
                 raise RuntimeError("`tasks.*.item` should be map.")
 
             # replace values in tasks
-            task_d_: dict = replace_value(task, variables.data)
-            debug(task_d_)
+            task_repl = {key: value for key, value in task.items() if key in {"name"}}
+            task = task | replace_value(task_repl, variables.data)
+
+            cls.process_task_variables_template(task, variables)
+            icecream.ic(task)
+            exit()
 
             task_o_ = ChkwareTaskSupport.make_task(
-                task_d_, **dict(base_file_path=base_fpath)
+                task, **dict(base_file_path=base_fpath)
             )
 
             exctx_args = {"variables": json.dumps(task_o_.variables)}
