@@ -113,9 +113,13 @@ class WorkflowPresenter(PresentationBuilder):
                 response_task_dump["validate_asserts_count_fail"] = (
                     item.others["count_fail"] if "count_fail" in item.others else ""
                 )
-                response_task_dump["validate_asserts_err_messages"] = [
-                    f"      >>> {msg}" for msg in item.others["exceptions"]
-                ]
+
+                response_task_dump["validate_asserts_err_messages"] = []
+
+                if "exceptions" in item.others:
+                    response_task_dump["validate_asserts_err_messages"] = [
+                        f"      >>> {msg}" for msg in item.others["exceptions"]
+                    ]
 
             r_dump["tasks"].append(response_task_dump)
         return r_dump
