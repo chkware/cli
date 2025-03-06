@@ -87,7 +87,9 @@ class TestVariableTableManager:
             },
             VariableConfigNode.VARIABLES: {
                 "var_1": "bar",
+                "var_6": "<% var_5 | trim %> cent",
                 "var_2": 2,
+                "var_7": "<% var_6 %> <% var_3 | upper %>",
                 "var_3": "ajax_<%var_1%>",
                 "var_5": "  <% var_2 %>",
             },
@@ -104,13 +106,14 @@ class TestVariableTableManager:
             variable_doc, file_ctx.document[VariableConfigNode.VARIABLES]
         )
 
-        assert len(variable_doc.data) == 4
+        assert len(variable_doc.data) == 6
         assert variable_doc.data == {
             "var_1": "bar",
             "var_2": 2,
             "var_3": "ajax_bar",
             "var_5": "  2",
-        }
+            "var_6": "2 cent",
+            "var_7": "2 cent AJAX_BAR",        }
 
     @staticmethod
     def test_handle_execute_context_pass():

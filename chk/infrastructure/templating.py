@@ -7,6 +7,7 @@ import typing
 
 from jinja2 import TemplateError
 from jinja2.environment import Template
+from jinja2.meta import find_undeclared_variables
 from jinja2.nativetypes import NativeEnvironment
 
 from chk.infrastructure.logging import error
@@ -14,6 +15,22 @@ from chk.infrastructure.logging import error
 
 class JinjaTemplate:
     """JinjaTemplate is wrapper class for JinjaNativeTemplate"""
+
+    @staticmethod
+    def build_env() -> NativeEnvironment:
+        """Build a native env"""
+
+        env = NativeEnvironment(
+            variable_start_string="<%",
+            variable_end_string="%>",
+            block_start_string="<@",
+            block_end_string="@>",
+            comment_start_string="<#",
+            comment_end_string="#>",
+        )
+
+        env.filters["fromjson"] = filter_fromjson
+        return env
 
     @staticmethod
     def make(template: str) -> Template:
@@ -36,6 +53,23 @@ class JinjaTemplate:
         env.filters["fromjson"] = filter_fromjson
 
         return env.from_string(template)
+
+    @staticmethod
+    def render(env: NativeEnvironment, template: str, data: dict) -> typing.Any:
+        """Create a NativeEnvironment with default settings"""
+
+        if not template or not isinstance(template, str):
+            e_msg = f"Template error: {type(template)} {template}"
+            error(e_msg)
+            raise ValueError(e_msg)
+
+        # handle undefined vars
+        undeclared_vars = find_undeclared_variables(env.parse(template))
+
+        if all([_var in data for _var in undeclared_vars]):
+            return env.from_string(template).render(data)
+        else:
+            return template
 
 
 def is_template_str(tpl: str) -> bool:

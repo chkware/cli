@@ -94,11 +94,11 @@ def replace_value(doc: dict | list, var_s: dict) -> dict | list:
     :param var_s:
     :return:
     """
+    env = JinjaTemplate.build_env()
 
     for key, val in list(doc.items() if isinstance(doc, dict) else enumerate(doc)):
         if isinstance(val, str):
-            str_tpl = JinjaTemplate.make(val)
-            doc[key] = str_tpl.render(var_s)
+            doc[key] = JinjaTemplate.render(env, val, var_s)
         elif isinstance(val, (dict, list)):
             doc[key] = replace_value(doc[key], var_s)
     return doc
@@ -174,8 +174,10 @@ class VariableTableManager:
             replaced_values: dict = replace_callback(
                 composite_values, variable_doc.data
             )
-            for key, val in replaced_values.items():
-                variable_doc[key] = val
+
+            cls.handle_absolute(variable_doc, replaced_values)
+            cls.handle_composite(variable_doc, replaced_values)
+
 
     @classmethod
     def handle_execute_context(
