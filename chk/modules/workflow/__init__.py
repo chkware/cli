@@ -151,19 +151,17 @@ class WorkflowDocumentSupport:
             task = task | replace_value(task_repl, variables.data)
 
             cls.process_task_variables_template(task, variables)
-            icecream.ic(task)
-            exit()
 
             task_o_ = ChkwareTaskSupport.make_task(
                 task, **dict(base_file_path=base_fpath)
             )
 
-            exctx_args = {"variables": json.dumps(task_o_.variables)}
+            execute_args = {"variables": json.dumps(task_o_.variables)}
 
             if isinstance(task_o_, ChkwareValidateTask):
-                exctx_args["arguments"] = task_o_.arguments.model_dump_json()
+                execute_args["arguments"] = task_o_.arguments.model_dump_json()
 
-            execution_ctx = ExecuteContext({"dump": True, "format": True}, exctx_args)
+            execution_ctx = ExecuteContext({"dump": True, "format": True}, execute_args)
             debug(execution_ctx)
 
             task_fn = None
