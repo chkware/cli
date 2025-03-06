@@ -136,6 +136,24 @@ class VariableTableManager:
             cls.handle_composite(variable_doc, variables)
 
     @classmethod
+    def handle_variable_doc(
+        cls,
+        variables: Variables,
+        variable_doc: dict,
+    ) -> None:
+        """Handles variable handling
+
+        Args:
+            variable_doc: VariableDocument to add values to
+            variables: VersionedDocument of document data
+        """
+
+        cls.handle_absolute(variables, variable_doc)
+
+        if variables:
+            cls.handle_composite(variables, variable_doc)
+
+    @classmethod
     def handle_absolute(cls, variable_doc: Variables, document: dict) -> None:
         """Handles absolute variables and values from document
 
