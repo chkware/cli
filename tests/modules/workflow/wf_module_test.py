@@ -37,7 +37,7 @@ class TestWorkflowExecute:
         execute(file_ctx, execution_ctx)
 
         captured = capsys.readouterr()
-        assert "======" in captured.out
+        assert "------" in captured.out
 
 class TestWorkflowCall:
     """TestWorkflowCall"""
