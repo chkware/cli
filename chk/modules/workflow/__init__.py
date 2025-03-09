@@ -123,7 +123,9 @@ class WorkflowDocumentSupport:
             loc_vars = Variables(variables.data)
 
             VariableTableManager.handle_variable_doc(loc_vars, doc)
-            task["variables"] = {key: value for key, value in loc_vars.data.items() if key in doc.keys()}
+            task["variables"] = {
+                key: value for key, value in loc_vars.data.items() if key in doc.keys()
+            }
 
         # handle task arguments
         if "arguments" in task and bool(task["arguments"]):
@@ -132,7 +134,11 @@ class WorkflowDocumentSupport:
                 loc_vars = Variables(variables.data)
 
                 VariableTableManager.handle_variable_doc(loc_vars, doc)
-                task["arguments"] = {key: value for key, value in loc_vars.data.items() if key in doc.keys()}
+                task["arguments"] = {
+                    key: value
+                    for key, value in loc_vars.data.items()
+                    if key in doc.keys()
+                }
 
     @classmethod
     def process_task_template(

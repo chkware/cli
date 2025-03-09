@@ -196,7 +196,6 @@ class VariableTableManager:
             cls.handle_absolute(variable_doc, replaced_values)
             cls.handle_composite(variable_doc, replaced_values)
 
-
     @classmethod
     def handle_execute_context(
         cls, variable_doc: Variables, exec_ctx: ExecuteContext
