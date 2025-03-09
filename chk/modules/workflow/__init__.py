@@ -10,7 +10,6 @@ import sys
 from collections import abc
 from collections.abc import Callable
 
-import icecream
 from pydantic import BaseModel, ConfigDict, Field
 
 from chk.infrastructure.document import (
@@ -118,12 +117,22 @@ class WorkflowDocumentSupport:
     def process_task_variables_template(cls, task: dict, variables: Variables):
         """process task.variables template"""
 
+        # handle task variables
         if "variables" in task:
             doc = task["variables"]
             loc_vars = Variables(variables.data)
 
             VariableTableManager.handle_variable_doc(loc_vars, doc)
-            task["variables"] = {key: value for key, value in loc_vars.items() if key in doc.keys()}
+            task["variables"] = {key: value for key, value in loc_vars.data.items() if key in doc.keys()}
+
+        # handle task arguments
+        if "arguments" in task and bool(task["arguments"]):
+            if "data" in task["arguments"] and bool(task["arguments"]["data"]):
+                doc = task["arguments"]
+                loc_vars = Variables(variables.data)
+
+                VariableTableManager.handle_variable_doc(loc_vars, doc)
+                task["arguments"] = {key: value for key, value in loc_vars.data.items() if key in doc.keys()}
 
     @classmethod
     def process_task_template(
