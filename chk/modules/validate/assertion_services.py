@@ -6,7 +6,6 @@ from collections.abc import Callable
 from datetime import datetime
 
 import chk.modules.validate.assertion_function as asrt_f
-from chk.infrastructure.helper import Cast
 from chk.infrastructure.logging import debug
 from chk.infrastructure.templating import JinjaTemplate, is_template_str
 from chk.modules.validate.assertion_message import get_assert_msg_for
