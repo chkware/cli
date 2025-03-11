@@ -20,6 +20,7 @@ VAR_ERROR_MSG = "-V, --variables accept values as JSON object"
 
 # root command
 @click.group()
+@click.version_option()
 @click.option(
     "--debug/--no-debug", is_flag=True, default=True, help="Enable debug logging"
 )
@@ -35,10 +36,11 @@ def chk(ctx: click.Context, debug: bool) -> None:
      ░░█████████  █████   █████ █████ ░░████  ░░████░████   ░░████████ █████    ░░██████
       ░░░░░░░░░  ░░░░░   ░░░░░ ░░░░░   ░░░░    ░░░░ ░░░░     ░░░░░░░░ ░░░░░      ░░░░░░
 
+
     \b
     Low-code API quality testing, and automation toolbox.
-    Version 0.5.0
     """
+
     ctx.ensure_object(dict)
     ctx.obj["debug"] = debug
 
