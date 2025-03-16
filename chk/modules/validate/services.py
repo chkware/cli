@@ -25,11 +25,7 @@ class ValidatePresenter(PresentationBuilder):
         if not err:
             err = self.data.exception
 
-        return (
-            f"Validate error\n------\n{repr(err)}"
-            if err
-            else "Validate error\n------\nUnspecified error"
-        )
+        return f"Validate error\n------\n{repr(err)}" if err else "Validate error\n------\nUnspecified error"
 
     def dump_fmt(self) -> str:
         """dump formatted string"""
@@ -49,7 +45,7 @@ class ValidatePresenter(PresentationBuilder):
 
         display_items: list[dict] = []
 
-        for key, item in self.data.exposed.items():
+        for _key, item in self.data.exposed.items():
             display_items.append(dict(item))
 
         return json.dumps(display_items)

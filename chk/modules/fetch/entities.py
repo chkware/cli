@@ -177,9 +177,7 @@ class ApiResponseModel(BaseModel):
     @computed_field  # type: ignore
     @property
     def info(self) -> str:
-        return (
-            f"{Http_V10 if self.version == 10 else Http_V11} {self.code} {self.reason}"
-        )
+        return f"{Http_V10 if self.version == 10 else Http_V11} {self.code} {self.reason}"
 
     @computed_field  # type: ignore
     @property
@@ -248,7 +246,7 @@ class ApiResponseModel(BaseModel):
             ApiResponseModel: _description_
         """
 
-        arm = ApiResponseModel(
+        return ApiResponseModel(
             code=response.status_code,
             version=11 if response.raw.version == 0 else response.raw.version,
             reason=response.reason,
@@ -256,18 +254,11 @@ class ApiResponseModel(BaseModel):
             body=response.text,
         )
 
-        if arm:
-            arm.body_content_type
-
-        return arm
-
     @staticmethod
     def from_dict(**kwargs: dict) -> ApiResponseModel:
         """Construct from dict"""
 
-        if not all(
-            [item in kwargs.keys() for item in ["code", "info", "headers", "body"]]
-        ):
+        if not all(item in kwargs.keys() for item in ["code", "info", "headers", "body"]):
             raise KeyError("Expected keys to make ApiResponseModel not found")
 
         if not isinstance(kwargs["code"], int):
@@ -311,11 +302,7 @@ class ApiResponseModel(BaseModel):
         presentation += "\r\n".join(f"{k}: {v}" for k, v in self.headers.items())
         presentation += "\r\n\r\n"
 
-        presentation += (
-            json.dumps(self.body_as_dict())
-            if self.body_content_type == CTYPE_JSON
-            else self.body
-        )
+        presentation += json.dumps(self.body_as_dict()) if self.body_content_type == CTYPE_JSON else self.body
 
         return presentation
 

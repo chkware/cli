@@ -189,17 +189,13 @@ class VariableTableManager:
                 composite_values[key] = val
 
         if composite_values:
-            replaced_values: dict = replace_callback(
-                composite_values, variable_doc.data
-            )
+            replaced_values: dict = replace_callback(composite_values, variable_doc.data)
 
             cls.handle_absolute(variable_doc, replaced_values)
             cls.handle_composite(variable_doc, replaced_values)
 
     @classmethod
-    def handle_execute_context(
-        cls, variable_doc: Variables, exec_ctx: ExecuteContext
-    ) -> None:
+    def handle_execute_context(cls, variable_doc: Variables, exec_ctx: ExecuteContext) -> None:
         """Handle variables passed from external context
 
         Args:
@@ -276,12 +272,9 @@ class ExposeManager:
 
         if expose_doc := ExposeManager.get_expose_doc(file_ctx.document):
             exposed_doc_t = copy.copy(expose_doc)
-            exposed_doc_t = [
-                str(key).replace("%>", "").replace("<%", "").strip()
-                for key in exposed_doc_t
-            ]
+            exposed_doc_t = [str(key).replace("%>", "").replace("<%", "").strip() for key in exposed_doc_t]
 
             expose_val = ExposeManager.replace_values(expose_doc, store)
-            return dict(zip(exposed_doc_t, expose_val))
+            return dict(zip(exposed_doc_t, expose_val, strict=False))
 
         return {}

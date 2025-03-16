@@ -67,11 +67,7 @@ class WorkflowDocument(VersionedDocumentV2, BaseModel):
         if id_str := data_get(ctx.document, "id"):
             id_str = slugify(str(id_str).strip())
         else:
-            id_str = (
-                slugify(name_str)
-                if name_str and len(name_str) > 0
-                else pathlib.Path(ctx.filepath).stem
-            )
+            id_str = slugify(name_str) if name_str and len(name_str) > 0 else pathlib.Path(ctx.filepath).stem
 
         if not name_str:
             name_str = id_str
@@ -123,9 +119,7 @@ class WorkflowDocumentSupport:
             loc_vars = Variables(variables.data)
 
             VariableTableManager.handle_variable_doc(loc_vars, doc)
-            task["variables"] = {
-                key: value for key, value in loc_vars.data.items() if key in doc.keys()
-            }
+            task["variables"] = {key: value for key, value in loc_vars.data.items() if key in doc.keys()}
 
         # handle task arguments
         if "arguments" in task and bool(task["arguments"]):
@@ -134,16 +128,10 @@ class WorkflowDocumentSupport:
                 loc_vars = Variables(variables.data)
 
                 VariableTableManager.handle_variable_doc(loc_vars, doc)
-                task["arguments"] = {
-                    key: value
-                    for key, value in loc_vars.data.items()
-                    if key in doc.keys()
-                }
+                task["arguments"] = {key: value for key, value in loc_vars.data.items() if key in doc.keys()}
 
     @classmethod
-    def process_task_template(
-        cls, document: WorkflowDocument, variables: Variables
-    ) -> list:
+    def process_task_template(cls, document: WorkflowDocument, variables: Variables) -> list:
         """Process task block of document"""
 
         base_fpath: str = FileContext(*document.context).filepath
@@ -167,9 +155,7 @@ class WorkflowDocumentSupport:
 
             cls.process_task_variables_template(task, variables)
 
-            task_o_ = ChkwareTaskSupport.make_task(
-                task, **dict(base_file_path=base_fpath)
-            )
+            task_o_ = ChkwareTaskSupport.make_task(task, **{"base_file_path": base_fpath})
 
             execute_args = {"variables": json.dumps(task_o_.variables)}
 
@@ -209,9 +195,7 @@ class WorkflowDocumentSupport:
         return exec_report
 
     @classmethod
-    def execute_task(
-        cls, task_fn: Callable, task_params: TaskExecParam, variables: Variables
-    ) -> ExecResponse:
+    def execute_task(cls, task_fn: Callable, task_params: TaskExecParam, variables: Variables) -> ExecResponse:
         """execute_task"""
 
         _task_res: ExecResponse = task_fn(**task_params.as_dict())
@@ -279,9 +263,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
 
 
 @with_catch_log
-def execute(
-    ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...
-) -> None:
+def execute(ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...) -> None:
     """Run a workflow document
 
     Args:

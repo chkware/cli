@@ -68,11 +68,7 @@ class DocumentVersion:
             ver_l[-1],
         )
 
-        if (
-            len(self.provider) == 0
-            or len(self.doc_type) == 0
-            or len(self.doc_type_ver) == 0
-        ):
+        if len(self.provider) == 0 or len(self.doc_type) == 0 or len(self.doc_type_ver) == 0:
             raise ValueError("Invalid version string")
 
     def validate(self) -> bool:
