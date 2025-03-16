@@ -141,9 +141,7 @@ def boolean(actual: object, expected: object, **_: object) -> _AResult:
     if not isinstance(actual, bool):
         return ValueError("actual_not_bool")
 
-    if not isinstance(expected, types.NotImplementedType) and not isinstance(
-        expected, bool
-    ):
+    if not isinstance(expected, types.NotImplementedType) and not isinstance(expected, bool):
         return ValueError("expected_not_bool")
 
     if isinstance(expected, bool):
@@ -176,9 +174,7 @@ def integer_greater(actual: object, extra_fields: dict, **_: object) -> _AResult
     return int(extra_fields["other"]) < actual
 
 
-def integer_greater_or_equal(
-    actual: object, extra_fields: dict, **_: object
-) -> _AResult:
+def integer_greater_or_equal(actual: object, extra_fields: dict, **_: object) -> _AResult:
     """Assert integer is greater than or equal to other"""
 
     if not isinstance(actual, int):
@@ -365,9 +361,7 @@ def date_after(actual: str, expected: str, extra_fields: dict, **_: object) -> _
         return ValueError("date_conversion_issue")
 
 
-def date_after_or_equal(
-    actual: str, expected: str, extra_fields: dict, **_: object
-) -> _AResult:
+def date_after_or_equal(actual: str, expected: str, extra_fields: dict, **_: object) -> _AResult:
     """Assert actual date is after or equal to expected date"""
 
     if not isinstance(actual, str):
@@ -385,9 +379,7 @@ def date_after_or_equal(
         return ValueError("date_conversion_issue")
 
 
-def date_before(
-    actual: str, expected: str, extra_fields: dict, **_: object
-) -> _AResult:
+def date_before(actual: str, expected: str, extra_fields: dict, **_: object) -> _AResult:
     """Assert actual date is after expected date"""
 
     if not isinstance(actual, str):
@@ -405,9 +397,7 @@ def date_before(
         return ValueError("date_conversion_issue")
 
 
-def date_before_or_equal(
-    actual: str, expected: str, extra_fields: dict, **_: object
-) -> _AResult:
+def date_before_or_equal(actual: str, expected: str, extra_fields: dict, **_: object) -> _AResult:
     """Assert actual date is after expected date"""
 
     if not isinstance(actual, str):

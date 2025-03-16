@@ -66,7 +66,7 @@ class JinjaTemplate:
         # handle undefined vars
         undeclared_vars = find_undeclared_variables(env.parse(template))
 
-        if all([_var in data for _var in undeclared_vars]):
+        if all(_var in data for _var in undeclared_vars):
             return env.from_string(template).render(data)
         else:
             return template
@@ -76,7 +76,7 @@ def is_template_str(tpl: str) -> bool:
     """Check given string is templated string or not"""
 
     _dm_sets = [("<%", "%>"), ("<@", "@>"), ("<#", "#>")]
-    return any([_dm_set[0] in tpl and _dm_set[1] in tpl for _dm_set in _dm_sets])
+    return any(_dm_set[0] in tpl and _dm_set[1] in tpl for _dm_set in _dm_sets)
 
 
 ######################################

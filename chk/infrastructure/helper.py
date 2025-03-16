@@ -27,9 +27,7 @@ def data_set(data: dict | list, keymap: str, value: Any) -> Any:
 
     if isinstance(data, dict):
         if current_item.isnumeric():
-            raise IndexError(
-                f"Trying to set numeric key `{current_item}` on dict `{data}`"
-            )
+            raise IndexError(f"Trying to set numeric key `{current_item}` on dict `{data}`")
 
         if len(keymap_list) == 0:
             data[current_item] = value
@@ -42,9 +40,7 @@ def data_set(data: dict | list, keymap: str, value: Any) -> Any:
 
     if isinstance(data, list):
         if not current_item.isnumeric():
-            raise IndexError(
-                f"Trying to set non-numeric index `{current_item}` on list `{data}`"
-            )
+            raise IndexError(f"Trying to set non-numeric index `{current_item}` on list `{data}`")
         current_item_i = int(current_item)
 
         if len(data) < current_item_i:
@@ -170,9 +166,7 @@ class Cast:
                 return to_dict
 
 
-def formatter(
-    message: object, cb: Callable = str, dump: bool = True, is_err: bool = False
-) -> str:
+def formatter(message: object, cb: Callable = str, dump: bool = True, is_err: bool = False) -> str:
     """Format message with given callback
 
     Args:

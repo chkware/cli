@@ -697,79 +697,39 @@ def get_schema_map(item: AssertionEntityType | None = None) -> dict:
         AssertionEntityType.NotEmpty: _get_schema_for_not_empty(_generic_schema),
         AssertionEntityType.Boolean: _get_schema_for_boolean(_generic_schema),
         AssertionEntityType.Integer: _get_schema_for_integer(_generic_schema),
-        AssertionEntityType.IntegerBetween: _get_schema_for_integer_between(
-            _generic_schema
-        ),
-        AssertionEntityType.IntegerGreater: _get_schema_for_integer_greater(
-            _generic_schema
-        ),
-        AssertionEntityType.IntegerGreaterOrEqual: _get_schema_for_integer_greater_or_equal(
-            _generic_schema
-        ),
+        AssertionEntityType.IntegerBetween: _get_schema_for_integer_between(_generic_schema),
+        AssertionEntityType.IntegerGreater: _get_schema_for_integer_greater(_generic_schema),
+        AssertionEntityType.IntegerGreaterOrEqual: _get_schema_for_integer_greater_or_equal(_generic_schema),
         AssertionEntityType.IntegerLess: _get_schema_for_integer_less(_generic_schema),
-        AssertionEntityType.IntegerLessOrEqual: _get_schema_for_integer_less_or_equal(
-            _generic_schema
-        ),
+        AssertionEntityType.IntegerLessOrEqual: _get_schema_for_integer_less_or_equal(_generic_schema),
         AssertionEntityType.Float: _get_schema_for_float(_generic_schema),
-        AssertionEntityType.FloatBetween: _get_schema_for_float_between(
-            _generic_schema
-        ),
-        AssertionEntityType.FloatGreater: _get_schema_for_float_greater(
-            _generic_schema
-        ),
-        AssertionEntityType.FloatGreaterOrEqual: _get_schema_for_float_greater_or_equal(
-            _generic_schema
-        ),
+        AssertionEntityType.FloatBetween: _get_schema_for_float_between(_generic_schema),
+        AssertionEntityType.FloatGreater: _get_schema_for_float_greater(_generic_schema),
+        AssertionEntityType.FloatGreaterOrEqual: _get_schema_for_float_greater_or_equal(_generic_schema),
         AssertionEntityType.FloatLess: _get_schema_for_float_less(_generic_schema),
-        AssertionEntityType.FloatLessOrEqual: _get_schema_for_float_less_or_equal(
-            _generic_schema
-        ),
+        AssertionEntityType.FloatLessOrEqual: _get_schema_for_float_less_or_equal(_generic_schema),
         AssertionEntityType.Str: _get_schema_for_str(_generic_schema),
         AssertionEntityType.StrHave: _get_schema_for_str_have(_generic_schema),
-        AssertionEntityType.StrDoNotHave: _get_schema_for_str_do_not_have(
-            _generic_schema
-        ),
-        AssertionEntityType.StrStartsWith: _get_schema_for_str_starts_with(
-            _generic_schema
-        ),
-        AssertionEntityType.StrDoNotStartsWith: _get_schema_for_str_do_not_starts_with(
-            _generic_schema
-        ),
+        AssertionEntityType.StrDoNotHave: _get_schema_for_str_do_not_have(_generic_schema),
+        AssertionEntityType.StrStartsWith: _get_schema_for_str_starts_with(_generic_schema),
+        AssertionEntityType.StrDoNotStartsWith: _get_schema_for_str_do_not_starts_with(_generic_schema),
         AssertionEntityType.StrEndsWith: _get_schema_for_str_ends_with(_generic_schema),
-        AssertionEntityType.StrDoNotEndsWith: _get_schema_for_str_do_not_ends_with(
-            _generic_schema
-        ),
+        AssertionEntityType.StrDoNotEndsWith: _get_schema_for_str_do_not_ends_with(_generic_schema),
         AssertionEntityType.Date: _get_schema_for_date(_generic_schema),
         AssertionEntityType.DateAfter: _get_schema_for_date_after(_generic_schema),
-        AssertionEntityType.DateAfterOrEqual: _get_schema_for_date_after_or_equal(
-            _generic_schema
-        ),
+        AssertionEntityType.DateAfterOrEqual: _get_schema_for_date_after_or_equal(_generic_schema),
         AssertionEntityType.DateBefore: _get_schema_for_date_before(_generic_schema),
-        AssertionEntityType.DateBeforeOrEqual: _get_schema_for_date_before_or_equal(
-            _generic_schema
-        ),
+        AssertionEntityType.DateBeforeOrEqual: _get_schema_for_date_before_or_equal(_generic_schema),
         AssertionEntityType.List: _get_schema_for_list(_generic_schema),
-        AssertionEntityType.ListContains: _get_schema_for_list_contains(
-            _generic_schema
-        ),
-        AssertionEntityType.ListDoNotContains: _get_schema_for_list_do_not_contains(
-            _generic_schema
-        ),
-        AssertionEntityType.ListHasIndex: _get_schema_for_list_has_index(
-            _generic_schema
-        ),
-        AssertionEntityType.ListDoNotHasIndex: _get_schema_for_list_do_not_has_index(
-            _generic_schema
-        ),
+        AssertionEntityType.ListContains: _get_schema_for_list_contains(_generic_schema),
+        AssertionEntityType.ListDoNotContains: _get_schema_for_list_do_not_contains(_generic_schema),
+        AssertionEntityType.ListHasIndex: _get_schema_for_list_has_index(_generic_schema),
+        AssertionEntityType.ListDoNotHasIndex: _get_schema_for_list_do_not_has_index(_generic_schema),
         AssertionEntityType.Map: _get_schema_for_map(_generic_schema),
         AssertionEntityType.MapKeyCount: _get_schema_for_map_key_count(_generic_schema),
         AssertionEntityType.MapHasKeys: _get_schema_for_map_has_keys(_generic_schema),
-        AssertionEntityType.MapDoNotHasKeys: _get_schema_for_map_do_not_has_keys(
-            _generic_schema
-        ),
-        AssertionEntityType.MapExactKeys: _get_schema_for_map_exact_keys(
-            _generic_schema
-        ),
+        AssertionEntityType.MapDoNotHasKeys: _get_schema_for_map_do_not_has_keys(_generic_schema),
+        AssertionEntityType.MapExactKeys: _get_schema_for_map_exact_keys(_generic_schema),
         AssertionEntityType.Count: _get_schema_for_count(_generic_schema),
     }
 

@@ -1,3 +1,1 @@
-"""
-chk command-line app
-"""
+"""chk command-line app"""

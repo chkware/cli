@@ -131,23 +131,15 @@ class ValidationDocumentSupport:
         """sets data or template"""
 
         data = data_get(exec_ctx.arguments, "data", {})
-        variables[ValidationConfigNode.VAR_NODE.value] = (
-            data if data else validate_doc.data
-        )
+        variables[ValidationConfigNode.VAR_NODE.value] = data if data else validate_doc.data
 
     @staticmethod
     def process_data_template(variables: Variables) -> None:
         """process data or template before assertion"""
         data = variables[ValidationConfigNode.VAR_NODE.value]
-        tmp_variables = {
-            key: val
-            for key, val in variables.data.items()
-            if key != ValidationConfigNode.VAR_NODE.value
-        }
+        tmp_variables = {key: val for key, val in variables.data.items() if key != ValidationConfigNode.VAR_NODE.value}
 
-        variables[ValidationConfigNode.VAR_NODE.value] = replace_value(
-            data, tmp_variables
-        )
+        variables[ValidationConfigNode.VAR_NODE.value] = replace_value(data, tmp_variables)
 
     @staticmethod
     def make_assertion_entry_list(assert_lst: list[dict]) -> list[AssertionEntry]:
@@ -160,14 +152,10 @@ class ValidationDocumentSupport:
             try:
                 validator = cerberus.Validator(get_schema_map(_assert_type))
             except KeyError as ex:
-                raise KeyError(
-                    f"`{_assert_type}` key not found. in {repr(each_assert)}"
-                ) from ex
+                raise KeyError(f"`{_assert_type}` key not found. in {repr(each_assert)}") from ex
 
             if not validator.validate(each_assert):
-                raise RuntimeError(
-                    f"key: Unsupported structure for `{each_assert}`. {validator.errors}"
-                )
+                raise RuntimeError(f"key: Unsupported structure for `{each_assert}`. {validator.errors}")
 
             if _assert_type not in MAP_TYPE_TO_FN:
                 raise RuntimeError(f"type: `{_assert_type}` not supported.")
@@ -176,9 +164,7 @@ class ValidationDocumentSupport:
                 raise RuntimeError("key: `actual` not found in one of the asserts.")
             _actual = each_assert["actual"]
 
-            _expected = (
-                each_assert["expected"] if "expected" in each_assert else NotImplemented
-            )
+            _expected = each_assert["expected"] if "expected" in each_assert else NotImplemented
 
             _msg_pass = each_assert.get("msg_pass", "")
             _msg_fail = each_assert.get("msg_fail", "")
@@ -187,9 +173,7 @@ class ValidationDocumentSupport:
             _extra_fld = {}
 
             if len(only) > 0:
-                _extra_fld = {
-                    key: val for key, val in each_assert.items() if key in only
-                }
+                _extra_fld = {key: val for key, val in each_assert.items() if key in only}
             ae = AssertionEntry(
                 assert_type=_assert_type,
                 actual=_actual,
@@ -216,9 +200,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         validate_doc = ValidationDocument.from_file_context(file_ctx)
         debug(validate_doc.model_dump_json())
 
-        VersionedDocumentSupport.validate_with_schema(
-            ValidationDocumentSupport.build_schema(), validate_doc
-        )
+        VersionedDocumentSupport.validate_with_schema(ValidationDocumentSupport.build_schema(), validate_doc)
     except Exception as ex:
         error_trace(exception=sys.exc_info()).error(ex)
         return ExecResponse(
@@ -239,9 +221,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
     debug(variable_doc.data)
 
     try:
-        assert_list = ValidationDocumentSupport.make_assertion_entry_list(
-            validate_doc.asserts
-        )
+        assert_list = ValidationDocumentSupport.make_assertion_entry_list(validate_doc.asserts)
 
         run_rpt = AssertionEntryListRunner.test_run(assert_list, variable_doc.data)
     except Exception as ex:
@@ -292,9 +272,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
 
 
 @with_catch_log
-def execute(
-    ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...
-) -> None:
+def execute(ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...) -> None:
     """Run a validation document
 
     Args:

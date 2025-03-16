@@ -33,7 +33,9 @@ _AMessages = {
         "fail": "actual `{type_actual}({value_actual})` is not a boolean value",
         "actual_not_bool": "actual `{type_actual}({value_actual})` is not a boolean value",
         "expected_not_bool": "expected `{type_expected}({value_expected})` is not a boolean value",
-        "expected_mismatch": "actual `{type_actual}({value_actual})` and expected `{type_expected}({value_expected})` mismatch",
+        "expected_mismatch": (
+            "actual `{type_actual}({value_actual})` and expected `{type_expected}({value_expected})` mismatch"
+        ),
     },
     "integer": {
         "pass": "actual `{type_actual}({value_actual})` is a integer value",
@@ -143,28 +145,48 @@ _AMessages = {
         "fail": "actual `{type_actual}({value_actual})` is not after `{type_expected}({value_expected})`",
         "actual_not_str": "actual `{type_actual}({value_actual})` is not a string formatted date.",
         "expected_not_str": "expected `{type_expected}({value_expected})` is not a string formatted date.",
-        "date_conversion_issue": "date conversion error. actual `{type_actual}({value_actual})`, expected `{type_expected}({value_expected})`, format `{extra_fields[format]}`.",
+        "date_conversion_issue": (
+            "date conversion error."
+            " actual `{type_actual}({value_actual})`"
+            ", expected `{type_expected}({value_expected})`"
+            ", format `{extra_fields[format]}`."
+        ),
     },
     "date_after_or_equal": {
         "pass": "actual `{type_actual}({value_actual})` is after or equal `{type_expected}({value_expected})`",
         "fail": "actual `{type_actual}({value_actual})` is not after or equal `{type_expected}({value_expected})`",
         "actual_not_str": "actual `{type_actual}({value_actual})` is not a string formatted date.",
         "expected_not_str": "expected `{type_expected}({value_expected})` is not a string formatted date.",
-        "date_conversion_issue": "date conversion error. actual `{type_actual}({value_actual})`, expected `{type_expected}({value_expected})`, format `{extra_fields[format]}`.",
+        "date_conversion_issue": (
+            "date conversion error."
+            " actual `{type_actual}({value_actual})`"
+            ", expected `{type_expected}({value_expected})`"
+            ", format `{extra_fields[format]}`."
+        ),
     },
     "date_before": {
         "pass": "actual `{type_actual}({value_actual})` is before `{type_expected}({value_expected})`",
         "fail": "actual `{type_actual}({value_actual})` is not before `{type_expected}({value_expected})`",
         "actual_not_str": "actual `{type_actual}({value_actual})` is not a string formatted date.",
         "expected_not_str": "expected `{type_expected}({value_expected})` is not a string formatted date.",
-        "date_conversion_issue": "date conversion error. actual `{type_actual}({value_actual})`, expected `{type_expected}({value_expected})`, format `{extra_fields[format]}`.",
+        "date_conversion_issue": (
+            "date conversion error."
+            " actual `{type_actual}({value_actual})`"
+            ", expected `{type_expected}({value_expected})`"
+            ", format `{extra_fields[format]}`."
+        ),
     },
     "date_before_or_equal": {
         "pass": "actual `{type_actual}({value_actual})` is before or equal `{type_expected}({value_expected})`",
         "fail": "actual `{type_actual}({value_actual})` is not before or equal `{type_expected}({value_expected})`",
         "actual_not_str": "actual `{type_actual}({value_actual})` is not a string formatted date.",
         "expected_not_str": "expected `{type_expected}({value_expected})` is not a string formatted date.",
-        "date_conversion_issue": "date conversion error. actual `{type_actual}({value_actual})`, expected `{type_expected}({value_expected})`, format `{extra_fields[format]}`.",
+        "date_conversion_issue": (
+            "date conversion error."
+            " actual `{type_actual}({value_actual})`"
+            ", expected `{type_expected}({value_expected})`"
+            ", format `{extra_fields[format]}`."
+        ),
     },
     "list_": {
         "pass": "actual `{type_actual}({value_actual})` is a list",

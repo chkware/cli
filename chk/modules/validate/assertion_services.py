@@ -62,9 +62,7 @@ class AssertionEntryListRunner:
     """AssertionAntiquary is service class that run assertion"""
 
     @staticmethod
-    def _replace_assertion_values(
-        assert_item: AssertionEntry, variable_d: dict
-    ) -> AssertionEntry:
+    def _replace_assertion_values(assert_item: AssertionEntry, variable_d: dict) -> AssertionEntry:
         """Replace value for actual and expected data
 
         Args:
@@ -81,9 +79,7 @@ class AssertionEntryListRunner:
             assert_item.actual = str_tpl.render(variable_d)
 
         # replace expected value for template
-        if isinstance(assert_item.expected, str) and is_template_str(
-            assert_item.expected
-        ):
+        if isinstance(assert_item.expected, str) and is_template_str(assert_item.expected):
             str_tpl = JinjaTemplate.make(assert_item.expected)
             assert_item.expected = str_tpl.render(variable_d)
 
@@ -98,21 +94,15 @@ class AssertionEntryListRunner:
             asrt_fn_name = MAP_TYPE_TO_FN[assert_item.assert_type].__name__
 
             if isinstance(asrt_resp, ValueError):
-                return get_assert_msg_for(f"{asrt_fn_name}.{str(asrt_resp)}").format(
-                    **detail.get_message_values()
-                )
+                return get_assert_msg_for(f"{asrt_fn_name}.{str(asrt_resp)}").format(**detail.get_message_values())
 
             if asrt_resp:
                 message = (
-                    get_assert_msg_for(f"{asrt_fn_name}.pass")
-                    if assert_item.msg_pass == ""
-                    else assert_item.msg_pass
+                    get_assert_msg_for(f"{asrt_fn_name}.pass") if assert_item.msg_pass == "" else assert_item.msg_pass
                 )
             else:
                 message = (
-                    get_assert_msg_for(f"{asrt_fn_name}.fail")
-                    if assert_item.msg_fail == ""
-                    else assert_item.msg_fail
+                    get_assert_msg_for(f"{asrt_fn_name}.fail") if assert_item.msg_fail == "" else assert_item.msg_fail
                 )
 
             return message.format(**detail.get_message_values())
@@ -158,9 +148,7 @@ class AssertionEntryListRunner:
         run_report = RunReport(count_all=len(assert_list))
 
         for assert_item in assert_list:
-            assert_item = AssertionEntryListRunner._replace_assertion_values(
-                assert_item, variables
-            )
+            assert_item = AssertionEntryListRunner._replace_assertion_values(assert_item, variables)
             debug(assert_item)
 
             resp: RunDetail = AssertionEntryListRunner._prepare_test_run_result(

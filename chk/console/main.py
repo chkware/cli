@@ -21,9 +21,7 @@ VAR_ERROR_MSG = "-V, --variables accept values as JSON object"
 # root command
 @click.group()
 @click.version_option()
-@click.option(
-    "--debug/--no-debug", is_flag=True, default=True, help="Enable debug logging"
-)
+@click.option("--debug/--no-debug", is_flag=True, default=True, help="Enable debug logging")
 @click.pass_context
 def chk(ctx: click.Context, debug: bool) -> None:
     """\b
@@ -50,9 +48,7 @@ def chk(ctx: click.Context, debug: bool) -> None:
 # run fetch sub-command
 @chk.command()
 @click.argument("file", type=click.Path(exists=True))
-@click.option(
-    "-nf", "--no-format", is_flag=True, help="No formatting to show the output"
-)
+@click.option("-nf", "--no-format", is_flag=True, help="No formatting to show the output")
 @click.option("-V", "--variables", type=str, help="Pass variable(s) as JSON object")
 @click.pass_context
 def fetch(cctx: click.Context, file: str, no_format: bool, variables: str) -> None:
@@ -85,9 +81,7 @@ def fetch(cctx: click.Context, file: str, no_format: bool, variables: str) -> No
 # run validate sub-command
 @chk.command()
 @click.argument("file", type=click.Path(exists=True))
-@click.option(
-    "-nf", "--no-format", is_flag=True, help="No formatting to show the output"
-)
+@click.option("-nf", "--no-format", is_flag=True, help="No formatting to show the output")
 @click.option("-V", "--variables", type=str, help="Pass variable(s) as JSON object")
 @click.option("-D", "--data", type=str, help="Pass data as JSON")
 @click.option("-Di", "--data-in", is_flag=True, help="Pass data as JSON [from pipe]")
@@ -111,13 +105,9 @@ def validate(
 
     with with_catch_log():
         _data = (
-            load_variables_as_dict(
-                get_stdin(), except_msg="-Di, --data-in: Pass data as JSON [from pipe]"
-            )
+            load_variables_as_dict(get_stdin(), except_msg="-Di, --data-in: Pass data as JSON [from pipe]")
             if data_in
-            else load_variables_as_dict(
-                data, except_msg="-D, --data: Pass data as JSON"
-            )
+            else load_variables_as_dict(data, except_msg="-D, --data: Pass data as JSON")
         )
 
     execution_ctx = ExecuteContext(
@@ -141,9 +131,7 @@ def validate(
 # run validate sub-command
 @chk.command()
 @click.argument("file", type=click.Path(exists=True))
-@click.option(
-    "-nf", "--no-format", is_flag=True, help="No formatting to show the output"
-)
+@click.option("-nf", "--no-format", is_flag=True, help="No formatting to show the output")
 @click.option("-V", "--variables", type=str, help="Pass variable(s) as JSON object")
 @click.pass_context
 def workflow(cctx: click.Context, file: str, no_format: bool, variables: str) -> None:

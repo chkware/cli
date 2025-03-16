@@ -30,9 +30,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
         http_doc = HttpDocumentSupport.from_file_context(file_ctx)
         debug(http_doc.model_dump_json())
 
-        VersionedDocumentSupport.validate_with_schema(
-            HttpDocumentSupport.build_schema(), http_doc
-        )
+        VersionedDocumentSupport.validate_with_schema(HttpDocumentSupport.build_schema(), http_doc)
     except Exception as ex:
         error_trace(exception=sys.exc_info()).error(ex)
         return ExecResponse(
@@ -96,9 +94,7 @@ def call(file_ctx: FileContext, exec_ctx: ExecuteContext) -> ExecResponse:
 
 
 @with_catch_log
-def execute(
-    ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...
-) -> None:
+def execute(ctx: FileContext, exec_ctx: ExecuteContext, cb: abc.Callable = lambda *args: ...) -> None:
     """Call with a http document
 
     Args:
