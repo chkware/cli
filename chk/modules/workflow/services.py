@@ -62,11 +62,7 @@ class WorkflowPresenter(PresentationBuilder):
         if not err:
             err = self.data.exception
 
-        return (
-            f"Workflow error\n------\n{repr(err)}"
-            if err
-            else "Workflow error\n------\nUnspecified error"
-        )
+        return f"Workflow error\n------\n{repr(err)}" if err else "Workflow error\n------\nUnspecified error"
 
     def _prepare_dump_data(self) -> dict:
         """prepare dump data"""
@@ -81,9 +77,7 @@ class WorkflowPresenter(PresentationBuilder):
 
         if exec_report:
             r_dump["step_count"] = len(_document["tasks"])
-            r_dump["step_failed"] = len(
-                [item for item in exec_report if not item.is_success]
-            )
+            r_dump["step_failed"] = len([item for item in exec_report if not item.is_success])
 
         r_dump["tasks"] = []
 
@@ -98,9 +92,7 @@ class WorkflowPresenter(PresentationBuilder):
             }
             if item.task.uses == "fetch":
                 response_task_dump["fetch_request_method"] = (
-                    item.others["request_method"]
-                    if "request_method" in item.others
-                    else ""
+                    item.others["request_method"] if "request_method" in item.others else ""
                 )
                 response_task_dump["fetch_request_url"] = (
                     item.others["request_url"] if "request_url" in item.others else ""
@@ -113,9 +105,13 @@ class WorkflowPresenter(PresentationBuilder):
                 response_task_dump["validate_asserts_count_fail"] = (
                     item.others["count_fail"] if "count_fail" in item.others else ""
                 )
-                response_task_dump["validate_asserts_err_messages"] = [
-                    f"      >>> {msg}" for msg in item.others["exceptions"]
-                ]
+
+                response_task_dump["validate_asserts_err_messages"] = []
+
+                if "exceptions" in item.others:
+                    response_task_dump["validate_asserts_err_messages"] = [
+                        f"      >>> {msg}" for msg in item.others["exceptions"]
+                    ]
 
             r_dump["tasks"].append(response_task_dump)
         return r_dump
@@ -163,15 +159,11 @@ class WorkflowPresenter(PresentationBuilder):
                 if not one_task["is_success"]:
                     _computed_str += f"\n>> With message: {one_task['exception']}"
             elif one_task["uses"] == "validate":
-                _computed_str += (
-                    f">> Total tests: {one_task['validate_asserts_count_all']}, "
-                )
+                _computed_str += f">> Total tests: {one_task['validate_asserts_count_all']}, "
                 _computed_str += f"Failed: {one_task['validate_asserts_count_fail']}"
                 if not one_task["is_success"]:
                     _computed_str += f"\n>> With message: {one_task['exception']}\n"
-                    _computed_str += "\n".join(
-                        one_task["validate_asserts_err_messages"]
-                    )
+                    _computed_str += "\n".join(one_task["validate_asserts_err_messages"])
 
         return _computed_str
 

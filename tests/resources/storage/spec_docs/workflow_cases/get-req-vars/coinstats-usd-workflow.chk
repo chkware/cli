@@ -10,16 +10,16 @@ variables:
 tasks:
   - name: Fetch some content from URL
     uses: fetch
-    file: "./<% group %>-usd-request.chk"
+    file: "./coinstats-usd-request.chk"
     variables:
       convertCurrency: <% currency %>
 
   - name: Validate the content is okay
     uses: validate
-    file: "./<% group %>-usd-validate.chk"
+    file: "./coinstats-usd-validate.chk"
     variables:
       vdata: <% _steps.0._response %>
 
 expose:
   - <% _steps %>
-  - <% _steps.1.vdata.body %>
+#  - <% _steps.1.vdata.body %>

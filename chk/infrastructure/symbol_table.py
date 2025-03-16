@@ -94,11 +94,11 @@ def replace_value(doc: dict | list, var_s: dict) -> dict | list:
     :param var_s:
     :return:
     """
+    env = JinjaTemplate.build_env()
 
     for key, val in list(doc.items() if isinstance(doc, dict) else enumerate(doc)):
         if isinstance(val, str):
-            str_tpl = JinjaTemplate.make(val)
-            doc[key] = str_tpl.render(var_s)
+            doc[key] = JinjaTemplate.render(env, val, var_s)
         elif isinstance(val, (dict, list)):
             doc[key] = replace_value(doc[key], var_s)
     return doc
@@ -136,6 +136,24 @@ class VariableTableManager:
             cls.handle_composite(variable_doc, variables)
 
     @classmethod
+    def handle_variable_doc(
+        cls,
+        variables: Variables,
+        variable_doc: dict,
+    ) -> None:
+        """Handles variable handling
+
+        Args:
+            variable_doc: VariableDocument to add values to
+            variables: VersionedDocument of document data
+        """
+
+        cls.handle_absolute(variables, variable_doc)
+
+        if variables:
+            cls.handle_composite(variables, variable_doc)
+
+    @classmethod
     def handle_absolute(cls, variable_doc: Variables, document: dict) -> None:
         """Handles absolute variables and values from document
 
@@ -171,16 +189,13 @@ class VariableTableManager:
                 composite_values[key] = val
 
         if composite_values:
-            replaced_values: dict = replace_callback(
-                composite_values, variable_doc.data
-            )
-            for key, val in replaced_values.items():
-                variable_doc[key] = val
+            replaced_values: dict = replace_callback(composite_values, variable_doc.data)
+
+            cls.handle_absolute(variable_doc, replaced_values)
+            cls.handle_composite(variable_doc, replaced_values)
 
     @classmethod
-    def handle_execute_context(
-        cls, variable_doc: Variables, exec_ctx: ExecuteContext
-    ) -> None:
+    def handle_execute_context(cls, variable_doc: Variables, exec_ctx: ExecuteContext) -> None:
         """Handle variables passed from external context
 
         Args:
@@ -257,12 +272,9 @@ class ExposeManager:
 
         if expose_doc := ExposeManager.get_expose_doc(file_ctx.document):
             exposed_doc_t = copy.copy(expose_doc)
-            exposed_doc_t = [
-                str(key).replace("%>", "").replace("<%", "").strip()
-                for key in exposed_doc_t
-            ]
+            exposed_doc_t = [str(key).replace("%>", "").replace("<%", "").strip() for key in exposed_doc_t]
 
             expose_val = ExposeManager.replace_values(expose_doc, store)
-            return dict(zip(exposed_doc_t, expose_val))
+            return dict(zip(exposed_doc_t, expose_val, strict=False))
 
         return {}

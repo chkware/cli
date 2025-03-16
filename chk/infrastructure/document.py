@@ -33,9 +33,7 @@ class VersionedDocumentSupport:
     """DocumentVersionSupport"""
 
     @staticmethod
-    def validate_with_schema(
-        schema: dict, doc: VersionedDocument | VersionedDocumentV2
-    ) -> bool:
+    def validate_with_schema(schema: dict, doc: VersionedDocument | VersionedDocumentV2) -> bool:
         """Validate a document with given schema
 
         Args:
@@ -54,12 +52,8 @@ class VersionedDocumentSupport:
 
         try:
             if not validator.validate(file_ctx.document, schema):
-                raise RuntimeError(
-                    f"File exception: Validation failed: {str(validator.errors)}"
-                )
+                raise RuntimeError(f"File exception: Validation failed: {str(validator.errors)}")
         except cerberus.validator.DocumentError as doc_err:
-            raise RuntimeError(
-                f"Document exception: `version` string not found: {str(doc_err)}"
-            ) from doc_err
+            raise RuntimeError(f"Document exception: `version` string not found: {str(doc_err)}") from doc_err
 
         return True

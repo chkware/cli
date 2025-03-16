@@ -2,9 +2,9 @@
 version: default:validate:0.7.2
 
 asserts:
-  - { type: Equal, actual: <% _data.code %>, expected: 200, msg_pass: 'Response was successful with code `{type_actual}({value_actual})`', cast_actual_to: int }
+  - { type: Equal, actual: <% _data.code %>, expected: 200, msg_pass: 'Response was successful with code `{type_actual}({value_actual})`'}
   - { type: Map, actual: <% _data.headers %>, msg_pass: 'Header is a list', msg_fail: 'Header is not a list' }
-  - { type: Str, actual: <% _data.code %>, msg_pass: 'Code `{type_actual}({value_actual})` is a string', msg_fail: 'Code `{type_actual}({value_actual})` is not a string', cast_actual_to: int }
+  - { type: Str, actual: <% _data.code %>, msg_pass: 'Code `{type_actual}({value_actual})` is a string', msg_fail: 'Code `{type_actual}({value_actual})` is not a string'}
   - { type: StrHave, actual: <% _data.info %>, other: "200 OK" }
   - { type: Map, actual: <% _data.body %> }
   - { type: List, actual: <% _data.body.explorers %> }

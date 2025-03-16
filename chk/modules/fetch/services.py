@@ -43,7 +43,7 @@ def allowed_method(value: str) -> bool:
         ValueError: When unsupported method found
     """
 
-    if value not in set(method for method in HttpMethod):
+    if value not in set(HttpMethod):
         raise ValueError("Unsupported method")
 
     return True
@@ -105,9 +105,7 @@ class HttpRequestArgCompiler:
 
         # handle bearer auth
         if (tag_be := request_data.get(RequestConfigNode.AUTH_BE)) is not None:
-            request_arg["auth"] = BearerAuthentication(
-                tag_be.get(RequestConfigNode.AUTH_BE_TOK)
-            )
+            request_arg["auth"] = BearerAuthentication(tag_be.get(RequestConfigNode.AUTH_BE_TOK))
 
     @staticmethod
     def add_body(request_data: dict, request_arg: dict) -> None:
@@ -141,10 +139,7 @@ class HttpRequestArgCompiler:
             if "headers" not in request_arg:
                 request_arg["headers"] = {}
 
-            if (
-                "content-type" not in request_arg["headers"]
-                and "Content-Type" not in request_arg["headers"]
-            ):
+            if "content-type" not in request_arg["headers"] and "Content-Type" not in request_arg["headers"]:
                 request_arg["headers"]["content-type"] = CTYPE_XML
 
             request_arg["data"] = body
@@ -152,10 +147,7 @@ class HttpRequestArgCompiler:
             if "headers" not in request_arg:
                 request_arg["headers"] = {}
 
-            if (
-                "content-type" not in request_arg["headers"]
-                and "Content-Type" not in request_arg["headers"]
-            ):
+            if "content-type" not in request_arg["headers"] and "Content-Type" not in request_arg["headers"]:
                 request_arg["headers"]["content-type"] = "text/plain"
 
             request_arg["data"] = str(body)
@@ -252,11 +244,7 @@ class FetchPresenter(PresentationBuilder):
         if not err:
             err = self.data.exception
 
-        return (
-            f"Fetch error\n------\n{repr(err)}"
-            if err
-            else "Fetch error\n------\nUnspecified error"
-        )
+        return f"Fetch error\n------\n{repr(err)}" if err else "Fetch error\n------\nUnspecified error"
 
     def dump_json(self) -> str:
         """dump json"""
@@ -265,10 +253,7 @@ class FetchPresenter(PresentationBuilder):
 
         for key, expose_item in self.data.exposed.items():
             if key == RequestConfigNode.LOCAL and all(
-                [
-                    item in expose_item.keys()
-                    for item in ["code", "info", "headers", "body"]
-                ]
+                item in expose_item.keys() for item in ("code", "info", "headers", "body")
             ):
                 resp = ApiResponseModel.from_dict(**expose_item)
                 displayables.append(resp.model_dump())
@@ -284,10 +269,7 @@ class FetchPresenter(PresentationBuilder):
 
         for key, expose_item in self.data.exposed.items():
             if key == RequestConfigNode.LOCAL and all(
-                [
-                    item in expose_item.keys()
-                    for item in ["code", "info", "headers", "body"]
-                ]
+                item in expose_item.keys() for item in ("code", "info", "headers", "body")
             ):
                 resp = ApiResponseModel.from_dict(**expose_item)
                 displayables.append(resp.as_fmt_str())
